@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=XKill
+Name[fr]=XKill
+Comment[fr]=Forcer une application à quitter en ciblant sa fenêtre
+Comment=Force an application to quit by targeting its window
+Exec=xkill
+TryExec=xkill
+Icon=process-stop
+StartupNotify=true
+Categories=System
+Terminal=false
