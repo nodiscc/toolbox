@@ -1,0 +1,16 @@
+#!/bin/bash
+# Description: output a list of useful/interesting manpages
+# TODO search for missing commands on manpages.debian.org
+#set -o errexit
+set -o nounset
+errors_file=".manpages.errors"
+
+if  [[ -f "$errors_file" ]]; then rm "$errors_file"; fi
+cat manpages.list | while read -r i; do man -f "$i" 2>> "$errors_file" ; done
+
+cut -d":" -f 1 "$errors_file" | while read -r missing_manpage; do
+	echo "https://manpages.debian.org/$missing_manpage"
+done
+
+rm "$errors_file"
+
