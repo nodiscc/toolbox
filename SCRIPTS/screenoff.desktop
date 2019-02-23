@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Turn off display
+Name[fr]=Éteindre l'écran
+Comment=Turn off display
+Comment[fr]=Mettre l'écran en veille
+Exec=xset dpms force off
+TryExec=xset
+Icon=preferences-desktop-screensaver
+Terminal=false
+StartupNotify=false
+Categories=System
