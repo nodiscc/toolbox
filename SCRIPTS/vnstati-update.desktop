@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Network usage monitor
+Comment=
+Exec=update-vnstati
+Icon=gnome-nettool
+Path=
+Terminal=false
+StartupNotify=false
