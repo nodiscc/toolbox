@@ -1,0 +1,1 @@
+text/x-uri; windows-doturl-handler '%s' ; edit=windows-doturl-handler '%s' ; test=test "$DISPLAY" != "" ; description="URL Windows"	
