@@ -1,0 +1,14 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Lock keyrings
+Comment=Make password storage unreachable
+Name=Verrouiller les trousseaux de mots de passe
+Comment=Rendre le stockage de mots de passe inaccessible
+Categories=System;Settings
+Exec=rxtx-lock-gnomekeyring
+TryExec=rxtx-lock-gnomekeyring
+Terminal=false
+Type=Application
+Icon=lock
+NoDisplay=false
+Name[fr_FR]=lock-gnomekeyring.desktop
