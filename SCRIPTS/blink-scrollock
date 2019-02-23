@@ -1,0 +1,3 @@
+#!/bin/bash
+# Description: blink the scroll lock led in a loop
+while true; do xset led 3; sleep 0.2; xset -led 3; sleep 0.2; done
