@@ -1,0 +1,8 @@
+// @ is also noted $ORIGIN
+//  IN rec.typ domain         admin
+@   IN SOA  epc.example.com   root.epc.example.com. (
+                     2017031301      ; serial (for slave auto replication)
+                     1D              ; refresh
+                     1H              ; retry
+                     1W              ; expire
+                     3H )            ; minimum
