@@ -1,0 +1,5 @@
+#Use ssh my-dev as proxy shortcut
+Host my-dev 
+    ProxyCommand ssh -q -W %h:%p work-ssh-gate
+    HostName 192.168.1.123
+    User user2
