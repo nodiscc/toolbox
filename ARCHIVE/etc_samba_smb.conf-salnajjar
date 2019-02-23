@@ -1,0 +1,62 @@
+[global]
+    workgroup = CORP
+    netbios name = FILESERVER
+    server string = Linux Samba File Server
+    map to guest = Bad User
+    null passwords = Yes
+    security = share
+    guest account = smbguest
+    wins support = Yes
+    client NTLMv2 auth = Yes
+    log file = /var/log/samba/log.%m
+    max log size = 50
+    socket options = TCP_NODELAY IPTOS_LOWDELAY
+    disable spools = Yes
+    show add printer wizard = No
+    preferred master = No
+    domain master = No
+    idmap uid = 15000-20000
+    idmap gid = 15000-20000
+    winbind use default domain = Yes
+    dont descend = ./lost+found
+    use sendfile = yes
+    hide unreadable = yes
+    hide files = /lost+found/
+    cache directory = /var/run/samba/locks/cache
+    directory name cache size = 500
+    os level = 0
+    #hosts allow = 192.168.0.0/8 127.0.0.1 (restict access to local network)
+    #hosts deny = ALL (deny everyone)
+    force user = smbguest
+    force group = smbguest
+
+[Public]
+   comment = Public Share
+   guest ok = yes
+   guest only = yes
+   path = /path/to/public/share/
+   read only = no
+   create mask = 0777
+   directory mask = 0777
+
+[Homes]
+    comment = Home Directories
+    read only = No
+    hide files = /.*/lost+found/
+    browseable = No
+    browsable = No
+
+[Fileshare]
+    comment = A basic file share
+    path = /srv/fileshare
+    write list = user1, user2, user3, @group1, @group2
+    force create mode = 0666
+    force security mode = 0666
+    force directory mode = 0777
+    force directory security mode = 0777
+    guest ok = Yes
+    hide special files = Yes
+    hide files = /.*/lost+found/
+    dont descend = /lost+found
+
+#run sudo testparm after editing, then sudo restart smbd. See man smb.conf
