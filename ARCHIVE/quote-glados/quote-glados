@@ -1,0 +1,7 @@
+#!/bin/bash
+# Description: outputs a random line from a text file
+set -o errexit
+set -o nounset
+
+quotes_file="$(dirname $0)/glados.txt"
+shuf -n1 "$quotes_file"
