@@ -1,0 +1,7 @@
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);
+#editBMPanel_folderRow,
+#editBMPanel_locationRow,
+#editBMPanel_descriptionRow,
+#editBMPanel_loadInSidebarCheckbox {
+visibility: visible;
+    }
