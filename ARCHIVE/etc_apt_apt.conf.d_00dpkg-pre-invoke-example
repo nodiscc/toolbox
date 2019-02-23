@@ -1,0 +1,2 @@
+// Run an arbitrary command before changing packages state
+Pkg::Pre-Invoke {"/bin/bash /usr/local/bin/do-something.sh apt 5";};
