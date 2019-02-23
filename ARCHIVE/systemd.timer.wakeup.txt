@@ -1,0 +1,10 @@
+[Unit]
+Description=Alarm Clock
+[Timer]
+Unit=alarm.service
+OnCalendar=Mon..Fri 6:25
+OnCalendar=Sat,Sun 6:40
+AccuracySec=5min
+WakeSystem=true
+[Install]
+WantedBy=alarm.service
