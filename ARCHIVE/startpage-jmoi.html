@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+        <head>
+		<meta charset="UTF-8">
+                <title>start</title>
+                <link rel="shortcut icon" type="image/png" href="" />
+
+                <style type="text/css">
+			*, * * {
+			font-family: termsyn !important;
+			}
+                        body {
+                        background : #170F0D;
+                        }
+
+                        .keepcentered {
+                        position : absolute;
+                        left : 50%;
+                        top : 50%;
+                        width : 480px;
+                        height : 300px;
+                        margin-left : -240px;
+                        margin-top : -150px;
+                        font-weight : 100;
+                        }
+                        body {
+                        font-style : normal;
+                        color : #AF652F;
+                        margin : 5px;
+                        }
+                        td, tr {
+                        width: 25%;
+                        text-align: center;
+			font-size: 14px;
+                        }
+                        a {
+                        font-weight: 300;
+                        color : #908F32;
+                        }
+                        a:hover{
+                        color: #C3C13D;
+                        }
+                        a:link {
+                        text-decoration : none;
+                        }
+			form {
+			position : absolute;
+                        left : 50%;
+                        top : 50%;
+                        width : 240px;
+                        height : 30px;
+                        margin-left : -120px;
+                        margin-top : 100px;
+                        font-weight : 100;
+			}
+			input {
+			background: #170F0D;
+			color: #AF542F;
+			border: 2px solid #392925;
+			border-radius: 4px;
+			padding: 0 4px;
+			}
+			
+</style>
+        </head>
+               
+        <body onload="updateClock()">
+                <div class="keepcentered">
+                        <center><font size=72><div id="time"></div></font></center>
+                        <p><center>
+                        <table width="100%" border="0px">
+                                <tr>
+                                        <td>Suosikit</td>
+                                        <td>Google</td>
+                                        <td>Koulu</td>
+                                        <td>Muut</td>
+                                </tr>
+                                <tr>
+                                        <td><a href="http://www.facebook.com">Facebook</a></td>
+					<td><a href="http://www.gmail.com">Gmail</a></td>
+                                        <td><a href="#">Sähköposti</a></td>
+                                        <td><a href="#">Verkkopankki</a></td>
+
+                                </tr>
+                                <tr>
+                                        <td><a href="http://www.medium.com">Medium</a></td>
+                                        <td><a href="http://calendar.google.com">Kalenteri</a></td>
+                                        <td><a href="#">Weboodi</a></td>
+                                        <td><a href="http://www.reittiopas.fi/">Reittiopas</a></td>
+                                </tr>
+                                <tr>
+                                        <td><a href="http://www.hs.fi">HS.fi</a></td>
+                                        <td><a href="http://drive.google.com">Drive</a></td>
+                                        <td><a href="http://mathstat.helsinki.fi/opiskelu">Mathstat</a></td>
+                                        <td><a href="#">?</a></td>
+                                </tr>
+                                <tr>
+                                        <td><a href="http://www.nhl.com">NHL</a></td>
+                                        <td><a href="http://www.google.com/analytics">Analytics</a></td>
+                                        <td><a href="http://www.cs.helsinki.fi/opiskelu">CS</a></td>
+                                        <td><a href="#">~/</a></td>
+                                </tr>
+                        </table>
+                        <br>
+                        </center>
+                </p>
+</div>
+
+<form method="get" action="https://duckduckgo.com/?q=">
+<input type="text" name="q" size="30" maxlength="255" placeholder="DuckDuckGo" />
+</form>
+        </body>
+        <script>
+                function updateClock()
+                {
+                        Date.getMinutesTwoDigits = function()
+                        {
+                                var retval = now.getMinutes();
+                                if (retval < 10) return ("0" + retval.toString());
+                                else return retval.toString();
+                        }
+                        Date.getHoursModTwelve = function()
+                        {
+                                var retval = now.getHours();
+                                retval = retval%24;
+                                if (retval == 0) retval = 00;
+                                return retval;
+                        }
+                        var now = new Date(),
+                        time = Date.getHoursModTwelve() + ':' + Date.getMinutesTwoDigits();
+                        document.getElementById('time').innerHTML = ["", time].join('');
+                        setTimeout(updateClock, 1000);
+                }
+        </script>      
+</html>
