@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Units
+Comment[fr]=conversions entre différents systèmes d'unités
+Comment=converts between different systems of units
+Exec=units
+TryExec=units
+Icon=applications-accessories
+Terminal=true
+StartupNotify=true
+Categories=Utility
