@@ -1,0 +1,36 @@
+alignment middle_middle
+background yes
+draw_borders no
+draw_graph_borders yes
+draw_outline no
+draw_shades no
+double_buffer yes
+gap_y 5
+minimum_size 450
+net_avg_samples 2
+no_buffers no
+out_to_console no
+own_window yes
+own_window_class Conky
+own_window_type desktop
+own_window_transparent no
+own_window_argb_visual yes
+own_window_argb_value 255
+own_window_hints undecorated,sticky,skip_taskbar,skip_pager
+stippled_borders 1
+update_interval 1
+uppercase no
+show_graph_scale no
+show_graph_range no
+font Blue Highway:size=12
+xftfont Blue Highway:size=12
+default_color FFFFFF
+color4 DCBA72
+color5 B9CE4B
+override_utf8_locale yes
+use_xft yes
+
+
+TEXT
+${color5}${font Almonte Woodgrain:size=120}>${color}${time %H:%M}${font Almonte Woodgrain:size=58}${time :%S}${font Almonte Woodgrain:size=42}
+${color5}${time %A %d/%m}${color}${font}
