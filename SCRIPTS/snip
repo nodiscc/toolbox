@@ -1,0 +1,50 @@
+#!/bin/bash
+# Description: Add or search text in a snippets file
+# Copyright: (c) 2014-2015 nodiscc (nodiscc@gmail.com)
+# License: MIT (http://opensource.org/licenses/MIT)
+# TODO: -i flag: use egrep -i
+# TODO: separate results with a newline
+
+set -e
+
+USAGE="$(basename $0) [searchterm] [-a text to add] [-o]
+	search term		word to look for in snippets file
+	-a line	  add line to your snippets file
+	-o        open snippets file in text editor"
+
+#TODO: when snip -a is ran without arguments, open nano to type the snippet, and save it to snippets file when nano closes
+
+if [[ "$snippetsfile" == "" ]]
+	then echo "the \$snippetsfile variable (path to your snippets file) is not set, please set it in your .bashrc" 1>&2
+	exit 1
+fi
+
+###############################################################
+
+
+function _main() {
+	searchterm="$1"
+	case "$searchterm" in
+		"-a" ) shift; _addsnippet "$@";;
+		"-h"|"") echo "$USAGE"; exit 1;;
+        "-o" ) xdg-open "$snippetsfile";;
+		* ) _searchsnippet "$@";;
+	esac
+}
+
+function _searchsnippet() {
+    pipe="egrep --color=always $1 $snippetsfile"; shift
+    for term in "$@"; do
+        pipe="$pipe | egrep --color=always $term"
+    done
+  	eval "$pipe"
+}
+
+function _addsnippet() {
+	  echo -e "\n\n$@" >> "$snippetsfile"
+}
+
+
+#################################################################
+
+_main $@
