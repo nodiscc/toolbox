@@ -1,0 +1,2 @@
+#!/bin/bash
+WINURL=`tail -n 1 "$1" | sed 's/URL=//'`;  xdg-open $WINURL
