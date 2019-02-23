@@ -1,0 +1,14 @@
+[Desktop Entry]
+Version=1.0
+Name=Analog clock
+Name[fr]=Horloge analogique
+Comment=Analog clock (xclock)
+Comment[fr]=Horloge analogique (xclock)
+Exec=xclock
+TryExec=xclock
+Icon=gnome-clocks
+Terminal=false
+Type=Application
+X-MultipleArgs=false
+Categories=Utility
+StartupNotify=true
