@@ -1,0 +1,20 @@
+<network>
+  <name>default</name>
+  <uuid>452d79a2-7fb4-4649-a13d-95348bea17c6</uuid>
+  <forward mode='nat'>
+    <nat>
+      <port start='1024' end='65535'/>
+    </nat>
+  </forward>
+  <bridge name='virbr0' stp='on' delay='0'/>
+  <mac address='52:54:00:63:35:ca'/>
+  <ip address='192.168.122.254' netmask='255.255.255.0'>
+    <dhcp>
+      <range start='192.168.122.101' end='192.168.122.253'/>
+      <host mac='52:54:00:99:5a:d8' name='debian9' ip='192.168.122.1'/>
+      <host mac='52:54:00:f7:a1:c8' name='puffy' ip='192.168.122.3'/>
+      <host mac='52:54:00:4c:40:1c' name='xenial' ip='192.168.122.4'/>
+    </dhcp>
+  </ip>
+</network>
+<!-- edit accordingly then run virsh net-destroy default; virsh net-define default.xml; virsh net-start default -->
