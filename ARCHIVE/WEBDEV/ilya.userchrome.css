@@ -1,0 +1,104 @@
+@namespace url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);
+@-moz-document url(chrome://browser/content/browser.xul) {
+
+/* Hide clutter */
+.urlbar-history-dropmarker, #star-button, .tab-icon-image, #page-proxy-favicon, #go-button, #urlbar-reload-button, #urlbar-stop-button, #identity-icon-labels, #notification-popup-box[hidden="true"], 
+#notification-popup-box[hidden="false"], #notification-popup-box, .notification-anchor-icon, #PanelUI-button,
+.findbar-highlight.tabbable, .toolbarbutton-1, .findbar-case-sensitive, #minimize-button, #restore-button {
+    display: none !important;
+}
+
+/* Set global font */
+* {
+    font-family: gohufont !important;
+}
+
+/* Style url-bar */
+#nav-bar {
+    position: fixed !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    background: #021B21 !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#urlbar {
+    -moz-appearance: none !important;
+    color: #E8DFD6 !important;
+    border: none !important;
+    background: #021B21 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 38px !important;
+    margin-left: -6px !important;
+    padding-left: 20px !important;
+}
+
+#nav-bar-customization-target {
+    width: 100% !important;
+}
+
+#content-deck {
+margin-bottom: 38px !important;
+}
+
+/* Style url-bar */
+#navigator-toolbox {
+    margin-top: -2px !important;
+    margin-bottom: -1px !important;
+}
+
+/* Style tabs */
+#tabbrowser-tabs {
+    margin-left: -15px !important;
+    margin-right: -15px !important;
+    height: 38px !important;
+    text-align: center !important;
+    background: #021B21 !important;
+}
+
+.tabbrowser-tab[fadein]:not([pinned]) {
+    min-width: 32px !important;
+    max-width: 100% !important;
+    margin-top: 2px !important;
+}
+    
+.tabbrowser-tab[selected="true"]{
+
+}
+
+/* Remove australis shit */
+#TabsToolbar:not(:-moz-lwtheme)::after, #TabsToolbar:not(:-moz-lwtheme)::before {
+    display: none !important;
+}
+
+.tab-background-start, .tab-background-end {
+    visibility: hidden !important;
+    box-shadow: none !important;
+}
+
+.tab-background-middle {
+    background: none !important;
+}
+
+#TabsToolbar, #TabsToolbar *{
+    clip-path: none !important;
+    max-height: 42px !important;
+}
+
+#TabsToolbar, .tabbrowser-tab *, .tabs-newtab-button, .toolbarbutton, .tab-background *{
+    background-image: none !important;
+}
+
+.tab-background, .tab-background-middle, .tabbrowser-tab:after, .tabbrowser-tab:before, .tabbrowser-tab:after {
+    box-shadow: none !important;
+    background: none !important;
+}
+    
+#TabsToolbar:after {
+    border-bottom: 1px solid #e8eaed !important;
+}
+
+}
