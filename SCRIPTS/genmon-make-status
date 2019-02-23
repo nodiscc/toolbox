@@ -1,0 +1,9 @@
+#!/bin/bash
+status_file="$HOME/.cache/make_exit_status"
+
+if [[ -f "$status_file" ]] && grep 0 "$status_file"; then
+    echo  "<img>/usr/share/icons/Paper/16x16/status/dialog-info.png</img>"
+else
+    echo  "<img>/usr/share/icons/Paper/16x16/status/dialog-error.png</img>"
+fi
+echo "<click>xfce4-terminal --hold --default-working-directory $HOME/Nextcloud/ -x make derrichter</click>"
