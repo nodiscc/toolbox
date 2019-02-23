@@ -1,0 +1,3 @@
+#!/bin/bash
+#Description: show a manpage on manpages.debian.org
+curl "https://manpages.debian.org/stretch/logwatch/$1.8.en.gz" | man -l -
