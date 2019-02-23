@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Decrease Gamma
+Comment=Decrease display gamma value
+Exec=gamma-low
+NoDisplay=false
+StartupNotify=false
+Terminal=false
