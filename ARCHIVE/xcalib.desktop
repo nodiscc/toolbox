@@ -1,0 +1,15 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Invert Colors
+Name[fr]=Inverser les couleurs
+Comment[fr]=Invert display colors
+Comment=Invert display colors
+Exec=xcalib -a -i
+TryExec=xcalib
+Icon=multimedia-player-ipod-touch
+StartupNotify=true
+Categories=Settings;
+Terminal=false
+GenericName=Invert display colors
+Name[fr_FR.utf8]=Invert display colors
