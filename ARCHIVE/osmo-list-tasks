@@ -1,0 +1,3 @@
+#/bin/bash
+grep summary ~/.osmo/tasks_entries.xml |sed 's/<summary>//g' | sed 's/<\/summary>//g' | sed 's/      / \* /g'}
+xmlstarlet sel -t -m '//entry[status="0"]' -v summary --nl ~/.osmo/tasks_entries.xml}
