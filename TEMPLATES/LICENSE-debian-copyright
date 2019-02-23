@@ -1,0 +1,21 @@
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: LXLauncher
+Upstream-Contact: lxde-list@lists.sourceforge.net
+Source: http://sourceforge.net/projects/lxde/files/
+
+Files: *
+Copyright: 2008-2011 Hong Jen Yee (PCMan) <pcman.tw@gmail.com>
+License: GPL-2+
+
+Files: src/working-area.*
+Copyright: 2003-2004 Gary Kramlich
+License: GPL-2+
+
+Files: src/exo-wrap-table.*
+Copyright: 2000 Ramiro Estrugo <ramiro@eazel.com>
+           2005-2006 Benedikt Meurer <benny@xfce.org>
+License: LGPL-2+
+
+Files: debian/*
+Copyright: 2008-2012 Andrew Lee (李健秋) <ajqlee@debian.org>
+License: GPL-2+
