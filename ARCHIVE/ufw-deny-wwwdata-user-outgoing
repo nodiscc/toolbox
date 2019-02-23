@@ -1,0 +1,21 @@
+# Description: UFW - Disallow apache's outgoing connections
+# Create new chain
+--new-chain out_apache
+
+# Perf: skip already established connections, use ufw's default output policy for these
+-A ufw-after-output -m state --state ESTABLISHED,RELATED -j ufw-skip-to-policy-output
+
+# Put everything sent by the Apache run user www-data into the chain out_apache
+-A ufw-after-output -m owner --uid-owner www-data -j out_apache
+
+# How to add an exception:
+# Example: webmail: allow new outgoing connections to port 143 (imap) and 25 (smtp) on localhost
+# Return them to ufw's output policy queue
+# (use RETURN instead of ACCEPT so that further restrictions in the ufw out queue still apply)
+#-A out_apache -p tcp --syn -d 127.0.0.1 --dport 143 -j RETURN
+#-A out_apache -p tcp --syn -d 127.0.0.1 --dport 25  -j RETURN
+
+# Reject everything else apache sends out
+-A out_apache -j REJECT
+
+#####################################################
