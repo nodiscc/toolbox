@@ -1,0 +1,158 @@
+[GIT/exploit-database-bin-sploits]
+checkout = git clone 'https://github.com/offensive-security/exploit-database-bin-sploits' 'GIT/exploit-database-bin-sploits'
+
+[Adapta]
+checkout = git clone 'https://github.com/tista500/Adapta' 'Adapta'
+
+[Albatross]
+checkout = git clone 'https://github.com/shimmerproject/Albatross' 'Albatross'
+
+[Arc-theme]
+checkout = git clone 'https://github.com/horst3180/Arc-theme' 'Arc-theme'
+
+[Blackbird]
+checkout = git clone 'https://github.com/shimmerproject/Blackbird' 'Blackbird'
+
+[blawb-icons]
+checkout = git clone 'https://github.com/nodiscc/blawb-icons' 'blawb-icons'
+
+[BleuFear]
+checkout = git clone 'https://github.com/maxfierke/BleuFear' 'BleuFear'
+
+[Bluebird]
+checkout = git clone 'https://github.com/shimmerproject/Bluebird' 'Bluebird'
+
+[bunsen-themes]
+checkout = git clone 'https://github.com/BunsenLabs/bunsen-themes' 'bunsen-themes'
+
+[CaptainIcon]
+checkout = git clone 'https://github.com/mariodelvalle/CaptainIcon' 'CaptainIcon'
+
+[centauri_gtk_theme]
+checkout = git clone 'https://github.com/vval/centauri_gtk_theme' 'centauri_gtk_theme'
+
+[Ceti-2-theme]
+checkout = git clone 'https://github.com/horst3180/Ceti-2-theme' 'Ceti-2-theme'
+
+[crayolo]
+checkout = git clone 'https://github.com/dkeg/crayolo' 'crayolo'
+
+[deb8-theme]
+checkout = git clone 'https://github.com/BunsenLabs/deb8-theme' 'deb8-theme'
+
+[diagona-icons-1.0]
+checkout = git clone 'https://github.com/nodiscc/diagona-icons-1.0' 'diagona-icons-1.0'
+
+[elementary-xfce]
+checkout = git clone 'https://github.com/shimmerproject/elementary-xfce' 'elementary-xfce'
+
+[evil-icons]
+checkout = git clone 'https://github.com/outpunk/evil-icons' 'evil-icons'
+
+[Evolve]
+checkout = git clone 'https://github.com/satya164/Evolve' 'Evolve'
+
+[faba-mono-icons]
+checkout = git clone 'https://github.com/moka-project/faba-mono-icons' 'faba-mono-icons'
+
+[falcon-icons]
+checkout = git clone 'https://github.com/nodiscc/falcon-icons' 'falcon-icons'
+
+[flattr-icons]
+checkout = git clone 'https://github.com/NitruxSA/flattr-icons' 'flattr-icons'
+
+[fugue-icons]
+checkout = git clone 'https://github.com/nodiscc/fugue-icons' 'fugue-icons'
+
+[glyph-iconset]
+checkout = git clone 'https://github.com/frexy/glyph-iconset/' 'glyph-iconset'
+
+[Greybird]
+checkout = git clone 'https://github.com/shimmerproject/Greybird' 'Greybird'
+
+[hexagrama-icons]
+checkout = git clone 'https://github.com/nodiscc/hexagrama-icons' 'hexagrama-icons'
+
+[iris]
+checkout = git clone 'https://github.com/xyl0n/iris/' 'iris'
+
+[iris-light]
+checkout = git clone 'https://github.com/xyl0n/iris-light' 'iris-light'
+
+[iris-lychee]
+checkout = git clone 'https://github.com/xyl0n/iris-lychee' 'iris-lychee'
+
+[la-capitaine-icon-theme]
+checkout = git clone 'https://github.com/keeferrourke/la-capitaine-icon-theme' 'la-capitaine-icon-theme'
+
+[linea-icons]
+checkout = git clone 'https://github.com/nodiscc/linea-icons' 'linea-icons'
+
+[linecons]
+checkout = git clone 'https://github.com/nodiscc/linecons' 'linecons'
+
+[luv-icon-theme]
+checkout = git clone 'https://github.com/NitruxSA/luv-icon-theme' 'luv-icon-theme'
+
+[minicons]
+checkout = git clone 'https://github.com/nodiscc/minicons' 'minicons'
+
+[mint-themes-gtk3]
+checkout = git clone 'https://github.com/linuxmint/mint-themes-gtk3' 'mint-themes-gtk3'
+
+[mint-x-icons]
+checkout = git clone 'https://github.com/linuxmint/mint-x-icons' 'mint-x-icons'
+
+[mint-y-icons]
+checkout = git clone 'https://github.com/linuxmint/mint-y-icons' 'mint-y-icons'
+
+[mint-y-theme]
+checkout = git clone 'https://github.com/linuxmint/mint-y-theme' 'mint-y-theme'
+
+[numix-icon-theme-circle]
+checkout = git clone 'https://github.com/numixproject/numix-icon-theme-circle' 'numix-icon-theme-circle'
+
+[Orion]
+checkout = git clone 'https://github.com/shimmerproject/Orion' 'Orion'
+
+[ozon-icon-theme]
+checkout = git clone 'https://github.com/xyl0n/ozon-icon-theme' 'ozon-icon-theme'
+
+[pacifica-icon-theme]
+checkout = git clone 'https://github.com/fsvh/pacifica-icon-theme' 'pacifica-icon-theme'
+
+[paper-gtk-theme]
+checkout = git clone 'https://github.com/snwh/paper-gtk-theme' 'paper-gtk-theme'
+
+[paper-icon-theme]
+checkout = git clone 'https://github.com/snwh/paper-icon-theme' 'paper-icon-theme'
+
+[papirus-icon-theme-gtk]
+checkout = git clone 'https://github.com/PapirusDevelopmentTeam/papirus-icon-theme-gtk' 'papirus-icon-theme-gtk'
+
+[project-icons]
+checkout = git clone 'https://github.com/nodiscc/project-icons' 'project-icons'
+
+[silk-icons]
+checkout = git clone 'https://github.com/nodiscc/silk-icons' 'silk-icons'
+
+[Super-Flat-Remix]
+checkout = git clone 'https://github.com/daniruiz/Super-Flat-Remix' 'Super-Flat-Remix'
+
+[vertex-icons]
+checkout = git clone 'https://github.com/horst3180/vertex-icons' 'vertex-icons'
+
+[vertex-theme]
+checkout = git clone 'https://github.com/horst3180/vertex-theme' 'vertex-theme'
+
+[victory-icon-theme]
+checkout = git clone 'https://github.com/newhoa/victory-icon-theme' 'victory-icon-theme'
+
+[vivant-gtk]
+checkout = git clone 'https://github.com/xyl0n/vivant-gtk' 'vivant-gtk'
+
+[vivant-icons]
+checkout = git clone 'https://github.com/xyl0n/vivant-icons' 'vivant-icons'
+
+[zuki-themes]
+checkout = git clone 'https://github.com/lassekongo83/zuki-themes' 'zuki-themes'

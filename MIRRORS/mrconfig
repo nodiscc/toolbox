@@ -1,0 +1,171 @@
+[GIT/airwave]
+checkout =
+	git clone --depth=1 'https://github.com/phantom-code/airwave' 'GIT/airwave'
+	git remote add rodlie https://github.com/rodlie/airwave
+
+[GIT/shaarli-api-documentation]
+checkout = git clone 'https://github.com/shaarli/api-documentation' 'GIT/shaarli-api-documentation'
+
+[GIT/awesome-linuxaudio]
+checkout =
+	git clone 'https://github.com/nodiscc/awesome-linuxaudio' 'GIT/awesome-linuxaudio'
+	git remote add gitlab git@gitlab.com:nodiscc/awesome-linuxaudio.git
+
+[GIT/awesome-selfhosted]
+checkout = git clone --depth=1 'https://github.com/kickball/awesome-selfhosted' 'GIT/awesome-selfhosted'
+
+[GIT/conky-config]
+checkout = git clone --depth=1 'https://gitlab.com/nodiscc/conky-config' 'GIT/conky-config'
+
+
+[GIT/Bash-Snippets]
+checkout = git clone --depth=1 'https://github.com/alexanderepstein/Bash-Snippets' 'GIT/Bash-Snippets'
+
+[GIT/bookmark-archiver]
+checkout = git clone --depth=1 'https://github.com/pirate/bookmark-archiver' 'GIT/bookmark-archiver'
+
+[GIT/cleanerml]
+checkout =
+	git clone --depth=1 'https://github.com/az0/cleanerml/' 'GIT/cleanerml'
+
+[GIT/dbu]
+checkout =
+	git clone 'git@github.com:nodiscc/dbu' 'GIT/dbu'
+	git remote add gitlab git@gitlab.com:nodiscc/dbu.git
+
+[GIT/dssi-vst]
+checkout = git clone --depth=1 'https://github.com/falkTX/dssi-vst' 'GIT/dssi-vst'
+
+[GIT/fonts]
+checkout =
+	git clone --depth=1 'https://github.com/nodiscc/fonts' 'GIT/fonts'
+	cd fonts
+	git remote add gitlab git@gitlab.com:nodiscc/fonts.git
+
+[GIT/awesome-games]
+checkout = git clone --depth=1 'https://github.com/leereilly/games' 'GIT/awesome-games'
+
+[GIT/github-stars-backup]
+checkout =
+	git clone --depth=1 'https://github.com/nodiscc/github-stars-backup' 'GIT/github-stars-backup'
+	cd github-stars-backup
+	git remote add gitlab https://gitlab.com/nodiscc/github-stars-backup.git
+
+[GIT/glim]
+checkout = git clone --depth=1 'https://github.com/thias/glim' 'GIT/glim'
+
+[GIT/kickthemout]
+checkout = git clone --depth=1 'https://github.com/k4m4/kickthemout' 'GIT/kickthemout'
+
+[GIT/musical-artifacts-data]
+checkout =
+	git clone 'https://github.com/nodiscc/musical-artifacts-data' 'GIT/musical-artifacts-data'
+	git remote add gitlab git@gitlab.com:nodiscc/musical-artifacts-data
+
+[GIT/nginx-resources]
+checkout = git clone --depth=1 'https://github.com/fcambus/nginx-resources' 'GIT/nginx-resources'
+
+[GIT/ohmpage]
+checkout =
+	git clone 'https://github.com/nodiscc/ohmpage' 'GIT/ohmpage'
+	cd ohmpage
+	git remote add gitlab git@gitlab.com:nodiscc/ohmpage.git
+
+[GIT/python-shaarli-client]
+checkout = git clone 'https://github.com/shaarli/python-shaarli-client' 'GIT/python-shaarli-client'
+
+[GIT/samplecat]
+checkout = git clone --depth=1 'https://github.com/ayyi/samplecat' 'GIT/samplecat'
+
+[GIT/shaarchiver]
+checkout =
+	git clone 'https://github.com/nodiscc/shaarchiver' 'GIT/shaarchiver'
+	cd shaarchiver
+	git remote add gitlab git@gitlab.com:nodiscc/shaarchiver.git
+
+[GIT/Shaarli]
+checkout = git clone 'https://github.com/shaarli/Shaarli' 'GIT/Shaarli'
+
+[GIT/srv01]
+checkout =
+	git clone 'git@github.com:nodiscc/srv01' 'GIT/srv01'
+	cd srv01
+	git remote add gitlab git@gitlab.com:nodiscc/srv01.git
+
+
+[GIT/ttrss-reader]
+checkout = git clone --depth=1 'https://github.com/kucrut/ttrss-reader' 'GIT/ttrss-reader'
+
+[GIT/tumblr_backup]
+checkout = git clone --depth=1 'https://github.com/bdoms/tumblr_backup' 'GIT/tumblr_backup'
+
+[GIT/tumblr-upload]
+checkout = git clone --depth=1 'https://github.com/miohtama/tumblr-upload' 'GIT/tumblr-upload'
+
+[GIT/user.js]
+checkout =
+	git clone 'https://github.com/nodiscc/user.js' 'GIT/user.js'
+	cd user.js
+	git remote add gitlab git@gitlab.com:nodiscc/user.js
+	git remote add pyllyukko https://github.com/pyllyukko/user.js
+
+[GIT/awesome-linuxaudio]
+checkout =
+	git clone 'https://github.com/nodiscc/awesome-linuxaudio' 'GIT/awesome-linuxaudio'
+	cd awesome-linuxaudio
+	git remote add gitlab git@gitlab.com:nodiscc/awesome-linuxaudio.git
+
+
+
+[GIT/vcfconvert]
+checkout = git clone --depth=1 'https://github.com/thomascube/vcfconvert' 'GIT/vcfconvert'
+
+[GIT/wikiteam]
+checkout = git clone --depth=1 'https://github.com/WikiTeam/wikiteam' 'GIT/wikiteam'
+
+[GIT/wikiteam.wiki]
+checkout = git clone --depth=1 'https://github.com/WikiTeam/wikiteam.wiki.git' 'GIT/wikiteam.wiki'
+
+[GIT/xwinwrap]
+checkout = git clone --depth=1 'https://github.com/ujjwal96/xwinwrap' 'GIT/xwinwrap'
+
+[GIT/skippy-xd]
+checkout = git clone --depth=1 'https://github.com/richardgv/skippy-xd' 'GIT/skippy-xd'
+
+[GIT/youtube-dl-gui]
+checkout =
+	   git clone 'https://github.com/MrS0m30n3/youtube-dl-gui' 'GIT/youtube-dl-gui'
+	   git remote add debian https://salsa.debian.org/felix-guest/youtube-dl-gui
+
+[GIT/spectre-meltdown-checker]
+checkout = git clone 'https://github.com/speed47/spectre-meltdown-checker' 'GIT/spectre-meltdown-checker'
+
+[GIT/pidgin-opensteamworks]
+checkout =
+	   git clone 'https://github.com/EionRobb/pidgin-opensteamworks' 'GIT/pidgin-opensteamworks'
+	   git remote add doctorlard https://github.com/doctorlard/pidgin-opensteamworks/
+
+
+[GIT/memeater]
+checkout = git clone 'https://github.com/tdz/memeater' 'GIT/memeater'
+
+[GIT/youtube_playlist]
+checkout = git clone 'https://github.com/zaius/youtube_playlist' 'GIT/youtube_playlist'
+
+[GIT/exploit-database]
+checkout = git clone 'https://github.com/offensive-security/exploit-database' 'GIT/exploit-database'
+
+[GIT/git-loc]
+checkout = git clone 'https://github.com/ITikhonov/git-loc' 'GIT/git-loc'
+
+[GIT/consoleSSLlabs]
+checkout = git clone 'https://github.com/nodiscc/consoleSSLlabs' 'GIT/consoleSSLlabs'
+
+[GIT/Simple-Grid]
+checkout = git clone 'https://github.com/ThisIsDallas/Simple-Grid' 'GIT/Simple-Grid'
+
+[GIT/Wiffy]
+checkout = git clone 'https://github.com/nu11secur1ty/Wiffy' 'GIT/Wiffy'
+
+[GIT/dbu-firefox-setup]
+checkout = git clone 'git@gitlab.com:nodiscc/dbu-firefox-setup.git' 'GIT/dbu-firefox-setup'
