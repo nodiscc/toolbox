@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Icon=system-file-manager
+TryExec=xdg-file-manager
+Exec=xdg-file-manager
+Name=File Manager
+Name[fr]=Gestionnaire de Fichiers  
+Comment=Browse files and directories on this computer and on the network
+Comment[fr]=Parcourir les fichiers et répertoires sur cet ordinateur et sur le réseau
+Categories=System;Utility;Core;GTK;FileTools;FileManager;
