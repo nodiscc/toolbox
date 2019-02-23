@@ -1,0 +1,4 @@
+#!/bin/bash
+# Description: find 100 largets file in the current directory
+
+find "$1" -type f -print0 | xargs -0 du -h | sort -hr | head -100
