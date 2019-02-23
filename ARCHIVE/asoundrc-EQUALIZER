@@ -1,0 +1,21 @@
+#ALSA EQUALIZER
+
+ctl.equal {
+        type equal;
+}
+
+pcm.plugequal {
+        type equal;
+        slave.pcm "plug:dmix";
+}
+
+#pcm.equal {
+pcm.!default {
+	type pulse
+#        type plug;
+#        slave.pcm plugequal;
+}
+
+pcm.pulse {
+        type pulse
+}
