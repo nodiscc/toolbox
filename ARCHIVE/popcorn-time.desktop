@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Name=Popcorn Time
+Comment=Stream videos from the Bittorrent p2p network
+Exec=/opt/Popcorn-Time/Popcorn-Time
+Icon=popcorn-time
+Terminal=false
+Type=Application
+Categories=AudioVideo;Player;Recorder;
+Keywords=Player;Capture;DVD;Audio;Video;Server;Broadcast;
