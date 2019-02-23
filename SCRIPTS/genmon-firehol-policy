@@ -1,0 +1,34 @@
+#!/bin/bash
+if grep "^\s*client all accept # accept all outgoing connections" /etc/firehol/firehol.conf > /dev/null; then
+	status="accept_all"
+else
+   status="drop_all"
+fi
+
+if [[ ! -z "$1" ]]; then command="$1";
+else command="--help"
+fi
+
+case "$command" in
+	"--genmon")
+	if [[ "$status" == "drop_all" ]]; then
+		echo "<img>/usr/share/icons/Paper/16x16/status/security-high.png</img>"
+		echo "<click>/usr/local/bin/genmon-firehol-policy --toggle</click>"
+		echo "<tool>OUTPUT policy: DROP</tool>"
+	else
+		echo "<img>/usr/share/icons/Paper/16x16/status/security-medium.png</img>"
+		echo "<click>/usr/local/bin/genmon-firehol-policy --toggle</click>"
+		echo "<tool>OUTPUT policy: ACCEPT</tool>"
+	fi
+	;;
+	"--toggle")
+	if [[ "$status" == "drop_all" ]]; then
+		sudo sed -i 's/#client all accept # accept all outgoing connections/client all accept # accept all outgoing connections/' /etc/firehol/firehol.conf
+	else
+		sudo sed -i 's/client all accept # accept all outgoing connections/#client all accept # accept all outgoing connections/' /etc/firehol/firehol.conf
+	fi
+	;;
+	*)
+	echo "Usage: $0 [--toggle|--genmon]"
+	;;
+esac
