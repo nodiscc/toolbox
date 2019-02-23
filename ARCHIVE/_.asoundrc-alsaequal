@@ -1,0 +1,26 @@
+#Asoundrc with ALSA equalizer
+#source: http://fsk141.com/alsaequal-for-when-you-need-tailored-audio-response/
+#run with alsamixer -D equal
+
+ctl.equal {
+        type equal;
+}
+
+pcm.plugequal {
+        type equal;
+        # Modify the line below if you don't
+        # want to use sound card 0.
+        slave.pcm "plug:dmix";
+}
+
+###
+
+# Comment out the 'default' version for 'optional' equal, visa versa
+
+pcm.equal {
+#pcm.!default {
+
+###
+        type plug;
+        slave.pcm plugequal;
+}
