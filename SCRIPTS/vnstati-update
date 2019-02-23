@@ -1,0 +1,23 @@
+#!/bin/bash
+
+export LANG=C
+interface="eth0"
+output_dir="$HOME/.cache"
+
+# output
+vnstati --summary -i "$interface" -o "$output_dir/vnstat-summary.png"
+vnstati --months -i "$interface" -o "$output_dir/vnstat-months.png"
+vnstati --top10 -i "$interface" -o "$output_dir/vnstat-top10.png"
+vnstati --days -i "$interface" -o "$output_dir/vnstat-days.png"
+vnstati --hours -i "$interface" -o "$output_dir/vnstat-hours.png"
+
+montage -tile 1x5 -geometry +0+0 \
+    "$output_dir/vnstat-summary.png" \
+    "$output_dir/vnstat-months.png" \
+    "$output_dir/vnstat-top10.png" \
+    "$output_dir/vnstat-days.png" \
+    "$output_dir/vnstat-hours.png" \
+    "$output_dir/vnstat.png"
+
+xdg-open "$output_dir/vnstat.png"
+
