@@ -1,0 +1,14 @@
+[Desktop Entry]
+Version=1.0
+Encoding=UTF-8
+Type=Application
+Name=Force CD/DVD drive ejection
+Comment=Stop all pending operations on CD/DVD drive and eject
+Name[fr]=Forcer l'éjection du CD/DVD
+Comment[fr]=Arrêter toutes les opérations en cours sur le CD et ouvrir le tiroir
+Categories=Application;System;
+Exec=pkexec rxtx-force-eject
+TryExec=rxtx-force-eject
+Icon=drive-removable-media
+Terminal=false
+StartupNotify=false
