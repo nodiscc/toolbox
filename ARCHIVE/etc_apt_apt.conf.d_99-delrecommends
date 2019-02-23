@@ -1,0 +1,5 @@
+// If you want to remove recommended packages from your system, even if there are still some installed packages recommending (or suggesting) them, put the following in the file `/etc/apt/apt.conf.d/99_delrecommends` (create it):
+
+    APT::Install-Recommends "false";
+    APT::AutoRemove::RecommendsImportant "false";
+    APT::AutoRemove::SuggestsImportant "false";
