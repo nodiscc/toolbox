@@ -1,0 +1,20 @@
+#!/bin/bash
+#Description: Generate a markdown-formatted list of all sh/python scripts in a directory, with their descriptions
+#Lines with descriptions have to start with "#Description: "
+#Works on files with .sh or .py extensions
+#Also works for .deb packages: for i in *; do pkgdesc=$(dpkg -I "$i" | grep "^ Description" | cut -d ":" -f 1 --complement); echo " * [$i]($i) - $pkgdesc"; done
+
+# echo "### Files"
+for i in $(find .  -maxdepth 1 \( -name "*.sh" -o -name "*.py" \) -type f -exec basename '{}' \; | sort)
+do
+	md_desc=$(grep -E "^#\s?Description" "$i" 2>/dev/null | cut -d " " -f 1 --complement)
+	echo " * [$i]($i) - $md_desc"
+done | sort
+
+# echo ""
+# echo "### Directories"
+# for i in $(find . -maxdepth 1 -type d -exec basename '{}' \; | sort)
+# do
+# 	echo " * [$i]($i)"
+# done | sort | tail -n +2
+
