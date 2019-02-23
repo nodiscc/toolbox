@@ -1,0 +1,15 @@
+# Use container-based infrastructure for quicker build start-up
+# But require sudo for package installation
+# https://docs.travis-ci.com/user/ci-environment/#Virtualization-environments
+sudo: required
+
+
+# manually fetch and install shellcheck from debian repos,
+# because adding debian sid sourceline breaks the build (conflict
+# between debian and ubuntu packages)
+before_install:
+  - wget http://ftp.us.debian.org/debian/pool/main/s/shellcheck/shellcheck_0.4.4-4_amd64.deb
+  - sudo dpkg -i shellcheck_0.4.4-4_amd64.deb
+
+script:
+ - make shellcheck
