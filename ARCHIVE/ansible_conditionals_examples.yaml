@@ -1,0 +1,157 @@
+---
+# This has been tested with ansible 1.3 with these commands:
+#   ansible-playbook -i hosts ansible_conditionals_examples.yaml --extra-vars="hosts=myhosts isFirstRun=false"
+#   ansible-playbook -i hosts ansible_conditionals_examples.yaml --extra-vars="hosts=myhosts isFirstRun=true"
+#   ansible-playbook -i hosts ansible_conditionals_examples.yaml --extra-vars="hosts=myhosts"
+# NB: The type of the variable is crucial!
+
+- name: Ansible Conditionals Examples
+  hosts: $hosts
+  vars_files:
+    - vars.yml
+  tasks:
+########### Correct COMPLEX expressions ###################
+    # Need parentheses around $is_live, because it (may) contain an _or_, and _and_ has higher prio than _or_;
+    - name: ($is_live) and (isFirstRun == 'true')  # OK only if isFirstRun is defined. 
+      command: echo hello
+      when: ($is_live) and (isFirstRun == 'true')
+
+    # isFirstRun is a string var, whereas is_mgmt is an expression evaluating to a string, so it seems we need the $ to dereference it
+    - name: $is_mgmt and (isFirstRun == 'true')       # OK only if isFirstRun is defined
+      command: echo hello
+      when: $is_mgmt and (isFirstRun == 'true')
+      
+    - name: $is_mgmt and (isFirstRun != 'false')      # OK only if isFirstRun is defined
+      command: echo hello
+      when: $is_mgmt and (isFirstRun != 'false')
+      
+    - name: $is_mgmt and (not isFirstRun == 'false')  # OK only if isFirstRun is defined
+      command: echo hello
+      when: $is_mgmt and (not isFirstRun == 'false')
+########### SIMPLE expressions ############################
+    - name: is_mgmt     # OK
+      command: echo hello
+      when: is_mgmt
+      
+    - name: $is_mgmt    # OK
+      command: echo hello
+      when: $is_mgmt
+
+    - name: ($is_mgmt)  # OK
+      command: echo hello
+      when: ($is_mgmt)
+
+    - name: (is_mgmt)   # WRONG - Always runs
+      command: echo hello
+      when: (is_mgmt)
+######
+    - name: isFirstRun == 'true'      # OK
+      command: echo hello
+      when: isFirstRun == 'true'
+      
+    - name: not isFirstRun != 'true'  # OK
+      command: echo hello
+      when: not isFirstRun != 'true'
+      
+    - name: not isFirstRun == 'false' # OK
+      command: echo hello
+      when: not isFirstRun == 'false'
+
+    - name: isFirstRun != 'false'     # OK
+      command: echo hello
+      when: isFirstRun != 'false'
+      
+    - name: $isFirstRun == 'true'     # WRONG - $isFirstRun is interpreted as true and true is not equal to 'true' so only works for negative match
+      command: echo hello
+      when: $isFirstRun == 'true'
+########### All wrong #####################################
+    - name: ($is_live == True) and (isFirstRun == 'true')  # WRONG - Only first live node on true (none of false (correct))
+      command: echo hello
+      when: ($is_live == True) and (isFirstRun == 'true')
+
+    - name: $is_live and (isFirstRun == 'true')  # WRONG - Correct when true, but only first live when false
+      # ['$inventory_hostname' == 'tsrvuweblive71' or '$inventory_hostname' == 'tsrvuweblive72' and (isFirstRun == 'true')] 
+      command: echo hello
+      when: $is_live and (isFirstRun == 'true')
+      
+    - name: is_live and (isFirstRun == 'true')   # WRONG - All nodes run on true (none of false (correct))
+      command: echo hello
+      when: is_live and (isFirstRun == 'true')
+      
+    - name: ($is_live == 'True') and (isFirstRun == 'true')  # WRONG - Only first live node on true (none on false (correct)) 
+      command: echo hello
+      when: ($is_live == 'True') and (isFirstRun == 'true')
+      
+    - name: (is_live == 'True') and (isFirstRun == 'true')   # WRONG - No nodes run on niether true nor false - is_live not dereferenced
+      command: echo hello
+      when: (is_live == 'True') and (isFirstRun == 'true')
+######
+    - name: is_mgmt and (isFirstRun == 'true')
+      # WRONG - All run on true
+      command: echo hello
+      when: is_mgmt and (isFirstRun == 'true')
+      
+    - name: is_mgmt and (isFirstRun != 'false')
+      # WRONG - All run on true
+      command: echo hello
+      when: is_mgmt and (isFirstRun != 'false')
+      
+    - name: is_mgmt and (not isFirstRun == 'false')
+      # WRONG - All run on true
+      command: echo hello
+      when: is_mgmt and (not isFirstRun == 'false')
+
+    - name: mgmt and isFirstRun equal true with ()
+      # WRONG - Does not run when isFirstRun is 'false' (which is correct), but runs all nodes when 'true'  
+      command: echo hello
+      when: ((is_mgmt) and (isFirstRun == 'true'))
+      
+    - name: mgmt and isFirstRun not_equal true with $
+      # WRONG - Always runs mgmt irrespective of value of isFirstRun 
+      command: echo hello
+      when: $is_mgmt and $isFirstRun != 'true'
+      
+    - name: mgmt and not isFirstRun equal true with $
+      # # WRONG - Always runs mgmt irrespective of value of isFirstRun
+      command: echo hello
+      when: $is_mgmt and not $isFirstRun == 'true'
+      
+    - name: mgmt and isFirstRun equal true with $
+      # WRONG - Never runs any node
+      command: echo hello
+      when: $is_mgmt and $isFirstRun == 'true'
+      
+    - name: mgmt and not isFirstRun equal true with only_if and $
+      # WRONG - All nodes run
+      command: echo hello
+      only_if: "'$is_mgmt' and not '$isFirstRun' == 'true'"
+      
+    - name: mgmt and isFirstRun not_equal true with only_if and $
+      # WRONG - All nodes run
+      command: echo hello
+      only_if: "'$is_mgmt' and '$isFirstRun' != 'true'"
+      
+    - name: mgmt and isFirstRun not_equal true with ()
+      # WRONG - All nodes run when isFirstRun is false and no nodes run when isFirstRun is true
+      command: echo hello
+      when: ((is_mgmt) and (isFirstRun != 'true'))
+
+    - name: mgmt and isFirstRun not_equal true
+      # WRONG - All nodes run when isFirstRun is false and no nodes run when isFirstRun is true
+      command: echo hello
+      when: is_mgmt and isFirstRun != 'true'
+      
+    - name: mgmt and not isFirstRun equal true
+      # WRONG - All nodes run when isFirstRun is false and no nodes run when isFirstRun is true
+      command: echo hello
+      when: is_mgmt and not isFirstRun == 'true'
+
+    - name: mgmt and not isFirstRun equal true with ()
+      # WRONG - All nodes run when isFirstRun is false and no nodes run when isFirstRun is true
+      command: echo hello
+      when: ((is_mgmt) and (not isFirstRun == 'true'))
+
+    - name: mgmt and not isFirstRun equal true with only_if, $ and ()
+      # ERROR Conditional expression must evaluate to True or False: ($is_mgmt) and (not '$isFirstRun' == 'true')
+      command: echo hello
+      only_if: "($is_mgmt) and (not '$isFirstRun' == 'true')"
