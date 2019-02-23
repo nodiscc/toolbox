@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Syslog
+Comment=
+Exec=sudo tail -f /var/log/syslog
+Icon=system-log-viewer
+Path=
+Terminal=true
+StartupNotify=true
