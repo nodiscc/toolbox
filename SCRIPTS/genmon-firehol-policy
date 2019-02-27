@@ -23,9 +23,11 @@ case "$command" in
 	;;
 	"--toggle")
 	if [[ "$status" == "drop_all" ]]; then
-		sudo sed -i 's/#client all accept # accept all outgoing connections/client all accept # accept all outgoing connections/' /etc/firehol/firehol.conf
+		pkexec sed -i 's/#client all accept # accept all outgoing connections/client all accept # accept all outgoing connections/' /etc/firehol/firehol.conf
+		pkexec systemctl restart firehol
 	else
-		sudo sed -i 's/client all accept # accept all outgoing connections/#client all accept # accept all outgoing connections/' /etc/firehol/firehol.conf
+		pkexec sed -i 's/client all accept # accept all outgoing connections/#client all accept # accept all outgoing connections/' /etc/firehol/firehol.conf
+		pkexec systemctl restart firehol
 	fi
 	;;
 	*)
