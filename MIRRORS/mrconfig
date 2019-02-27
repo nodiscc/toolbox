@@ -33,9 +33,6 @@ checkout =
 	git clone 'git@github.com:nodiscc/dbu' 'GIT/dbu'
 	git remote add gitlab git@gitlab.com:nodiscc/dbu.git
 
-[GIT/dssi-vst]
-checkout = git clone --depth=1 'https://github.com/falkTX/dssi-vst' 'GIT/dssi-vst'
-
 [GIT/fonts]
 checkout =
 	git clone --depth=1 'https://github.com/nodiscc/fonts' 'GIT/fonts'
