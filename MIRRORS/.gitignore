@@ -9,7 +9,6 @@ BIN-LINUX/indicator-workspaces
 BIN-LINUX/webtorrent-desktop_0.16.0-1_amd64.deb
 BIN-LINUX/webtorrent-desktop_0.16.0-1_amd64.deb
 BIN-LINUX/sendmidi-linux-1.0.5.zip
-BIN-LINUX/sendmidi-linux-1.0.5.zip
 BIN-LINUX/hub-linux-amd64-2.3.0-pre10.tgz
 BIN-LINUX/flowblade-2.0.0-1_all.deb
 BIN-LINUX/fzf-0.15.9-linux_amd64.tgz
@@ -57,7 +56,7 @@ BIN-ISO/
 
 
 BIN-WINDOWS/Popcorn-Time-0.3.10-Linux-64.tar.xz
-BIN-WINDOWS/sendmidi-macos-1.0.5.zip
+BIN-MAC/sendmidi-macos-1.0.5.zip
 BIN-WINDOWS/libsteam-1.6.1.dll
 BIN-WINDOWS/youtube-dl.exe
 BIN-WINDOWS/MagicaVoxel-0.98.1-win-mac-beta.zip
