@@ -32,7 +32,7 @@ then
     fi
 
     ghi list -s closed -- "$ghuser"/"$ghrepo" | tee "closed/$ghuser-$ghrepo-issues.md"
-    issues=$(awk -F" *" '{print $2}' "closed/$ghuser-$ghrepo-issues.md" | egrep -v '^[A-Z|a-z]')
+    issues=$(awk -F" *" '{print $2}' "closed/$ghuser-$ghrepo-issues.md" | grep -E -v '^[A-Z|a-z]')
     for i in $issues; do ghi show "$i" -- "$ghuser"/"$ghrepo" | tee "closed/$ghuser-$ghrepo-issue-$i.md"; done
 fi
 

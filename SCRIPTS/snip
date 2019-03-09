@@ -41,7 +41,7 @@ function _main() {
 function _searchsnippet() {
     pipe="grep -E --color=always $1 $snippetsfile"; shift
     for term in "$@"; do
-        pipe="$pipe | egrep --color=always $term"
+        pipe="$pipe | grep -E --color=always $term"
     done
   	eval "$pipe"
 }
