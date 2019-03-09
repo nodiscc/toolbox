@@ -20,7 +20,7 @@ fi
 
 ### Backup open issues
 ghi list -- "$ghuser"/"$ghrepo" | tee "$ghuser-$ghrepo-issues.md"
-issues=$(cat "$ghuser-$ghrepo-issues.md" | awk -F" *" '{print $2}' | egrep -v '^[A-Z|a-z]')
+issues=$(cat "$ghuser-$ghrepo-issues.md" | awk -F" *" '{print $2}' | grep -E -v '^[A-Z|a-z]')
 for i in $issues; do ghi show "$i" -- "$ghuser"/"$ghrepo" | tee "$ghuser-$ghrepo-issue-$i.md"; done
 
 

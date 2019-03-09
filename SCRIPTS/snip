@@ -2,7 +2,7 @@
 # Description: Add or search text in a snippets file
 # Copyright: (c) 2014-2015 nodiscc (nodiscc@gmail.com)
 # License: MIT (http://opensource.org/licenses/MIT)
-# TODO: -i flag: use egrep -i
+# TODO: -i flag: use grep -Ei
 # TODO: separate results with a newline
 # TODO: snip -a without arguments: open nano to type the snippet, and save it to snippets file when nano closes
 set -o errexit
@@ -39,7 +39,7 @@ function _main() {
 }
 
 function _searchsnippet() {
-    pipe="egrep --color=always $1 $snippetsfile"; shift
+    pipe="grep -E --color=always $1 $snippetsfile"; shift
     for term in "$@"; do
         pipe="$pipe | egrep --color=always $term"
     done
