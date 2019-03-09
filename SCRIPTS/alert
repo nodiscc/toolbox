@@ -4,6 +4,7 @@
 
 "$@"
 
+#shellcheck disable=SC2181
 if [[ $? == 0 ]]; then color="32"; msg="OK"; else color="31"; msg="ERROR"; fi
 
 #shellcheck disable=SC2034
