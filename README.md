@@ -1,4 +1,4 @@
-![](https://api.travis-ci.org/nodiscc/toolbox.svg?branch=master)
+[![](https://api.travis-ci.org/nodiscc/toolbox.svg?branch=master)](https://travis-ci.org/nodiscc/toolbox)
 
 ```
 License: MIT
