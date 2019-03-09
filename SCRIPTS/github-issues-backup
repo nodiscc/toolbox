@@ -12,7 +12,7 @@ fi
 ghuser="$1"
 ghrepo="$2"
 
-if [ "$ghuser" == "" -o "$ghrepo" == "" ]
+if [[ "$ghuser" == "" ]] || [[ "$ghrepo" == "" ]];
     then echo "Usage: backup-gh-issues.sh [--closed] username repository"; exit 1
 fi
 
@@ -21,7 +21,7 @@ fi
 ### Backup open issues
 ghi list -- "$ghuser"/"$ghrepo" | tee "$ghuser-$ghrepo-issues.md"
 issues=$(cat "$ghuser-$ghrepo-issues.md" | awk -F" *" '{print $2}' | egrep -v '^[A-Z|a-z]')
-for i in $issues; do ghi show $i -- "$ghuser"/"$ghrepo" | tee "$ghuser-$ghrepo-issue-$i.md"; done
+for i in $issues; do ghi show "$i" -- "$ghuser"/"$ghrepo" | tee "$ghuser-$ghrepo-issue-$i.md"; done
 
 
 ### Backup closed issues
@@ -32,8 +32,8 @@ then
     fi
 
     ghi list -s closed -- "$ghuser"/"$ghrepo" | tee "closed/$ghuser-$ghrepo-issues.md"
-    issues=$(cat "closed/$ghuser-$ghrepo-issues.md" | awk -F" *" '{print $2}' | egrep -v '^[A-Z|a-z]')
-    for i in $issues; do ghi show $i -- "$ghuser"/"$ghrepo" | tee "closed/$ghuser-$ghrepo-issue-$i.md"; done
+    issues=$(awk -F" *" '{print $2}' "closed/$ghuser-$ghrepo-issues.md" | egrep -v '^[A-Z|a-z]')
+    for i in $issues; do ghi show "$i" -- "$ghuser"/"$ghrepo" | tee "closed/$ghuser-$ghrepo-issue-$i.md"; done
 fi
 
 #TODO: Add links to individual md issues from the list

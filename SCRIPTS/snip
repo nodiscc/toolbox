@@ -4,18 +4,24 @@
 # License: MIT (http://opensource.org/licenses/MIT)
 # TODO: -i flag: use egrep -i
 # TODO: separate results with a newline
+# TODO: snip -a without arguments: open nano to type the snippet, and save it to snippets file when nano closes
+set -o errexit
+set -o nouset
 
-set -e
+# shellcheck disable=SC1090
+source ~/.config/snip.conf || \
+	echo 'export snippetsfile=""' > ~/.config/snip.conf && \
+	echo "Please set the path to your snippets file in ~/.config/snip.conf" 1>&2 && \
+	exit 1
 
-USAGE="$(basename $0) [searchterm] [-a text to add] [-o]
+USAGE="$(basename "$0") [searchterm] [-a text to add] [-o]
 	search term		word to look for in snippets file
 	-a line	  add line to your snippets file
 	-o        open snippets file in text editor"
 
-#TODO: when snip -a is ran without arguments, open nano to type the snippet, and save it to snippets file when nano closes
-
+# shellcheck disable=SC2154
 if [[ "$snippetsfile" == "" ]]
-	then echo "the \$snippetsfile variable (path to your snippets file) is not set, please set it in your .bashrc" 1>&2
+	then echo "Please set the path to your snippets file in ~/.config/snip.conf" 1>&2
 	exit 1
 fi
 
@@ -41,10 +47,10 @@ function _searchsnippet() {
 }
 
 function _addsnippet() {
-	  echo -e "\n\n$@" >> "$snippetsfile"
+	  echo -e "\n\n$*" >> "$snippetsfile"
 }
 
 
 #################################################################
 
-_main $@
+_main "$@"

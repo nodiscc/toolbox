@@ -2,6 +2,8 @@
 #Source: http://blog.rolinh.ch/
 #Description: converts m4a files to mp3
 # song tags should be preserved
+set -o errexit
+set -o nounset
 
 if ! which faad >/dev/null; then
   echo "faad executable not found." >&2;
@@ -17,7 +19,7 @@ if ! which id3v2 >/dev/null; then
 fi
 
 echo -n "Delete m4a file(s) after conversion?(y/n) "
-read yn
+read -r yn
 case $yn in
   y|yes)
       echo -e "All right $USER, m4a files will be removed."
@@ -30,8 +32,9 @@ esac
 
 echo -e "\nBe patient if you convert lots of file."
 
-while read m4afile; do
+while read -r m4afile; do
 
+  # shellcheck disable=SC2001
   mp3file=$(echo "$m4afile" | sed s/\.m4a/.mp3/g)
   ARTIST=$(faad -i "$m4afile" 2>&1 | grep '^artist: ' | sed 's/^artist: //')
   TITLE=$(faad -i "$m4afile" 2>&1 | grep '^title: ' | sed 's/^title: //')

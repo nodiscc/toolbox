@@ -6,7 +6,7 @@ set -o nounset
 errors_file=".manpages.errors"
 
 if  [[ -f "$errors_file" ]]; then rm "$errors_file"; fi
-cat manpages.list | while read -r i; do man -f "$i" 2>> "$errors_file" ; done
+while read -r i < manpages.list ; do man -f "$i" 2>> "$errors_file" ; done
 
 cut -d":" -f 1 "$errors_file" | while read -r missing_manpage; do
 	echo "https://manpages.debian.org/$missing_manpage"

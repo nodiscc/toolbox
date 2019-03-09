@@ -4,8 +4,6 @@
 
 # only display last X events
 limit=10
-cur_date=$(date +%s)
-in60days=$(( cur_date + 5184000 ))
 
 function get_tb_events() {
   sqlite3 ~/.thunderbird/*/calendar-data/cache.sqlite \

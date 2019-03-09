@@ -4,7 +4,7 @@
 #License: MIT (http://opensource.org/licenses/MIT)
 
 #Check for root privileges
-if [ `whoami` = "root" ]; then
+if [[ "$USER" == "root" ]]; then
 	true
 	else echo "This script must be run as root"; exit 1
 fi
@@ -26,7 +26,7 @@ cd emu && make && make install
 
 #Install firmwares and reload E-MU kernel module
 mkdir -p /lib/firmware/emu
-cp *fw /lib/firmware/emu/ &&
+cp ./*fw /lib/firmware/emu/ &&
 modprobe -r snd-emu10k1-synth snd-emu10k1; modprobe snd-emu10k1 &&
 
 #Remove temporary build dir

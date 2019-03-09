@@ -4,6 +4,7 @@ set -o errexit
 set -o nounset
 
 tasks=$(for i in ~/.thunderbird/*/calendar-data/cache.sqlite; do
+	# shellcheck disable=SC2016
     sqlite3 "$i" 'SELECT `title` FROM `cal_todos` WHERE (`ical_status` NOT LIKE "%COMPLETED%" OR `ical_status` IS NULL) ORDER BY `priority` DESC LIMIT 0, 50000;'
 done | sort --unique | cut -b 1-25)
 

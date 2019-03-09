@@ -32,25 +32,25 @@ if [ -z "$FILEDIR" ]; then
 FILEDIR="./";
 fi
 SVERSION="0.2"
-HOSTPC=`hostname`
-HOSTUSER=`whoami`
+HOSTPC=$(hostname)
+HOSTUSER=$(whoami)
 
 #Now do the  find thing
 
 case "$HIDDEN" in
 
-    0) echo "Reporting all files modified in last "$MTIME" period in directory "$FILEDIR" for system "$HOSTPC", running as user "$HOSTUSER" excluding hidden files."
-    echo "Date: `date`"
+    0) echo "Reporting all files modified in last $MTIME period in directory $FILEDIR for system $HOSTPC, running as user $HOSTUSER excluding hidden files."
+    echo "Date: $(date)"
     echo "START OF FILE REPORT"
-    find $FILEDIR -type f -mtime $MTIME ! -path "*/.*" | xargs -r ls -lh 2>/dev/null
+    find "$FILEDIR" -0 -type f -mtime $MTIME ! -path "*/.*" | xargs -r ls -lh 2>/dev/null
     echo "END OF FILE REPORT"
     echo "Report script version $SVERSION by raymii.org"
     ;;
 
-    1) echo "Reporting all files modified in last "$MTIME" period in directory "$FILEDIR" for system "$HOSTPC", running as user "$HOSTUSER"."
-    echo "Date: `date`"
+    1) echo "Reporting all files modified in last $MTIME period in directory $FILEDIR for system $HOSTPC, running as user $HOSTUSER."
+    echo "Date: $(date)"
     echo "START OF FILE REPORT"
-    find $FILEDIR -type f -mtime $MTIME | xargs -r ls -lh 2>/dev/null
+    find "$FILEDIR" -0 -type f -mtime $MTIME | xargs -r ls -lh 2>/dev/null
     echo "END OF FILE REPORT"
     echo "Report script version $SVERSION by raymii.org"
     ;;

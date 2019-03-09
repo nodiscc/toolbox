@@ -2,6 +2,9 @@
 #Description: find biggest objects in git repository
 #Author: Vi.
 #Source: https://stackoverflow.com/questions/1029969/why-is-my-git-repository-so-big
+#shellcheck disable=SC2046,SC2162,SC2034
+
+
 git rev-list --all --objects | \
     sed -n $(git rev-list --objects --all | \
     cut -f1 -d' ' | \

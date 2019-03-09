@@ -1,6 +1,8 @@
 #!/bin/bash
 #Description: install Android SDK
 #thx http://techapple.net/2014/07/runinstall-official-android-sdk-emulator-linux-ubuntulinuxmint/
+set -o errexit
+set -o nounset
 
 cd "$HOME"
 sudo aptitude install openjdk-6-jre openjdk-6-jdk icedtea6-plugin
