@@ -10,7 +10,7 @@ debootstrap --arch amd64 wheezy /your/install/path http://ftp.us.debian.org/debi
 #Fix locales, install keyring, do a full aptitude dist-upgrade -y
 
 #get the list of standard packages from tasks
-PACKAGES_STANDARD=`tasksel --task-packages standard | tr "\\n" " "`
+PACKAGES_STANDARD=$(tasksel --task-packages standard | tr "\\n" " ")
 PACKAGES_EXTRA='ufw ntp ntpdate openssh-server vim rsync screen dnsutils nmap zip unzip rar unrar htop postfix'
 PACKAGES_DEV='build-essential git subversion'
 
@@ -20,7 +20,8 @@ PACKAGES_DEV='build-essential git subversion'
 PACKAGES_TOPURGE='vim-tiny_ exim4_ exim4-base_ exim4-config_ exim4-daemon-light_'
 
 #run the install via aptitude
-DEBIAN_FRONTEND=noninteractive aptitude -y install $PACKAGES_STANDARD $PACKAGES_EXTRA $PACKAGES_DEV $PACKAGES_TOPURGE * Any post-installation configuration
+#shellcheck disable=SC2086
+DEBIAN_FRONTEND=noninteractive aptitude -y install $PACKAGES_STANDARD $PACKAGES_EXTRA $PACKAGES_DEV $PACKAGES_TOPURGE
 
 #Run post-installation cleanup jobs, ie aptitude clean
 #exit the chroot
