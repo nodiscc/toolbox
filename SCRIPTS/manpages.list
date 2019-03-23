@@ -86,6 +86,7 @@ ffmpeg
 find
 finger
 firewall-cmd
+flashrom
 fmt
 fold
 free
@@ -412,9 +413,9 @@ systemd.positive
 systemd.preset
 systemd.resource-control
 systemd.scope
+systemd.service
 systemd.slice
 systemd.special
-systemd.service
 systemd.swap
 systemd.target
 systemd.time
