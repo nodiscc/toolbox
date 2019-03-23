@@ -156,7 +156,7 @@ checkout = git clone 'https://github.com/offensive-security/exploit-database' 'G
 checkout = git clone 'https://github.com/ITikhonov/git-loc' 'GIT/git-loc'
 
 [GIT/consoleSSLlabs]
-checkout = git clone 'https://github.com/nodiscc/consoleSSLlabs' 'GIT/consoleSSLlabs'
+checkout = git clone 'https://github.com/ozzi-/consoleSSLlabs' 'GIT/consoleSSLlabs'
 
 [GIT/Simple-Grid]
 checkout = git clone 'https://github.com/ThisIsDallas/Simple-Grid' 'GIT/Simple-Grid'
