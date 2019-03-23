@@ -1308,3 +1308,30 @@ ss equivalent to netstat -pltuna: ss -aptu
 
 
 systemd edit unit file: systemctl --edit nginx.service
+
+
+strace filter syscalls: strace -e openat,getdents command
+
+
+strace command: strace command
+
+
+strace attach to process: strace -p PID
+
+
+strace profiling: strace -c command
+
+
+temporarily change debconf frontend: sudo DEBIAN_FRONTEND="gnome" dpkg-reconfigure debconf
+
+
+raspberry pi disable HDMI 25mA power saving: `/usr/bin/tvservice -o`
+
+
+adb tail androind logs: `adb logcat -v color`
+
+
+adb android show ERROR log messages: `adb logcat *:E`
+
+
+windows generate file checksum `certUtil -hashfile cheminVersLeFichier [MD2 MD4 MD5 SHA1 SHA256 SHA384 SHA512]`
