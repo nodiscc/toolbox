@@ -1,5 +1,5 @@
 [GIT/airwave]
-checkout =
+checkout = 
 	git clone --depth=1 'https://github.com/phantom-code/airwave' 'GIT/airwave'
 	git remote add rodlie https://github.com/rodlie/airwave
 
@@ -7,7 +7,7 @@ checkout =
 checkout = git clone 'https://github.com/shaarli/api-documentation' 'GIT/shaarli-api-documentation'
 
 [GIT/awesome-linuxaudio]
-checkout =
+checkout = 
 	git clone 'https://github.com/nodiscc/awesome-linuxaudio' 'GIT/awesome-linuxaudio'
 	git remote add gitlab git@gitlab.com:nodiscc/awesome-linuxaudio.git
 
@@ -25,16 +25,16 @@ checkout = git clone --depth=1 'https://github.com/alexanderepstein/Bash-Snippet
 checkout = git clone --depth=1 'https://github.com/pirate/bookmark-archiver' 'GIT/bookmark-archiver'
 
 [GIT/cleanerml]
-checkout =
+checkout = 
 	git clone --depth=1 'https://github.com/az0/cleanerml/' 'GIT/cleanerml'
 
 [GIT/dbu]
-checkout =
+checkout = 
 	git clone 'git@github.com:nodiscc/dbu' 'GIT/dbu'
 	git remote add gitlab git@gitlab.com:nodiscc/dbu.git
 
 [GIT/fonts]
-checkout =
+checkout = 
 	git clone --depth=1 'https://github.com/nodiscc/fonts' 'GIT/fonts'
 	cd fonts
 	git remote add gitlab git@gitlab.com:nodiscc/fonts.git
@@ -43,7 +43,7 @@ checkout =
 checkout = git clone --depth=1 'https://github.com/leereilly/games' 'GIT/awesome-games'
 
 [GIT/github-stars-backup]
-checkout =
+checkout = 
 	git clone --depth=1 'https://github.com/nodiscc/github-stars-backup' 'GIT/github-stars-backup'
 	cd github-stars-backup
 	git remote add gitlab https://gitlab.com/nodiscc/github-stars-backup.git
@@ -55,7 +55,7 @@ checkout = git clone --depth=1 'https://github.com/thias/glim' 'GIT/glim'
 checkout = git clone --depth=1 'https://github.com/k4m4/kickthemout' 'GIT/kickthemout'
 
 [GIT/musical-artifacts-data]
-checkout =
+checkout = 
 	git clone 'https://github.com/nodiscc/musical-artifacts-data' 'GIT/musical-artifacts-data'
 	git remote add gitlab git@gitlab.com:nodiscc/musical-artifacts-data
 
@@ -63,7 +63,7 @@ checkout =
 checkout = git clone --depth=1 'https://github.com/fcambus/nginx-resources' 'GIT/nginx-resources'
 
 [GIT/ohmpage]
-checkout =
+checkout = 
 	git clone 'https://github.com/nodiscc/ohmpage' 'GIT/ohmpage'
 	cd ohmpage
 	git remote add gitlab git@gitlab.com:nodiscc/ohmpage.git
@@ -75,7 +75,7 @@ checkout = git clone 'https://github.com/shaarli/python-shaarli-client' 'GIT/pyt
 checkout = git clone --depth=1 'https://github.com/ayyi/samplecat' 'GIT/samplecat'
 
 [GIT/shaarchiver]
-checkout =
+checkout = 
 	git clone 'https://github.com/nodiscc/shaarchiver' 'GIT/shaarchiver'
 	cd shaarchiver
 	git remote add gitlab git@gitlab.com:nodiscc/shaarchiver.git
@@ -84,7 +84,7 @@ checkout =
 checkout = git clone 'https://github.com/shaarli/Shaarli' 'GIT/Shaarli'
 
 [GIT/srv01]
-checkout =
+checkout = 
 	git clone 'git@github.com:nodiscc/srv01' 'GIT/srv01'
 	cd srv01
 	git remote add gitlab git@gitlab.com:nodiscc/srv01.git
@@ -100,14 +100,14 @@ checkout = git clone --depth=1 'https://github.com/bdoms/tumblr_backup' 'GIT/tum
 checkout = git clone --depth=1 'https://github.com/miohtama/tumblr-upload' 'GIT/tumblr-upload'
 
 [GIT/user.js]
-checkout =
+checkout = 
 	git clone 'https://github.com/nodiscc/user.js' 'GIT/user.js'
 	cd user.js
 	git remote add gitlab git@gitlab.com:nodiscc/user.js
 	git remote add pyllyukko https://github.com/pyllyukko/user.js
 
 [GIT/awesome-linuxaudio]
-checkout =
+checkout = 
 	git clone 'https://github.com/nodiscc/awesome-linuxaudio' 'GIT/awesome-linuxaudio'
 	cd awesome-linuxaudio
 	git remote add gitlab git@gitlab.com:nodiscc/awesome-linuxaudio.git
@@ -130,7 +130,7 @@ checkout = git clone --depth=1 'https://github.com/ujjwal96/xwinwrap' 'GIT/xwinw
 checkout = git clone --depth=1 'https://github.com/richardgv/skippy-xd' 'GIT/skippy-xd'
 
 [GIT/youtube-dl-gui]
-checkout =
+checkout = 
 	   git clone 'https://github.com/MrS0m30n3/youtube-dl-gui' 'GIT/youtube-dl-gui'
 	   git remote add debian https://salsa.debian.org/felix-guest/youtube-dl-gui
 
@@ -138,7 +138,7 @@ checkout =
 checkout = git clone 'https://github.com/speed47/spectre-meltdown-checker' 'GIT/spectre-meltdown-checker'
 
 [GIT/pidgin-opensteamworks]
-checkout =
+checkout = 
 	   git clone 'https://github.com/EionRobb/pidgin-opensteamworks' 'GIT/pidgin-opensteamworks'
 	   git remote add doctorlard https://github.com/doctorlard/pidgin-opensteamworks/
 
@@ -165,4 +165,8 @@ checkout = git clone 'https://github.com/ThisIsDallas/Simple-Grid' 'GIT/Simple-G
 checkout = git clone 'https://github.com/nu11secur1ty/Wiffy' 'GIT/Wiffy'
 
 [GIT/dbu-firefox-setup]
-checkout = git clone 'git@gitlab.com:nodiscc/dbu-firefox-setup.git' 'GIT/dbu-firefox-setup'
+checkout = git clone 'https://gitlab.com:nodiscc/dbu-firefox-setup.git' 'GIT/dbu-firefox-setup'
+
+[/home/live/toolbox/MIRRORS/DOCS]
+checkout = git clone 'https://gitlab.com/nodiscc/wiki.git' 'DOCS'
+

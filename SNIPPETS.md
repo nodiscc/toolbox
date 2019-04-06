@@ -1,4 +1,14 @@
-Bash arrays `ARGS=(-f -x -n foo); if [ -r "$filename" ]; then ARGS+=(-r "$filename"); fi; program "${ARGS[@]}"`
+apachectl `start/stop/restart/fullstatus/status/graceful/graceful-stop/configtest/startssl`
+
+apache MPM: prefork: stable/fast, 1 connection -> 1 process (multi-process)
+apache MPM worker: lightweight, 1 connection -> 1 thread (requires php-fpm)
+apache MPM event: very lightweight, 1 request -> 1 thread. Use PHP-FPM anyway.
+
+NetworkManager create bridge `nmcli con add ifname br0 type bridge con-name br0; nmcli con modify br0 bridge.stp no; nmcli con add type bridge-slave ifname enp0s31f6 master br0`
+
+python directory of currently running script `os.path.abspath(__file__)`
+
+python set environment variable `os.environ['LD_LIBRARY_PATH'] = "my_path"`
 
 iptables/netfilter NAT Enable forwarding `echo 1 > /proc/sys/net/ipv4/ip_forward`
 
@@ -80,26 +90,13 @@ http://xmodulo.com/limit-network-bandwidth-linux.html `trickle -d 300 firefox %u
 
 rename/remove file extensions recursively `rename "s:\.::" **`
 
-bash Insert the last argument of the previous command `<ESC>.`
-
 https://www.cyberciti.biz/faq/how-to-test-the-network-speedthroughput-between-two-linux-servers/ `iperf -s`; `iperf -c 192.168.0.19`
 
 split files into individual words `fmt -1 < words.txt`
 
-bash create backup file `cp file.txt{,.bak}`
-
-bash run command number 1225 from bash history `!1225`
-
-bash create a directory and cd into it `mkdir -p a/directory/ && cd $_`
 
 Youtube channel RSS Feed: `https://www.youtube.com/feeds/videos.xml?channel_id=$channel_external_id`
 
-bash empty a file `> file.txt`
-
-bash less follow mode (like tail) `less +F somelogfile`
-
-bash most used commands: `history | awk '{print $2}' | sort | uniq -c | sort -rn | head -n 20`
-bash most used commands: `history | awk '{a[$2]++}END{for(i in a){print a[i] " " i}}' | sort -rn | head`
 
 tmux Command mode: `Ctrl+b`
 tmux `%` séparer la fenêtre en deux gauche et droite
@@ -224,22 +221,7 @@ prevent overwriting a file `chattr +a $FILE`
 
 create multiple directories `mkdir -p /home/user/{test,test1,test2}`
 
-bash variable substitution: `${var[:]{-=}default}`:
 
-    -   display default (if undefined)
-    :-  display default (if undefined OR null)
-    =   assign default (if undefined)
-    :=  assign default (if undefined OR null)
-
-bash remove shortest left segment of variable: `${var#*SEP}`
-
-bash remove longest left segment of variable: `${var##*SEP}`
-
-bash remove shortest right segment of variable: `${var%SEP*}`
-
-bash remove shortest right segment of variable: `${var%%SEP*}`
-
-bash convert text to uppercase `upper() { echo ${@^^}; }`
 
 obiwan traceroute traceroute -m 254 -q1 `obiwan.scrye.net`
 
@@ -248,116 +230,6 @@ locate files and move them to specified directory `locate -0 -i *barthes* | xarg
 >firewall **iptables -m** The -m options loads a feature that isn't part of the core filtering. -m == --match. (MATCH EXTENSIONS) The state module allows you to keep track of state in your rules. This is basically required when you want to permit traffic in one direction but not the other. If a packet has a state of NEW that means the packet doesn't belong to any existing connections (There is a state table in memory that keeps track of the full socket details. See  `/proc/net/ip_conntrack`). For a TCP connection this would almost always match the SYN packet sent as part of the three way handshake. http://redd.it/23mqi7. `iptables --match state [INVALID|ESTABLISHED|NEW|RELATED|UNTRACKED`
 
 ssh `socat -d -d TCP-L:22,reuseaddr,fork SYSTEM:"nc \$SOCAT_PEERADDR 22"` Confuse people SSHing to your host with a redirect back to theirs.
-
-Powershell list hidden windows updates: `(New-Object -ComObject Microsoft.Update.Session).CreateUpdateSearcher().Search('IsInstalled=0 and IsHidden=1').Updates | %{'KB'+$_.KBArticleIDs}`
-
-Windows list optional windows features `Get-WindowsOptionalFeature -Online`
-
-Windows list services `Get-Service`
-
-Windows server configuration tool `sconfig`
-
-windows RAID5 `list disk; select disk 1 ; list part; list vol ; select vol 0 [DVD]; [DVD] assign letter=z; create volume raid=5120 disk=1,2,3; select vol 3 [RAID]; format quick; assign letter=d OU assign mount=c:\Base`
-
-Windows Remote desktop connection `mstsc.exe [<Connection File>] [/v:<Server>[:<Port>]] [/admin] [/f] [/w:<Width> /h:<Height>] [/public] [/span] /edit <Connection File> /migrate`
-
-Windows GPO: `rsop.msc` or `gpresult /z`, http://gpsearch.azurewebsites.net/, ADMX models: `%systemroot%\policyDefinitions\` or in SYSVOL share, must be `Enabled` AND `Enforced`, `Get-Command *GP*`
-
-Trigger BSOD in windows: regedit > HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\i8042prt\Parameters or HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\i8042prt\Parameters. New DWORD > `CrashOnCtrlScroll` = 1. Hit Right Ctrl + Scroll Lock x2. Or kill csrss.exe.
-
-Windows remove password prompt at boot `Win + R` > "control userpasswords2" > Uncheck password
-
-Windows: change login screen background: place a .jpg image <245kb in `%windir\system32\oobe\info\backgrounds\backgroundDefault.jpg` + `HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI\Background\OEMBackground` (DWORD=1)
-
-Windows: encrypt swap: cmd as admin > `fsutil behavior set encryptpagingfile 1`
-
-Windows GodMode: Create a folder named GodMode.{ED7BA470-8E54-465E-825C-99712043E01C}
-
-Windows multi user RDP: HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\TerminalServer\fSingleSessionPerUser (0x0 Allow multiple sessions per user, 0x1 Force each user to a single session)
-
-Windows RDP Port number: HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\TerminalServer\WinStations\RDP-Tcp\PortNumber
-
-Windows/npackd install package `ncl add --non-interactive --package PACKAGE_NAME`
-
-windows create godmode directory `mkdir GodMode.{ED7BA470-8E54-465E-825C-99712043E01C}`
-
-Powershell `New-NetIPAddress -IPAddress 10.11.17.1 -AddressFamily IPv4 -InterfaceAlias Ethernet0 -DefaultGateway 10.11.255.254 -PrefixLength 8`
-
-Powershell 4.0 download file `& { iwr http://www.it1.net/it1_logo2.jpg -OutFile logo.jpg }`
-
-Windows make filesystem case-sensitive `reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\kernel" /v ObCaseInsensitive /t REG_DWORD /d 0 /f`
-
-Powershell set DNS server for client machine: `Set-DNSClientServerIpADdress -InterfaceIndex 12 -ServerAddress '10.0.0.1, 10.0.0.9'`
-
-Powershell set DNS suffix `Set-DNSClientGlobalSetting -SearchSuffix example.local`
-
-Powershell get hotfix status info: `Get-Hotfix -Id KB2952664`
-
-Windows uninstall KB `wusa /uninstall /kb:2952664`
-
-windows shutdown remote machine via SMB: net rpc shutdown -C "comment" -I IPADDRESS -U USERNAME%PASSWORD
-
-windows add firewall rule: netsh advfirewall firewall add rule name="Block NetBIOS Port 137 (UDP)" dir=in action=block protocol=UDP localport=137
-
-windows check NTP server offset: w32tm /stripchart /computer:time.windows.com
-
-Windows disable SMBv1: Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" SMB1 -Type DWORD -Value 0 -Force
-
-Powershell help: `Get-Help Get-Help -ShowWindow/ -Detailed -Examples -Full`
-
-Powershell help: `Help about_*`
-
-Powershell list methods/attributes: `$command | Get-Member`
-
-Powershell update-help from local repo: `Update-Help -SourcePath \\10.x.x.x.x\path\to\powershell\help\ -Credential ad\username`
-
-Powershell install Active Directory: `Get-Command *-Ad*; Import-Module ActiveDirectory, Add-WindowsFeature RSAT-AD-PowerShell`
-
-Powershell install DHCP: `install-windowsfeature [dhcp|rsat-dhcp]`
-
-Windows install DHCP service: `install-windowsfeature dhcp; install-windowsfeature rsat-dhcp`
-
-Windows add DHCP range: `add-dhcpserverv4scope -startrange 192.168.0.100 -endrange 192.168.0.200 -subnetmask 255.255.255.0 -name lan1_dhcp_range`
-
-Windows add NDS server DHCP option: `set-dhcpserverv4optionvalue -optionId 6 -ScopeId 192.168.0.0 -Value 192.168.0.1`
-
-Windows add DHCP reservation `add-dhcpserverv4reservation -scopeid 192.168.0.0 -ipaddress 192.168.0.100 -clientid 00-0c-29-f6-ad-0b`
-
-Windows install DNS service: `install-windowsfeature dns, install-windowsfeature rsat-dns-server`
-
-Powershell install DNS: `install-windowsfeature [dns|rsta-dns-server]`
-
-Powershell add DNS conditional forwarder: `add-DNSServerConditionalForwarderZone -Name example.com -MasterServers x.x.x.x`
-
-Powershell add DNS global forwarder: `add-DNSServerForwarder -IPAddress 10.0.0.1`
-
-Powershell add primary DNS zone: `add-DNSServerPrimaryZone -Name ad.example.com -Zonefile ad.example.com`
-
-Powershell show DNS resource record: `Get-DNSServerResourceRecord -Name ad.example.com`
-
-Powershell list running services: `Get-Service | Where-Object { $_.Status -eq "Running" }`
-
-Powershell loop `$startdate=get-date; $val=0; while ($val -neq 65535) { $val++; Write-Host -NoNewline "$val " }; $enddate=get-date; $totaltime=$enddate - $startdate; write-host "total time is $totaltime"`
-
-Powershell Enable/Allow RDP: `Get-NetFirewallRule -DisplayName "Remote Desktop*" | Set-NetFirewallRule -enabled true; Get-Service "*rdp*"; Set-Service -Name "ServiceName" -Status Running` + enable System Properties > Remote Settings > Allow
-
-Windows Remote desktop connection mstsc /span /v:HOSTNAME
-
-Powershell create firewall rule: `New-NetFirewallRule -DisplayName 'ICMPv4-In-ByIP' -Enabled True -Profile Domain -Direction Inbound -Action Allow -Protocol ICMPv4 -RemoteAddress 10.11.200.104,10.11.200.58`
-
-Windows System properties: `sysdm.cpl`
-
-Windows List junction points: `dir /aL; dir /aL /s C:\;`
-
-Windows Create junction point: `mklink /J <Target> <Linkname>`
-
-Windows download file `explorer https://url.of/file`
-
-Powershell download file from web `$clnt = new-object System.Net.WebClient; $clnt.DownloadFile("https://source.fi/le.txt", "destfile.txt")`
-
-Windows ipconfig commands: `/displaydns /all /release /renew`
-
-Windows local GPO console: `gpedit.msc`
 
 ################################################################################
 
@@ -383,7 +255,6 @@ output your microphone to a remote computer's speaker `dd if=/dev/dsp | ssh -c a
 
 Find largest files in directory and subdirectories  `find . -printf '%s %p\n'|sort -nr|head`
 
-windows Force unmount all network shares `net use * /delete /y`
 
 CLI connect to WEP wifi network: `iwconfig wlan0; iw dev wlan0 scan, ip link set wlan0 up; iw dev wlan0 connect [network SSID] key 0:[WEP key]`
 
@@ -403,26 +274,25 @@ Define number of workspaces `wmctrl -n $NOMBRE_BUREAUX`
 
 
 
-@bash replace *BEFORE* with *AFTER* in previous command (all) `!:gs/BEFORE/AFTER`
-
-@bash replace *BEFORE* with *AFTER* in previous command (last occurrence) `^BEFORE^AFTER^`
 
 do not log commands containing EXAMPLE in bash history `HISTIGNORE="*EXAMPLE*"`
 
-@bash generate random number between 1 and 10 `echo $%%(%%($RANDOM%10))`
 
-@bash sums with bash `i=$((2+2))`
 
-@bash `||` executes next command only if 1st command fails; `&&` executes next command only if 1st command succeeds
 
-bash diff the output of 2 commands `diff <( command1 ) <( command2)`
 
-bash variable `${VARNAME:-DEFAULT_VALUE}` evals to DEFAULT_VALUE if VARNAME undefined. So here, $bar is set to "alpha" - default values for variables if unset
 
-bash variable `bar=${foo:-alpha}` To make the default an empty string, use ${VARNAME:-}
-empty_string=${some_undefined_var:-}
 
-bash variable `count=$(grep -c some-string some-file || true)` Continue even with errors with errexit option - always return success; you can also disable temporarily errexit with set +e; set -e
+
+
+
+
+
+
+
+
+
+
 
 **subnets** If you use a regular 255.255.255.0 subnet for a group that will have a maximum of 50 users, you're going to waste 204 addresses. If you used 255.255.255.192 for example, then you'd have the ability to make four networks with 62 users each. (64-2, .0 .255 are the network address and the broadcast address)
 
@@ -496,7 +366,7 @@ convert unix timestamp to date `date +"%d/%m/%Y %X" -d @$UNIX_TIME`
 
 print a message on all open terminals `echo "Message" | wall`
 
-print previous command return code `echo $?` @bash
+print previous command return code `echo $?` bash
 
 X11 keylogger (without root) `xinput list; xinput test $INPUT_ID`
 
@@ -515,7 +385,7 @@ git change branch in bare repo: `git symbolic-ref HEAD refs/heads/mybranchname @
 
 @desktop @mime associte mimetype with program `xdg-mime default magnet-video-player.desktop x-scheme-handler/magnet`
 
-greybot (#bash bot): August is the month when all your scripts break because you placed $(date +%m) in a variable and tried to do arithmetic with it, without removing the leading zeros. 08 is considered octal. Use $((10#$month)) to force decimal, or strip the zero. @bash @wtf
+greybot (#bash bot): August is the month when all your scripts break because you placed $(date +%m) in a variable and tried to do arithmetic with it, without removing the leading zeros. 08 is considered octal. Use $((10#$month)) to force decimal, or strip the zero. bash @wtf
 
 remove all ACLs recursively for a directory `setfacl -Rb /path/to/dir/`
 
@@ -544,23 +414,8 @@ special file: Addresse MAC d'une carte réseau: `/sys/class/net/*/address`
 special file: Informations sur la distribution: `/etc/issue`
 special file: Infos sur la charge du processeur: `/proc/loadavg`
 
-windows GodMode: create a directory named `GodMode.{ED7BA470-8E54-465E-825C-99712043E01C}`. Gives access to all settings
-
-windows games Pour Bouger des jeux steam dans un autre répertoire que steamapps, aller dans ``steamapps``, déplacer le dossier du jeu à un autre emplacement (ex ``d:/``), et ``mklink /d "left 4 dead 2" "d:\left 4 dead 2"`` 
 
 
-windows enable password for UAC: Local Security Policy > Local Policies > Security Options > User Account Control : Behavior of the elevation prompt for... > Prompt for crendtials
-
-
-> Reset windows passwords:** Load up a linux distro and copy the SAM that is located in C:\windows\system32\config; run ophcrack on it
-
-
-Windows Connected USB drives list: `HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\USBSTOR\`, `C:\Windows\setupapi.log` -> Perform search for Serial Number
-
-windows Unicode Right-to-left override `"Awesome Song uploaded by \[U+202e\]3pm.exe"`
-
-
-windows **local privilege escalation** reboot, disconnect power during splash, plug back in, boot, ` Launch startup repair (recommended)` , on system restore dialog: ` Cancel` , Scan, "Cannot repair automatically" dialog: ` View problem details`, click link to ` X:\Windows\System32\en-US\erofflps.txt`, pops notepad, ` File>Open>C:\Windows\System32\`, set view to ` all files *.*`, rename `Sethc`  to ` Sethc1` , duplicate ` cmd`, rename new `cmd`  to ` Sethc`. Press shift 5 times (opens cmd instead of Sethc stickiy keys dialog) to test. Reboot. Wait for login prompt, press Shift 5 times,cmd opens, ` whoami` should return `NT AUTHORITY\SYSTEM`. `net user` to show available users, `net user $username *`, type new password, close cmd, login. <http://ifconfig.dk/password/> Can also be done by booting live CD, copying `cmd.exe`  to `magnify.exe`,  reboot, click magnify icon. Commands: `net user username new_password`; `net user username password /add`, `net localgroup administrators username /add`, `net user username /delete`, `net localgroup Remote Desktop Users UserLoginName /add` (RDP); `net user commands Reference`
 
 bash diff 2 strings: `diff  <(echo "$string1" ) <(echo "$string2")`
 
@@ -616,39 +471,19 @@ nfs: setup `/etc/exports`, `showmount --exports`
 
 mysql `GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, INDEX, ALTER, CREATE TEMPORARY TABLES ON 'wiki'.* TO 'wiki'@'localhost'; `
 
->As someone who knows Bash pretty well, @shell -- There are language features you should avoid, they are there for historic reasons; Know the few-ish actual language warts that you need to work around. (pipefail, when subshells are created); Know how field-separation works. Use trap for cleanup. *22-01-2014 19:40* ----- @bash
+bash -- There are language features you should avoid, they are there for historic reasons; Know the few-ish actual language warts that you need to work around. (pipefail, when subshells are created); Know how field-separation works. Use trap for cleanup. And it's largely because bash is trying to be smart for you: mix that into a language where instructions and data can each become the other, based purely on its position in the command line, and you're just headed for grief.   It's just not a very good design: the things that make it good on the command line make it an unsafe programming language. It is ridiculously easy to make terrible mistakes, things that look perfectly sensible... 
 
->And it's largely because bash is trying to be smart for you: mix that into a language where instructions and data can each become the other, based purely on its position in the command line, and you're just headed for grief.   It's just not a very good design: the things that make it good on the command line make it an unsafe programming language. It is ridiculously easy to make terrible mistakes, things that look perfectly sensible... @bash
 
->The difference between $@ and $*: Without quotes (don't do this!), there is no difference. With double quotes, "$@" expands to each parameter as its own argument: "$1" "$2" ..., while "$*" expands to the single argument "$1c$2c...", where 'c' is the first character of IFS. You almost always want "$@" (QUOTED!). The same goes for arrays: "${array[@]}". *21-01-2014 21:38* ----- @bash
 
-bash builtin: edit and run previous command in text editor `fc`
-
-bash builtin: edit and run a new command in text editor `Ctrl+x+e`
 
 bash filter out file extension: `touch example.list; file=example.list; echo "${file%.*}"`
 
-bash Iterate Through Array Values `for i in "${ARR[@]}"; do echo $i; done`
 
-bash Declare an array `ARR=(value1 value2 value3)`
+bash single tab to show ambiguous completions `set show-all-if-ambiguous on`  `(~/.inputrc)`
 
-bash print an array: `printf "%s\n" "${ARR[@]}"`
+bash completion: ignore case `set completion-ignore-case on` `(~/.inputrc)`
 
-bash print all items in an array: `${ARR[*]}`
-
-bash print All of the indexes in an array `# ${!ARR[*]}`
-
-bash print Number of items in an array `${#ARR[*]}`
-
-bash print Length of array item zero `${#ARR[0]}`
-
-bash single tab to show ambiguous completions `set show-all-if-ambiguous on`  (~/.inputrc)
-
-bash completion: ignore case `set completion-ignore-case on` (~/.inputrc)
-
-bash arrays `while true; do var[0]=K; var[1]=I; var[2]=L; var[3]=L; var[4]="_"; var[5]=A; var[6]=L; var[7]=L; var[8]="_"; var[9]=H; var[10]=U; var[11]=M; var[12]=A; var[13]=N; var[14]=S; var[15]="_"; for i in $(seq 0 15); do echo -n ${var[$i]}; done; done`
-
->**`source`** is a bash shell built-in command that executes the content of the file passed as argument, **in the current shell**.  (whereas `./script` runs the script as an executable file, launching a new shell to run it ") http://superuser.com/questions/46139/what-does-source-do @bash
+bash `source` executes the content of the file passed as argument, **in the current shell**.  (whereas `./script` runs the script as an executable file, launching a new shell to run it ") http://superuser.com/questions/46139/what-does-source-do 
 
 bash **options**: `nounset` (do not allow unset variables), errexit (exit on any error), `verbose`, `xtrace` (display commands as they are run), `pipefail` (send any non-zero return code at the end of the pipeline)
 
@@ -711,7 +546,7 @@ créer un pdf depuis le manuel d'une commande `man -t $COMMANDE | ps2pdf - > $CO
 
 Voir combien de temps une commande met à se terminer `time $COMMANDE`
 
-Chronomètre (`Ctrl+C` pour l'arrêter) `time cat`
+chronometer (`Ctrl+C` to stop) `time cat`
 
 Optimiser une image JPG `jpegtran -copy none -optimize $IMAGE temp.jpg; jpegtran -copy none -progressive temp.jpg monimage.jpg`
 
@@ -1043,45 +878,6 @@ remove empty directories `find -type d -empty -delete`
 find all files owned by an user: `find / -path /proc -prune -o -user <account> -ls`
 
 
-#nmap cheatsheet
-nmap -v server1.cyberciti.biz 192.168.1.1 #scan hosts (verbose)
-nmap 192.168.1.0-20             #scan addresses range
-name 192.168.1.0/24             #scan subnet
-nmap -iL /path/to/addresses/list.txt #get addresses from a text file
-nmap 192.168.1.0/24 --exclude 192.168.1.5,192.168.1.254 # exclude addresses from scanning
-nmap -iL /tmp/scanlist.txt --excludefile /tmp/exclude.txt # exclude addresses in a text file
-nmap -v -A 192.168.1.1          # -A switch: try to detect OS and version
-nmap -sA 192.168.1.254          # -sA: find if host is firewalled
-nmap -PN 192.168.1.1            # scan a firewalled host
-nmap -6 2607:f0d0:1002:51::4    # scan an IPv6 address
-nmap -sP 192.168.1.0/24         # network discovery/ping scan
-nmap -F 192.168.1.1             # fast scan
-nmap --reason 192.168.1.1       # Display the reason a port is in a particular state
-nmap --open 192.168.1.1         #only show open ports
-nmap --packet-trace 192.168.1.1 # show all sent/received packets
-nmap -p 80,443 192.168.1.1      # scan specific ports
-nmap -p 80-200 192.168.1.1      # scan port range
-nmap -p U:53 192.168.1.1        # scan UDP port
-nmap -p U:53,111,137,T:21-25,80,139,8080 192.168.1.1 #combine port scan options
-nmap --top-ports 5 192.168.1.1  #scan most-common ports
-nmap -T5 192.168.1.0/24         # fast open port scan
-nmap -v -O --osscan-guess 192.168.1.1 # identify remote host OS and apps
-nmap -sV 192.168.1.1            #detect remote services versions
-nmap -PS 80,21,443 192.168.1.1  #-PS: TCP SYN ping scan
-nmap -PA 80,21,443 192.168.1.1  #-PA: TCP ACK ping scan
-nmap -PU 2000.2001 192.168.1.1  #-PU: UDP ping scan
-nmap -sS 192.168.1.1            #Stealth scan
-nmap -sT 192.168.1.1            #find most common ports using TCP connect scan
-nmap -sA 192.168.1.1            #Find out the most commonly used TCP ports using TCP ACK scan. -sW: TCP window scan, -sM TCP Maimon scan
-nmap -sU 192.168.1.1            #scan for UDP listeners
-nmap -sO 192.168.1.1            #scan for IP protocols support (ICP,IGMP,TCP...)
-nmap -sN 192.168.1.254          #TCP null scan. -sF: TCP FIN scan, -sX: Sets the FIN, PSH, and URG flags
-nmap -f fw2.nixcraft.net.in     #fragment TCP packets (avoid IDS/DPI), set --mtu 32to set packet size
-nmap -n -Ddecoy-ip1,decoy-ip2,your-own-ip,decoy-ip3,decoy-ip4 remote-host-ip #create decoy scanners from other IP addresses
-
-@windows: run livestreamer: `livestreamer https://www.twitch.tv/gaminglive_tv1 medium --player "c:\Program Files\VLC_Media_Player_64_bit\vlc.exe"`
-
-
 git shallow submodules `git config -f .gitmodules submodule.<name>.shallow bool`
 
 edit git submodule URL: edit the .gitmodules file and run git submodule sync
@@ -1240,19 +1036,21 @@ ufw allow outgoing port 80 to IP address: ufw allow out proto udp from any to 37
 
 show disk statistics and serial number: inxi -c0 -xx -D | tail -n +2
 
-bash jobs: Run a command in background `COMMANDE &`
 
-bash jobs: Pause (suspend) the currently running task `Ctrl+z`
+bash create a directory and cd into it: mkdir -p a/directory/ && cd $_
+bash create backup file: cp file.txt{,.bak}
+bash diff the output of 2 commands: diff <( command1 ) <( command2)
+bash empty a file: > file.txt
+bash generate random number between 1 and 10: echo $%%(%%($RANDOM%10))
+bash less follow mode (like tail): less +F somelogfile
+bash most used commands: history | awk '{a[$2]++}END{for(i in a){print a[i] " " i}}' | sort -rn | head
+bash most used commands: history | awk '{print $2}' | sort | uniq -c | sort -rn | head -n 20
+bash replace BEFORE with AFTER in previous command (all): !:gs/BEFORE/AFTER
+bash replace BEFORE with AFTER in previous command (last occurrence): ^BEFORE^AFTER^
+bash sums: i=$((2+2))
 
-bash jobs: Show running/paused tasks `jobs`
 
-bash jobs: Put a paused task in the bakground `bg [job number]`
 
-bash jobs: Put a background task to foreground `fg [job number]`
-
-bash jobs: Stop (exit) the currently running task `Ctrl+C`
-
-bash jobs: Remove jobs from current shell `disown`
 
 Display process tree `pstree -p`
 
@@ -1333,5 +1131,3 @@ adb tail androind logs: `adb logcat -v color`
 
 adb android show ERROR log messages: `adb logcat *:E`
 
-
-windows generate file checksum `certUtil -hashfile cheminVersLeFichier [MD2 MD4 MD5 SHA1 SHA256 SHA384 SHA512]`
