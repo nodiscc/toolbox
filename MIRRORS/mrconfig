@@ -167,6 +167,6 @@ checkout = git clone 'https://github.com/nu11secur1ty/Wiffy' 'GIT/Wiffy'
 [GIT/dbu-firefox-setup]
 checkout = git clone 'https://gitlab.com:nodiscc/dbu-firefox-setup.git' 'GIT/dbu-firefox-setup'
 
-[/home/live/toolbox/MIRRORS/DOCS]
+[DOCS]
 checkout = git clone 'https://gitlab.com/nodiscc/wiki.git' 'DOCS'
 
