@@ -39,10 +39,8 @@ downloads_linux:
 	$(WGET) -P BIN-LINUX/ https://download.opensuse.org/repositories/home:/jgeboski/Debian_9.0/amd64/purple-facebook_20190113-0.9.6-0250907-166_amd64.deb
 	$(WGET) -P BIN-LINUX/ https://download.opensuse.org/repositories/home:/RockHopper/Debian_9.0/amd64/shuriken_0.5.2-2stretch1_amd64.deb # https://rock-hopper.github.io/shuriken/ (blocks wget user-agent)
 	$(WGET) -P BIN-LINUX/ https://download.sublimetext.com/sublime_text_3_build_3176_x64.tar.bz2 # https://www.sublimetext.com/3
-	$(WGET) -P BIN-LINUX/ https://downloads.lwks.com/lwks-12.6.0-amd64.deb
 	$(WGET) -P BIN-LINUX/ https://downloads.lwks.com/lwks-12.6.0-amd64.deb # https://www.lwks.com/ (non-free)
 	$(WGET) -P BIN-LINUX/ https://downloads.tuxfamily.org/godotengine/2.1.3/Godot_v2.1.3-stable_x11.64.zip
-	$(WGET) -P BIN-LINUX/ https://mirror03.popcorntime.sh/repo/build/Popcorn-Time-0.3.10-Linux-64.tar.xz
 	$(WGET) -P BIN-LINUX/ https://github.com/artfwo/andes/releases/download/v0.1/Andes1-0.1-linux-x86_64.tar.gz
 	$(WGET) -P BIN-LINUX/ https://github.com/BurntSushi/xsv/releases/download/0.10.3/xsv-0.10.3-i686-unknown-linux-musl.tar.gz
 	$(WGET) -P BIN-LINUX/ https://github.com/Dynalon/mdwiki/releases/download/0.6.2/mdwiki-0.6.2.zip
@@ -52,13 +50,13 @@ downloads_linux:
 	$(WGET) -P BIN-LINUX/ https://github.com/github/hub/releases/download/v2.3.0-pre10/hub-linux-amd64-2.3.0-pre10.tgz
 	$(WGET) -P BIN-LINUX/ https://github.com/jliljebl/flowblade/releases/download/v2.0/flowblade-2.0.0-1_all.deb
 	$(WGET) -P BIN-LINUX/ https://github.com/junegunn/fzf-bin/releases/download/0.15.9/fzf-0.15.9-linux_amd64.tgz
-	$(WGET) -P BIN-LINUX/ https://github.com/junegunn/fzf-bin/releases/download/0.15.9/fzf-0.15.9-linux_amd64.tgz
 	$(WGET) -P BIN-LINUX/ https://github.com/klembot/twinejs/releases/download/2.2.1/twine_2.2.1_linux64.zip
 	$(WGET) -P BIN-LINUX/ https://github.com/kmkolasinski/AwesomeBump/releases/download/Linuxv5.0/AwesomeBumpV5.Bin64Linux.tar.gz
 	$(WGET) -P BIN-LINUX/ https://github.com/mifi/lossless-cut/releases/download/v2.1.0/LosslessCut-linux-x64.zip
 	$(WGET) -P BIN-LINUX/ https://github.com/mltframework/shotcut/releases/download/v17.09/shotcut-linux-x86_64-170904.tar.bz2
 	$(WGET) -P BIN-LINUX/ https://github.com/pbek/QOwnNotes/releases/download/linux-b3572-073533/QOwnNotes-18.05.0.deb
 	$(WGET) -P BIN-LINUX/ https://github.com/vrana/adminer/releases/download/v4.7.1/adminer-4.7.1.php
+	$(WGET) -P BIN-LINUX/ https://mirror03.popcorntime.sh/repo/build/Popcorn-Time-0.3.10-Linux-64.tar.xz
 	$(WGET) -P BIN-LINUX/ https://packagecontrol.io/Package%20Control.sublime-package
 	$(WGET) -P BIN-LINUX/ https://s3.amazonaws.com/Minecraft.Download/versions/1.11.2/minecraft_server.1.11.2.jar
 	$(WGET) -P BIN-LINUX/ https://yt-dl.org/downloads/latest/youtube-dl
