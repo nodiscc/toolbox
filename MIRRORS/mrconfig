@@ -170,3 +170,5 @@ checkout = git clone 'https://gitlab.com:nodiscc/dbu-firefox-setup.git' 'GIT/dbu
 [NOTES]
 checkout = git clone 'https://gitlab.com/nodiscc/wiki.git' 'NOTES'
 
+[GIT/goldberg_emulator]
+checkout = git clone 'https://gitlab.com/Mr_Goldberg/goldberg_emulator' 'goldberg_emulator'
