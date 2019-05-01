@@ -14,9 +14,6 @@ checkout =
 [GIT/awesome-selfhosted]
 checkout = git clone --depth=1 'https://github.com/kickball/awesome-selfhosted' 'awesome-selfhosted'
 
-[GIT/conky-config]
-checkout = git clone --depth=1 'https://gitlab.com/nodiscc/conky-config' 'conky-config'
-
 
 [GIT/Bash-Snippets]
 checkout = git clone --depth=1 'https://github.com/alexanderepstein/Bash-Snippets' 'Bash-Snippets'
@@ -172,3 +169,6 @@ checkout = git clone 'https://gitlab.com/nodiscc/wiki.git' 'NOTES'
 
 [GIT/goldberg_emulator]
 checkout = git clone 'https://gitlab.com/Mr_Goldberg/goldberg_emulator' 'goldberg_emulator'
+
+[GIT/dbu-utils]
+checkout = git clone 'https://gitlab.com/nodiscc/dbu-utils' 'dbu-utils'
