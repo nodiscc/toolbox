@@ -165,7 +165,7 @@ checkout = git clone 'https://github.com/nu11secur1ty/Wiffy' 'Wiffy'
 checkout = git clone 'https://gitlab.com/nodiscc/dbu-firefox-setup.git' 'dbu-firefox-setup'
 
 [NOTES]
-checkout = git clone 'https://gitlab.com/nodiscc/wiki.git' 'NOTES'
+checkout = git clone 'https://gitlab.com/nodiscc/NOTES.git' 'NOTES'
 
 [GIT/goldberg_emulator]
 checkout = git clone 'https://gitlab.com/Mr_Goldberg/goldberg_emulator' 'goldberg_emulator'
