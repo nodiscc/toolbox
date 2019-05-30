@@ -1,3 +1,11 @@
+docker-compose up #démarrage en mpode detached
+docker-compose ps #vérifier que les containers sont up
+docker-compose stop plexpy #stop single container
+docker-compose up -d #après ajout d'un bloc au .yml, lancer nvx containers
+docker-compose pull #update containers
+docker-compose up -d #restart updated containers
+
+
 apachectl `start/stop/restart/fullstatus/status/graceful/graceful-stop/configtest/startssl`
 
 apache MPM: prefork: stable/fast, 1 connection -> 1 process (multi-process)
