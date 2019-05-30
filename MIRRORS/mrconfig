@@ -32,9 +32,6 @@ checkout =
 	cd fonts
 	git remote add gitlab git@gitlab.com:nodiscc/fonts.git
 
-[GIT/awesome-games]
-checkout = git clone --depth=1 'https://github.com/leereilly/games' 'awesome-games'
-
 [GIT/github-stars-backup]
 checkout = 
 	git clone --depth=1 'https://github.com/nodiscc/github-stars-backup' 'github-stars-backup'
