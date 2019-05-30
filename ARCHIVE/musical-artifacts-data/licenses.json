@@ -1,0 +1,98 @@
+[
+  {
+    "id": 1,
+    "name": "Public Domain",
+    "short_name": "public",
+    "license_type": "public"
+  },
+  {
+    "id": 2,
+    "name": "Creative Commons Attribution 4.0",
+    "short_name": "by",
+    "license_type": "cc"
+  },
+  {
+    "id": 3,
+    "name": "Creative Commons Attribution-ShareAlike 4.0",
+    "short_name": "by-sa",
+    "license_type": "cc"
+  },
+  {
+    "id": 4,
+    "name": "Creative Commons Attribution-NoDerivs 4.0",
+    "short_name": "by-nd",
+    "license_type": "cc"
+  },
+  {
+    "id": 5,
+    "name": "Creative Commons Attribution-NonCommercial 4.0",
+    "short_name": "by-nc",
+    "license_type": "cc"
+  },
+  {
+    "id": 6,
+    "name": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0",
+    "short_name": "by-nc-sa",
+    "license_type": "cc"
+  },
+  {
+    "id": 7,
+    "name": "Creative Commons Attribution-NonCommercial-NoDerivs 4.0",
+    "short_name": "by-nc-nd",
+    "license_type": "cc"
+  },
+  {
+    "id": 8,
+    "name": "Creative Commons Sampling Plus 1.0",
+    "short_name": "cc-sample",
+    "license_type": "cc"
+  },
+  {
+    "id": 9,
+    "name": "Copyright",
+    "short_name": "copyright",
+    "license_type": "copyright"
+  },
+  {
+    "id": 11,
+    "name": "GNU General Public License V1",
+    "short_name": "gpl",
+    "license_type": "gpl"
+  },
+  {
+    "id": 12,
+    "name": "GNU General Public License V2",
+    "short_name": "gpl-v2",
+    "license_type": "gpl"
+  },
+  {
+    "id": 13,
+    "name": "GNU General Public License V3",
+    "short_name": "gpl-v3",
+    "license_type": "gpl"
+  },
+  {
+    "id": 14,
+    "name": "Various Licenses",
+    "short_name": "various",
+    "license_type": "various"
+  },
+  {
+    "id": 15,
+    "name": "Gray Area",
+    "short_name": "gray",
+    "license_type": "gray"
+  },
+  {
+    "id": 16,
+    "name": "Free Art License v1.3",
+    "short_name": "falv13",
+    "license_type": "fal"
+  },
+  {
+    "id": 17,
+    "name": "Do What The Fuck You Want To Public License v2",
+    "short_name": "wtfpl",
+    "license_type": "wtfpl"
+  }
+]

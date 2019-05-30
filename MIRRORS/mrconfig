@@ -14,10 +14,6 @@ checkout =
 [GIT/awesome-selfhosted]
 checkout = git clone --depth=1 'https://github.com/kickball/awesome-selfhosted' 'awesome-selfhosted'
 
-
-[GIT/Bash-Snippets]
-checkout = git clone --depth=1 'https://github.com/alexanderepstein/Bash-Snippets' 'Bash-Snippets'
-
 [GIT/bookmark-archiver]
 checkout = git clone --depth=1 'https://github.com/pirate/bookmark-archiver' 'bookmark-archiver'
 
@@ -50,11 +46,6 @@ checkout = git clone --depth=1 'https://github.com/thias/glim' 'glim'
 
 [GIT/kickthemout]
 checkout = git clone --depth=1 'https://github.com/k4m4/kickthemout' 'kickthemout'
-
-[GIT/musical-artifacts-data]
-checkout = 
-	git clone 'https://github.com/nodiscc/musical-artifacts-data' 'musical-artifacts-data'
-	git remote add gitlab git@gitlab.com:nodiscc/musical-artifacts-data
 
 [GIT/python-shaarli-client]
 checkout = git clone 'https://github.com/shaarli/python-shaarli-client' 'python-shaarli-client'
@@ -148,12 +139,6 @@ checkout = git clone 'https://github.com/ozzi-/consoleSSLlabs' 'consoleSSLlabs'
 
 [GIT/Simple-Grid]
 checkout = git clone 'https://github.com/ThisIsDallas/Simple-Grid' 'Simple-Grid'
-
-[GIT/Wiffy]
-checkout = git clone 'https://github.com/nu11secur1ty/Wiffy' 'Wiffy'
-
-[GIT/dbu-firefox-setup]
-checkout = git clone 'https://gitlab.com/nodiscc/dbu-firefox-setup.git' 'dbu-firefox-setup'
 
 [NOTES]
 checkout = git clone 'https://gitlab.com/nodiscc/NOTES.git' 'NOTES'
