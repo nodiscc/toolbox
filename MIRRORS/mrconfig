@@ -41,9 +41,6 @@ checkout =
 [GIT/glim]
 checkout = git clone --depth=1 'https://github.com/thias/glim' 'glim'
 
-[GIT/kickthemout]
-checkout = git clone --depth=1 'https://github.com/k4m4/kickthemout' 'kickthemout'
-
 [GIT/python-shaarli-client]
 checkout = git clone 'https://github.com/shaarli/python-shaarli-client' 'python-shaarli-client'
 

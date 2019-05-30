@@ -1,0 +1,3 @@
+kamene
+python-nmap
+netifaces

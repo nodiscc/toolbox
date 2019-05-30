@@ -1,0 +1,28 @@
+sudo: required
+dist: trusty
+language: python
+python:
+    - "3.4"
+    - "3.5"
+    - "3.6"
+
+install:
+    - sudo -H python3 -m pip install -r requirements.txt
+script:
+    - sudo -H python3 -c "import kickthemout; import scan; import spoof;"
+
+branches:
+  only:
+  - master
+
+addons:
+  apt:
+    packages:
+      - python3
+      - python3-pip
+      - nmap
+
+notifications:
+  email:
+    on_success: never
+    on_failure: always
