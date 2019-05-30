@@ -56,15 +56,6 @@ checkout =
 	git clone 'https://github.com/nodiscc/musical-artifacts-data' 'musical-artifacts-data'
 	git remote add gitlab git@gitlab.com:nodiscc/musical-artifacts-data
 
-[GIT/nginx-resources]
-checkout = git clone --depth=1 'https://github.com/fcambus/nginx-resources' 'nginx-resources'
-
-[GIT/ohmpage]
-checkout = 
-	git clone 'https://github.com/nodiscc/ohmpage' 'ohmpage'
-	cd ohmpage
-	git remote add gitlab git@gitlab.com:nodiscc/ohmpage.git
-
 [GIT/python-shaarli-client]
 checkout = git clone 'https://github.com/shaarli/python-shaarli-client' 'python-shaarli-client'
 
