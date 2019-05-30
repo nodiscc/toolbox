@@ -84,6 +84,9 @@ WIKI/www.ekopedia.fr/
 DATA/nameservers.csv
 MAPS/france-latest.osm.pbf
 
+GIT/exploitdb-bin-sploits
+GIT/exploitdb
+GIT/exploitdb-papers
 GIT/airwave
 GIT/ansible/
 GIT/awesome-games/

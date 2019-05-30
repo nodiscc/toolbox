@@ -142,3 +142,12 @@ checkout = git clone 'https://gitlab.com/Mr_Goldberg/goldberg_emulator' 'goldber
 
 [GIT/dbu-utils]
 checkout = git clone 'https://gitlab.com/nodiscc/dbu-utils' 'dbu-utils'
+
+[GIT/exploitdb]
+checkout = git clone 'https://github.com/offensive-security/exploitdb' 'exploitdb'
+
+[GIT/exploitdb-bin-sploits]
+checkout = git clone 'https://github.com/offensive-security/exploitdb-bin-sploits' 'exploitdb-bin-sploits'
+
+[GIT/exploitdb-papers]
+checkout = git clone 'https://github.com/offensive-security/exploitdb-papers' 'exploitdb-papers'
