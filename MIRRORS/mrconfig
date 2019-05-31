@@ -151,3 +151,6 @@ checkout = git clone 'https://github.com/offensive-security/exploitdb-bin-sploit
 
 [GIT/exploitdb-papers]
 checkout = git clone 'https://github.com/offensive-security/exploitdb-papers' 'exploitdb-papers'
+
+[/home/live/toolbox/MIRRORS/GIT/pybadges]
+checkout = git clone 'https://github.com/google/pybadges' 'pybadges'
