@@ -1,0 +1,692 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+
+ Author: Ivan Novembri
+ Copyright (C) 2009 Ivan Novembri <ivan.novembri@gmail.com>
+
+ Revu et corrigé par: Rombeaut Rodolphe
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Library General Public
+ License as published by the Free Software Foundation; either
+ version 3 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Library General Public License for more details.
+
+ You should have received a copy of the GNU Library General Public
+ License along with this library; if not, write to the
+ Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ Boston, MA 02111-1307, USA.
+
+-->
+
+<language id="conkyrc" _name=".conkyrc" version="2.0" _section="Others">
+  <metadata>
+<!--<property name="mimetypes">text/plain</property>-->
+    <property name="globs">*conkyrc*</property>
+    <property name="line-comment-start">#</property>
+  </metadata>
+
+  <styles>
+    <style id="comment"           _name="Commentaires"          map-to="def:comment"/>
+    <style id="keyword"           _name="avant text"            map-to="def:keyword"/>
+    <style id="decimal"           _name="Decimal"               map-to="def:decimal"/>
+    <style id="attribute"         _name="après text"            map-to="def:type"/>
+    <style id="color"             _name="valeur couleur"        map-to="def:base-n-integer"/>
+    <style id="boolean"           _name="Boolean"               map-to="def:boolean"/>
+    <style id="subshell"          _name="Subshell"              map-to="def:preprocessor"/>
+    <style id="element-name"      _name="crochets"              map-to="def:identifier"/>
+    <style id="error"             _name="Error"                 map-to="def:error"/>
+    <style id="attributex"        _name="Attribut police"       map-to="xml:attribute-name"/>
+    <style id="adresse"           _name="Adresse"               map-to="def:statement"/>
+  </styles> 
+
+  <definitions>
+    <context id="conkyrc">
+      <include>
+        <context ref="keyword"/>
+        <context ref="line-comment"/>
+        <context ref="number"/>
+        <context ref="color"/>
+        <context ref="color1"/>
+        <context ref="color2"/>
+        <context ref="adresse"/>
+        <context ref="date"/>
+        <context ref="taille"/>
+        <context ref="boolean"/>
+        <context ref="backtick-subshell"/>
+        <context ref="attribute"/>
+        <context ref="attribute1"/>
+        <context ref="crochets"/>
+        <context ref="police"/>    
+        <context ref="lua"/>    
+        <context ref="lua1"/>    
+        <context ref="lua2"/>    
+        <context ref="lua3"/>    
+        <context ref="lua4"/>    
+        <context ref="lua5"/>    
+        <context ref="lua6"/>    
+        <context ref="lua7"/>    
+      </include>
+    </context>
+
+    <context id="police" style-ref="attributex">
+      <match>((?&lt;=\$\{font )\b([\w_-]\s?)*(\:(style\=)?([Mm]edium)?([Bb]old|[Ii]talic))?\:(pixel)?size=)|((?&lt;=xftfont ) {0,}\b([\w_-]\s?)*(\:(style\=)?([Mm]edium)?([Bb]old|[Ii]talic))?\:(pixel)?size=)</match>
+    </context> 
+
+    <context id="line-comment" style-ref="comment" end-at-line-end="true">
+      <start>(?&lt;!\S)#</start>
+      <include>
+        <context ref="def:in-comment"/>
+      </include>
+    </context>
+
+    <context id="backtick-subshell" style-ref="subshell">
+      <start>`</start>
+      <end>`</end>
+    </context>
+
+    <context id="crochets" style-ref="element-name">
+      <match>\$\{|(?&lt;!\})\}</match>
+    </context>
+
+    <define-regex id="attribute2">[a-z]</define-regex>
+
+    <context id="attribute1" style-ref="element-name">
+      <match>\$(?=\%{attribute2})</match>
+    </context>
+
+    <context id="number" style-ref="decimal">
+      <match extended="true">
+        (?&lt;![\w\.])(?&lt;!color\d )(?&lt;!color )[0-9]{1,4}(,|\.)[0-9]{1,4}(?![\w\.,])|(?&lt;![\w\.])(?&lt;!color\d )(?&lt;!color )[0-9]{1,5}(?![\w\.,])
+      </match>
+    </context>
+
+    <!-- parole sopra TEXT -->
+    <!-- keywords above TEXT -->
+    <context id="keyword" style-ref="keyword">
+      <keyword>TEXT</keyword>
+      <keyword>alignment</keyword>
+      <keyword>append_file</keyword>
+      <keyword>background</keyword>
+      <keyword>border_inner_margin</keyword>
+      <keyword>border_outer_margin</keyword>
+      <keyword>border_width</keyword>
+      <keyword>bytes</keyword>
+      <keyword>color</keyword>
+      <keyword>color[0-9]</keyword>
+      <keyword>colour</keyword>
+      <keyword>cpu_avg_samples</keyword>
+      <keyword>default_bar_size</keyword>
+      <keyword>default_color</keyword>
+      <keyword>default_gauge_size</keyword>
+      <keyword>default_graph_size</keyword>
+      <keyword>default_outline_color</keyword>
+      <keyword>default_shade_color</keyword>
+      <keyword>diskio_avg_samples</keyword>
+      <keyword>display</keyword>
+      <keyword>double_buffer</keyword>
+      <keyword>draw_borders</keyword>
+      <keyword>draw_graph_borders</keyword>
+      <keyword>draw_outline</keyword>
+      <keyword>draw_shades</keyword>
+      <keyword>extra_newline</keyword>
+      <keyword>^font</keyword>
+      <keyword>format_human_readable</keyword>
+      <keyword>function_name[functionarguments]</keyword>
+      <keyword>gap_x</keyword>
+      <keyword>gap_y</keyword>
+      <keyword>if_up_strictness</keyword>
+      <keyword>imap</keyword>
+      <keyword>imlib_cache_flush_interval</keyword>
+      <keyword>imlib_cache_size</keyword>
+      <keyword>lua_draw_hook_post</keyword>
+      <keyword>lua_draw_hook_pre</keyword>
+      <keyword>lua_load</keyword>
+      <keyword>mail_spool</keyword>
+      <keyword>max_port_monitor_connections</keyword>
+      <keyword>max_specials</keyword>
+      <keyword>max_user_text</keyword>
+      <keyword>maximum_width</keyword>
+      <keyword>minimum_size</keyword>
+      <keyword>mpd_host</keyword>
+      <keyword>mpd_password</keyword>
+      <keyword>mpd_port</keyword>
+      <keyword>music_player_interval</keyword>
+      <keyword>net_avg_samples</keyword>
+      <keyword>no_buffers</keyword>
+      <keyword>out_to_console</keyword>
+      <keyword>out_to_stderr</keyword>
+      <keyword>out_to_x</keyword>
+      <keyword>override_utf8_locale</keyword>
+      <keyword>overwrite_file</keyword>
+      <keyword>own_window</keyword>
+      <keyword>own_window_class</keyword>
+      <keyword>own_window_colour</keyword>
+      <keyword>own_window_hints</keyword>
+      <keyword>own_window_title</keyword>
+      <keyword>own_window_transparent</keyword>
+      <keyword>own_window_type</keyword>
+      <keyword>pad_percents</keyword>
+      <keyword>pixels</keyword>
+      <keyword>pop3</keyword>
+      <keyword>short_units</keyword>
+      <keyword>show_graph_range</keyword>
+      <keyword>show_graph_scale</keyword>
+      <keyword>stippled_borders</keyword>
+      <keyword>temperature_unit</keyword>
+      <keyword>template[0-9]</keyword>
+      <keyword>text_buffer_size</keyword>
+      <keyword>top_cpu_separate</keyword>
+      <keyword>top_name_width</keyword>
+      <keyword>total_run_times</keyword>
+      <keyword>update_interval</keyword>
+      <keyword>uppercase</keyword>
+      <keyword>use_spacer</keyword>
+      <keyword>use_xft</keyword>
+      <keyword>xftalpha</keyword>
+      <keyword>xftfont</keyword>
+      <keyword>border_margin</keyword>
+      <keyword>border_margin</keyword>
+      <keyword>mldonkey_hostname</keyword>
+      <keyword>mldonkey_port</keyword>
+      <keyword>mldonkey_login</keyword>
+      <keyword>mldonkey_password</keyword>
+      <keyword>on_bottom</keyword>
+    </context>
+
+
+    <!-- parole sotto TEXT -->
+    <!-- keywords below TEXT -->
+    <context id="attribute" style-ref="attribute">
+      <keyword>AC</keyword>
+      <keyword>Givesthecurrentgpufrequency</keyword>
+      <keyword>Givesthecurrentmemfrequency</keyword>
+      <keyword>Localhostname</keyword>
+      <keyword>Localipaddress</keyword>
+      <keyword>Localportnumber</keyword>
+      <keyword>OpenGLapplications</keyword>
+      <keyword>Remotehostname</keyword>
+      <keyword>Remoteipaddress</keyword>
+      <keyword>Remoteportnumber</keyword>
+      <keyword>acpiacadapter</keyword>
+      <keyword>acpifan</keyword>
+      <keyword>acpitemp</keyword>
+      <keyword>addr</keyword>
+      <keyword>addrs</keyword>
+      <keyword>adt746xcpu</keyword>
+      <keyword>adt746xfan</keyword>
+      <keyword>alignc</keyword>
+      <keyword>alignr</keyword>
+      <keyword>ambient</keyword>
+      <keyword>apcupsd</keyword>
+      <keyword>apcupsd_cable</keyword>
+      <keyword>apcupsd_charge</keyword>
+      <keyword>apcupsd_lastxfer</keyword>
+      <keyword>apcupsd_linev</keyword>
+      <keyword>apcupsd_load</keyword>
+      <keyword>apcupsd_loadbar</keyword>
+      <keyword>apcupsd_loadgauge</keyword>
+      <keyword>apcupsd_loadgraph</keyword>
+      <keyword>apcupsd_model</keyword>
+      <keyword>apcupsd_name</keyword>
+      <keyword>apcupsd_status</keyword>
+      <keyword>apcupsd_temp</keyword>
+      <keyword>apcupsd_timeleft</keyword>
+      <keyword>apcupsd_upsmode</keyword>
+      <keyword>api_useridapi_keycharacter_id</keyword>
+      <keyword>apm_adapter</keyword>
+      <keyword>apm_battery_life</keyword>
+      <keyword>apm_battery_time</keyword>
+      <keyword>audacious_bar</keyword>
+      <keyword>audacious_bitrate</keyword>
+      <keyword>audacious_channels</keyword>
+      <keyword>audacious_filename</keyword>
+      <keyword>audacious_frequency</keyword>
+      <keyword>audacious_length</keyword>
+      <keyword>audacious_length_seconds</keyword>
+      <keyword>audacious_main_volume</keyword>
+      <keyword>audacious_playlist_length</keyword>
+      <keyword>audacious_playlist_position</keyword>
+      <keyword>audacious_position</keyword>
+      <keyword>audacious_position_seconds</keyword>
+      <keyword>audacious_status</keyword>
+      <keyword>audacious_title</keyword>
+      <keyword>battery</keyword>
+      <keyword>battery_bar</keyword>
+      <keyword>battery_percent</keyword>
+      <keyword>battery_short</keyword>
+      <keyword>battery_time</keyword>
+      <keyword>blink</keyword>
+      <keyword>bmpx_album</keyword>
+      <keyword>bmpx_artist</keyword>
+      <keyword>bmpx_bitrate</keyword>
+      <keyword>bmpx_title</keyword>
+      <keyword>bmpx_track</keyword>
+      <keyword>bmpx_uri</keyword>
+      <keyword>buffers</keyword>
+      <keyword>cached</keyword>
+      <keyword>case</keyword>
+      <keyword>codeset_fromcodeset_to</keyword>
+      <keyword>combine</keyword>
+      <keyword>command</keyword>
+      <keyword>conky_build_arch</keyword>
+      <keyword>conky_build_date</keyword>
+      <keyword>conky_version</keyword>
+      <keyword>cpu</keyword>
+      <keyword>cpu[0-9]</keyword>
+      <keyword>cpubar</keyword>
+      <keyword>cpugauge</keyword>
+      <keyword>cpugraph</keyword>
+      <keyword>curl</keyword>
+      <keyword>desktop</keyword>
+      <keyword>desktop_name</keyword>
+      <keyword>desktop_number</keyword>
+      <keyword>device</keyword>
+      <keyword>discharging.</keyword>
+      <keyword>disk</keyword>
+      <keyword>disk_protect</keyword>
+      <keyword>diskio</keyword>
+      <keyword>diskio_read</keyword>
+      <keyword>diskio_write</keyword>
+      <keyword>diskiograph</keyword>
+      <keyword>diskiograph_read</keyword>
+      <keyword>diskiograph_write</keyword>
+      <keyword>downspeed</keyword>
+      <keyword>downspeedf</keyword>
+      <keyword>downspeedgraph</keyword>
+      <keyword>draft_mails</keyword>
+      <keyword>else</keyword>
+      <keyword>else</keyword>
+      <keyword>endif</keyword>
+      <keyword>entropy_avail</keyword>
+      <keyword>entropy_bar</keyword>
+      <keyword>entropy_perc</keyword>
+      <keyword>entropy_poolsize</keyword>
+      <keyword>eval</keyword>
+      <keyword>eve</keyword>
+      <keyword>exec</keyword>
+      <keyword>(?&lt;=exec )expr</keyword>
+      <keyword>execbar</keyword>
+      <keyword>execgauge</keyword>
+      <keyword>execgraph</keyword>
+      <keyword>execi</keyword>
+      <keyword>execibar</keyword>
+      <keyword>execigauge</keyword>
+      <keyword>execigraph</keyword>
+      <keyword>execp</keyword>
+      <keyword>execpi</keyword>
+      <keyword>expression</keyword>
+      <keyword>fifthconnectiononaprivilegedport</keyword>
+      <keyword>filestring</keyword>
+      <keyword>finterval</keyword>
+      <keyword>firstconnectiononaprivilegedport</keyword>
+      <keyword>firstsshdconnection</keyword>
+      <keyword>flagged_mails</keyword>
+      <keyword>font</keyword>
+      <keyword>forwarded_mails</keyword>
+      <keyword>freq</keyword>
+      <keyword>freq_g</keyword>
+      <keyword>fs</keyword>
+      <keyword>fs_bar</keyword>
+      <keyword>fs_bar_free</keyword>
+      <keyword>fs_free</keyword>
+      <keyword>fs_free_perc</keyword>
+      <keyword>fs_size</keyword>
+      <keyword>fs_type</keyword>
+      <keyword>fs_used</keyword>
+      <keyword>fs_used_perc</keyword>
+      <keyword>function_name</keyword>
+      <keyword>goto</keyword>
+      <keyword>gpufreq</keyword>
+      <keyword>gw_iface</keyword>
+      <keyword>gw_ip</keyword>
+      <keyword>hddtemp</keyword>
+      <keyword>head</keyword>
+      <keyword>height</keyword>
+      <keyword>host</keyword>
+      <keyword>hr</keyword>
+      <keyword>hwmon</keyword>
+      <keyword>i2c</keyword>
+      <keyword>i8k_ac_status</keyword>
+      <keyword>i8k_bios</keyword>
+      <keyword>i8k_buttons_status</keyword>
+      <keyword>i8k_cpu_temp</keyword>
+      <keyword>i8k_left_fan_rpm</keyword>
+      <keyword>i8k_left_fan_status</keyword>
+      <keyword>i8k_right_fan_rpm</keyword>
+      <keyword>i8k_right_fan_status</keyword>
+      <keyword>i8k_serial</keyword>
+      <keyword>i8k_version</keyword>
+      <keyword>ibm_brightness</keyword>
+      <keyword>ibm_fan</keyword>
+      <keyword>ibm_temps</keyword>
+      <keyword>ibm_volume</keyword>
+      <keyword>iconv_start</keyword>
+      <keyword>iconv_stop</keyword>
+      <keyword>if_empty</keyword>
+      <keyword>if_existing</keyword>
+      <keyword>if_gw</keyword>
+      <keyword>if_match</keyword>
+      <keyword>if_mixer_mute</keyword>
+      <keyword>if_mounted</keyword>
+      <keyword>if_mpd_playing</keyword>
+      <keyword>if_running</keyword>
+      <keyword>if_smapi_bat_installed</keyword>
+      <keyword>if_up</keyword>
+      <keyword>if_updatenr</keyword>
+      <keyword>if_xmms2_connected</keyword>
+      <keyword>ifbatteryisfullychargedorabsent.</keyword>
+      <keyword>image</keyword>
+      <keyword>imagequality</keyword>
+      <keyword>imap_messages</keyword>
+      <keyword>imap_unseen</keyword>
+      <keyword>include</keyword>
+      <keyword>interface</keyword>
+      <keyword>interval-t-lcommand</keyword>
+      <keyword>interval</keyword>
+      <keyword>intervalcommand</keyword>
+      <keyword>ioscheduler</keyword>
+      <keyword>item</keyword>
+      <keyword>kernel</keyword>
+      <keyword>laptop_mode</keyword>
+      <keyword>lines</keyword>
+      <keyword>loadavg</keyword>
+      <keyword>loadgraph</keyword>
+      <keyword>logfilelines</keyword>
+      <keyword>^lua</keyword>
+      <keyword>lua_bar</keyword>
+      <keyword>lua_gauge</keyword>
+      <keyword>lua_graph</keyword>
+      <keyword>lua_parse</keyword>
+      <keyword>lua_read_parse</keyword>
+      <keyword>machine</keyword>
+      <keyword>maildir</keyword>
+      <keyword>mails</keyword>
+      <keyword>maxlength</keyword>
+      <keyword>mboxscan</keyword>
+      <keyword>mem</keyword>
+      <keyword>membar</keyword>
+      <keyword>memeasyfree</keyword>
+      <keyword>memfree</keyword>
+      <keyword>memfreq</keyword>
+      <keyword>memgauge</keyword>
+      <keyword>memgraph</keyword>
+      <keyword>memmax</keyword>
+      <keyword>memperc</keyword>
+      <keyword>mixer</keyword>
+      <keyword>mixerbar</keyword>
+      <keyword>mixerl</keyword>
+      <keyword>mixerlbar</keyword>
+      <keyword>mixerr</keyword>
+      <keyword>mixerrbar</keyword>
+      <keyword>moc_album</keyword>
+      <keyword>moc_artist</keyword>
+      <keyword>moc_bitrate</keyword>
+      <keyword>moc_curtime</keyword>
+      <keyword>moc_file</keyword>
+      <keyword>moc_rate</keyword>
+      <keyword>moc_song</keyword>
+      <keyword>moc_state</keyword>
+      <keyword>moc_timeleft</keyword>
+      <keyword>moc_title</keyword>
+      <keyword>moc_totaltime</keyword>
+      <keyword>monitor</keyword>
+      <keyword>monitor_number</keyword>
+      <keyword>mountpoint</keyword>
+      <keyword>mpd_album</keyword>
+      <keyword>mpd_artist</keyword>
+      <keyword>mpd_bar</keyword>
+      <keyword>mpd_bitrate</keyword>
+      <keyword>mpd_elapsed</keyword>
+      <keyword>mpd_file</keyword>
+      <keyword>mpd_length</keyword>
+      <keyword>mpd_name</keyword>
+      <keyword>mpd_percent</keyword>
+      <keyword>mpd_random</keyword>
+      <keyword>mpd_repeat</keyword>
+      <keyword>mpd_smart</keyword>
+      <keyword>mpd_status</keyword>
+      <keyword>mpd_title</keyword>
+      <keyword>mpd_track</keyword>
+      <keyword>mpd_vol</keyword>
+      <keyword>nameserver</keyword>
+      <keyword>net</keyword>
+      <keyword>new_mails</keyword>
+      <keyword>nodename</keyword>
+      <keyword>num</keyword>
+      <keyword>nvidia</keyword>
+      <keyword>offset</keyword>
+      <keyword>outlinecolor</keyword>
+      <keyword>parameters</keyword>
+      <keyword>path</keyword>
+      <keyword>pb_battery</keyword>
+      <keyword>platform</keyword>
+      <keyword>pop3_unseen</keyword>
+      <keyword>pop3_used</keyword>
+      <keyword>port</keyword>
+      <keyword>port_beginport_enditem</keyword>
+      <keyword>ports</keyword>
+      <keyword>pre_exec</keyword>
+      <keyword>process</keyword>
+      <keyword>processes</keyword>
+      <keyword>range</keyword>
+      <keyword>read_tcp</keyword>
+      <keyword>replied_mails</keyword>
+      <keyword>rss</keyword>
+      <keyword>running_processes</keyword>
+      <keyword>scroll</keyword>
+      <keyword>seen_mails</keyword>
+      <keyword>shadecolor</keyword>
+      <keyword>shellcommand</keyword>
+      <keyword>size</keyword>
+      <keyword>smapi</keyword>
+      <keyword>smapi_bat_bar</keyword>
+      <keyword>smapi_bat_perc</keyword>
+      <keyword>smapi_bat_power</keyword>
+      <keyword>smapi_bat_temp</keyword>
+      <keyword>sony_fanspeed</keyword>
+      <keyword>stippled_hr</keyword>
+      <keyword>string</keyword>
+      <keyword>swap</keyword>
+      <keyword>swapbar</keyword>
+      <keyword>swapfree</keyword>
+      <keyword>swapmax</keyword>
+      <keyword>swapperc</keyword>
+      <keyword>sysname</keyword>
+      <keyword>tab</keyword>
+      <keyword>tail</keyword>
+      <keyword>tcp_portmon</keyword>
+      <keyword>temp</keyword>
+      <keyword>template[0-9]</keyword>
+      <keyword>tenthsshdconnection</keyword>
+      <keyword>texeci</keyword>
+      <keyword>text_and_other_conky_vars</keyword>
+      <keyword>textfile</keyword>
+      <keyword>thebittorrentportrange</keyword>
+      <keyword>threshold</keyword>
+      <keyword>time</keyword>
+      <keyword>to_bytes</keyword>
+      <keyword>top</keyword>
+      <keyword>top_io</keyword>
+      <keyword>top_mem</keyword>
+      <keyword>top_time</keyword>
+      <keyword>totaldown</keyword>
+      <keyword>totalup</keyword>
+      <keyword>trashed_mails</keyword>
+      <keyword>type</keyword>
+      <keyword>typen</keyword>
+      <keyword>tztime</keyword>
+      <keyword>unflagged_mails</keyword>
+      <keyword>unforwarded_mails</keyword>
+      <keyword>unreplied_mails</keyword>
+      <keyword>unseen_mails</keyword>
+      <keyword>updatenr</keyword>
+      <keyword>updates</keyword>
+      <keyword>upspeed</keyword>
+      <keyword>upspeedf</keyword>
+      <keyword>upspeedgraph</keyword>
+      <keyword>uptime</keyword>
+      <keyword>uptime_short</keyword>
+      <keyword>urlinterval_in_minutes</keyword>
+      <keyword>user_names</keyword>
+      <keyword>user_number</keyword>
+      <keyword>user_terms</keyword>
+      <keyword>user_times</keyword>
+      <keyword>utime</keyword>
+      <keyword>var1var2</keyword>
+      <keyword>voffset</keyword>
+      <keyword>voltage_mv</keyword>
+      <keyword>voltage_v</keyword>
+      <keyword>weather</keyword>
+      <keyword>width</keyword>
+      <keyword>wireless_ap</keyword>
+      <keyword>wireless_bitrate</keyword>
+      <keyword>wireless_essid</keyword>
+      <keyword>wireless_link_bar</keyword>
+      <keyword>wireless_link_qual</keyword>
+      <keyword>wireless_link_qual_max</keyword>
+      <keyword>wireless_link_qual_perc</keyword>
+      <keyword>wireless_mode</keyword>
+      <keyword>words</keyword>
+      <keyword>xmms2_album</keyword>
+      <keyword>xmms2_artist</keyword>
+      <keyword>xmms2_bar</keyword>
+      <keyword>xmms2_bitrate</keyword>
+      <keyword>xmms2_comment</keyword>
+      <keyword>xmms2_date</keyword>
+      <keyword>xmms2_duration</keyword>
+      <keyword>xmms2_elapsed</keyword>
+      <keyword>xmms2_genre</keyword>
+      <keyword>xmms2_id</keyword>
+      <keyword>xmms2_percent</keyword>
+      <keyword>xmms2_playlist</keyword>
+      <keyword>xmms2_size</keyword>
+      <keyword>xmms2_smart</keyword>
+      <keyword>xmms2_status</keyword>
+      <keyword>xmms2_timesplayed</keyword>
+      <keyword>xmms2_title</keyword>
+      <keyword>xmms2_tracknr</keyword>
+      <keyword>xmms2_url</keyword>
+      <keyword>acpitempf</keyword>
+      <keyword>freq_dyn</keyword>
+      <keyword>freq_dyn_g</keyword>
+      <keyword>i8k_cpu_tempf</keyword>
+      <keyword>linkstatus</keyword>
+      <keyword>ml_upload_counter</keyword>
+      <keyword>ml_download_counter</keyword>
+      <keyword>ml_nshared_files</keyword>
+      <keyword>ml_shared_counter</keyword>
+      <keyword>ml_tcp_upload_rate</keyword>
+      <keyword>ml_tcp_download_rate</keyword>
+      <keyword>ml_udp_upload_rate</keyword>
+      <keyword>ml_udp_download_rate</keyword>
+      <keyword>ml_ndownloaded_files</keyword>
+      <keyword>ml_ndownloading_files</keyword>
+      <keyword>seti_prog</keyword>
+      <keyword>seti_progbar</keyword>
+      <keyword>seti_credit</keyword>
+      <keyword>wlan[0-9]</keyword>
+      <keyword>eth[0-9]</keyword>
+    </context>
+
+<!-- *************************************************************************** -->
+
+    <context id="color" style-ref="color">
+      <match>((?&lt;= )([0-9]|[a-f]|[A-F]){6} ([0-9]|[a-f]|[A-F]){6}(?=\}))</match>
+    </context>
+
+    <context id="color1" style-ref="color">
+      <match>((?&lt;=colour )([0-9]|[a-f]|[A-F]){6})|((?&lt;=color )([0-9]|[a-f]|[A-F]){6})|((?&lt;=color\d )([0-9]|[a-f]|[A-F]){6})</match>
+    </context>
+
+    <context id="taille" style-ref="decimal">
+      <match>\d*x\d*\d</match>
+    </context>
+
+    <context id="adresse" style-ref="adresse">
+      <match>\s(~|\$HOME)?\/([^ \`{}$]{3,}\/?)*</match>
+    </context>
+
+    <context id="date" style-ref="boolean">
+      <match>(?&lt;=\$\{time )[\% a-zA-Z:]*(?=\})</match>
+    </context>
+
+    <context id="lua" style-ref="boolean">
+      <match>(?&lt;=lua_load )([a-zA-Z0-9]+(_?[a-zA-Z0-9]+)+(\.lua)?)</match>
+    </context>
+
+    <context id="lua1" style-ref="boolean">
+      <match>(?&lt;=lua_draw_hook_pre )([a-zA-Z0-9]+(_?[a-zA-Z0-9]+)+ ?){1,}</match>
+    </context>
+
+    <context id="lua2" style-ref="boolean">
+      <match>(?&lt;=lua_draw_hook_post )([a-zA-Z0-9]+(_?[a-zA-Z0-9]+)+ ?){1,}</match>
+    </context>
+
+    <context id="lua3" style-ref="boolean">
+      <match>(?&lt;=lua_parse )([a-zA-Z0-9]+(_?[a-zA-Z0-9]+)+ ?){1,}</match>
+    </context>
+
+    <context id="lua4" style-ref="boolean">
+      <match>(?&lt;=lua_bar )([a-zA-Z0-9]+(_?[a-zA-Z0-9]+)+ ?){1,}</match>
+    </context>
+
+    <context id="lua5" style-ref="boolean">
+      <match>(?&lt;=lua_gauge )([a-zA-Z0-9]+(_?[a-zA-Z0-9]+)+ ?){1,}</match>
+    </context>
+
+    <context id="lua6" style-ref="boolean">
+      <match>(?&lt;=lua_graph )([a-zA-Z0-9]+(_?[a-zA-Z0-9]+)+ ?){1,}</match>
+    </context>
+
+    <context id="lua7" style-ref="boolean">
+      <match>(?&lt;=lua_read_parse )([a-zA-Z0-9]+(_?[a-zA-Z0-9]+)+ ?){1,}</match>
+    </context>
+
+    <context id="boolean" style-ref="boolean">
+      <keyword> +yes</keyword>
+      <keyword> +no</keyword>
+      <keyword> +none</keyword>
+      <keyword> +normal</keyword>
+      <keyword> +top</keyword>
+      <keyword> +top_left</keyword>
+      <keyword> +top_right</keyword>
+      <keyword> +bottom</keyword>
+      <keyword> +bottom_left</keyword>
+      <keyword> +bottom_right</keyword>
+      <keyword> +right</keyword>
+      <keyword> +left</keyword>
+      <keyword>( +)?(,)?undecorated</keyword>
+      <keyword>( +)?(,)?below</keyword>
+      <keyword>( +)?(,)?above</keyword>
+      <keyword>( +)?(,)?sticky</keyword>
+      <keyword>( +)?(,)?skip_taskbar</keyword>
+      <keyword>( +)?(,)?skip_pager</keyword>
+    </context>
+
+    <context id="color2" style-ref="color">
+      <keyword> +purple</keyword>
+      <keyword> +blue</keyword>
+      <keyword> +green</keyword>
+      <keyword> +yellow</keyword>
+      <keyword> +orange</keyword>
+      <keyword> +red</keyword>
+      <keyword> +black</keyword>
+      <keyword> +white</keyword>
+      <keyword> +gray</keyword>
+      <keyword> +brown</keyword>
+      <keyword> +pink</keyword>
+      <keyword> +lightblue </keyword>
+      <keyword> +darkblue</keyword>
+      <keyword> +cyan</keyword>
+      <keyword> +bordeaux</keyword>
+      <keyword> +violet</keyword>
+    </context>
+
+  </definitions>
+</language>

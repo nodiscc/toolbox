@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+ Author: Patrick Hétu <patrick.hetu@gmail.com>
+ Copyright (C) 2007 Patrick Hétu <patrick.hetu@gmail.com>
+
+ This library is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+-->
+<language id="moinmoin" _name="Moinmoin" version="2.0" _section="Markup">
+  <metadata>
+    <property name="mimetypes">text/x-moinmoin;application/x-moinmoin</property>
+    <property name="globs">*.moin</property>
+    <property name="line-comment-start">##</property>
+  </metadata>
+
+  <styles>
+    <style id="bulletlist"       _name="BulletList"             map-to="def:type"/>
+    <style id="numberedlist"     _name="NumberedList"           map-to="def:type"/>
+    <style id="alphalist"        _name="Alphalist"              map-to="def:type"/>
+    <style id="header"           _name="Header"                 map-to="def:preprocessor"/>
+    <style id="bold"             _name="Bold string"            map-to="def:character"/>
+    <style id="italic"           _name="Italic string"          map-to="def:character"/>
+    <style id="bolditalic"       _name="string"                 map-to="def:character"/>
+    <style id="underline"        _name="string"                 map-to="def:character"/>
+    <style id="subscript"        _name="Subscript"              map-to="def:character"/>
+    <style id="superscript"      _name="Superscript"            map-to="def:character"/>
+    <style id="typewriter"       _name="Typewriter"             map-to="def:character"/>
+    <style id="macro"            _name="Macro"                  map-to="def:identifier"/>
+    <style id="pragma"           _name="Pragma"                 map-to="def:comment"/>
+    <style id="preformatted"     _name="Preformatted"           map-to="def:comment"/>
+    <style id="wikiword"         _name="WikiWord"               map-to="def:type"/>
+    <style id="bracketlink"      _name="Bracket link"           map-to="def:identifier"/>
+    <style id="normalURL"        _name="URL"                    map-to="def:keyword"/>
+    <style id="sublink"          _name="SubLink"                map-to="def:identifier"/>
+    <style id="interlink"        _name="InterLink"              map-to="def:identifier"/>
+    <style id="email"            _name="Email"                  map-to="def:keyword"/>
+    <style id="descriptionlist"  _name="Descriptionlist"        map-to="def:identifier"/>
+    <style id="rule"             _name="Rule"                   map-to="def:keyword"/>
+
+  </styles>
+
+  <definitions>
+    <context id="moinmoin">
+      <include>
+       <context id="header" style-ref="header">
+          <match>^(={1,5}).*(={1,5})</match>
+       </context>
+        <context id="bulletlist" style-ref="bulletlist">
+          <match>(^(\s+)[\*|\.].+)</match>
+        </context>
+        <context id="numberedlist" style-ref="numberedlist">
+          <match>(^(\s+)1\..+)</match>
+        </context>
+        <context id="alphalist" style-ref="alphalist">
+          <match>(^(\s+)[a-zA-Z]\..+)</match>
+        </context>
+        <context id="descriptionlist" style-ref="descriptionlist">
+          <match>^.+::.*</match>
+        </context>
+        <context id="italic" style-ref="italic">
+          <match>('{2,5}).*('{2,5})</match>
+        </context>
+        <context id="macro" style-ref="macro">
+          <start>\[\[</start>
+          <end>\]\]</end>
+        </context>
+        <context id="bracketlink" style-ref="bracketlink">
+          <start>\[</start>
+          <end>\]</end>
+        </context>
+        <context id="pragma" style-ref="pragma">
+          <match>^#.*</match>
+        </context>
+        <context id="wikiword" style-ref="wikiword">
+          <match>([A-Z]+[a-z0-9]+){2,}</match>
+        </context>
+        <context id="normalURL" style-ref="normalURL">
+          <match>([^|\s].+:\/\/\S*)</match>
+        </context>
+        <context id="email" style-ref="email">
+          <match>(\S+@\S+)</match>
+        </context>
+        <context id="rule" style-ref="rule">
+          <match>^-{4,}</match>
+        </context>
+        <context id="preformatted" style-ref="preformatted">
+          <start>^\{\{\{</start>
+          <end>^\}\}\}</end>
+        </context>
+      </include>
+    </context>
+  </definitions>
+</language>
