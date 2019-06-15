@@ -84,6 +84,7 @@ WIKI/www.ekopedia.fr/
 DATA/nameservers.csv
 MAPS/france-latest.osm.pbf
 
+GIT/netdata-needrestart
 GIT/exploitdb-bin-sploits
 GIT/exploitdb
 GIT/exploitdb-papers

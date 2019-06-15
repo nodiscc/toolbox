@@ -154,3 +154,6 @@ checkout = git clone 'https://github.com/offensive-security/exploitdb-papers' 'e
 
 [/home/live/toolbox/MIRRORS/GIT/pybadges]
 checkout = git clone 'https://github.com/google/pybadges' 'pybadges'
+
+[GIT/netdata-needrestart]
+checkout = git clone 'gitea@neuralnet.xinit.se:zerodb/netdata-needrestart.git' 'netdata-needrestart'
