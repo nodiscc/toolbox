@@ -1,0 +1,8 @@
+# Configuration file for android-deploy-tools
+
+export applications=(
+com.example.myapp
+)
+export ADB_PATH="./bin/adb"
+export GREEN="\\033[0;32m"
+export GREY="\\033[0;37m"
