@@ -85,6 +85,7 @@ DATA/nameservers.csv
 MAPS/france-latest.osm.pbf
 
 GIT/netdata-needrestart
+GIT/netdata-debsecan
 GIT/exploitdb-bin-sploits
 GIT/exploitdb
 GIT/exploitdb-papers

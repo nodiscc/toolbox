@@ -157,3 +157,6 @@ checkout = git clone 'https://github.com/google/pybadges' 'pybadges'
 
 [GIT/netdata-needrestart]
 checkout = git clone 'gitea@neuralnet.xinit.se:zerodb/netdata-needrestart.git' 'netdata-needrestart'
+
+[GIT/netdata-debsecan]
+checkout = git clone 'git@gitlab.com:nodiscc/netdata-debsecan' 'netdata-debsecan'
