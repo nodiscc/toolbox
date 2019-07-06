@@ -56,12 +56,8 @@ checkout =
 [GIT/Shaarli]
 checkout = git clone 'https://github.com/shaarli/Shaarli' 'Shaarli'
 
-[GIT/srv01]
-checkout = 
-	git clone 'git@github.com:nodiscc/srv01' 'srv01'
-	cd srv01
-	git remote add gitlab git@gitlab.com:nodiscc/srv01.git
-
+[GIT/svr]
+checkout = git clone 'https://gitlab.com/nodiscc/svr' 'svr'
 
 [GIT/ttrss-reader]
 checkout = git clone --depth=1 'https://github.com/kucrut/ttrss-reader' 'ttrss-reader'
@@ -160,3 +156,6 @@ checkout = git clone 'gitea@neuralnet.xinit.se:zerodb/netdata-needrestart.git' '
 
 [GIT/netdata-debsecan]
 checkout = git clone 'git@gitlab.com:nodiscc/netdata-debsecan' 'netdata-debsecan'
+
+[GIT/gitea-cli]
+checkout = git clone 'https://github.com/bashup/gitea-cli' 'gitea-cli'
