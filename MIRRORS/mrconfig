@@ -159,3 +159,6 @@ checkout = git clone 'git@gitlab.com:nodiscc/netdata-debsecan' 'netdata-debsecan
 
 [GIT/gitea-cli]
 checkout = git clone 'https://github.com/bashup/gitea-cli' 'gitea-cli'
+
+[GIT/python-gitlab]
+checkout = git clone 'https://github.com/python-gitlab/python-gitlab' 'python-gitlab'
