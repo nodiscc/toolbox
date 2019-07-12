@@ -162,3 +162,9 @@ checkout = git clone 'https://github.com/bashup/gitea-cli' 'gitea-cli'
 
 [GIT/python-gitlab]
 checkout = git clone 'https://github.com/python-gitlab/python-gitlab' 'python-gitlab'
+
+[GIT/nano-highlight]
+checkout = git clone 'https://github.com/serialhex/nano-highlight' 'nano-highlight'
+
+[GIT/nanorc]
+checkout = git clone 'https://github.com/scopatz/nanorc' 'nanorc'

@@ -84,6 +84,8 @@ WIKI/www.ekopedia.fr/
 DATA/nameservers.csv
 MAPS/france-latest.osm.pbf
 
+GIT/nanorc
+GIT/nano-highlight
 GIT/airwave
 GIT/ansible-svr-apache/
 GIT/ansible-svr-common/
