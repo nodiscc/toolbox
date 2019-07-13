@@ -19,9 +19,9 @@ done < manpages.list
 
 for i in ${errors[*]}; do
 	url="https://manpages.debian.org/$i.en.gz"
-	manpage=$(curl -L --silent $url)
+	manpage=$(curl -L --silent "$url")
 	description=$(echo "$manpage" | \
 		grep -Ei --after-context=2 --max-count=1 '.SH \"?NAME' | \
-		grep -Eiv "^\.("SH"|B|"PP"|"NM")" | sed 's/\\//g' | sed "s/$i - //g")
+		grep -Eiv "^\.('SH'|'B'|'PP'|'NM')" | sed 's/\\//g' | sed "s/$i - //g")
 	echo "$i - $description"
 done
