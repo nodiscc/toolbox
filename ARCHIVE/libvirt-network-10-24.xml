@@ -1,0 +1,20 @@
+<!--
+Usage: load this network definition in libvirt using
+# virsh net-define libvirt-network-10-24.xml
+-->
+
+<network>
+  <name>network-10-24</name>
+  <uuid>81939871-069d-4c8e-ba7c-be319e06512f</uuid>
+  <forward dev='eth0' mode='nat'>
+    <interface dev='eth0'/>
+  </forward>
+  <bridge name='virbr0' stp='on' delay='0'/>
+  <mac address='52:54:00:24:19:f6'/>
+  <domain name='mydomain.host' localOnly='yes'/>
+  <ip address='10.0.0.1' netmask='255.255.255.0'>
+    <dhcp>
+      <range start='10.0.0.200' end='10.0.0.254'/>
+    </dhcp>
+  </ip>
+</network>
