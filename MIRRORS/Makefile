@@ -48,14 +48,14 @@ downloads_linux:
 	$(WGET) -P BIN-LINUX/ https://github.com/feross/webtorrent-desktop/releases/download/v0.16.0/webtorrent-desktop_0.16.0-1_amd64.deb
 	$(WGET) -P BIN-LINUX/ https://github.com/gbevin/SendMIDI/releases/download/1.0.5/sendmidi-linux-1.0.5.zip
 	$(WGET) -P BIN-LINUX/ https://github.com/github/hub/releases/download/v2.3.0-pre10/hub-linux-amd64-2.3.0-pre10.tgz
-	$(WGET) -P BIN-LINUX/ https://github.com/jliljebl/flowblade/releases/download/v2.0/flowblade-2.0.0-1_all.deb
+	$(WGET) -P BIN-LINUX/ https://github.com/jliljebl/flowblade/releases/download/v2.2/flowblade-2.2.0-1_all.deb
 	$(WGET) -P BIN-LINUX/ https://github.com/junegunn/fzf-bin/releases/download/0.15.9/fzf-0.15.9-linux_amd64.tgz
 	$(WGET) -P BIN-LINUX/ https://github.com/klembot/twinejs/releases/download/2.2.1/twine_2.2.1_linux64.zip
 	$(WGET) -P BIN-LINUX/ https://github.com/kmkolasinski/AwesomeBump/releases/download/Linuxv5.0/AwesomeBumpV5.Bin64Linux.tar.gz
-	$(WGET) -P BIN-LINUX/ https://github.com/mifi/lossless-cut/releases/download/v2.1.0/LosslessCut-linux-x64.zip
+	$(WGET) -P BIN-LINUX/ https://github.com/mifi/lossless-cut/releases/download/v2.4.0/LosslessCut-linux-x64.zip
 	$(WGET) -P BIN-LINUX/ https://github.com/mltframework/shotcut/releases/download/v17.09/shotcut-linux-x86_64-170904.tar.bz2
 	$(WGET) -P BIN-LINUX/ https://github.com/pbek/QOwnNotes/releases/download/linux-b3572-073533/QOwnNotes-18.05.0.deb
-	$(WGET) -P BIN-LINUX/ https://github.com/vrana/adminer/releases/download/v4.7.2/adminer-4.7.2.php
+	$(WGET) -P BIN-LINUX/ https://github.com/vrana/adminer/releases/download/v4.7.3/adminer-4.7.3.php
 	$(WGET) -P BIN-LINUX/ https://mirror03.popcorntime.sh/repo/build/Popcorn-Time-0.3.10-Linux-64.tar.xz
 	$(WGET) -P BIN-LINUX/ https://packagecontrol.io/Package%20Control.sublime-package
 	$(WGET) -P BIN-LINUX/ https://s3.amazonaws.com/Minecraft.Download/versions/1.11.2/minecraft_server.1.11.2.jar
