@@ -1,0 +1,6 @@
+#!/bin/bash
+# Description: dump all Firefox bookmarks
+# Usage: set $mozprofile
+# TODO: add filtering (see snip)
+mozprofile="dv1qc7nt.default"
+echo "select parent,url,title from moz_bookmarks, moz_places where moz_places.id=moz_bookmarks.fk;" | sqlite3 ~/.mozilla/firefox/$mozprofile/places.sqlite | sort -n
