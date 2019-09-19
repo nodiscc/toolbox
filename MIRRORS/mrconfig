@@ -56,9 +56,6 @@ checkout =
 [GIT/Shaarli]
 checkout = git clone 'https://github.com/shaarli/Shaarli' 'Shaarli'
 
-[GIT/svr]
-checkout = git clone 'https://gitlab.com/nodiscc/svr' 'svr'
-
 [GIT/ttrss-reader]
 checkout = git clone --depth=1 'https://github.com/kucrut/ttrss-reader' 'ttrss-reader'
 

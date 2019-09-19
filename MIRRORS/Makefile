@@ -54,7 +54,7 @@ downloads_linux:
 	$(WGET) -P BIN-LINUX/ https://github.com/kmkolasinski/AwesomeBump/releases/download/Linuxv5.0/AwesomeBumpV5.Bin64Linux.tar.gz
 	$(WGET) -P BIN-LINUX/ https://github.com/mifi/lossless-cut/releases/download/v2.4.0/LosslessCut-linux-x64.zip
 	$(WGET) -P BIN-LINUX/ https://github.com/mltframework/shotcut/releases/download/v17.09/shotcut-linux-x86_64-170904.tar.bz2
-	$(WGET) -P BIN-LINUX/ https://github.com/pbek/QOwnNotes/releases/download/linux-b3572-073533/QOwnNotes-18.05.0.deb
+	#$(WGET) -P BIN-LINUX/ https://github.com/pbek/QOwnNotes/releases/download/linux-b3572-073533/QOwnNotes-18.05.0.deb
 	$(WGET) -P BIN-LINUX/ https://github.com/vrana/adminer/releases/download/v4.7.3/adminer-4.7.3.php
 	$(WGET) -P BIN-LINUX/ https://mirror03.popcorntime.sh/repo/build/Popcorn-Time-0.3.10-Linux-64.tar.xz
 	$(WGET) -P BIN-LINUX/ https://packagecontrol.io/Package%20Control.sublime-package
