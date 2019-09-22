@@ -37,7 +37,7 @@ rm -r /tmp/alsafirmware &&
 #Set E-MU card as default
 touch /etc/modprobe.d/99-alsa-default-emu.conf &&
 echo "options snd-emu10k1 index=0
-options snd slots=snd_emu10k1,snd_had_intel
+options snd slots=snd_emu10k1,snd_hda_intel
 options snd_hda_intel index=1" >| /etc/modprobe.d/99-alsa-default-emu.conf &&
 
 aplay -l
