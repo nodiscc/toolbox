@@ -112,8 +112,7 @@ GIT/bookmark-archiver/
 GIT/cleanerml/
 GIT/conky-config/
 GIT/consoleSSLlabs/
-GIT/dbu-firefox-setup/
-GIT/dbu/
+GIT/dlc/
 GIT/dssi-vst/
 GIT/exploit-database-bin-sploits/
 GIT/exploit-database/
@@ -213,6 +212,6 @@ THEMES-ICONS/vivant-gtk/
 THEMES-ICONS/vivant-icons/
 THEMES-ICONS/zuki-themes/
 GIT/goldberg_emulator/
-GIT/dbu-utils/
+GIT/dlc-utils/
 
 NOTES/

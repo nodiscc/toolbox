@@ -21,10 +21,10 @@ checkout = git clone --depth=1 'https://github.com/pirate/bookmark-archiver' 'bo
 checkout = 
 	git clone --depth=1 'https://github.com/az0/cleanerml/' 'cleanerml'
 
-[GIT/dbu]
+[GIT/dlc]
 checkout = 
-	git clone 'git@github.com:nodiscc/dbu' 'dbu'
-	git remote add gitlab git@gitlab.com:nodiscc/dbu.git
+	git clone 'git@github.com:nodiscc/dlc' 'dlc'
+	git remote add gitlab git@gitlab.com:nodiscc/dlc.git
 
 [GIT/fonts]
 checkout = 
@@ -133,8 +133,8 @@ checkout = git clone 'https://gitlab.com/nodiscc/NOTES.git' 'NOTES'
 [GIT/goldberg_emulator]
 checkout = git clone 'https://gitlab.com/Mr_Goldberg/goldberg_emulator' 'goldberg_emulator'
 
-[GIT/dbu-utils]
-checkout = git clone 'https://gitlab.com/nodiscc/dbu-utils' 'dbu-utils'
+[GIT/dlc-utils]
+checkout = git clone 'https://gitlab.com/nodiscc/dlc-utils' 'dlc-utils'
 
 [GIT/exploitdb]
 checkout = git clone 'https://github.com/offensive-security/exploitdb' 'exploitdb'
