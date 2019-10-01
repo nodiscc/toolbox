@@ -84,9 +84,6 @@ WIKI/www.ekopedia.fr/
 DATA/nameservers.csv
 MAPS/france-latest.osm.pbf
 
-GIT/XSRV/ansible-xsrv-common
-GIT/nanorc
-GIT/nano-highlight
 GIT/airwave
 GIT/ansible-svr-apache/
 GIT/ansible-svr-common/
@@ -122,11 +119,14 @@ GIT/exploitdb-papers
 GIT/fonts/
 GIT/git-loc/
 GIT/git-redate/
+GIT/gitea-cli
 GIT/github-stars-backup/
 GIT/glim/
 GIT/kickthemout/
 GIT/memeater/
 GIT/musical-artifacts-data/
+GIT/nano-highlight
+GIT/nanorc
 GIT/netdata-debsecan
 GIT/netdata-needrestart
 GIT/nginx-resources
@@ -134,6 +134,7 @@ GIT/nginx-resources/
 GIT/ohmpage/
 GIT/pidgin-opensteamworks/
 GIT/pybadges/
+GIT/python-gitlab
 GIT/python-shaarli-client/
 GIT/samplecat/
 GIT/shaarchiver/
@@ -143,6 +144,7 @@ GIT/Simple-Grid
 GIT/skippy-xd/
 GIT/sloth/
 GIT/spectre-meltdown-checker/
+GIT/svr
 GIT/ttrss-reader/
 GIT/tumblr-upload/
 GIT/tumblr_backup/
@@ -155,9 +157,10 @@ GIT/wikiteam/
 GIT/xwinwrap/
 GIT/youtube-dl-gui/
 GIT/youtube_playlist/
-GIT/svr
-GIT/gitea-cli
-GIT/python-gitlab
+GIT/goldberg_emulator/
+GIT/dlc-utils/
+GIT/ansible-xsrv-common
+
 
 THEMES-ICONS/Adapta/
 THEMES-ICONS/Albatross/
@@ -211,7 +214,3 @@ THEMES-ICONS/victory-icon-theme/
 THEMES-ICONS/vivant-gtk/
 THEMES-ICONS/vivant-icons/
 THEMES-ICONS/zuki-themes/
-GIT/goldberg_emulator/
-GIT/dlc-utils/
-
-NOTES/
