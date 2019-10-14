@@ -167,4 +167,7 @@ checkout = git clone 'https://github.com/serialhex/nano-highlight' 'nano-highlig
 checkout = git clone 'https://github.com/scopatz/nanorc' 'nanorc'
 
 [GIT/ansible-xsrv-common]
-checkout = git clone 'gitea@neuralnet.xinit.se:xsrv/ansible-xsrv-common' 'ansible-xsrv-common'
+checkout = git clone 'https://gitlab.com/nodiscc/ansible-xsrv-common' 'ansible-xsrv-common'
+
+[GIT/ansible-xsrv-backup]
+checkout = git clone 'https://gitlab.com/nodiscc/ansible-xsrv-backup' 'ansible-xsrv-common'
