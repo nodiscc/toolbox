@@ -85,21 +85,8 @@ DATA/nameservers.csv
 MAPS/france-latest.osm.pbf
 
 GIT/airwave
-GIT/ansible-svr-apache/
-GIT/ansible-svr-common/
-GIT/ansible-svr-docker/
-GIT/ansible-svr-gitea/
-GIT/ansible-svr-gitlab-runner/
-GIT/ansible-svr-icecast/
-GIT/ansible-svr-monitoring/
-GIT/ansible-svr-mumble/
-GIT/ansible-svr-nextcloud/
-GIT/ansible-svr-openldap/
-GIT/ansible-svr-pulseaudio/
-GIT/ansible-svr-samba/
-GIT/ansible-svr-shaarli/
-GIT/ansible-svr-transmission/
-GIT/ansible-svr-tt-rss/
+GIT/ansible-xsrv-common
+GIT/ansible-xsrv-backup
 GIT/ansible/
 GIT/awesome-games/
 GIT/awesome-linuxaudio/
@@ -109,6 +96,7 @@ GIT/bookmark-archiver/
 GIT/cleanerml/
 GIT/conky-config/
 GIT/consoleSSLlabs/
+GIT/dlc-utils/
 GIT/dlc/
 GIT/dssi-vst/
 GIT/exploit-database-bin-sploits/
@@ -122,6 +110,7 @@ GIT/git-redate/
 GIT/gitea-cli
 GIT/github-stars-backup/
 GIT/glim/
+GIT/goldberg_emulator/
 GIT/kickthemout/
 GIT/memeater/
 GIT/musical-artifacts-data/
@@ -157,36 +146,31 @@ GIT/wikiteam/
 GIT/xwinwrap/
 GIT/youtube-dl-gui/
 GIT/youtube_playlist/
-GIT/goldberg_emulator/
-GIT/dlc-utils/
-GIT/ansible-xsrv-common
 
 
 THEMES-ICONS/Adapta/
 THEMES-ICONS/Albatross/
 THEMES-ICONS/Arc-theme/
 THEMES-ICONS/Blackbird/
+THEMES-ICONS/blawb-icons/
 THEMES-ICONS/BleuFear/
 THEMES-ICONS/Bluebird/
-THEMES-ICONS/CaptainIcon/
-THEMES-ICONS/Ceti-2-theme/
-THEMES-ICONS/Evolve/
-THEMES-ICONS/Greybird/
-THEMES-ICONS/Orion/
-THEMES-ICONS/Super-Flat-Remix/
-THEMES-ICONS/blawb-icons/
 THEMES-ICONS/bunsen-themes/
+THEMES-ICONS/CaptainIcon/
 THEMES-ICONS/centauri_gtk_theme/
+THEMES-ICONS/Ceti-2-theme/
 THEMES-ICONS/crayolo/
 THEMES-ICONS/deb8-theme/
 THEMES-ICONS/diagona-icons-1.0/
 THEMES-ICONS/elementary-xfce/
 THEMES-ICONS/evil-icons/
+THEMES-ICONS/Evolve/
 THEMES-ICONS/faba-mono-icons/
 THEMES-ICONS/falcon-icons/
 THEMES-ICONS/flattr-icons/
 THEMES-ICONS/fugue-icons/
 THEMES-ICONS/glyph-iconset/
+THEMES-ICONS/Greybird/
 THEMES-ICONS/hexagrama-icons/
 THEMES-ICONS/iris-light/
 THEMES-ICONS/iris-lychee/
@@ -201,6 +185,7 @@ THEMES-ICONS/mint-x-icons/
 THEMES-ICONS/mint-y-icons/
 THEMES-ICONS/mint-y-theme/
 THEMES-ICONS/numix-icon-theme-circle/
+THEMES-ICONS/Orion/
 THEMES-ICONS/ozon-icon-theme/
 THEMES-ICONS/pacifica-icon-theme/
 THEMES-ICONS/paper-gtk-theme/
@@ -208,6 +193,7 @@ THEMES-ICONS/paper-icon-theme/
 THEMES-ICONS/papirus-icon-theme-gtk/
 THEMES-ICONS/project-icons/
 THEMES-ICONS/silk-icons/
+THEMES-ICONS/Super-Flat-Remix/
 THEMES-ICONS/vertex-icons/
 THEMES-ICONS/vertex-theme/
 THEMES-ICONS/victory-icon-theme/
