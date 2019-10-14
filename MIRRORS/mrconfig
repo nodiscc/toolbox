@@ -28,9 +28,7 @@ checkout =
 
 [GIT/fonts]
 checkout = 
-	git clone --depth=1 'https://github.com/nodiscc/fonts' 'fonts'
-	cd fonts
-	git remote add gitlab git@gitlab.com:nodiscc/fonts.git
+	git clone --depth=1 'https://gitlab.com/nodiscc/fonts' 'fonts'
 
 [GIT/github-stars-backup]
 checkout = 
