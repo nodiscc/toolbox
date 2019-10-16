@@ -126,7 +126,7 @@ checkout = git clone 'https://github.com/ozzi-/consoleSSLlabs' 'consoleSSLlabs'
 checkout = git clone 'https://github.com/ThisIsDallas/Simple-Grid' 'Simple-Grid'
 
 [NOTES]
-checkout = git clone 'https://gitlab.com/nodiscc/NOTES.git' 'NOTES'
+checkout = git clone 'https://gitlab.com/nodiscc/NOTES' 'NOTES'
 
 [GIT/goldberg_emulator]
 checkout = git clone 'https://gitlab.com/Mr_Goldberg/goldberg_emulator' 'goldberg_emulator'
