@@ -13,7 +13,7 @@ set -e
 USAGE="$(basename "$0") [-d] file1.gif file2.gif file3.gif ...
 	-d:	delete original after conversion"
 
-while getopts ":d" opt; do
+while getopts ":dh" opt; do
 	case $opt in
 	d) DELETE_ORIGINAL="true"; shift
 	;;
