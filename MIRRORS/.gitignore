@@ -68,6 +68,8 @@ DATA/nameservers.csv
 GIT/airwave
 GIT/ansible-xsrv-backup
 GIT/ansible-xsrv-common
+GIT/ansible-xsrv-monitoring
+GIT/ansible-xsrv-lamp
 GIT/ansible/
 GIT/awesome-games/
 GIT/awesome-linuxaudio/

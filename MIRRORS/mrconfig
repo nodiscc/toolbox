@@ -168,4 +168,11 @@ checkout = git clone 'https://github.com/scopatz/nanorc' 'nanorc'
 checkout = git clone 'https://gitlab.com/nodiscc/ansible-xsrv-common' 'ansible-xsrv-common'
 
 [GIT/ansible-xsrv-backup]
-checkout = git clone 'https://gitlab.com/nodiscc/ansible-xsrv-backup' 'ansible-xsrv-common'
+checkout = git clone 'https://gitlab.com/nodiscc/ansible-xsrv-common' 'ansible-xsrv-backup'
+
+[GIT/ansible-xsrv-lamp]
+checkout = git clone 'https://gitlab.com/nodiscc/ansible-xsrv-lamp' 'ansible-xsrv-lamp'
+
+[GIT/ansible-xsrv-monitoring]
+checkout = git clone 'https://gitlab.com/nodiscc/ansible-xsrv-monitoring' 'ansible-xsrv-monitoring'
+
