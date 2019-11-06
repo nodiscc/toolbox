@@ -6,25 +6,13 @@ checkout =
 [GIT/shaarli-api-documentation]
 checkout = git clone 'https://github.com/shaarli/api-documentation' 'shaarli-api-documentation'
 
-[GIT/awesome-linuxaudio]
-checkout = 
-	git clone 'https://github.com/nodiscc/awesome-linuxaudio' 'awesome-linuxaudio'
-	git remote add gitlab git@gitlab.com:nodiscc/awesome-linuxaudio.git
-
-[GIT/awesome-selfhosted]
-checkout = git clone --depth=1 'https://github.com/kickball/awesome-selfhosted' 'awesome-selfhosted'
-
-[GIT/bookmark-archiver]
-checkout = git clone --depth=1 'https://github.com/pirate/bookmark-archiver' 'bookmark-archiver'
-
 [GIT/cleanerml]
 checkout = 
 	git clone --depth=1 'https://github.com/az0/cleanerml/' 'cleanerml'
 
 [GIT/dlc]
 checkout = 
-	git clone 'git@github.com:nodiscc/dlc' 'dlc'
-	git remote add gitlab git@gitlab.com:nodiscc/dlc.git
+	git clone 'https://gitlab.com/nodiscc/dlc' 'dlc'
 
 [GIT/fonts]
 checkout = 
@@ -32,30 +20,20 @@ checkout =
 
 [GIT/github-stars-backup]
 checkout = 
-	git clone --depth=1 'https://github.com/nodiscc/github-stars-backup' 'github-stars-backup'
-	cd github-stars-backup
-	git remote add gitlab https://gitlab.com/nodiscc/github-stars-backup.git
+	git clone https://gitlab.com/nodiscc/github-stars-backup' 'github-stars-backup'
 
 [GIT/glim]
 checkout = git clone --depth=1 'https://github.com/thias/glim' 'glim'
-
-[GIT/python-shaarli-client]
-checkout = git clone 'https://github.com/shaarli/python-shaarli-client' 'python-shaarli-client'
 
 [GIT/samplecat]
 checkout = git clone --depth=1 'https://github.com/ayyi/samplecat' 'samplecat'
 
 [GIT/shaarchiver]
-checkout = 
-	git clone 'https://github.com/nodiscc/shaarchiver' 'shaarchiver'
-	cd shaarchiver
-	git remote add gitlab git@gitlab.com:nodiscc/shaarchiver.git
+checkout = 	git clone 'https://gitlab.com/nodiscc/shaarchiver' 'shaarchiver'
+
 
 [GIT/Shaarli]
 checkout = git clone 'https://github.com/shaarli/Shaarli' 'Shaarli'
-
-[GIT/ttrss-reader]
-checkout = git clone --depth=1 'https://github.com/kucrut/ttrss-reader' 'ttrss-reader'
 
 [GIT/tumblr_backup]
 checkout = git clone --depth=1 'https://github.com/bdoms/tumblr_backup' 'tumblr_backup'
@@ -65,47 +43,18 @@ checkout = git clone --depth=1 'https://github.com/miohtama/tumblr-upload' 'tumb
 
 [GIT/user.js]
 checkout = 
-	git clone 'https://github.com/nodiscc/user.js' 'user.js'
+	git clone 'https://gitlab.com/nodiscc/user.js' 'user.js'
 	cd user.js
-	git remote add gitlab git@gitlab.com:nodiscc/user.js
-	git remote add pyllyukko https://github.com/pyllyukko/user.js
-
-[GIT/awesome-linuxaudio]
-checkout = 
-	git clone 'https://github.com/nodiscc/awesome-linuxaudio' 'awesome-linuxaudio'
-	cd awesome-linuxaudio
-	git remote add gitlab git@gitlab.com:nodiscc/awesome-linuxaudio.git
-
-
+	git remote add upstream https://github.com/pyllyukko/user.js
 
 [GIT/vcfconvert]
 checkout = git clone --depth=1 'https://github.com/thomascube/vcfconvert' 'vcfconvert'
-
-[GIT/wikiteam]
-checkout = git clone --depth=1 'https://github.com/WikiTeam/wikiteam' 'wikiteam'
-
-[GIT/wikiteam.wiki]
-checkout = git clone --depth=1 'https://github.com/WikiTeam/wikiteam.wiki.git' 'wikiteam.wiki'
 
 [GIT/xwinwrap]
 checkout = git clone --depth=1 'https://github.com/ujjwal96/xwinwrap' 'xwinwrap'
 
 [GIT/skippy-xd]
 checkout = git clone --depth=1 'https://github.com/richardgv/skippy-xd' 'skippy-xd'
-
-[GIT/youtube-dl-gui]
-checkout = 
-	   git clone 'https://github.com/MrS0m30n3/youtube-dl-gui' 'youtube-dl-gui'
-	   git remote add debian https://salsa.debian.org/felix-guest/youtube-dl-gui
-
-[GIT/spectre-meltdown-checker]
-checkout = git clone 'https://github.com/speed47/spectre-meltdown-checker' 'spectre-meltdown-checker'
-
-[GIT/pidgin-opensteamworks]
-checkout = 
-	   git clone 'https://github.com/EionRobb/pidgin-opensteamworks' 'pidgin-opensteamworks'
-	   git remote add doctorlard https://github.com/doctorlard/pidgin-opensteamworks/
-
 
 [GIT/memeater]
 checkout = git clone 'https://github.com/tdz/memeater' 'memeater'
@@ -124,9 +73,6 @@ checkout = git clone 'https://github.com/ozzi-/consoleSSLlabs' 'consoleSSLlabs'
 
 [GIT/Simple-Grid]
 checkout = git clone 'https://github.com/ThisIsDallas/Simple-Grid' 'Simple-Grid'
-
-[NOTES]
-checkout = git clone 'https://gitlab.com/nodiscc/NOTES' 'NOTES'
 
 [GIT/goldberg_emulator]
 checkout = git clone 'https://gitlab.com/Mr_Goldberg/goldberg_emulator' 'goldberg_emulator'
@@ -147,13 +93,10 @@ checkout = git clone 'https://github.com/offensive-security/exploitdb-papers' 'e
 checkout = git clone 'https://github.com/google/pybadges' 'pybadges'
 
 [GIT/netdata-needrestart]
-checkout = git clone 'gitea@neuralnet.xinit.se:zerodb/netdata-needrestart.git' 'netdata-needrestart'
+checkout = git clone 'https://gitlab.com/nodiscc/netdata-needrestart.git' 'netdata-needrestart'
 
 [GIT/netdata-debsecan]
-checkout = git clone 'git@gitlab.com:nodiscc/netdata-debsecan' 'netdata-debsecan'
-
-[GIT/gitea-cli]
-checkout = git clone 'https://github.com/bashup/gitea-cli' 'gitea-cli'
+checkout = git clone 'https://gitlab.com/nodiscc/netdata-debsecan' 'netdata-debsecan'
 
 [GIT/python-gitlab]
 checkout = git clone 'https://github.com/python-gitlab/python-gitlab' 'python-gitlab'
@@ -163,16 +106,3 @@ checkout = git clone 'https://github.com/serialhex/nano-highlight' 'nano-highlig
 
 [GIT/nanorc]
 checkout = git clone 'https://github.com/scopatz/nanorc' 'nanorc'
-
-[GIT/ansible-xsrv-common]
-checkout = git clone 'https://gitlab.com/nodiscc/ansible-xsrv-common' 'ansible-xsrv-common'
-
-[GIT/ansible-xsrv-backup]
-checkout = git clone 'https://gitlab.com/nodiscc/ansible-xsrv-common' 'ansible-xsrv-backup'
-
-[GIT/ansible-xsrv-lamp]
-checkout = git clone 'https://gitlab.com/nodiscc/ansible-xsrv-lamp' 'ansible-xsrv-lamp'
-
-[GIT/ansible-xsrv-monitoring]
-checkout = git clone 'https://gitlab.com/nodiscc/ansible-xsrv-monitoring' 'ansible-xsrv-monitoring'
-
