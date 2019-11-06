@@ -66,10 +66,6 @@ BIN-WINDOWS/youtube-dl.exe
 DATA/kiwix-0.9+wikipedia_en_all_nopic_2017-08.zip
 DATA/nameservers.csv
 GIT/airwave
-GIT/ansible-xsrv-backup
-GIT/ansible-xsrv-common
-GIT/ansible-xsrv-monitoring
-GIT/ansible-xsrv-lamp
 GIT/ansible/
 GIT/awesome-games/
 GIT/awesome-linuxaudio/
