@@ -2,7 +2,7 @@
 
 all: mirrors_short
 
-mirrors_short: mirror_git git_stat downloads_dlc download_github_stars downloads_linux downloads_windows downloads_macos downloads_iso
+mirrors_short: mirror_git git_stat download_github_stars downloads_linux downloads_windows downloads_macos downloads_iso
 
 mirrors_long: mirrors_short mirror_git_long git_stat download_data download_maps
 
@@ -19,9 +19,6 @@ mirror_git:
 git_stat:
 	mr -c mrconfig stat
 	git status
-
-downloads_dlc:
-	cd GIT/dlc && make download_extra clean
 
 GITHUB_STARS_BACKUP_USER := "nodiscc"
 download_github_stars:

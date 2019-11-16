@@ -10,10 +10,6 @@ checkout = git clone 'https://github.com/shaarli/api-documentation' 'shaarli-api
 checkout = 
 	git clone --depth=1 'https://github.com/az0/cleanerml/' 'cleanerml'
 
-[GIT/dlc]
-checkout = 
-	git clone 'https://gitlab.com/nodiscc/dlc' 'dlc'
-
 [GIT/fonts]
 checkout = 
 	git clone --depth=1 'https://gitlab.com/nodiscc/fonts' 'fonts'
@@ -76,9 +72,6 @@ checkout = git clone 'https://github.com/ThisIsDallas/Simple-Grid' 'Simple-Grid'
 
 [GIT/goldberg_emulator]
 checkout = git clone 'https://gitlab.com/Mr_Goldberg/goldberg_emulator' 'goldberg_emulator'
-
-[GIT/dlc-utils]
-checkout = git clone 'https://gitlab.com/nodiscc/dlc-utils' 'dlc-utils'
 
 [GIT/exploitdb]
 checkout = git clone 'https://github.com/offensive-security/exploitdb' 'exploitdb'
