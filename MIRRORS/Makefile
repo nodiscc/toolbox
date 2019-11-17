@@ -20,10 +20,6 @@ git_stat:
 	mr -c mrconfig stat
 	git status
 
-GITHUB_STARS_BACKUP_USER := "nodiscc"
-download_github_stars:
-	cd GIT/github-stars-backup/ && ./github-stars-backup $(GITHUB_STARS_BACKUP_USER)
-	-cd GIT/github-stars-backup/ && git add . && git commit -m "update" && git push
 
 DISTRIB_DL_DISTRIBUTIONS := "debian centos kali tails proxmox pfsense"
 downloads_iso:
