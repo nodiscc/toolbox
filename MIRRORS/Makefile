@@ -2,24 +2,13 @@
 
 all: mirrors_short
 
-mirrors_short: mirror_git git_stat download_github_stars downloads_linux downloads_windows downloads_macos downloads_iso
+mirrors_short: downloads_linux downloads_windows downloads_macos downloads_iso
 
-mirrors_long: mirrors_short mirror_git_long git_stat download_data download_maps
+mirrors_long: mirrors_short download_data download_maps
 
 mirrors_all: mirrors_long download_tumblr download_wikia download_icons download_mediawiki
 
 #####################################################
-
-optimize:
-	git submodule foreach git gc --aggressive
-
-mirror_git:
-	mr -c mrconfig update
-
-git_stat:
-	mr -c mrconfig stat
-	git status
-
 
 DISTRIB_DL_DISTRIBUTIONS := "debian centos kali tails proxmox pfsense"
 downloads_iso:
