@@ -31,7 +31,7 @@ downloads_linux:
 	$(WGET) -P BIN-LINUX/ https://deb.debian.org/debian/pool/main/r/retext/retext_7.0.4-1_all.deb # https://github.com/retext-project/retext
 	$(WGET) -P BIN-LINUX/ https://download.opensuse.org/repositories/home:/jgeboski/Debian_9.0/amd64/purple-facebook_20190113-0.9.6-0250907-166_amd64.deb
 	$(WGET) -P BIN-LINUX/ https://download.opensuse.org/repositories/home:/RockHopper/Debian_9.0/amd64/shuriken_0.5.2-2stretch1_amd64.deb # https://rock-hopper.github.io/shuriken/ (blocks wget user-agent)
-	$(WGET) -P BIN-LINUX/ https://download.sublimetext.com/sublime_text_3_build_3176_x64.tar.bz2 # https://www.sublimetext.com/3
+	$(WGET) -P BIN-LINUX/ https://download.sublimetext.com/sublime_text_3_build_3211_x64.tar.bz2 # https://www.sublimetext.com/3
 	$(WGET) -P BIN-LINUX/ https://downloads.lwks.com/lwks-12.6.0-amd64.deb # https://www.lwks.com/ (non-free)
 	$(WGET) -P BIN-LINUX/ https://downloads.tuxfamily.org/godotengine/2.1.3/Godot_v2.1.3-stable_x11.64.zip
 	$(WGET) -P BIN-LINUX/ https://github.com/artfwo/andes/releases/download/v0.1/Andes1-0.1-linux-x86_64.tar.gz
