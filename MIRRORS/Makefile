@@ -10,7 +10,7 @@ mirrors_all: mirrors_long download_tumblr download_wikia download_icons download
 
 #####################################################
 
-DISTRIB_DL_DISTRIBUTIONS := "debian centos kali tails proxmox pfsense"
+DISTRIB_DL_DISTRIBUTIONS := debian centos kali tails proxmox pfsense
 downloads_iso:
 	cd BIN-ISO/ && ./distrib-dl $(DISTRIB_DL_DISTRIBUTIONS)
 
