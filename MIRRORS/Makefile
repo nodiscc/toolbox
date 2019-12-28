@@ -34,7 +34,7 @@ downloads_linux:
 	$(WGET) -P BIN-LINUX/ https://github.com/junegunn/fzf-bin/releases/download/0.15.9/fzf-0.15.9-linux_amd64.tgz
 	$(WGET) -P BIN-LINUX/ https://github.com/klembot/twinejs/releases/download/2.2.1/twine_2.2.1_linux64.zip
 	$(WGET) -P BIN-LINUX/ https://github.com/kmkolasinski/AwesomeBump/releases/download/Linuxv5.0/AwesomeBumpV5.Bin64Linux.tar.gz
-	$(WGET) -P BIN-LINUX/ https://github.com/mifi/lossless-cut/releases/download/v2.6.2/LosslessCut-linux-x64.zip
+	$(WGET) -P BIN-LINUX/ https://github.com/mifi/lossless-cut/releases/download/v2.6.2/lossless-cut-2.6.2.tar.bz2
 	$(WGET) -P BIN-LINUX/ https://github.com/mltframework/shotcut/releases/download/v17.09/shotcut-linux-x86_64-170904.tar.bz2
 	#$(WGET) -P BIN-LINUX/ https://github.com/pbek/QOwnNotes/releases/download/linux-b3572-073533/QOwnNotes-18.05.0.deb
 	$(WGET) -P BIN-LINUX/ https://github.com/vrana/adminer/releases/download/v4.7.3/adminer-4.7.5.php
