@@ -1,10 +1,14 @@
-# Systemd service for reverse SSH tunnel
-# Enable with systemctl enable --now tunnel.service
 [Unit]
-Description=Reverse Tunnel
-After=network-online.target
+Description=maintenance reverse SSH tunnel
+After=network.target
+
 [Service]
-ExecStart=/usr/bin/ssh -f -N -T -R 2000:localhost:22 remote.example.com
-Restart=Always
-# prevents the service from disabling itself after too many/rapid failures (rate limiting)
+User=labriche
+ExecStart=/usr/bin/ssh -NTC -o ServerAliveInterval=60 -o ExitOnForwardFailure=yes -o StrictHostKeyChecking=no -i %h/.ssh/id_rsa -R 19997:localhost:22 user@my.example.org
+
+# Restart every >2 seconds to avoid StartLimitInterval failure
 RestartSec=10
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
