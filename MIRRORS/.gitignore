@@ -64,7 +64,7 @@ BIN-WINDOWS/wsusoffline1092.zip
 BIN-WINDOWS/youtube-dl.exe
 DATA/kiwix-0.9+wikipedia_en_all_nopic_2017-08.zip
 DATA/nameservers.csv
-MAPS/france-latest.osm.pbf
+DATA/france-latest.osm.pbf
 TUMBLR/onethingwell.org
 WIKI/elderscrolls_pages_current.xml.7z
 WIKI/en.wikiaudio.org/
@@ -73,3 +73,5 @@ WIKI/wiki.archlinux.org/
 WIKI/wiki.step-project.com/
 WIKI/www.ekopedia.fr/
 NOTES/
+BIN-LINUX/alsa-firmware-1.0.29.tar.bz2
+BIN-LINUX/node-v12.14.1-linux-x64.tar.xz
