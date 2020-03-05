@@ -50,11 +50,11 @@ BIN-LINUX/empty.html
 BIN-MAC/sendmidi-macos-1.0.5.zip
 BIN-WINDOWS/Abricotine-setup-win32-x64.exe
 BIN-WINDOWS/flashplayer_27_sa.exe
-BIN-WINDOWS/france-latest.osm.pbf
+BIN-DATA/france-latest.osm.pbf
 BIN-WINDOWS/FreeAlarmClockPortable.zip
 BIN-WINDOWS/libsteam-1.6.1.dll
 BIN-WINDOWS/MagicaVoxel-0.98.1-win-mac-beta.zip
-BIN-WINDOWS/nameservers.csv
+BIN-DATA/nameservers.csv
 BIN-WINDOWS/Npackd64-1.24.8.msi
 BIN-WINDOWS/NpackdCL64-1.24.8.msi
 BIN-WINDOWS/Popcorn-Time-0.3.10-Linux-64.tar.xz
