@@ -1,6 +1,8 @@
 #!/usr/bin/env make
 
-all: download_isos download_binaries download_data download_tumblr download_wikia
+all: download_isos download_binaries download_data
+
+full: all download_tumblr download_wikia
 
 #####################################################
 
