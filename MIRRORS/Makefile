@@ -7,13 +7,14 @@ all: download_isos download_binaries download_data download_tumblr download_wiki
 download_isos:
 	cd BIN-ISO/ && ./distrib-dl debian centos kali tails proxmox pfsense androidx86
 
+WGET = wget --no-clobber --show-progress --content-disposition --tries 1 --timeout 3
 download_binaries:
-	wget --timestamping --no-verbose --show-progress --content-disposition --directory-prefix=BIN-LINUX/ --input-file=bin-linux.urls.list
-	wget --timestamping --no-verbose --show-progress --content-disposition --directory-prefix=BIN-MAC/ --input-file=bin-mac.urls.list
-	wget --timestamping --no-verbose --show-progress --content-disposition --directory-prefix=BIN-WINDOWS/ --input-file=bin-windows.urls.list
+	$(WGET) --directory-prefix=BIN-LINUX/ --input-file=bin-linux.urls.list
+	$(WGET) --directory-prefix=BIN-MAC/ --input-file=bin-mac.urls.list
+	$(WGET) --directory-prefix=BIN-WINDOWS/ --input-file=bin-windows.urls.list
 
 download_data:
-	wget --timestamping --no-verbose --show-progress --content-disposition --directory-prefix=BIN-DATA/ --input-file=bin-data.urls.list
+	$(WGET) --directory-prefix=BIN-DATA/ --input-file=bin-data.urls.list
 
 download_tumblr:
 	cd TUMBLR/ && python ../GITHUB/tumblr_backup/tumblr_backup.py onethingwell.org
