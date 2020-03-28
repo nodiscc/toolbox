@@ -1,0 +1,3 @@
+#!/bin/bash
+# Description: sort the X11 clipboard alphabetically
+xclip -selection c -o | sort | xclip -selection c -i
