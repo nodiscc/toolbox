@@ -1,0 +1,6 @@
+#!/bin/bash
+# Description: Backup specified file, adding date after it
+set -o nounset
+set -o errexit
+cp -v "$1" "$1.$(date +%Y-%m-%d_%H-%M-%S).bak"
+
