@@ -1,0 +1,5 @@
+#!/bin/bash
+# Description: play a sound warning 3 times
+play -q /usr/share/sounds/freedesktop/stereo/complete.oga
+play -q /usr/share/sounds/freedesktop/stereo/complete.oga
+play -q /usr/share/sounds/freedesktop/stereo/complete.oga

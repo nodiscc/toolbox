@@ -1,0 +1,3 @@
+#!/bin/bash
+# Description: play an alarm sound repeatedly
+while true; do play -q /usr/share/sounds/email.wav; sleep 0.2 ; done
