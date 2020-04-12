@@ -30,6 +30,7 @@ chkrootkit
 chm2pdf
 chmod
 chown
+chronic
 chroot
 chrt
 chsh
@@ -37,6 +38,7 @@ cksum
 cmp
 colrm
 column
+combine
 comm
 cp
 cryptsetup
@@ -77,6 +79,7 @@ eject
 elinks
 enscript
 env
+errno
 expand
 expr
 factor
@@ -133,7 +136,9 @@ htop
 htpasswd
 id
 ifconfig
+ifdata
 ifdown
+ifne
 iftop
 ifup
 init
@@ -151,6 +156,7 @@ iptables-apply
 iptables-restore
 iptables-save
 iptraf
+isutf8
 jnettop
 join
 jot
@@ -158,6 +164,7 @@ jq
 kill
 killall
 lastb
+lckdo
 ldd
 less
 ln
@@ -214,6 +221,7 @@ man
 md5sum
 mdadm
 mdadm.conf
+mispipe
 mkdir
 mkfifo
 mkfs
@@ -254,12 +262,14 @@ objdump
 od
 open
 pam-auth-update
+parallel
 parted
 passwd
 paste
 pdfimages
 pdftotext
 pdfunite
+pee
 pgrep
 photorec
 pidof
@@ -461,6 +471,7 @@ tr
 tracepath
 traceroute
 transmission-daemon
+ts
 tshark
 tty
 tzselect
@@ -481,7 +492,9 @@ vdir
 vgcreate
 vgextend
 vgreduce
+vidir
 vim
+vipe
 virsh
 virt-admin
 virt-clone
@@ -524,3 +537,4 @@ zcat
 zgrep
 zip
 zless
+zrun
