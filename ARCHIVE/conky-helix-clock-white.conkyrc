@@ -1,0 +1,63 @@
+#Conky configuration
+#Minimal date/time display (white)
+alignment top_right
+background no
+border_margin 5
+border_width 5
+color0 555555			#
+color1 FCAF3E			# zolty
+color2 2a2a2a			# braz
+color3 a82553			# rozowy f71f84
+color4 5e1014			# bordowy
+color5 64574e			# braz
+color6 2a2a2a			# szary
+color7 8888CC			#  (COOL)
+color8 9d9c61			# zolto-szary
+color9 525276			# niebiesko-szary
+cpu_avg_samples 2
+default_color ffffff		# szary 5f5f5f
+default_outline_color 000000 	# Black
+default_shade_color 000000	# Black
+double_buffer yes
+draw_borders no
+draw_graph_borders no
+draw_outline no
+draw_shades yes
+gap_x 30
+gap_y 50
+max_specials 1024
+max_user_text 10000
+maximum_width 900
+minimum_size 350
+net_avg_samples 2
+no_buffers yes
+override_utf8_locale yes
+own_window_class Conky
+own_window yes
+own_window_argb_visual yes
+#own_window_argb_value 0
+#own_window_colour 000000	# Black
+own_window_hints undecorated,below,sticky,skip_taskbar,skip_pager
+own_window_transparent yes
+own_window_type normal 	## normal
+pad_percents 2			# to co nizej, miejsc po przecinku
+short_units yes			# krotka wersja podawania wielkosci dyskow np. 612.21M/3.80G
+stippled_borders 3
+text_buffer_size 8000
+total_run_times 0
+update_interval 1.0
+uppercase no
+use_spacer right
+use_xft yes
+xftalpha 1
+xftfont Freesans:pixelsize=9
+
+# ${diskiograph /dev/sda 15,180 a7a7a7 a7a7a7} # wskaznik pracy dysku
+# ${image /home/didisoft/.conky/didisoft.jpg -p 0,80 -s 26x28} # obrazki w conky
+
+
+TEXT
+${color white}${font WeblySleek UI:pixelsize=40}${time %A}${font} 
+_________________________
+${color white}${font WeblySleek UI:pixelsize=15}${time %B %d, %Y}${font}	
+${color white}${font WeblySleek UI:pixelsize=40}${time %H:%M:%S}${font} 

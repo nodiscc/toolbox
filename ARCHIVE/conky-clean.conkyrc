@@ -1,0 +1,140 @@
+#Conky configuration
+#Clean system monitor
+#Use Xft?
+use_xft yes
+xftfont Droid Sans:size=8
+xftalpha 0.8
+text_buffer_size 2048
+
+# Update interval in seconds
+update_interval 1
+
+# set to yes if you want Conky to be forked in the background
+background no
+
+# This is the number of times Conky will update before quitting.
+# Set to zero to run forever.
+total_run_times 0
+
+# Create own window instead of using desktop (required in nautilus)
+own_window yes
+own_window_transparent yes
+own_window_type normal
+own_window_hints undecorated,below,sticky,skip_taskbar,skip_pager
+##############################################
+# Compositing tips:
+# Conky can play strangely when used with
+# different compositors. I have found the
+# following to work well, but your mileage
+# may vary. Comment/uncomment to suit.
+##############################################
+## no compositor
+#own_window_type normal
+own_window_argb_visual yes
+
+## xcompmgr
+#own_window_type normal
+own_window_argb_visual yes
+
+## cairo-compmgr
+own_window_type normal
+own_window_argb_visual yes
+#####################################
+# Use double buffering (reduces flicker, may not work for everyone)
+double_buffer yes
+
+# Minimum size of text area
+minimum_size 200 0
+maximum_width 200
+
+# Draw shades?
+draw_shades no
+
+# Draw outlines?
+draw_outline no
+
+# Draw borders around text
+draw_borders no
+
+# Stippled borders?
+stippled_borders 0
+
+# border margins
+border_inner_margin 5
+
+# border width
+border_width 1
+
+# Default colors and also border colors
+default_color white
+color1 FFBF41
+own_window_colour black
+
+# Text alignment, other possible values are commented
+#alignment top_left
+alignment top_right
+#alignment bottom_left
+#alignment bottom_right
+
+# Gap between borders of screen and text
+# same thing as passing -x at command line
+#gap_x 30
+gap_y 5
+
+# Subtract file system buffers from used memory?
+no_buffers yes
+
+# set to yes if you want all text to be in uppercase
+uppercase no
+
+# number of cpu samples to average
+# set to 1 to disable averaging
+cpu_avg_samples 2
+
+# number of net samples to average
+# set to 1 to disable averaging
+net_avg_samples 2
+
+# Force UTF8? note that UTF8 support required XFT
+override_utf8_locale yes
+
+# Add spaces to keep things from moving about?  This only affects certain objects.
+use_spacer none
+
+TEXT
+#DESKTOP  ${if_match ${desktop}==1}${color1}${endif}•${color}${offset 10}${if_match ${desktop}==2}${color1}${endif}•${color}${offset 10}${if_match ${desktop}==3}${color1}${endif}•${color}${offset 10}${if_match ${desktop}==4}${color1}${endif}•${color}
+#DESKTOP  ${if_match ${desktop}==1}${color1}${endif}1${color}${offset 10}${if_match ${desktop}==2}${color1}${endif}2${color}${offset 10}${if_match ${desktop}==3}${color1}${endif}3${color}${offset 10}${if_match ${desktop}==4}${color1}${endif}4${color}
+${alignc}${font Droid Sans:size=50}${time %H:%M}${font}
+
+
+SYSTEM ${hr 2}
+#${voffset 4} System: ${alignr}Crunchbang 10 Statler
+#${voffset 4} Kernel: ${alignr}${kernel}
+${voffset 4} Uptime: ${alignr}${uptime}
+${voffset 6} CPU: ${cpu cpu0}% ${alignr}${cpubar cpu0 8,60}
+#${voffset 4} CPU1: ${cpu cpu1}% ${alignr}${cpubar cpu1 8,60}
+#${voffset 4} CPU2: ${cpu cpu2}% ${alignr}${cpubar cpu2 8,60}
+#${voffset 4} CPU3: ${cpu cpu3}% ${alignr}${cpubar cpu3 8,60}
+#${voffset 4} CPU4: ${cpu cpu4}% ${alignr}${cpubar cpu4 8,60}
+${voffset 6} RAM: $memperc% ${alignr}${membar 8,60}
+${voffset 4} SWAP: $swapperc% ${alignr}${swapbar 8,60}
+
+CPU USAGE ${hr 2}
+${voffset 4} ${top name 1}${alignr} ${top pid 1} ${top cpu 1}
+${voffset 4} ${top name 2}${alignr} ${top pid 2} ${top cpu 2}
+${voffset 4} ${top name 3}${alignr} ${top pid 3} ${top cpu 3}
+
+MEM USAGE ${hr 2}
+${voffset 4} ${top_mem name 1}${alignr} ${top_mem pid 1} ${top_mem mem 1}
+${voffset 4} ${top_mem name 2}${alignr} ${top_mem pid 2} ${top_mem mem 2}
+${voffset 4} ${top_mem name 3}${alignr} ${top_mem pid 3} ${top_mem mem 3}
+
+HD ${hr 2}
+${voffset 4}Root: ${fs_free /}/${fs_size /} ${alignr}${fs_bar 8,60 /}
+${voffset 4}Home: ${fs_free /home}/${fs_size /home} ${alignr}${fs_bar 8,60 /home}
+
+NETWORK ${hr 2}
+${voffset 4} Upload: ${upspeed wlan0} kb/s ${alignr}${upspeedgraph wlan0 8,60}
+${voffset 4} Sent: ${alignr}${totalup wlan0}
+${voffset 4} Download: ${downspeed wlan0} kb/s ${alignr}${downspeedgraph wlan0 8,60}
+${voffset 4} Received: ${alignr}${totaldown wlan0}
