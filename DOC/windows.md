@@ -4,64 +4,120 @@
 
 Windows force Active directory synchronization with O365 (ignore 30 min default interval) `Start-ADSyncSyncCycle -PolicyType Delta`
 
-- run livestreamer: `livestreamer https://www.twitch.tv/gaminglive_tv1 medium --player "c:\Program Files\VLC_Media_Player_64_bit\vlc.exe"`
-- enable password for UAC: Local Security Policy > Local Policies > Security Options > User Account Control : Behavior of the elevation prompt for... > Prompt for crendtials
-- Connected USB drives list: `HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\USBSTOR\`, `C:\Windows\setupapi.log` -> Perform search for Serial Number
-- Unicode Right-to-left override `"Awesome Song uploaded by \[U+202e\]3pm.exe"`
-- Reset windows passwords: Load up a linux distro and copy the SAM that is located in `C:\windows\system32\config`; run ophcrack on it. Or use https://pogostick.net/~pnh/ntpasswd/
-- Remote desktop connection: `mstsc.exe [<Connection File>] [/v:<Server>[:<Port>]] [/admin] [/f] [/w:<Width> /h:<Height>] [/public] [/span] /edit <Connection File> /migrate`
-- Trigger BSOD: regedit > `HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\i8042prt\Parameters` or `HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\i8042prt\Parameters`. New DWORD > `CrashOnCtrlScroll` = 1. Hit Right Ctrl + Scroll Lock x2. Or kill csrss.exe.
-- **RAID5** `list disk; select disk 1 ; list part; list vol ; select vol 0 [DVD]; [DVD] assign letter=z; create volume raid=5120 disk=1,2,3; select vol 3 [RAID]; format quick; assign letter=d OU assign mount=c:\Base`
-- add DHCP range: `add-dhcpserverv4scope -startrange 192.168.0.100 -endrange 192.168.0.200 -subnetmask 255.255.255.0 -name lan1_dhcp_range`
-- add DHCP reservation `add-dhcpserverv4reservation -scopeid 192.168.0.0 -ipaddress 192.168.0.100 -clientid 00-0c-29-f6-ad-0b`
-- add DNS conditional forwarder: `add-DNSServerConditionalForwarderZone -Name example.com -MasterServers x.x.x.x`
-- add DNS global forwarder: `add-DNSServerForwarder -IPAddress 10.0.0.1`
-- add firewall rule: `netsh advfirewall firewall add rule name="Block NetBIOS Port 137 (UDP)" dir=in action=block protocol=UDP localport=137`
-- add NDS server DHCP option: `set-dhcpserverv4optionvalue -optionId 6 -ScopeId 192.168.0.0 -Value 192.168.0.1`
-- add primary DNS zone: `add-DNSServerPrimaryZone -Name ad.example.com -Zonefile ad.example.com`
-- change login screen background: place a .jpg image <245kb in `%windir\system32\oobe\info\backgrounds\backgroundDefault.jpg` + `HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI\Background\OEMBackground` (DWORD=1)
-- check NTP server offset: `w32tm /stripchart /computer:time.windows.com`
-- create firewall rule: `New-NetFirewallRule -DisplayName 'ICMPv4-In-ByIP' -Enabled True -Profile Domain -Direction Inbound -Action Allow -Protocol ICMPv4 -RemoteAddress 10.11.200.104,10.11.200.58`
-- create godmode directory `mkdir GodMode.{ED7BA470-8E54-465E-825C-99712043E01C}`
-- Create junction point: `mklink /J <Target> <Linkname>`
-- disable SMBv1: `Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" SMB1 -Type DWORD -Value 0 -Force`
-- download file `$clnt = new-object System.Net.WebClient; $clnt.DownloadFile("https://source.fi/le.txt", "destfile.txt")`
-- Download file `& { iwr http://www.it1.net/it1_logo2.jpg -OutFile logo.jpg }`
-- download file `explorer https://url.of/file`
-- Enable/Allow RDP: `Get-NetFirewallRule -DisplayName "Remote Desktop*" | Set-NetFirewallRule -enabled true; Get-Service "*rdp*"; Set-Service -Name "ServiceName" -Status Running` + enable System Properties > Remote Settings > Allow
-- encrypt swap: cmd as admin > `fsutil behavior set encryptpagingfile 1`
-- get hotfix status info: `Get-Hotfix -Id KB2952664`
-- install Active Directory: `Get-Command *-Ad*; Import-Module ActiveDirectory, Add-WindowsFeature RSAT-AD-PowerShell`
-- install DHCP service: `install-windowsfeature dhcp; install-windowsfeature rsat-dhcp`
-- install DNS service: `install-windowsfeature dns, install-windowsfeature rsat-dns-server`
-- install DNS: `install-windowsfeature [dns|rsta-dns-server]`
-- ipconfig commands: `/displaydns /all /release /renew`
-- list hidden windows updates; `(New-Object -ComObject Microsoft.Update.Session).CreateUpdateSearcher().Search('IsInstalled=0 and IsHidden=1').Updates | %{'KB'+$_.KBArticleIDs}`
-- List junction points: `dir /aL; dir /aL /s C:\;`
-- list optional windows features; `Get-WindowsOptionalFeature -Online`
-- list running services: `Get-Service | Where-Object { $_.Status -eq "Running" }`
-- list services:`Get-Service`
-- display routing information `route print; netstat -r`
-- make filesystem case-sensitive `reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\kernel" /v ObCaseInsensitive /t REG_DWORD /d 0 /f`
-- multi user RDP: `HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\TerminalServer\fSingleSessionPerUser` (0x0 Allow multiple sessions per user, 0x1 Force each user to a single session)
-- Powershell help: `Get-Help Get-Help -ShowWindow/ -Detailed -Examples -Full`
-- Powershell help: `Help about_*`
-- Powershell list methods/attributes: `$command | Get-Member`
-- Powershell loop `$startdate=get-date; $val=0; while ($val -neq 65535) { $val++; Write-Host -NoNewline "$val " }; $enddate=get-date; $totaltime=$enddate - $startdate; write-host "total time is $totaltime"`
-- Powershell update-help from local repo: `Update-Help -SourcePath \\10.x.x.x.x\path\to\powershell\help\ -Credential ad\username`
-- RDP Port number: `HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\TerminalServer\WinStations\RDP-Tcp\PortNumber`
-- Remote desktop connection `mstsc /span /v:HOSTNAME`
-- remove password prompt at boot `Win + R` > "control userpasswords2" > Uncheck password
-- server configuration tool: `sconfig`
-- Set DNS server for client machine: `Set-DNSClientServerIpADdress -InterfaceIndex 12 -ServerAddress '10.0.0.1, 10.0.0.9'`
-- set DNS suffix `Set-DNSClientGlobalSetting -SearchSuffix example.local`
-- set IP address `New-NetIPAddress -IPAddress 10.11.17.1 -AddressFamily IPv4 -InterfaceAlias Ethernet0 -DefaultGateway 10.11.255.254 -PrefixLength 8`
-- show DNS resource record: `Get-DNSServerResourceRecord -Name ad.example.com`
-- shutdown remote machine via SMB: `net rpc shutdown -C "comment" -I IPADDRESS -U USERNAME%PASSWORD`
-- System properties: `sysdm.cpl`
-- uninstall KB `wusa /uninstall /kb:2952664`
-- generate file checksum `certUtil -hashfile cheminVersLeFichier [MD2 MD4 MD5 SHA1 SHA256 SHA384 SHA512]`
-- Force unmount all network shares `net use * /delete /y`
+Windows enable password for UAC: Local Security Policy > Local Policies > Security Options > User Account Control : Behavior of the elevation prompt for... > Prompt for crendtials
+
+
+Windows Connected USB drives list: `HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\USBSTOR\`, `C:\Windows\setupapi.log` -> Perform search for Serial Number
+
+Windows Unicode Right-to-left override `"Awesome Song uploaded by \[U+202e\]3pm.exe"`
+
+Reset windows passwords: Load up a linux distro and copy the SAM that is located in `C:\windows\system32\config`; run ophcrack on it. Or use https://pogostick.net/~pnh/ntpasswd/
+
+Windows Remote desktop connection: `mstsc.exe [<Connection File>] [/v:<Server>[:<Port>]] [/admin] [/f] [/w:<Width> /h:<Height>] [/public] [/span] /edit <Connection File> /migrate`
+
+Windows Trigger BSOD: regedit > `HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\i8042prt\Parameters` or `HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\i8042prt\Parameters`. New DWORD > `CrashOnCtrlScroll` = 1. Hit Right Ctrl + Scroll Lock x2. Or kill csrss.exe.
+
+Windows **RAID5** `list disk; select disk 1 ; list part; list vol ; select vol 0 [DVD]; [DVD] assign letter=z; create volume raid=5120 disk=1,2,3; select vol 3 [RAID]; format quick; assign letter=d OU assign mount=c:\Base`
+
+Windows add DHCP range: `add-dhcpserverv4scope -startrange 192.168.0.100 -endrange 192.168.0.200 -subnetmask 255.255.255.0 -name lan1_dhcp_range`
+
+Windows add DHCP reservation `add-dhcpserverv4reservation -scopeid 192.168.0.0 -ipaddress 192.168.0.100 -clientid 00-0c-29-f6-ad-0b`
+
+Windows add DNS conditional forwarder: `add-DNSServerConditionalForwarderZone -Name example.com -MasterServers x.x.x.x`
+
+Windows add DNS global forwarder: `add-DNSServerForwarder -IPAddress 10.0.0.1`
+
+Windows add firewall rule: `netsh advfirewall firewall add rule name="Block NetBIOS Port 137 (UDP)" dir=in action=block protocol=UDP localport=137`
+
+Windows add NDS server DHCP option: `set-dhcpserverv4optionvalue -optionId 6 -ScopeId 192.168.0.0 -Value 192.168.0.1`
+
+Windows add primary DNS zone: `add-DNSServerPrimaryZone -Name ad.example.com -Zonefile ad.example.com`
+
+Windows change login screen background: place a .jpg image <245kb in `%windir\system32\oobe\info\backgrounds\backgroundDefault.jpg` + `HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI\Background\OEMBackground` (DWORD=1)
+
+Windows check NTP server offset: `w32tm /stripchart /computer:time.windows.com`
+
+Windows create firewall rule: `New-NetFirewallRule -DisplayName 'ICMPv4-In-ByIP' -Enabled True -Profile Domain -Direction Inbound -Action Allow -Protocol ICMPv4 -RemoteAddress 10.11.200.104,10.11.200.58`
+
+Windows create godmode directory `mkdir GodMode.{ED7BA470-8E54-465E-825C-99712043E01C}`
+
+Windows Create junction point: `mklink /J <Target> <Linkname>`
+
+Windows disable SMBv1: `Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" SMB1 -Type DWORD -Value 0 -Force`
+
+Windows download file `$clnt = new-object System.Net.WebClient; $clnt.DownloadFile("https://source.fi/le.txt", "destfile.txt")`
+
+Windows Download file `& { iwr http://www.it1.net/it1_logo2.jpg -OutFile logo.jpg }`
+
+Windows download file `explorer https://url.of/file`
+
+Windows Enable/Allow RDP: `Get-NetFirewallRule -DisplayName "Remote Desktop*" | Set-NetFirewallRule -enabled true; Get-Service "*rdp*"; Set-Service -Name "ServiceName" -Status Running` + enable System Properties > Remote Settings > Allow
+
+Windows encrypt swap: cmd as admin > `fsutil behavior set encryptpagingfile 1`
+
+Windows get hotfix status info: `Get-Hotfix -Id KB2952664`
+
+Windows install Active Directory: `Get-Command *-Ad*; Import-Module ActiveDirectory, Add-WindowsFeature RSAT-AD-PowerShell`
+
+Windows install DHCP service: `install-windowsfeature dhcp; install-windowsfeature rsat-dhcp`
+
+Windows install DNS service: `install-windowsfeature dns, install-windowsfeature rsat-dns-server`
+
+Windows install DNS: `install-windowsfeature [dns|rsta-dns-server]`
+
+Windows ipconfig commands: `/displaydns /all /release /renew`
+
+Windows list hidden windows updates; `(New-Object -ComObject Microsoft.Update.Session).CreateUpdateSearcher().Search('IsInstalled=0 and IsHidden=1').Updates | %{'KB'+$_.KBArticleIDs}`
+
+Windows List junction points: `dir /aL; dir /aL /s C:\;`
+
+Windows list optional windows features; `Get-WindowsOptionalFeature -Online`
+
+Windows list running services: `Get-Service | Where-Object { $_.Status -eq "Running" }`
+
+Windows list services:`Get-Service`
+
+Windows display routing information `route print; netstat -r`
+
+Windows make filesystem case-sensitive `reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\kernel" /v ObCaseInsensitive /t REG_DWORD /d 0 /f`
+
+Windows multi user RDP: `HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\TerminalServer\fSingleSessionPerUser` (0x0 Allow multiple sessions per user, 0x1 Force each user to a single session)
+
+Windows Powershell help: `Get-Help Get-Help -ShowWindow/ -Detailed -Examples -Full`
+
+Windows Powershell help: `Help about_*`
+
+Windows Powershell list methods/attributes: `$command | Get-Member`
+
+Windows Powershell loop `$startdate=get-date; $val=0; while ($val -neq 65535) { $val++; Write-Host -NoNewline "$val " }; $enddate=get-date; $totaltime=$enddate - $startdate; write-host "total time is $totaltime"`
+
+Windows Powershell update-help from local repo: `Update-Help -SourcePath \\10.x.x.x.x\path\to\powershell\help\ -Credential ad\username`
+
+Windows RDP Port number: `HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\TerminalServer\WinStations\RDP-Tcp\PortNumber`
+
+Windows Remote desktop connection `mstsc /span /v:HOSTNAME`
+
+Windows remove password prompt at boot `Win + R` > "control userpasswords2" > Uncheck password
+
+Windows server configuration tool: `sconfig`
+
+Windows Set DNS server for client machine: `Set-DNSClientServerIpADdress -InterfaceIndex 12 -ServerAddress '10.0.0.1, 10.0.0.9'`
+
+Windows set DNS suffix `Set-DNSClientGlobalSetting -SearchSuffix example.local`
+
+Windows set IP address `New-NetIPAddress -IPAddress 10.11.17.1 -AddressFamily IPv4 -InterfaceAlias Ethernet0 -DefaultGateway 10.11.255.254 -PrefixLength 8`
+
+Windows show DNS resource record: `Get-DNSServerResourceRecord -Name ad.example.com`
+
+Windows shutdown remote machine via SMB: `net rpc shutdown -C "comment" -I IPADDRESS -U USERNAME%PASSWORD`
+
+Windows System properties: `sysdm.cpl`
+
+Windows uninstall KB `wusa /uninstall /kb:2952664`
+
+Windows generate file checksum `certUtil -hashfile cheminVersLeFichier [MD2 MD4 MD5 SHA1 SHA256 SHA384 SHA512]`
+
+Windows Force unmount all network shares `net use * /delete /y`
 
 ----------------------------------------------
 
