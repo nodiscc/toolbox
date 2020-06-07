@@ -1,0 +1,49 @@
+stages:
+  - build
+  - test
+  - deploy
+
+package_hello_world:
+  image: me/gradle-dev
+  stage: build
+  script:
+    - gradle --no-daemon shadowJar
+  artifacts:
+    paths:
+      - build/libs/hello-world.jar
+
+run_hello_world_tests:
+  image: jdk8-alpine
+  stage: test
+  script:
+    - gradle --no-daemon test
+
+.deploy: &deploy
+  image: me/gradle-dev
+  dependencies:
+    - package hello world
+  before_script:
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - eval $(ssh-agent)
+    - ssh-add ~/.ssh/id_rsa
+  script:
+    - scp deploy@$SERVER_URL:/tmp/hello-world.jar build/libs/hello-world.jar
+    - ssh -t deploy@$SERVER_URL "cp /tmp/hello-world.jar /opt/hello-world.jar"
+
+deploy to dev:
+  <<: *deploy
+  variables:
+    SERVER_URL: dev.example.com
+  environment: development
+  only:
+    develop
+  
+deploy to prod:
+  <<: *deploy
+  variables:
+    SERVER_URL: prod.example.com
+  environment: production
+  only:
+    master
+  
