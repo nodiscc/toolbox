@@ -711,27 +711,29 @@ apt remove stale config files `aptitude -y purge ~c`
 
 >debian non-free network/wifi card drivers! For your Wi-fi card to work, and if installing Debian, you will need to; either install from the http://cdimage.debian.org/cdimage/unofficial/non-free/cd-including-firmware/ unofficial cd image with included non-free firmwares (Wi-fi will work during the setup procedure); or install using a wired connection. Anyway you have to enable non-free software during setup, and, after initial setup, manually install the firmware-linux-nonfree firmware-atheros packages.
 
-@apt add an apt key `sudo apt-key add $KEYFILE`
+add an apt key `sudo apt-key add $KEYFILE`
 
-@apt add gpg key from remote server `sudo apt-key adv --recv-keys --keyserver $KEYSERVER $FINGERPRINT`
+add an apt key from remote server `sudo apt-key adv --recv-keys --keyserver $KEYSERVER $FINGERPRINT`
 
-@apt add a key to gpg keyring `curl http://mozilla.debian.net/archive.asc | sudo apt-key --keyring /etc/apt/trusted.gpg.d/rxtx.gpg add -`
+add an apt key to gpg keyring `curl http://mozilla.debian.net/archive.asc | sudo apt-key --keyring /etc/apt/trusted.gpg.d/rxtx.gpg add -`
 
-@apt show package for a file `dpkg -S $FICHIER`
+show apt package for a file `dpkg -S $FICHIER`
 
-@apt show obsolete packages `aptitude search ?obsolete`
+show obsolete apt packages `aptitude search ?obsolete`
 
-@apt search in package names/descriptions `apt-cache search $MOTCLE`
+search in apt package names/descriptions `apt-cache search $MOTCLE`
 
-@apt show package info `apt-cache show $PAQUET`
+show apt package info `apt-cache show $PAQUET`
 
-@apt freeze/hold package in it's current version `aptitude hold $PAQUET`
+freeze/hold apt package in its current version `aptitude hold $PAQUET`
 
-deb @packaging: create a package from a directory `dpkg-deb --build $REPERTOIRE`
+create a .deb package from a directory `dpkg-deb --build $REPERTOIRE`
 
-deb @packaging: rename package from control file `dpkg-name $PAQUET`
+rename a .deb package from control file `dpkg-name $PAQUET`
 
-@apt List installed packages, sorted by size `dpkg-query -Wf '${Installed-Size}\t${Package}' | sort -n`
+list installed apt packages, sorted by size `dpkg-query -Wf '${Installed-Size}\t${Package}' | sort -n`
+
+Dennis Ritchie ASCII art `curl -L https://git.io/unix`
 
 Remove old kernels `packages=$(dpkg -l|egrep '^ii  linux-(im|he)'|awk '{print $2}'|egrep -v "($(uname -r)|image-.86|image-amd64)"); aptitude purge $packages`
 
@@ -976,7 +978,7 @@ inotify: inotifywait -m -r -e modify,attrib,close_write,move,create,delete /tmp
 
 LVM: fdisk, pvcreate, vgextend, pvmove, vgreduce/vgsplit
 
-SSL/TLS X509 cert to text: openssl x509 -in cert.pem -text
+SSL/TLS X509 cert to text: `openssl x509 -in cert.pem -text`
 
 html iframe: <iframe src="https://www.w3schools.com"></iframe>
 
@@ -1140,7 +1142,7 @@ shrink sparse qcow2 disk image: qemu-convert -p -O qcow2 source.qcow2 dest-shrun
 set pulseaudio volume: pactl set-sink-volume @DEFAULT_SINK@ +5%
 
 
-openssl show certificate info: echo | openssl s_client -showcerts -servername google.com -connect gnupg.org:443 2>/dev/null | openssl x509 -inform pem -noout -text
+openssl show certificate info: `echo | openssl s_client -showcerts -servername google.com -connect gnupg.org:443 2>/dev/null | openssl x509 -inform pem -noout -text`
 
 
 packet capture on remote machine and display in local wireshark: ssh root@remoteserver "tcpdump -c 1000 -nn -w - not port 22" | wireshark -k -i -
