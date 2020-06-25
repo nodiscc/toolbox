@@ -1,5 +1,5 @@
 #!/bin/bash
-#Description: Backup github issues for a repository to plain text files for offline reading
+#Description: Backup github issues for a repository to stdout (use a pipe to save to a file)
 #Dependencies: ghi "https://github.com/stephencelis/ghi"
 #Usage: backup-gh-issues.sh [--closed] username repository
 set -e
@@ -21,7 +21,7 @@ fi
 ### Backup open issues
 ghi list -- "$ghuser"/"$ghrepo" | tee "$ghuser-$ghrepo-issues.md"
 issues=$(cat "$ghuser-$ghrepo-issues.md" | awk -F" *" '{print $2}' | grep -E -v '^[A-Z|a-z]')
-for i in $issues; do ghi show "$i" -- "$ghuser"/"$ghrepo" | tee "$ghuser-$ghrepo-issue-$i.md"; done
+for i in $issues; do echo -e '\n---------------------------\n\n'; ghi show "$i" -- "$ghuser"/"$ghrepo"; done
 
 
 ### Backup closed issues
@@ -33,7 +33,7 @@ then
 
     ghi list -s closed -- "$ghuser"/"$ghrepo" | tee "closed/$ghuser-$ghrepo-issues.md"
     issues=$(awk -F" *" '{print $2}' "closed/$ghuser-$ghrepo-issues.md" | grep -E -v '^[A-Z|a-z]')
-    for i in $issues; do ghi show "$i" -- "$ghuser"/"$ghrepo" | tee "closed/$ghuser-$ghrepo-issue-$i.md"; done
+    for i in $issues; do echo -n "CLOSED "; ghi show "$i" -- "$ghuser"/"$ghrepo"; done
 fi
 
 #TODO: Add links to individual md issues from the list
