@@ -1,13 +1,10 @@
 #!/usr/bin/env make
 
-all: download_isos download_binaries download_data
+all: download_binaries download_data
 
 full: all download_tumblr download_wikia
 
 #####################################################
-
-download_isos:
-	cd BIN-ISO/ && ./distrib-dl all
 
 WGET = wget --no-clobber --show-progress --content-disposition --tries 1 --timeout 3
 download_binaries:
