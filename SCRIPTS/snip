@@ -47,7 +47,7 @@ function _searchsnippet() {
 }
 
 function _addsnippet() {
-	  echo -e "\n\n$*" >> "$snippetsfile"
+	  echo -e "\\n\\n$*" >> "$snippetsfile"
 }
 
 
