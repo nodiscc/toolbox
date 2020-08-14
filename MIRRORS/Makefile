@@ -1,6 +1,6 @@
 #!/usr/bin/env make
 
-all: download_binaries download_data
+all: download_binaries #download_data
 
 full: all download_tumblr download_wikia
 
