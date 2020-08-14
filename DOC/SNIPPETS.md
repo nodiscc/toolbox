@@ -25,6 +25,7 @@ docker-compose up -d #après ajout d'un bloc au .yml, lancer nvx containers
 docker-compose pull #update containers
 docker-compose up -d #restart updated containers
 
+systemctl daemon-reload error `Failed to reload daemon: Refusing to reload, not enough space available on /run/systemd. ` -> `sudo mkdir /var/log/journal && sudo systemctl restart systemd-journald`
 
 apachectl `start/stop/restart/fullstatus/status/graceful/graceful-stop/configtest/startssl`
 
@@ -58,6 +59,8 @@ monitoring disk I/O. Sheduleur: deadline, noop, anticipatory, and cfq. CFQ: dist
 
 Memory optimization: use ECC RAM, Use swap file??  application 80%, infra 20%
 
+pfsens upgrade from command line `sudo pfSense-upgrade -d`
+
 Prevent AMD Ryzen crash when idle? Disable idle power management in UEFI, or turn off C-States
 
 Apache tuning: MinSpareServers 20, MaxSPareServers 80,StartServers 32, MaxCLients 256, MaxRequestsPerChild. Use memcache, minimize modules, use nginx
@@ -69,6 +72,8 @@ Network tuning/monitoring: packet in/out, packets dropped
 apache force HTTPS redirect rewriterule: `    RewriteCond %{HTTPS} !=on; RewriteRule ^/?(.*) https://%{SERVER_NAME}/$1 [R,L]`
 
 Make nvidia optimus work under Debian: `sudo apt-get install bbswitch-dkms intel-microcode firmware-linux-nonfree bumblebee bumblebee-nvidia primus primus-libs primus-libs:i386 linux-headers-$(uname -r)`; Open `/etc/bumblebee/bumblebee.conf` and ser KernelDriver=nvidia-current; adduser your_user bumblebee; in `/etc/default/grub` add kernel option `rcutree.rcu_idle_gp_delay=1`; ` update-grub; reboot`. Test with `primusrun <command>` or `optirun <ommand>` <https://www.unixmen.com/how-to-make-nvidia-optimus-technology-work-properly-on-debian/>
+
+nvidia driver fix screen tearing `options nvidia_drm modeset=1` in `/etc/modprobe.d/nvidia.conf`
 
 Network Allow more ports to be available: `echo 1024 65000 > /proc/sys/net/ipv4/ip_local_port_range`
 
@@ -251,6 +256,8 @@ create multiple directories `mkdir -p /home/user/{test,test1,test2}`
 
 
 
+HTML5 details tag `<details> <summary>This is shown by default</summary> <p>Anything else in the element is hidden until you click the summary.</p> </details>`
+
 obiwan traceroute traceroute -m 254 -q1 `obiwan.scrye.net`
 
 locate files and move them to specified directory `locate -0 -i *barthes* | xargs -0 mv -t ~/Books/Barthes/`
@@ -430,16 +437,16 @@ debugging: get stacktrace: `gdb programname; (reproduce bug here); thread apply 
 
 translations: convert .po to .mo `msgfmt -cv -o fr_FR.mo fr_FR.po`
 
-`$BASH_SUBSHELL` returns how deep we are in subshells
+show how deep we are in subshells `echo $BASH_SUBSHELL` 
 
 git change branch in bare repo: `git symbolic-ref HEAD refs/heads/mybranchname @git`
 
 
 `wget --mirror --page-requisites --convert-links http://stackexchange.com` (infinite recursion depth) https://softwarerecs.stackexchange.com/questions/7344/how-to-create-an-offline-copy-of-a-website @scraping
 
-@desktop @mime associte mimetype with program `xdg-mime default magnet-video-player.desktop x-scheme-handler/magnet`
+associate mimetype with program/.desktop launcher `xdg-mime default magnet-video-player.desktop x-scheme-handler/magnet`
 
-greybot (#bash bot): August is the month when all your scripts break because you placed $(date +%m) in a variable and tried to do arithmetic with it, without removing the leading zeros. 08 is considered octal. Use $((10#$month)) to force decimal, or strip the zero. bash @wtf
+>greybot (#bash bot): August is the month when all your scripts break because you placed $(date +%m) in a variable and tried to do arithmetic with it, without removing the leading zeros. 08 is considered octal. Use $((10#$month)) to force decimal, or strip the zero.
 
 remove all ACLs recursively for a directory `setfacl -Rb /path/to/dir/`
 
@@ -453,71 +460,94 @@ force color in grep `grep --color=always`
 grep multiple patterns `egrep -i "str1|str2" /your/file`
 replace 4th character in a string `echo 'ABTKAKTSQ' | sed -re 's/(.{4})A/\1Z/'` = 	`ABTKZKTSQ`
 
-Generate private/public keypair `ssh-keygen -t rsa` or `-t ecdsa`
-change ssh private key passphrase `ssh-keygen -p`
-authorize a public key on remote ssh server  `ssh-copy-id -i ~/.ssh/id_dsa.pub $LOGIN@$SERVEUR`, on non-standard port: `ssh-copy-id "$LOGIN@$SERVEUR -p $PORT"`
+SSH Generate private/public keypair `ssh-keygen -t rsa` or `-t ecdsa`
+
+SSH change ssh private key passphrase `ssh-keygen -p`
+
+SSH authorize a public key on remote ssh server  `ssh-copy-id -i ~/.ssh/id_dsa.pub $LOGIN@$SERVEUR`, on non-standard port: `ssh-copy-id "$LOGIN@$SERVEUR -p $PORT"`
+
 sync directory to remote ssh/sftp server `rsync -avzP directory/ user@server:/path/to/directory`
 
-special file: Entropie disponible: `/proc/sys/kernel/random/entropy_avail`
-special file: Infos du processeur: `/proc/cpuinfo`
-special file: Infos sur la mémoire: `/proc/meminfo`
-special file: Systèmes de fichiers: `/proc/mounts`
-special file: Absorbeurs de données: `/dev/null`, `/dev/zero`
-special file: Fichier plein:`/dev/full`
-special file: Addresse MAC d'une carte réseau: `/sys/class/net/*/address`
-special file: Informations sur la distribution: `/etc/issue`
-special file: Infos sur la charge du processeur: `/proc/loadavg`
+show linux kernel entropy `cat /proc/sys/kernel/random/entropy_avail`
 
+show linux kernel CPU info `cat /proc/cpuinfo`
 
+show linux kernel memory info `/proc/meminfo`
+
+show linux kernel mounted filesystems info `/proc/mounts`
+
+linux kernel special files: `/dev/null`, `/dev/zero`, `/dev/full`
+
+show network interfaces MAC addresses `cat /sys/class/net/*/address`
+
+show linux distribution info `cat /etc/issue`
+
+show load average as reported by kernel `cat /proc/loadavg`
 
 
 bash diff 2 strings: `diff  <(echo "$string1" ) <(echo "$string2")`
 
 show default TCP/UDP port number convention `less /etc/services`
 
-show kernel supported filesystems `/proc/filesystems`
+show kernel supported filesystems `cat /proc/filesystems`
 
-clear freedesktop trashes `find /media/ /mnt/ -maxdepth 3  -type d -name "\.Trash*" -exec srm -llzrv '{}' \;`
+mysql show global variables `sudo mysql -e "SHOW GLOBAL VARIABLES;"`
 
-mysql `mysqldump -u root -p db_name [tables] > dumpfile.sql` export sql database (or `--all-databases`)
+mysql/mariadb show tables information and size (as root) `use information_schema; SELECT table_name, engine, row_format, table_rows, ROUND(((data_length + index_length) / 1024 / 1024), 2) AS "size (mb)" FROM TABLES ORDER BY (data_length + index_length) DESC;`
 
-mysql `mysql -u root -p db_name < dumpfile.sql` restore from mysqldump
+mysql enable slow query log `SET GLOBAL slow_query_log_file = '/var/log/mysql/slow_query.log';
+; SET GLOBAL slow_query_log = 1; SET GLOBAL long_query_time = 0.1; SET GLOBAL log_queries_not_using_indexes = 1;`
 
-mysql Reset MySQL root password. Must be run as root. `service mysql stop; killall mysqld; echo "UPDATE mysql.user SET Password=PASSWORD('MyNewPass') WHERE User='root'; FLUSH PRIVILEGES;" > $HOME/mysql-init; mysqld_safe --init-file=$HOME/mysql-init ; sleep 5; service mysqld stop; rm $HOME/mysql-init`
+mysql enable general query log for 60 seconds `SET GLOBAL general_log = 1; SELECT SLEEP(60); SET GLOBAL general_log = 0;`
 
-mysql Login to interactive MySQL shell `mysql -u root -p`
+mysql generate report with percona-toolkit `sudo pt-query-digest /var/log/mysql/slow_query.log` (slow qusry log) `sudo pt-query-digest --type=genlog query.log > mysql.log.digest` (general query log)
 
-mysql Run MySQL command from shell `mysql -u user -p -e 'SQL Query' database`
+mysql query profiling `SET SESSION profiling = 1;`, run your queries, list gathered profiles `SHOW PROFILES;`, inspect a particular query/profile `SHOW PROFILE CPU FOR QUERY 1;`
 
-mysql List MySQL accounts and check for empty passwords `SELECT User, Host, Password FROM mysql.user`
+mysql show global status/peroformance counters `SHOW GLOBAL STATUS;`
 
-mysql change a user password `SET PASSWORD FOR "$USER"@"localhost" = PASSWORD("$PASSWORD");`
+mysql global status: `Innodb_buffer_pool_read_requests`: number of readings taken;  `Innodb_buffer_pool_reads` number of readings taken from disk that cannot be satisfied by the pool buffer; `Created_tmp_disk_tables` number of temporary tables created using the disk, `Created_tmp_tables` total number of temporary tables since the server was started; `Select_scan` number of full table scans performed
 
-mysql Show all data in a table `SELECT * FROM $TABLE_NAME;`
 
-mysql Create new user account `CREATE USER '$USER'@'localhost' IDENTIFIED BY '$PASSWORD';`
+mysql export sql database `mysqldump -u root -p db_name [tables] > dumpfile.sql` (or `--all-databases`)
 
-mysql Create new database `CREATE DATABASE $DB_NAME`
+restore from mysqldump `mysql -u root -p db_name < dumpfile.sql`
 
-mysql List all databases `show databases;`
+Reset mysql root password. Must be run as root. `service mysql stop; killall mysqld; echo "UPDATE mysql.user SET Password=PASSWORD('MyNewPass') WHERE User='root'; FLUSH PRIVILEGES;" > $HOME/mysql-init; mysqld_safe --init-file=$HOME/mysql-init ; sleep 5; service mysqld stop; rm $HOME/mysql-init`
 
-mysql Switch to a database `use $DB_NAME;`
+Login to interactive mysql shell `mysql -u root -p` (or `sudo mysql`)
 
-mysql Show all tables in the database `show tables;`
+Run mysql command from shell `mysql -u user -p -e 'SQL Query' database`
 
-mysql Show database's fields format `describe $TABLE_NAME;`
+List mysql accounts and check for empty passwords `SELECT User, Host, Password FROM mysql.user`
 
-mysql Grant all privileges on a database to a user `GRANT ALL ON $DATABASE.* TO '$USER'@'localhost';`
+change a mysql user password `SET PASSWORD FOR "$USER"@"localhost" = PASSWORD("$PASSWORD");`
 
-mysql Show privileges for a user `SHOW GRANTS FOR '$USER'@'localhost';`
+Show all data in a mysql table `SELECT * FROM $TABLE_NAME;`
 
-mysql Revoke all privileges for a user `REVOKE ALL PRIVILEGES, GRANT OPTION FROM '$USER'@'localhost';`
+Create new mysql user account `CREATE USER '$USER'@'localhost' IDENTIFIED BY '$PASSWORD';`
 
-mysql Delete a database `DROP DATABASE $DATABASE;`
+Create new mysql database `CREATE DATABASE $DB_NAME`
 
-mysql Delete an user account `DROP USER '$USERNAME'@'$HOST';`
+List all mysql databases `show databases;`
 
-mysql update/change field value in table `UPDATE $table SET $field=$newvalue WHERE $anotherfield=value`
+Switch to a mysql database `use $DB_NAME;`
+
+Show all tables in a mysql database `show tables;`
+
+Show mysql database's fields format `describe $TABLE_NAME;`
+
+Grant all privileges on a mysql database to a user `GRANT ALL ON $DATABASE.* TO '$USER'@'localhost';`
+
+Show privileges for a mysql user `SHOW GRANTS FOR '$USER'@'localhost';`
+
+Revoke all privileges for a mysql user `REVOKE ALL PRIVILEGES, GRANT OPTION FROM '$USER'@'localhost';`
+
+Delete a mysql database `DROP DATABASE $DATABASE;`
+
+Delete a mysql user account `DROP USER '$USERNAME'@'$HOST';`
+
+update/change a value in a mysql table `UPDATE $table SET $field=$newvalue WHERE $anotherfield=value`
 
 mysql: rsync fast **replicate databases** `rsync --progress --delete -avzun /nfs-mysql/* /vm/mysql/` http://www.reddit.com/r/linuxadmin/comments/23s2gh/easiest_way_to_replicate_an_sql_database/
 
@@ -682,6 +712,8 @@ git mirror a Mediawiki wiki locally (with images) `git -c remote.origin.mediaImp
 
 Virtualization stack on Debian (TODO): sudo aptitude install qemu-launcher virt-manager libvirt-bin lvm2 qemu virt-viewer qemu-kvm bridge-utils; sudo addgroup $USER libvirt
 
+KVM/QEMU enable nesetd virtualization (eg proxmox in libvirt: `options kvm-intel nested=Y` or `options kvm-amd nested=1` in `/etc/modprobe.d/kvm-nested.conf`
+
 Change Android device MAC address `su; busybox ifconfig eth0 hw ether 00:11:22:33:44:55`
 Android recovery mode: Power + Vol UP (+Home)
 
@@ -773,8 +805,9 @@ systemd: generate boot time plot: `systemd-analyze plot > plot.svg`
 
 allow SSD TRIM operations even when cryptestup is in use: pass `allow-discards` kernel option for the root FS
 
-
 Fix mouse turning off to often (disable power management) `echo 'CONTROL_USB_AUTOSUSPEND="0"' > /etc/laptop-mode/conf.d/board-specific/no-usb-autosuspend.conf`
+
+Fix mouse horizontal/vertical sensibility/acceleration `xinput --set-prop "SynPS/2 Synaptics TouchPad" "Device Accel Constant Deceleration" 1`
 
 disable keyboard beep: `echo 'options snd_hda_intel beep_mode=0' >> /etc/modprobe.d/alsa-base.conf`
 
@@ -903,6 +936,7 @@ limit user processes to 10000 `/etc/security/limits.conf: user hard nproc 10000`
 
 checkout github Pull Requests locally ` fetch = +refs/pull/*/head:refs/remotes/origin/pr/*`
 
+git use hooks directory from local repo `git config core.hooksPath .githook`
 
 list listening ports (from local machine): `netstat -tulp` or `ss -pau`
 
