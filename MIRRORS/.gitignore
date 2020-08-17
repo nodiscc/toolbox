@@ -1,3 +1,4 @@
+*.meta4
 BIN-DATA/elderscrolls_pages_current.xml.7z
 BIN-DATA/france-latest.osm.pbf
 BIN-DATA/kiwix-0.9+wikipedia_en_all_nopic_2017-08.zip
@@ -48,6 +49,7 @@ BIN-LINUX/twine_2.2.1_linux64.zip
 BIN-LINUX/webtorrent-desktop_0.16.0-1_amd64.deb
 BIN-LINUX/wikipedia_en_all.zip.torrent
 BIN-LINUX/wikipedia_fr_all.zip.torrent
+BIN-LINUX/worldpainter_2.7.17.deb
 BIN-LINUX/xsv-0.10.3-i686-unknown-linux-musl.tar.gz
 BIN-LINUX/xwinwrap_20180429-1_amd64.deb
 BIN-LINUX/youtube-dl
