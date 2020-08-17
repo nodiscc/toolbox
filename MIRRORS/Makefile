@@ -1,12 +1,8 @@
 #!/usr/bin/env make
 
-all: download_binaries #download_data
+all: download_binaries download_data #download_tumblr download_wikia
 
-full: all download_tumblr download_wikia
-
-#####################################################
-
-WGET = wget --no-clobber --show-progress --content-disposition --tries 1 --timeout 3
+WGET = wget --continue --show-progress --content-disposition --tries 1 --timeout 3
 download_binaries:
 	$(WGET) --directory-prefix=BIN-LINUX/ --input-file=bin-linux.urls.list
 	$(WGET) --directory-prefix=BIN-MAC/ --input-file=bin-mac.urls.list
