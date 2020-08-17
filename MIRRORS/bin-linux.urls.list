@@ -26,4 +26,4 @@ https://www.qlcplus.org/downloads/4.11.0/qlcplus_4.11.0_amd64.deb
 https://www.worldpainter.net/files/worldpainter_2.7.17.deb
 https://al.chemy.org/files/Alchemy-008.tar.gz
 https://tiddlywiki.com/empty.html
-https://www.torproject.org/dist/torbrowser/9.5.3/tor-browser-linux64-9.5.3_en-US.tar.xz
+#https://www.torproject.org/dist/torbrowser/9.5.3/tor-browser-linux64-9.5.3_en-US.tar.xz # sometimes returns HTTP error 421, just retry
