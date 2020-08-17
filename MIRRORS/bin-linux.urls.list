@@ -1,4 +1,4 @@
-https://download.mozilla.org/?product=firefox-nightly-latest-ssl&os=linux64&lang=en-US
+https://download-installer.cdn.mozilla.net/pub/firefox/nightly/latest-mozilla-central/firefox-81.0a1.en-US.linux-x86_64.tar.bz2
 https://deb.debian.org/debian/pool/main/r/retext/retext_7.0.4-1_all.deb
 https://download.opensuse.org/repositories/home:/jgeboski/Debian_9.0/amd64/purple-facebook_20190113-0.9.6-0250907-166_amd64.deb
 https://download.opensuse.org/repositories/home:/RockHopper/Debian_9.0/amd64/shuriken_0.5.2-2stretch1_amd64.deb
@@ -23,7 +23,7 @@ https://packagecontrol.io/Package%20Control.sublime-package
 https://s3.amazonaws.com/Minecraft.Download/versions/1.11.2/minecraft_server.1.11.2.jar
 https://yt-dl.org/downloads/latest/youtube-dl
 https://www.qlcplus.org/downloads/4.11.0/qlcplus_4.11.0_amd64.deb
-https://www.worldpainter.net/files/worldpainter_2.7.5.deb
+https://www.worldpainter.net/files/worldpainter_2.7.17.deb
 https://al.chemy.org/files/Alchemy-008.tar.gz
 https://tiddlywiki.com/empty.html
-https://www.torproject.org/dist/torbrowser/9.0.9/tor-browser-linux64-9.0.9_en-US.tar.xz
+https://www.torproject.org/dist/torbrowser/9.5.3/tor-browser-linux64-9.5.3_en-US.tar.xz

@@ -1,18 +1,15 @@
 #!/usr/bin/env make
+# Requirements: aria2c
+LANG = C
 
-all: download_binaries download_data #download_tumblr download_wikia
+define call_aria2c
+	aria2c --dir=$(1) --input-file=$(2) --continue --console-log-level=warn --auto-file-renaming=false --allow-overwrite=true --timeout=3 --user-agent="Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101 Firefox/68.0"
+endef
 
-WGET = wget --continue --show-progress --content-disposition --tries 1 --timeout 3
-download_binaries:
-	$(WGET) --directory-prefix=BIN-LINUX/ --input-file=bin-linux.urls.list
-	$(WGET) --directory-prefix=BIN-MAC/ --input-file=bin-mac.urls.list
-	$(WGET) --directory-prefix=BIN-WINDOWS/ --input-file=bin-windows.urls.list
+all: mirror
 
-download_data:
-	$(WGET) --directory-prefix=BIN-DATA/ --input-file=bin-data.urls.list
-
-download_tumblr:
-	cd TUMBLR/ && python ../GITHUB/tumblr_backup/tumblr_backup.py onethingwell.org
-
-download_wikia:
-	$(WGET) -P WIKIS/ https://s3.amazonaws.com/wikia_xml_dumps/e/el/elderscrolls_pages_current.xml.7z # http://elderscrolls.wikia.com/wiki/Special:Statistics
+mirror:
+	$(call call_aria2c,BIN-LINUX/,bin-linux.urls.list)
+	$(call call_aria2c,BIN-MAC/,bin-mac.urls.list)
+	$(call call_aria2c,BIN-WINDOWS/,bin-windows.urls.list)
+	$(call call_aria2c,BIN-DATA/,bin-data.urls.list)
