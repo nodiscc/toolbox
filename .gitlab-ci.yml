@@ -1,0 +1,13 @@
+---
+
+image: debian:buster-slim
+
+test:
+  before_script:
+    - apt-get update && apt-get install -y shellcheck python3-venv wget make
+    - export LC_ALL=C.UTF-8
+    - export LANG=C.UTF-8
+    - wget http://ftp.us.debian.org/debian/pool/main/s/shellcheck/shellcheck_0.4.4-4_amd64.deb
+    - dpkg -i shellcheck_0.4.4-4_amd64.deb
+  script:
+    - make tests

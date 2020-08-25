@@ -1,4 +1,4 @@
-[![](https://api.travis-ci.org/nodiscc/toolbox.svg?branch=master)](https://travis-ci.org/nodiscc/toolbox)
+[![](https://gitlab.com/nodiscc/toolbox/badges/master/pipeline.svg)](https://gitlab.com/nodiscc/toolbox/-/pipelines)
 
 ```
 License: MIT

@@ -6,8 +6,10 @@ all: mirrors tests
 mirrors:
 	cd MIRRORS/ && make
 
+tests: shellcheck
+
 # non-blocking, warning only
-tests:
+shellcheck:
 	for i in $$(find SCRIPTS/ -maxdepth 1 -type f); do \
 		if grep '^#!/bin/bash' "$$i" >/dev/null; then \
 		shellcheck "$$i" || exit 0 ; fi; done
