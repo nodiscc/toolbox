@@ -1,0 +1,9 @@
+ansible==2.10
+weboob
+gallery-dl
+yamllint
+subliminal
+https://github.com/shaarli/python-shaarli-client/archive/master.zip
+PyGithub
+python-gitlab
+
