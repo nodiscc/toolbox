@@ -2,26 +2,56 @@
 # WIP
 # Description: output a list of useful/interesting manpages
 # TODO search for missing commands on manpages.debian.org
+# Requirements: bash man xmlstarlet
 set -o errexit
 set -o nounset
+set -o pipefail
 
+local_manpages=()
 errors=()
 
-while read -r name; do
-	if description=$(man -f "$name" 2>/dev/null); then
-		echo "$description"
+
+function _get_html_li() {
+	name="$1"
+	if whatis=$(man -f "$name" 2>/dev/null); then
+		man_name=$(echo "$whatis" | awk '{print $1 " " $2}' )
+		description=$(echo "$whatis" | awk '{$1=$2=$3=""; print $0}' )
+		echo "<li><a href='#$name'>$man_name</a>$description</li>"
+		local_manpages+=("$name")
 	else
-		export errors+=("$name")
+		echo "<li><a href='#$name'>$name</a></li>"
 	fi
+}
+
+function _get_html_manpage() {
+	name="$1"
+	manpage="$(COLUMNS=100 man $name | xmlstarlet esc)"
+	echo "<h2><a id='$name'>$name</a><a href='#'>↥</a></h2>"
+	echo -e "\n<pre>"
+	echo "$manpage"
+	echo -e "\n</pre>\n\n<hr>\n\n"
+}
+
+while read -r name; do
+	_get_html_li "$name"
 done < manpages.list
+
+echo -e "\n\n<hr>\n\n"
+
+for name in ${local_manpages[*]}; do
+	_get_html_manpage "$name"
+done
+
+
+#https://manpages.debian.net/
 
 #echo "DEBUG ${errors[*]}"
 
-for i in ${errors[*]}; do
-	url="https://manpages.debian.org/$i.en.gz"
-	manpage=$(curl -L --silent "$url")
-	description=$(echo "$manpage" | \
-		grep -Ei --after-context=2 --max-count=1 '.SH \"?NAME' | \
-		grep -Eiv "^\.('SH'|'B'|'PP'|'NM')" | sed 's/\\//g' | sed "s/$i - //g")
-	echo "$i - $description"
-done
+# for i in ${errors[*]}; do
+# 	url="https://manpages.debian.org/$i.en.gz"
+# 	manpage=$(curl -L --silent "$url")
+# 	description=$(echo "$manpage" | \
+# 		grep -Ei --after-context=2 --max-count=1 '.SH \"?NAME' | \
+# 		grep -Eiv "^\.('SH'|'B'|'PP'|'NM')" | sed 's/\\//g' | sed "s/$i - //g")
+# 	echo "$i - $description"
+# done

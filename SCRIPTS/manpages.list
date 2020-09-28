@@ -239,6 +239,7 @@ mpstat
 mtr
 multitail
 mv
+nc
 ncat
 ndiff
 netcat
@@ -246,6 +247,7 @@ nethogs
 netstat
 ngrep
 ngxtop
+umask
 nice
 nl
 nm
@@ -519,6 +521,7 @@ whereis
 which
 whiptail
 who
+whois
 whoami
 wireshark
 wmctrl
