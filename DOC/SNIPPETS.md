@@ -144,6 +144,28 @@ https://stackoverflow.com/questions/20318770 send mail from linux terminal in on
 
 print 25th line of file: `sed 25!d file.txt `
 
+keep only file extension  `echo $FILE | sed 's/.*\./``/`
+
+replace newlines with spaces in a file `sed -i 's/\ //g/' $FICHIER`
+
+replace 4th character in a string `echo 'ABTKAKTSQ' | sed -re 's/(.{4})A/\1Z/'` = 	`ABTKZKTSQ`
+
+sed remove 1st an 4th lines in a file `sed '1d;4d' file.txt`
+
+sed remove lines matching regex `sed '/^#/d' file.txt`
+
+sed remove lines between 2 regex matches (including matched lines) `sed '/pattern1/d;/pattern2/d' file.txt`
+
+sed remove lines by number AND regex `sed '/1d;/^#/d' test.txt`
+
+sed only show lines matching regex `sed --quiet '/^#/p' file.txt`
+
+sed replace matched characters with other set of characters `sed 'y/éèëê/eeee'`
+
+sed replace characters + replace word on lines matchign pattern `sed '/pattern/ {y/éêëè/eee/;s/before/after/g}' file.txt`
+
+sed in-place replace and create backup of original file `for f in *.php; do sed -i.bak -e 's/before/after/' "$f"; done`
+
 remove all lines starting with `#` or blank lines `sed -e '/^[ ]*#/d' -e '/^$/d' /etc/samba/smb.conf`
 
 https://stackoverflow.com/questions/2181712/ Simple way to convert HH:MM:SS (hours:minutes:seconds.split seconds) to seconds `echo "00:20:40.25" | awk -F: '{ print ($1 * 3600) + ($2 * 60) + $3 }'`
@@ -193,6 +215,8 @@ stop a disk (spindown) `hdparm -y /dev/sdx`
 put a disk to idle,spindown after 21 minutes `hdparm -S252 /dev/sdx`
 
 detect installed operating systems `sudo os-prober; sudo update-grub`
+
+fix GRUB error `symbol 'grub_calloc' not found`: run live system, `sudo mount /dev/sda1  /mnt`, `sudo grub-install --root-directory=/mnt/  /dev/sda`
 
 backup luks-encrypted disk header  `cryptsetup luksHeaderBackup --header-backup-file `<file>` `<device>`
 
@@ -399,7 +423,7 @@ network display routing table `netstat -rn` or `ip r`
 
 scan local network `nmap -sP 192.168.1.0/24`
 
-network Serve the current directory on port 8080 `python -m SimpleHTTPServer 8080`
+network Serve the current directory on port 8080 `python -m SimpleHTTPServer 8080`, python3 `python3 -m http.server 8080`
 
 firewall deny requests from 1 IP address `sudo ufw  insert 1 deny from $IP_ADDRESS`
 
@@ -450,15 +474,17 @@ associate mimetype with program/.desktop launcher `xdg-mime default magnet-video
 
 remove all ACLs recursively for a directory `setfacl -Rb /path/to/dir/`
 
-keep only file extension  `echo $FILE | sed 's/.*\./``/`
-remove duplicate lines in a file `cat $FILE | sort |uniq`
-replace newlines with spaces in a file `sed -i 's/\ //g/' $FICHIER`
+remove duplicate lines in a file `cat $FILE | sort --unique`
+
 remove 4 first characters from every line in file `cut -b 1-4 --complement $FICHIER`
+
 use newline as separator in cut `cut -d $`
+
 sort lines in a file in-place `sort -o $FICHIER`, remove upicates with `-u`
+
 force color in grep `grep --color=always`
+
 grep multiple patterns `egrep -i "str1|str2" /your/file`
-replace 4th character in a string `echo 'ABTKAKTSQ' | sed -re 's/(.{4})A/\1Z/'` = 	`ABTKZKTSQ`
 
 SSH Generate private/public keypair `ssh-keygen -t rsa` or `-t ecdsa`
 
