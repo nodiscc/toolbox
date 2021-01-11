@@ -81,6 +81,8 @@ Network increase memory of socket buffers `echo 262143 > /proc/sys/core/rmem_max
 
 ffmpeg cut between 310th and 500th frame `ffmpeg -i constellaion003.mkv -vf 'select=gte(n\,301)*lte(n\,500)'` output.mkv (breaks video index/length/seek?)
 
+find duplicate images and display in image viewer `findimagedupes -v=fp  -R -f=fp_data  ~/images; findimagedupes -v=fp  -R -f=fp_data  -p=/usr/bin/feh ~/images`
+
 debian simple sid backport: First, check for a backport on [debian-backports].  If unavailable: 1) Add a deb-src line for sid (not a deb line!); ask me about [deb-src sid] 2) enable debian-backports (see [bdo]) 3) aptitude update; aptitude install build-essential; aptitude build-dep packagename; apt-get -b source packagename; 4) install the resultant debs.  To change compilation options, see [package recompile]; for versions newer than sid see [uupdate]. (from #debian dpkg bot)
 
 apt list packages from specific origin/repository (eg. kxStudio): `ls  /var/lib/apt/lists/*kx*Packages | xargs cat | grep ^Package | sort --unique`
@@ -103,6 +105,8 @@ bash increment variable `var=$((var+1))`
 bash increment variable `((var=var+1))`
 bash increment variable `((var+=1))`
 bash increment variable `((var++))`
+
+python md5 hash string `import hashlib; hashlib.md5('chaine à hasher').hexdigest()`
 
 Force running handler even if triggering tasks have not `changed`: `--force-handler` or `force_handlers = True` in ansible.cfg; and task `- meta: flush_handlers` to fire your handlers at a specific point
 
@@ -1177,9 +1181,6 @@ convert image to data: URL (base64): base64 IMAGE.jpg
 mount qcow2 disk: sudo modprobe nbd max_part=8; sudo qemu-nbd --connect /dev/nbd0 /path/to/disk.qcow2; sudo mount /dev/nbd0p1 /mnt; sudo umount /mnt; sudo qemu-nbd --disconnect /dev/nbd0
 
 
-move libvirt VM: 1. copy the VM disks from the src host to the dst host (same directory); 2. on src run `virsh dumpxml > myvm.xml`; 3. copy the XML to the dst host; 4. on dst run `virsh define myvm.xml`
-
-lbvirt clone VM template and run it: `sudo virt-clone --original vm-template --name my.example.host --file /path/to/my.example.host.qcow2 && sudo virsh start my.example.host`
 
 ansible readable output: `stdout_callback = debug` in ansible.cfg
 
