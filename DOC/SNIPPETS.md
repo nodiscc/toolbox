@@ -101,10 +101,9 @@ libvirt keyboard not working: set the proper keymap in VM settings
 
 open .mozlz4: `apt-get install liblz4-dev; git clone https://github.com/andikleen/lz4json.git; cd lz4json; make; ./lz4jsoncat ~/.mozilla/firefox/*/bookmarkbackups/*.jsonlz4`
 
-bash increment variable `var=$((var+1))`
-bash increment variable `((var=var+1))`
-bash increment variable `((var+=1))`
-bash increment variable `((var++))`
+bash increment variable `var=$((var+1))` OR `((var=var+1))` OR `((var+=1))` OR `((var++))`
+
+bash docs: Use error-if-unset `${placeholders?}` and join commands with `&&` to make it easier and safer to copy-paste shell commands from technical documentation.
 
 python md5 hash string `import hashlib; hashlib.md5('chaine à hasher').hexdigest()`
 
@@ -497,6 +496,8 @@ SSH change ssh private key passphrase `ssh-keygen -p`
 SSH authorize a public key on remote ssh server  `ssh-copy-id -i ~/.ssh/id_dsa.pub $LOGIN@$SERVEUR`, on non-standard port: `ssh-copy-id "$LOGIN@$SERVEUR -p $PORT"`
 
 sync directory to remote ssh/sftp server `rsync -avzP directory/ user@server:/path/to/directory`
+
+rsync over ssh with custom port `rsync -av -e "ssh -p 123" example.com:/path/on/remote/server ~/local/path`
 
 show linux kernel entropy `cat /proc/sys/kernel/random/entropy_avail`
 
