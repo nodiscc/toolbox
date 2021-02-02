@@ -237,6 +237,7 @@ watch for file modifications in a directory `inotifywait -rm --event modify --ev
 
 force disk verification on next startup/reboot `touch /forcefsck`
 
+create empty file `touch emptyfile` or `> emptyfile`
 
 python get all attributes/variables for an object: `from pprint import pprint; pprint(vars(object))`
 
@@ -420,6 +421,7 @@ samba add user to SAM database: `pdbedit -a username`
 
 samba change user password: `smpbasswd username`
 
+
 samba fstab mount entry: `//172.21.24.3/myshare /mnt/mysharemountpoint cifs _netdev,auto,username=xxx,pass=xxx 0 0`
 
 network display routing table `netstat -rn` or `ip r`
@@ -542,43 +544,43 @@ mysql global status: `Innodb_buffer_pool_read_requests`: number of readings take
 
 mysql export sql database `mysqldump -u root -p db_name [tables] > dumpfile.sql` (or `--all-databases`)
 
-restore from mysqldump `mysql -u root -p db_name < dumpfile.sql`
+mysql restore from mysqldump `mysql -u root -p db_name < dumpfile.sql`
 
-Reset mysql root password. Must be run as root. `service mysql stop; killall mysqld; echo "UPDATE mysql.user SET Password=PASSWORD('MyNewPass') WHERE User='root'; FLUSH PRIVILEGES;" > $HOME/mysql-init; mysqld_safe --init-file=$HOME/mysql-init ; sleep 5; service mysqld stop; rm $HOME/mysql-init`
+mysql reset root password. Must be run as root. `service mysql stop; killall mysqld; echo "UPDATE mysql.user SET Password=PASSWORD('MyNewPass') WHERE User='root'; FLUSH PRIVILEGES;" > $HOME/mysql-init; mysqld_safe --init-file=$HOME/mysql-init ; sleep 5; service mysqld stop; rm $HOME/mysql-init`
 
 Login to interactive mysql shell `mysql -u root -p` (or `sudo mysql`)
 
-Run mysql command from shell `mysql -u user -p -e 'SQL Query' database`
+mysql Run command from shell `mysql -u user -p -e 'SQL Query' database`
 
-List mysql accounts and check for empty passwords `SELECT User, Host, Password FROM mysql.user`
+mysql List accounts and check for empty passwords `SELECT User, Host, Password FROM mysql.user`
 
-change a mysql user password `SET PASSWORD FOR "$USER"@"localhost" = PASSWORD("$PASSWORD");`
+mysql change user password `SET PASSWORD FOR "$USER"@"localhost" = PASSWORD("$PASSWORD");`
 
-Show all data in a mysql table `SELECT * FROM $TABLE_NAME;`
+mysql Show all data in a table `SELECT * FROM $TABLE_NAME;`
 
-Create new mysql user account `CREATE USER '$USER'@'localhost' IDENTIFIED BY '$PASSWORD';`
+mysql  Create new user account `CREATE USER '$USER'@'localhost' IDENTIFIED BY '$PASSWORD';`
 
-Create new mysql database `CREATE DATABASE $DB_NAME`
+mysql Create new database `CREATE DATABASE $DB_NAME`
 
-List all mysql databases `show databases;`
+mysql List all databases `show databases;`
 
-Switch to a mysql database `use $DB_NAME;`
+mysql Switch to a database `use $DB_NAME;`
 
-Show all tables in a mysql database `show tables;`
+mysql Show all tables in a database `show tables;`
 
-Show mysql database's fields format `describe $TABLE_NAME;`
+mysql Show database's fields format `describe $TABLE_NAME;`
 
-Grant all privileges on a mysql database to a user `GRANT ALL ON $DATABASE.* TO '$USER'@'localhost';`
+mysql Grant all privileges on a database to a user `GRANT ALL ON $DATABASE.* TO '$USER'@'localhost';`
 
-Show privileges for a mysql user `SHOW GRANTS FOR '$USER'@'localhost';`
+mysql Show privileges for a user `SHOW GRANTS FOR '$USER'@'localhost';`
 
-Revoke all privileges for a mysql user `REVOKE ALL PRIVILEGES, GRANT OPTION FROM '$USER'@'localhost';`
+mysql Revoke all privileges for a user `REVOKE ALL PRIVILEGES, GRANT OPTION FROM '$USER'@'localhost';`
 
-Delete a mysql database `DROP DATABASE $DATABASE;`
+mysql Delete a database `DROP DATABASE $DATABASE;`
 
-Delete a mysql user account `DROP USER '$USERNAME'@'$HOST';`
+mysql Delete a user account `DROP USER '$USERNAME'@'$HOST';`
 
-update/change a value in a mysql table `UPDATE $table SET $field=$newvalue WHERE $anotherfield=value`
+mysql update/change a value in a table `UPDATE $table SET $field=$newvalue WHERE $anotherfield=value`
 
 mysql: rsync fast **replicate databases** `rsync --progress --delete -avzun /nfs-mysql/* /vm/mysql/` http://www.reddit.com/r/linuxadmin/comments/23s2gh/easiest_way_to_replicate_an_sql_database/
 
@@ -907,6 +909,8 @@ simple xss test `</a><script>alert("ICANDOANYTHINGINJS!!!!")</script><imgsrc="ht
 Fix for touchpad mouse not working `echo synclient TapButton1=1 >> ~/.profile`
 
 Fix reset lost root password: reboot, select desired OS, hit `E`, add `init=/bin/bash` to kernel command line, `mount -o remount,rw / ; passwd; reboot`
+
+change linux user password from a script `echo -e "new_password\nnew_password" | (passwd --stdin $USER)` or `echo "username:password" | chpasswd`
 
 Fix phone not working as USB drive: Enable USB mass storage mode on the phone.
 
