@@ -1,0 +1,26 @@
+[Scheme]
+Name=Dark Pastels
+Name[ar]=أسود Pastels
+Name[bg]=Тъмни пастели
+Name[cs]=Tmavé pastely
+Name[es]=Pasteles oscuros
+Name[eu]=Pastel ilunak
+Name[fr]=Pastels sombres
+Name[he]=פסטלים כהים
+Name[hu]=Sötét pasztell
+Name[id]=Pastel Hitam
+Name[it]=Pastelli scuri
+Name[ja]=ダークパステル
+Name[kk]=Күңгірт пастель
+Name[ko]=어두운 파스텔
+Name[nl]=Donkere pastelkleuren
+Name[pl]=Ciemne pastele
+Name[pt]=Pastel escuro
+Name[pt_BR]=Pastel escuro
+Name[ro]=Pastel închis
+Name[sr]=Тамне боје
+Name[uk]=Темна пастель
+ColorForeground=#dcdcdc
+ColorBackground=#2c2c2c
+ColorCursor=#dcdcdc
+ColorPalette=#3f3f3f;#705050;#60b48a;#dfaf8f;#9ab8d7;#dc8cc3;#8cd0d3;#dcdcdc;#709080;#dca3a3;#72d5a3;#f0dfaf;#94bff3;#ec93d3;#93e0e3;#ffffff
