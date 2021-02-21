@@ -65,6 +65,8 @@ Prevent AMD Ryzen crash when idle? Disable idle power management in UEFI, or tur
 
 Apache tuning: MinSpareServers 20, MaxSPareServers 80,StartServers 32, MaxCLients 256, MaxRequestsPerChild. Use memcache, minimize modules, use nginx
 
+ouyt of disk space ~/.xsession-errors.log getting extremely large: replace call to exec with `exec >> /dev/null 2>&1` in /etc/X11/Xsession
+
 nginx enable HTTP2 `listen 443 ssl http2;`
 
 Network tuning/monitoring: packet in/out, packets dropped
