@@ -28,3 +28,4 @@ https://www.worldpainter.net/files/worldpainter_2.7.17.deb
 https://al.chemy.org/files/Alchemy-008.tar.gz
 https://tiddlywiki.com/empty.html
 #https://www.torproject.org/dist/torbrowser/9.5.3/tor-browser-linux64-9.5.3_en-US.tar.xz # sometimes returns HTTP error 421, just retry
+https://github.com/profclems/glab/releases/download/v1.15.0/glab_1.15.0_Linux_x86_64.tar.gz
