@@ -1,13 +1,44 @@
----
-
 image: debian:buster-slim
+
+stages:
+   - test
+   # - deploy
 
 test:
   before_script:
     - apt-get update && apt-get install -y shellcheck python3-venv wget make
-    - export LC_ALL=C.UTF-8
+    - export 
     - export LANG=C.UTF-8
-    - wget http://ftp.us.debian.org/debian/pool/main/s/shellcheck/shellcheck_0.4.4-4_amd64.deb
-    - dpkg -i shellcheck_0.4.4-4_amd64.deb
+    #- wget http://ftp.us.debian.org/debian/pool/main/s/shellcheck/shellcheck_0.4.4-4_amd64.deb
+    #- dpkg -i shellcheck_0.4.4-4_amd64.deb
   script:
     - make tests
+
+
+### EXAMPLE GITLAB DEPLOYMENT JOB ###
+# These jobs are shown in the -/environments tab
+# deploy_dev:
+#   stage: deploy
+#   script:
+#     - echo "Deploy to dev server"
+#   environment:
+#     name: dev
+#     url: https://dev.example.com
+
+# deploy_qa:
+#   stage: deploy
+#   script:
+#     - echo "Deploy to qa server"
+#   environment:
+#     name: qa
+#     url: https://qa.example.com
+
+# deploy_prod:
+#   stage: deploy
+#   script:
+#     - echo "Deploy to prod server"
+#   environment:
+#     name: prod
+#     url: https://prod.example.com
+#   only:
+#     - tags
