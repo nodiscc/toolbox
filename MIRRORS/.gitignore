@@ -4,7 +4,7 @@ BIN-DATA/france-latest.osm.pbf
 BIN-DATA/kiwix-0.9+wikipedia_en_all_nopic_2017-08.zip
 BIN-DATA/nameservers.csv
 BIN-LINUX/Abricotine-linux-ubuntu-debian-x64.deb
-BIN-LINUX/adminer-4.7.8.php
+BIN-LINUX/adminer-4.8.0.php
 BIN-LINUX/airwave_1.3.3-git1-1_amd64.deb
 BIN-LINUX/Alchemy-008.tar.gz
 BIN-LINUX/alsa-firmware-1.0.29.tar.bz2
@@ -36,7 +36,7 @@ BIN-LINUX/node-v12.14.1-linux-x64.tar.xz
 BIN-LINUX/Package Control.sublime-package
 BIN-LINUX/Package%20Control.sublime-package
 BIN-LINUX/Popcorn-Time-0.3.10-Linux-64.tar.xz
-BIN-LINUX/purple-facebook_20190113-0.9.6-0250907-166_amd64.deb
+BIN-LINUX/purple-facebook_20210215~e0d7732~22_amd64.deb
 BIN-LINUX/qlcplus_4.11.0_amd64.deb
 BIN-LINUX/QOwnNotes-18.05.0.deb
 BIN-LINUX/retext_7.0.4-1_all.deb
