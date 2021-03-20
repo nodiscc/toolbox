@@ -47,8 +47,6 @@ BIN-LINUX/skippy-xd_0.5.1~hg-1_amd64.deb
 BIN-LINUX/sublime_text_3_build_3211_x64.tar.bz2
 BIN-LINUX/twine_2.2.1_linux64.zip
 BIN-LINUX/webtorrent-desktop_0.16.0-1_amd64.deb
-BIN-LINUX/wikipedia_en_all.zip.torrent
-BIN-LINUX/wikipedia_fr_all.zip.torrent
 BIN-LINUX/worldpainter_2.7.17.deb
 BIN-LINUX/xsv-0.10.3-i686-unknown-linux-musl.tar.gz
 BIN-LINUX/xwinwrap_20180429-1_amd64.deb
@@ -77,4 +75,4 @@ WIKI/wiki.step-project.com.zip
 WIKI/www.ekopedia.fr.zip
 BIN-LINUX/firefox-81.0.1.tar.bz2
 BIN-LINUX/firefox-81.0.1.tar.bz2.asc
-
+BIN-DATA/wikipedia_en_all_maxi_2021-02.zim
