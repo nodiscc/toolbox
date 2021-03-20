@@ -1,0 +1,59 @@
+#!/bin/bash
+# Description: list thunderbird events and tasks
+# License: WTFPL
+set -o nounset
+set -o errexit
+USAGE="USAGE $0 [-r|-s] [-a] [-l number] tasks|events
+    -s: random sort
+    -r: reverse sort
+    -a: show all events, including those in the past
+    -l number: max. number of returned items"
+
+########################
+
+function get_events() {
+    for i in ~/.thunderbird/*/calendar-data/cache.sqlite; do
+        sqlite3 -separator ' | ' "$i" \
+        "SELECT date(SUBSTR(event_start, 1, 10), 'unixepoch'),title FROM cal_events $future_where_clause LIMIT 0, 50000;"
+    done
+}
+
+function get_tasks() {
+    for i in ~/.thunderbird/*/calendar-data/cache.sqlite; do
+        sqlite3 "$i" \
+        'SELECT title FROM cal_todos WHERE (ical_status NOT LIKE "%COMPLETED%" OR ical_status IS NULL) ORDER BY priority DESC LIMIT 0, 50000;'
+    done
+}
+#################################
+
+sort_command="sort"
+future_where_clause="WHERE SUBSTR(event_start, 1, 10) >= STRFTIME('%s', 'now')"
+limit=1000
+
+#Getopts loop - the first : sets silent mode (less error reporting)
+#An option followed by : (eg. a:) will require an argument
+#Options without an : are simple flags and require no argument
+while getopts ":rsal:" opt; do
+	case $opt in
+	r) sort_command="sort --reverse"; shift
+	;;
+	s) sort_command="sort --random-sort"; shift
+	;;
+	a) future_where_clause=""; shift
+	;;
+	l) limit=$OPTARG; shift 2
+	;;
+	h) echo "$USAGE"; exit 0
+	;;
+	*) echo -e "${R}Invalid option $opt${NC}"; echo "$USAGE"; exit 1
+	;;
+	esac
+done
+command=${1:-}
+case $command in
+    "events") list=$(get_events);;
+    "tasks") list=$(get_tasks);;
+    *) echo "$USAGE"; exit 1;;
+esac
+
+echo "$list" | $sort_command | cut -c -60 | tail -n "$limit"
