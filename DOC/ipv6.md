@@ -36,7 +36,7 @@ GlobalPrefix SubnetID InterfaceID /PrefixLength
 
  * Loopback `::1/128`
  * Unspecified `::/128`
- * Unique local `FC00::/7 - FDFF::/7`
+ * [Unique Local Address](https://en.wikipedia.org/wiki/Unique_local_address) `FC00::/7 - FDFF::/7`
 
 
 ### Packet
