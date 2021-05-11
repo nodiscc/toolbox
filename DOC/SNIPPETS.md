@@ -18,12 +18,16 @@ send mail from common line `echo "My message" | mail -s subject user@gmail.com`
 
 python pretty-print dicts: `#import pprint; pp = pprint.PrettyPrinter(indent=4); pp.pprint(my_dict)`
 
+```bash
 docker-compose up #démarrage en mpode detached
 docker-compose ps #vérifier que les containers sont up
 docker-compose stop plexpy #stop single container
 docker-compose up -d #après ajout d'un bloc au .yml, lancer nvx containers
 docker-compose pull #update containers
 docker-compose up -d #restart updated containers
+```
+
+Gitlab CI run pipeline with variables from URL parameters `.../pipelines/new?ref=my_branch&var[foo]=bar&file_var[file_foo]=file_bar`
 
 systemctl daemon-reload error `Failed to reload daemon: Refusing to reload, not enough space available on /run/systemd. ` -> `sudo mkdir /var/log/journal && sudo systemctl restart systemd-journald`
 
