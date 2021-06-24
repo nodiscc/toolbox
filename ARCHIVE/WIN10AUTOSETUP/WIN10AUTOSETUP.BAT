@@ -738,6 +738,7 @@ choco install resourcehacker.portable --yes
 choco install git --yes
 choco install wget --yes
 choco install steam --yes
+choco install playnite --yes
 
 :: Additional software
 :: PDF Creator http://sourceforge.net/projects/pdfcreator/
