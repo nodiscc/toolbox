@@ -6,6 +6,15 @@ Windows force Active directory synchronization with O365 (ignore 30 min default 
 
 Windows enable password for UAC: Local Security Policy > Local Policies > Security Options > User Account Control : Behavior of the elevation prompt for... > Prompt for crendtials
 
+windows powsershell general computer info `Get-ComputerInfo; Get-Counters; Get-WmiObject Win32_PNPEntity | sort -property deviceid |ft -Property service,name,manufacturer,deviceid; Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\* | Select-Object DisplayName,DisplayVersion,Publisher,InstallDate | format-table -autosize;  Get-AppxPackage | ft -Property PackageFullName,InstallLocation; Get-Process | ft -Property Id,PagedMemorySize,PagedSystemMemorySIze,PrivateMemorySIze,VirtualMemorySize,WorkingSet,CPU,Handlecount,Name,Path; Get-ScheduledTasks`
+
+windows powsershell device list  `Get-WmiObject Win32_PNPEntity | sort -property deviceid |ft -Property service,name,manufacturer,deviceid`
+
+windows powershell installed programs list `Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\* | Select-Object DisplayName,DisplayVersion,Publisher,InstallDate | format-table -autosize`
+
+windows powershell process list `Get-Process | ft -Property Id,PagedMemorySize,PagedSystemMemorySIze,PrivateMemorySIze,VirtualMemorySize,WorkingSet,CPU,Handlecount,Name,Path`
+
+windows performance/resource monitor `resmon.exe`
 
 Windows Connected USB drives list: `HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Enum\USBSTOR\`, `C:\Windows\setupapi.log` -> Perform search for Serial Number
 
