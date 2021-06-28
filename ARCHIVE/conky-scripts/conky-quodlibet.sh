@@ -1,5 +1,8 @@
 #!/bin/bash
 #Description : get information from currently running quodlibet instance
+set -o errexit
+set -o nounset
+
 [[ -e ~/.quodlibet/control ]] || exit
 cover_vpos=${1:-0}
 current_info=$(cat ~/.quodlibet/current) || current_info=""
@@ -11,7 +14,7 @@ ARTIST=$(echo "$current_info" | grep 'artist=' | cut -d"=" -f 1 --complement | c
 if [[ -f ~/.quodlibet/current.cover ]]; then
 	echo "\${image ~/.quodlibet/current.cover -p 0,$cover_vpos -s 100x100 -f 10}"
 else
-	echo '${image /media/EXT4-2TB-A/DOWNLOADS/media-optical.png -p 0,260 -s 100x100 -f 10}'
+	echo "\${image /opt/conky-scipts/media-optical.png -p 0,$cover_vpos -s 100x100 -f 10}"
 fi
 echo -e "\${goto 115}$ARTIST"
 echo -e "\${goto 115}$TITLE"
