@@ -35,13 +35,13 @@ limit=1000
 #Options without an : are simple flags and require no argument
 while getopts ":rsal:" opt; do
 	case $opt in
-	r) sort_command="sort --reverse"; shift
+	r) sort_command="sort --reverse"
 	;;
-	s) sort_command="sort --random-sort"; shift
+	s) sort_command="sort --random-sort"
 	;;
-	a) future_where_clause=""; shift
+	a) future_where_clause=""
 	;;
-	l) limit=$OPTARG; shift 2
+	l) limit=$OPTARG
 	;;
 	h) echo "$USAGE"; exit 0
 	;;
@@ -49,6 +49,8 @@ while getopts ":rsal:" opt; do
 	;;
 	esac
 done
+
+shift $((OPTIND-1))
 command=${1:-}
 case $command in
     "events") list=$(get_events);;
