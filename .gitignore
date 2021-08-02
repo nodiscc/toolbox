@@ -6,6 +6,11 @@ MIRRORS/BIN-ANDROID/LineageOS-Samsung-GalaxySIII-gt1900i/lineage-14.1-20181117-n
 MIRRORS/BIN-ANDROID/LineageOS-Samsung-GalaxySIII-gt1900i/platform-tools_r28.0.1-linux.zip
 MIRRORS/BIN-ANDROID/LineageOS-Samsung-GalaxySIII-gt1900i/twrp-3.2.3-0-i9300.img
 MIRRORS/BIN-ANDROID/LineageOS-Samsung-GalaxySIII-gt1900i/twrp-3.2.3-0-i9300.img.asc
+MIRRORS/BIN-ANDROID/LineageOS-Samsing-GalaxyA52016-a5xelte/0185e3df6c7f9fab5bbe63182203c65f.jpg
+MIRRORS/BIN-ANDROID/LineageOS-Samsing-GalaxyA52016-a5xelte/Heimdall-linux-master-012220.zip
+MIRRORS/BIN-ANDROID/LineageOS-Samsing-GalaxyA52016-a5xelte/lineage-17.1-20210801-nightly-a5xelte-signed.zip
+MIRRORS/BIN-ANDROID/LineageOS-Samsing-GalaxyA52016-a5xelte/lineage-17.1-20210801-recovery-a5xelte.img
+MIRRORS/BIN-ANDROID/LineageOS-Samsing-GalaxyA52016-a5xelte/twrp-3.5.2_9-0-a5xelte.img
 MIRRORS/BIN-DATA/elderscrolls_pages_current.xml.7z
 MIRRORS/BIN-DATA/france-latest.osm.pbf
 MIRRORS/BIN-DATA/nameservers.csv
@@ -121,7 +126,7 @@ MIRRORS/BIN-WINDOWS/WM237_Basic.exe
 MIRRORS/BIN-WINDOWS/wsusoffline-wxp-fra-ALL-UPDATES-2014-04-24.iso
 MIRRORS/BIN-WINDOWS/wsusoffline1092.zip
 MIRRORS/BIN-WINDOWS/youtube-dl.exe
-MIRRORS/BIN-DATA/arch-wiki-docs-20200527-1-any.pkg.tar.zst
+MIRRORS/BIN-DATA/arch-wiki-docs-20210802-1-any.pkg.tar.zst
 MIRRORS/BIN-DATA/wikipedia_en_all_maxi_2021-02.zim
 MIRRORS/BIN-LINUX/firefox-81.0.1.tar.bz2
 MIRRORS/BIN-LINUX/firefox-81.0.1.tar.bz2.asc
@@ -133,3 +138,4 @@ MIRRORS/WIKI/wiki.step-project.com/
 MIRRORS/WIKI/www.ekopedia.fr.zip
 MIRRORS/WIKI/www.ekopedia.fr/
 MIRRORS/BIN-LINUX/traitor-amd64
+MIRRORS/BIN-LINUX/gcolor2_0.4-2.2+b1_amd64.deb
