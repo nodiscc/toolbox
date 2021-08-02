@@ -18,6 +18,8 @@ send mail from common line `echo "My message" | mail -s subject user@gmail.com`
 
 python pretty-print dicts: `#import pprint; pp = pprint.PrettyPrinter(indent=4); pp.pprint(my_dict)`
 
+sphinx/recommonmark support markdown tables: add `sphinx_markdown_tables` to `extensions` list, add `sphinx-markdown-tables` to `docs/requirements.txt`, add `  install:    - requirements: docs/requirements.txt` to `readthedocs.yml`
+
 ```bash
 docker-compose up #démarrage en mpode detached
 docker-compose ps #vérifier que les containers sont up
