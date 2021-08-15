@@ -33,8 +33,7 @@ MIRRORS/BIN-LINUX/go-for-it_1.4.7-0~142~ubuntu16.10.1_amd64.deb
 MIRRORS/BIN-LINUX/go-for-it_20180217-1_amd64.deb
 MIRRORS/BIN-LINUX/Godot_v2.1.3-stable_x11.64.zip
 MIRRORS/BIN-LINUX/hub-linux-amd64-2.3.0-pre10.tgz
-MIRRORS/BIN-LINUX/indicator-keylock_1.1.0.orig.tar.gz
-MIRRORS/BIN-LINUX/indicator-keylock_3.0.2-0~ppa1_amd64.deb
+MIRRORS/BIN-LINUX/indicator-keylock_3.1.1-0~ppa1_amd64.deb
 MIRRORS/BIN-LINUX/indicator-workspaces_0.5_all.deb
 MIRRORS/BIN-LINUX/inxi_3.0.30-1-1_all.deb
 MIRRORS/BIN-LINUX/IOGraph_v1_0_1.jar
@@ -48,7 +47,7 @@ MIRRORS/BIN-LINUX/node-v12.14.1-linux-x64.tar.xz
 MIRRORS/BIN-LINUX/Package Control.sublime-package
 MIRRORS/BIN-LINUX/Package%20Control.sublime-package
 MIRRORS/BIN-LINUX/Popcorn-Time-0.3.10-Linux-64.tar.xz
-MIRRORS/BIN-LINUX/purple-facebook_20210215~e0d7732~22_amd64.deb
+MIRRORS/BIN-LINUX/purple-facebook_20210215*_amd64.deb
 MIRRORS/BIN-LINUX/qlcplus_4.11.0_amd64.deb
 MIRRORS/BIN-LINUX/QOwnNotes-18.05.0.deb
 MIRRORS/BIN-LINUX/retext_7.0.4-1_all.deb
