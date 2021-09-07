@@ -1,12 +1,12 @@
-ansible==2.10
+#ansible==2.10
 weboob
 gallery-dl
-yamllint
+#yamllint
 subliminal
-https://github.com/shaarli/python-shaarli-client/archive/master.zip
-PyGithub
-python-gitlab
-ansible-lint
+git+https://github.com/shaarli/python-shaarli-client/
+#PyGithub
+#python-gitlab
+#ansible-lint
 youtube-dl
-https://github.com/Alir3z4/html2text/archive/master.zip
+#https://github.com/Alir3z4/html2text/archive/master.zip
 
