@@ -139,3 +139,5 @@ MIRRORS/WIKI/www.ekopedia.fr.zip
 MIRRORS/WIKI/www.ekopedia.fr/
 MIRRORS/BIN-LINUX/traitor-amd64
 MIRRORS/BIN-LINUX/gcolor2_0.4-2.2+b1_amd64.deb
+MIRRORS/BIN-LINUX/*.metalink
+
