@@ -7,6 +7,9 @@ set -o nounset
 cover_vpos=${1:-0}
 current_info=$(cat ~/.quodlibet/current) || current_info=""
 TITLE=$(echo "$current_info" | grep 'title=' | cut -d"=" -f 1 --complement | cut -b 1-25)
+if [[ "$TITLE" == "" ]]; then
+    TITLE=$(echo "$current_info" | grep 'filename=' | cut -d"=" -f 1 --complement | xargs -0 basename | cut -b 1-25)
+fi
 ALBUM=$(echo "$current_info" | grep 'album=' | cut -d"=" -f 1 --complement | cut -b 1-25)
 ARTIST=$(echo "$current_info" | grep 'artist=' | cut -d"=" -f 1 --complement | cut -b 1-25)
 
