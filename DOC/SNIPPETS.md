@@ -119,6 +119,9 @@ Force running handler even if triggering tasks have not `changed`: `--force-hand
 
 Ansible check if shell command changed a file: `stat: path=... get_md5=yes; register: before; shell...; stat...; register: after` then compare md5s
 
+ansible exclude host from playbook run `ansible-playbook --limit '!hoost1:!host2' yourPlaybook.yml`
+
+
 >DECOMPOSE. THE. PROBLEM.
 
 iptables open OUTGOING port `iptables -A OUTPUT -p TCP --dport 6881:6999 \ -m state --state NEW -j ACCEPT`
