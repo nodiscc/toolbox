@@ -17,7 +17,7 @@ ARTIST=$(echo "$current_info" | grep 'artist=' | cut -d"=" -f 1 --complement | c
 if [[ -f ~/.quodlibet/current.cover ]]; then
 	echo "\${image ~/.quodlibet/current.cover -p 0,$cover_vpos -s 100x100 -f 10}"
 else
-	echo "\${image /opt/conky-scipts/media-optical.png -p 0,$cover_vpos -s 100x100 -f 10}"
+	echo "\${image /opt/conky-scripts/media-optical.png -p 0,$cover_vpos -s 100x100 -f 10}"
 fi
 echo -e "\${goto 115}$ARTIST"
 echo -e "\${goto 115}$TITLE"
