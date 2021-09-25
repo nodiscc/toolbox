@@ -85,3 +85,10 @@ adb sideload lineage-17.1-20210801-nightly-a5xelte-signed.zip
 <!--- TODO -------
 ### Automatic updates
 ----------->
+
+
+## Trusting self-signed certificates
+
+To let Android applications consume data from a web app/service that uses a self-signed TLS certificate, the certificate must be loaded to the Android certificate store. The certificate must have the `basicConstraints: "CA:TRUE"` and `key_usage: "digitalSignature,keyEncipherment"` flags set for Android to recognize it as a valid certificate.
+- Export the certificate in PEM format (from a web browser or directly from the server's `.crt` file), transfer the file to the Android device
+- Open the `.crt` file from the Android file browser, input a relevant name (eg. `rss.EXAMPLE.org self-signed`), tap `Import`
