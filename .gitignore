@@ -1,4 +1,9 @@
 *.meta4
+MIRRORS/BIN-ANDROID/LineageOS-Samsing-GalaxyA52016-a5xelte/0185e3df6c7f9fab5bbe63182203c65f.jpg
+MIRRORS/BIN-ANDROID/LineageOS-Samsing-GalaxyA52016-a5xelte/Heimdall-linux-master-012220.zip
+MIRRORS/BIN-ANDROID/LineageOS-Samsing-GalaxyA52016-a5xelte/lineage-17.1-20210801-nightly-a5xelte-signed.zip
+MIRRORS/BIN-ANDROID/LineageOS-Samsing-GalaxyA52016-a5xelte/lineage-17.1-20210801-recovery-a5xelte.img
+MIRRORS/BIN-ANDROID/LineageOS-Samsing-GalaxyA52016-a5xelte/twrp-3.5.2_9-0-a5xelte.img
 MIRRORS/BIN-ANDROID/LineageOS-Samsung-GalaxySIII-gt1900i/addonsu-14.1-arm-signed.zip
 MIRRORS/BIN-ANDROID/LineageOS-Samsung-GalaxySIII-gt1900i/debian7-heimdall_1.4.0-0_amd64.deb
 MIRRORS/BIN-ANDROID/LineageOS-Samsung-GalaxySIII-gt1900i/lineage-14.1-20181117-nightly-i9300-signed.zip
@@ -6,14 +11,12 @@ MIRRORS/BIN-ANDROID/LineageOS-Samsung-GalaxySIII-gt1900i/lineage-14.1-20181117-n
 MIRRORS/BIN-ANDROID/LineageOS-Samsung-GalaxySIII-gt1900i/platform-tools_r28.0.1-linux.zip
 MIRRORS/BIN-ANDROID/LineageOS-Samsung-GalaxySIII-gt1900i/twrp-3.2.3-0-i9300.img
 MIRRORS/BIN-ANDROID/LineageOS-Samsung-GalaxySIII-gt1900i/twrp-3.2.3-0-i9300.img.asc
-MIRRORS/BIN-ANDROID/LineageOS-Samsing-GalaxyA52016-a5xelte/0185e3df6c7f9fab5bbe63182203c65f.jpg
-MIRRORS/BIN-ANDROID/LineageOS-Samsing-GalaxyA52016-a5xelte/Heimdall-linux-master-012220.zip
-MIRRORS/BIN-ANDROID/LineageOS-Samsing-GalaxyA52016-a5xelte/lineage-17.1-20210801-nightly-a5xelte-signed.zip
-MIRRORS/BIN-ANDROID/LineageOS-Samsing-GalaxyA52016-a5xelte/lineage-17.1-20210801-recovery-a5xelte.img
-MIRRORS/BIN-ANDROID/LineageOS-Samsing-GalaxyA52016-a5xelte/twrp-3.5.2_9-0-a5xelte.img
+MIRRORS/BIN-DATA/arch-wiki-docs-20210802-1-any.pkg.tar.zst
 MIRRORS/BIN-DATA/elderscrolls_pages_current.xml.7z
 MIRRORS/BIN-DATA/france-latest.osm.pbf
 MIRRORS/BIN-DATA/nameservers.csv
+MIRRORS/BIN-DATA/wikipedia_en_all_maxi_2021-02.zim
+MIRRORS/BIN-LINUX/*.metalink
 MIRRORS/BIN-LINUX/Abricotine-linux-ubuntu-debian-x64.deb
 MIRRORS/BIN-LINUX/adminer-4.8.1.php
 MIRRORS/BIN-LINUX/airwave_1.3.3-git1-1_amd64.deb
@@ -26,8 +29,11 @@ MIRRORS/BIN-LINUX/AwesomeBumpV5.Bin64Linux.tar.gz
 MIRRORS/BIN-LINUX/code_1.18.1-1510857349_amd64.deb
 MIRRORS/BIN-LINUX/dnscrypt-resolvers.csv
 MIRRORS/BIN-LINUX/empty.html
+MIRRORS/BIN-LINUX/firefox-81.0.1.tar.bz2
+MIRRORS/BIN-LINUX/firefox-81.0.1.tar.bz2.asc
 MIRRORS/BIN-LINUX/flowblade-2.8.0.2-1_all.deb
 MIRRORS/BIN-LINUX/fzf-0.15.9-linux_amd64.tgz
+MIRRORS/BIN-LINUX/gcolor2_0.4-2.2+b1_amd64.deb
 MIRRORS/BIN-LINUX/glab_1.15.0_Linux_x86_64.tar.gz
 MIRRORS/BIN-LINUX/go-for-it_1.4.7-0~142~ubuntu16.10.1_amd64.deb
 MIRRORS/BIN-LINUX/go-for-it_20180217-1_amd64.deb
@@ -46,6 +52,7 @@ MIRRORS/BIN-LINUX/minecraft_server.1.11.2.jar
 MIRRORS/BIN-LINUX/node-v12.14.1-linux-x64.tar.xz
 MIRRORS/BIN-LINUX/Package Control.sublime-package
 MIRRORS/BIN-LINUX/Package%20Control.sublime-package
+MIRRORS/BIN-LINUX/PhoneInfoga_Linux_x86_64.tar.gz
 MIRRORS/BIN-LINUX/Popcorn-Time-0.3.10-Linux-64.tar.xz
 MIRRORS/BIN-LINUX/purple-facebook_20210215*_amd64.deb
 MIRRORS/BIN-LINUX/qlcplus_4.11.0_amd64.deb
@@ -56,13 +63,14 @@ MIRRORS/BIN-LINUX/shotcut-linux-x86_64-170904.tar.bz2
 MIRRORS/BIN-LINUX/shuriken_0.5.2-2stretch1_amd64.deb
 MIRRORS/BIN-LINUX/skippy-xd_0.5.1~hg-1_amd64.deb
 MIRRORS/BIN-LINUX/sublime_text_3_build_3211_x64.tar.bz2
+MIRRORS/BIN-LINUX/traitor-amd64
 MIRRORS/BIN-LINUX/twine_2.2.1_linux64.zip
+MIRRORS/BIN-LINUX/ventoy-1.0.50-linux.tar.gz
 MIRRORS/BIN-LINUX/webtorrent-desktop_0.16.0-1_amd64.deb
 MIRRORS/BIN-LINUX/worldpainter_2.8.1.deb
 MIRRORS/BIN-LINUX/xsv-0.10.3-i686-unknown-linux-musl.tar.gz
 MIRRORS/BIN-LINUX/xwinwrap_20180429-1_amd64.deb
 MIRRORS/BIN-LINUX/youtube-dl
-MIRRORS/BIN-LINUX/ventoy-1.0.50-linux.tar.gz
 MIRRORS/BIN-MAC/Keka-1.0.3-intel.dmg
 MIRRORS/BIN-MAC/Paragon-NTFS-for-Mac-8.0+Serial.zip
 MIRRORS/BIN-MAC/Perian_1.2.2.dmg
@@ -126,10 +134,6 @@ MIRRORS/BIN-WINDOWS/WM237_Basic.exe
 MIRRORS/BIN-WINDOWS/wsusoffline-wxp-fra-ALL-UPDATES-2014-04-24.iso
 MIRRORS/BIN-WINDOWS/wsusoffline1092.zip
 MIRRORS/BIN-WINDOWS/youtube-dl.exe
-MIRRORS/BIN-DATA/arch-wiki-docs-20210802-1-any.pkg.tar.zst
-MIRRORS/BIN-DATA/wikipedia_en_all_maxi_2021-02.zim
-MIRRORS/BIN-LINUX/firefox-81.0.1.tar.bz2
-MIRRORS/BIN-LINUX/firefox-81.0.1.tar.bz2.asc
 MIRRORS/WIKI/en.wikiaudio.org/
 MIRRORS/WIKI/Git-Mediawiki.wiki/
 MIRRORS/WIKI/wiki.archlinux.org/
@@ -137,7 +141,3 @@ MIRRORS/WIKI/wiki.step-project.com.zip
 MIRRORS/WIKI/wiki.step-project.com/
 MIRRORS/WIKI/www.ekopedia.fr.zip
 MIRRORS/WIKI/www.ekopedia.fr/
-MIRRORS/BIN-LINUX/traitor-amd64
-MIRRORS/BIN-LINUX/gcolor2_0.4-2.2+b1_amd64.deb
-MIRRORS/BIN-LINUX/*.metalink
-
