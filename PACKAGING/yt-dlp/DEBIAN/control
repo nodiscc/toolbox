@@ -1,0 +1,7 @@
+Package: yt-dlp
+Description: download videos from youtube.com or other video platforms. yt-dlp is a youtube-dl fork based on the now inactive youtube-dlc. The main focus of this project is adding new features and patches while also keeping up to date with the original project
+Maintainer: nodiscc <nodiscc@gmail.com>
+Architecture: amd64
+Version: %%YT_DLP_VERSION%%
+Section: net
+Priority: standard

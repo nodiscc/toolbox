@@ -1,19 +1,64 @@
-image: debian:buster-slim
+image: debian:bullseye-slim
 
 stages:
    - test
+   - package
+   - pages
    # - deploy
 
-test:
+default:
   before_script:
-    - apt-get update && apt-get install -y shellcheck python3-venv wget make
-    - export 
+    - apt-get update
     - export LANG=C.UTF-8
-    #- wget http://ftp.us.debian.org/debian/pool/main/s/shellcheck/shellcheck_0.4.4-4_amd64.deb
-    #- dpkg -i shellcheck_0.4.4-4_amd64.deb
+
+test:
+  stage: test
   script:
+    - apt-get install -y shellcheck python3-venv wget make git
     - make tests
 
+build-packages:
+  stage: package
+  script:
+    - apt-get update && apt-get install -qy make wget
+    - cd PACKAGING && make
+  artifacts:
+    when: on_success
+    expire_in: 1 week
+    paths:
+      - PACKAGING/dist/*
+
+test-packages:
+  stage: package
+  needs:
+    - build-packages
+  script:
+    - dpkg -i PACKAGING/dist/*.deb
+
+pages:
+  stage: pages
+  needs:
+    - build-packages
+    - test-packages
+  dependencies:
+    - build-packages
+    - test-packages
+  only:
+    - master
+  before_script:
+    - apt-get update -qy > /dev/null && apt-get -qy install aptly
+    - gpg --import --no-tty --batch --yes ${APTLY_GPG_PRIVATE_KEY}
+    - aptly repo create -distribution=bullseye -component=main public
+    - echo -e "use-agent\npinentry-mode loopback" > ~/.gnupg/gpg.conf
+    - echo "allow-loopback-pinentry" > ~/.gnupg/gpg-agent.conf
+  script:
+    - aptly repo add public ./PACKAGING/dist/
+    - aptly publish repo -batch -passphrase=${APTLY_GPG_PASSPHRASE} -gpg-key="${APTLY_GPG_KEY_ID}" public
+    - mv ~/.aptly/public .
+    - gpg --armor --output public/gpg.key --export ${APTLY_GPG_KEY_ID}
+  artifacts:
+    paths:
+      - public
 
 ### EXAMPLE GITLAB DEPLOYMENT JOB ###
 # These jobs are shown in the -/environments tab
