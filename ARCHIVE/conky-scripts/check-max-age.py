@@ -19,7 +19,7 @@ def get_status(path, max_age):
         modtime = os.path.getmtime(path)
         curtime = int (time.time())
         age = curtime - modtime
-        if age > max_age:
+        if age > int(max_age):
             status = 'error'
             error = None
         else:
