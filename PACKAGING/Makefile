@@ -5,8 +5,8 @@ YT_DLP_VERSION=2021.09.25
 yt_dlp:
 	mkdir -p build/ dist/ yt-dlp/usr/local/bin
 	cd build/ && \
-	wget https://github.com/yt-dlp/yt-dlp/releases/download/2021.09.25/yt-dlp && \
-	wget https://github.com/yt-dlp/yt-dlp/releases/download/2021.09.25/SHA2-512SUMS && \
+	wget https://github.com/yt-dlp/yt-dlp/releases/download/$(YT_DLP_VERSION)/yt-dlp && \
+	wget https://github.com/yt-dlp/yt-dlp/releases/download/$(YT_DLP_VERSION)/SHA2-512SUMS && \
 	sha512sum --ignore-missing --check SHA2-512SUMS
 	cp build/yt-dlp yt-dlp/usr/local/bin/
 	chmod 0755 yt-dlp/usr/local/bin/yt-dlp

@@ -57,7 +57,7 @@ pages:
     - mv ~/.aptly/public .
     - gpg --armor --output public/gpg.key --export ${APTLY_GPG_KEY_ID}
     - echo -e "Add this repository to your APT sources list:\ndeb https://nodiscc.gitlab.io/toolbox/ bullseye main\n" > public/index.html
-    - find -type f public/pool/ >> public/index.html
+    - find public/pool/ -type f >> public/index.html
   artifacts:
     paths:
       - public
