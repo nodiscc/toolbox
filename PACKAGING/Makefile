@@ -13,7 +13,7 @@ yt_dlp:
 	sed -i "s/%%YT_DLP_VERSION%%/$(YT_DLP_VERSION)/g" yt-dlp/DEBIAN/control
 	chmod 0755 yt-dlp/DEBIAN/
 	dpkg-deb --build yt-dlp/
-	mv -v yt-dlp.deb dist/
+	mv -v yt-dlp.deb dist/yt-dlp_$(YT_DLP_VERSION)_amd64.deb
 
 clean:
 	rm -rf build/ dist/ yt-dlp/usr/local/bin/yt-dlp
