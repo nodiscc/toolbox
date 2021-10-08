@@ -1,5 +1,7 @@
 [![](https://gitlab.com/nodiscc/toolbox/badges/master/pipeline.svg)](https://gitlab.com/nodiscc/toolbox/-/pipelines)
 
+APT repository: https://nodiscc.gitlab.io/toolbox/
+
 ```
 License: MIT
  Permission is hereby granted, free of charge, to any person obtaining
