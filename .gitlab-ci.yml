@@ -13,12 +13,14 @@ default:
 
 test:
   stage: test
+  interruptible: true
   script:
     - apt-get install -y shellcheck python3-venv wget make git
     - make tests
 
 build-packages:
   stage: package
+  interruptible: true
   script:
     - apt-get update && apt-get install -qy make wget
     - make packaging
@@ -30,6 +32,7 @@ build-packages:
 
 test-packages:
   stage: package
+  interruptible: true
   needs:
     - build-packages
   script:
@@ -37,6 +40,7 @@ test-packages:
 
 pages:
   stage: pages
+  interruptible: true
   needs:
     - build-packages
     - test-packages
