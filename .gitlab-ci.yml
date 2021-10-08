@@ -21,7 +21,7 @@ build-packages:
   stage: package
   script:
     - apt-get update && apt-get install -qy make wget
-    - cd PACKAGING && make
+    - make packaging
   artifacts:
     when: on_success
     expire_in: 1 week
