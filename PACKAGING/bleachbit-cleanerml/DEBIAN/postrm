@@ -1,0 +1,2 @@
+#!/bin/bash
+dpkg-divert --package bleachbit-cleanerml --remove --rename --divert /usr/share/bleachbit/cleaners/wine.xml.dpkg-divert /usr/share/bleachbit/cleaners/wine.xml
