@@ -22,7 +22,10 @@ build-packages:
   stage: package
   interruptible: true
   script:
-    - apt-get update && apt-get install -qy make wget unzip
+    - apt-get update
+    - apt-get install -qy --no-install-recommends make wget lintian # common
+    - apt-get install -qy --no-install-recommends unzip # bleachbit-cleanerml
+    - apt-get install -qy --no-install-recommends gcc checkinstall libpurple-dev libglib2.0-dev libjson-glib-dev libnss3-dev libsecret-1-dev # pidgin-opensteamworks
     - make packaging
   artifacts:
     when: on_success
