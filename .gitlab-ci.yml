@@ -23,7 +23,7 @@ build-packages:
   interruptible: true
   script:
     - apt-get update
-    - apt-get install -qy --no-install-recommends make wget lintian # common
+    - apt-get install -qy --no-install-recommends make wget # common
     - apt-get install -qy --no-install-recommends unzip # bleachbit-cleanerml
     - apt-get install -qy --no-install-recommends gcc checkinstall libpurple-dev libglib2.0-dev libjson-glib-dev libnss3-dev libsecret-1-dev # pidgin-opensteamworks
     - make packaging
@@ -39,7 +39,9 @@ test-packages:
   needs:
     - build-packages
   script:
+    - apt-get update && apt-get install -qy --no-install-recommends lintian
     - mkdir -p /etc/firefox-esr/ && touch /etc/firefox-esr/firefox-esr.js
+    - lintian PACKAGING/dist/*.deb || true
     - dpkg -i --force-depends PACKAGING/dist/*.deb
 
 pages:
