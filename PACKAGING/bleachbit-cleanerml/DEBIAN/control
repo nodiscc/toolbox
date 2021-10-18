@@ -1,0 +1,7 @@
+Package: bleachbit-cleanerml
+Description: Additional cleaners for BleachBit. Free disk space and maintain privacy. 
+Maintainer: nodiscc <nodiscc@gmail.com>
+Architecture: all
+Version: %%CLEANERML_VERSION%%
+Section: admin
+Priority: standard
