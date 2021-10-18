@@ -22,7 +22,7 @@ build-packages:
   stage: package
   interruptible: true
   script:
-    - apt-get update && apt-get install -qy make wget
+    - apt-get update && apt-get install -qy make wget unzip
     - make packaging
   artifacts:
     when: on_success
