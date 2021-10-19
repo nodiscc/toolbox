@@ -1,12 +1,14 @@
-#ansible==2.10
-#ansible-lint
+# USAGE: python3 -m venv ~/.venv && source ~/.venv/bin/activate && pip3 install -r requirements.txt
+
 gallery-dl
 git+https://github.com/shaarli/python-shaarli-client/
-#https://github.com/Alir3z4/html2text/archive/master.zip
-#PyGithub
-#python-gitlab
 subliminal
 weboob
+
+#ansible==4.7.0 ansible-lint # use https://github.com/nodiscc/xsrv
+#git+https://github.com/yt-dlp/yt-dlp/ # use https://nodiscc.gitlab.io/toolbox/
+#https://github.com/Alir3z4/html2text/archive/master.zip
+#PyGithub
+#python-gitlab # use https://packages.debian.org/bullseye/python3-gitlab
 #yamllint
-youtube-dl
-git+https://github.com/yt-dlp/yt-dlp/
+#youtube-dl # use yt-dlp
