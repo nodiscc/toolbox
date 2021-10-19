@@ -39,7 +39,7 @@ test-packages:
   needs:
     - build-packages
   script:
-    - dpkg -i PACKAGING/dist/*.deb
+    - dpkg -i --force-depends PACKAGING/dist/*.deb
 
 pages:
   stage: pages
