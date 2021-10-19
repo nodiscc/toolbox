@@ -63,7 +63,7 @@ pages:
     - aptly publish repo -batch -passphrase=${APTLY_GPG_PASSPHRASE} -gpg-key="${APTLY_GPG_KEY_ID}" public
     - mv ~/.aptly/public .
     - gpg --armor --output public/gpg.key --export ${APTLY_GPG_KEY_ID}
-    - echo -e "<pre>Add this repository to your APT sources list:\ndeb https://nodiscc.gitlab.io/toolbox/ bullseye main\n" > public/index.html
+    - echo -e "<pre>Add this repository to your APT sources list:\ndeb https://nodiscc.gitlab.io/toolbox/ bullseye main\nSources\:https://gitlab.com/nodiscc/toolbox/\nBuild logs:https://gitlab.com/nodiscc/toolbox/-/pipelines?page=1&scope=all&ref=master" > public/index.html
     - find public/pool/ -type f >> public/index.html
     - echo -e "\n</pre>" >> public/index.html
   artifacts:
