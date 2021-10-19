@@ -1,9 +1,10 @@
-all: yt_dlp bleachbit_cleanerml pidgin_opensteamworks
+all: yt_dlp bleachbit_cleanerml pidgin_opensteamworks lutris
 
 YT_DLP_VERSION=2021.09.25
 CLEANERML_VERSION=5bc2961
 CLEANERML_PACKAGE_VERSION=0.0.1~git0
 PIDGIN_OPENSTEAMWORKS_VERSION=1.7
+LUTRIS_VERSION=0.5.9
 
 yt_dlp:
 	rm -rf build/
@@ -48,6 +49,10 @@ pidgin_opensteamworks:
 		--showinstall \
 		--requires="libpurple0,libglib2.0-0,libjson-glib-1.0-0,libnss3"
 	mv -v build/pidgin-opensteamworks-$(PIDGIN_OPENSTEAMWORKS_VERSION)/steam-mobile/pidgin-opensteamworks_$(PIDGIN_OPENSTEAMWORKS_VERSION)-1_amd64.deb dist/
+
+lutris:
+	mkdir -p dist/
+	wget --continue --no-verbose --directory-prefix=dist/ https://github.com/lutris/lutris/releases/download/v$(LUTRIS_VERSION)/lutris_$(LUTRIS_VERSION)_all.deb
 
 clean:
 	rm -rf build/ dist/ yt-dlp/usr/local/bin/yt-dlp bleachbit-cleanerml/usr/share/bleachbit/cleaners/*xml
