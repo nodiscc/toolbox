@@ -8,7 +8,7 @@ stages:
 
 default:
   before_script:
-    - apt-get update
+    - apt-get update && apt-get -qy install ca-certificates
     - export LANG=C.UTF-8
 
 test:
