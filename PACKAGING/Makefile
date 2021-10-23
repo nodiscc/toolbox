@@ -1,10 +1,12 @@
-all: yt_dlp bleachbit_cleanerml pidgin_opensteamworks lutris
+all: yt_dlp bleachbit_cleanerml pidgin_opensteamworks lutris user.js
 
 YT_DLP_VERSION=2021.09.25
 CLEANERML_VERSION=5bc2961
 CLEANERML_PACKAGE_VERSION=0.0.1~git0
 PIDGIN_OPENSTEAMWORKS_VERSION=1.7
 LUTRIS_VERSION=0.5.9.1
+USERJS_VERSION=0.2
+USERJS_PACKAGE_VERSION=$(USERJS_VERSION)-1
 
 yt_dlp:
 	rm -rf build/
@@ -54,5 +56,26 @@ lutris:
 	mkdir -p dist/
 	wget --continue --no-verbose --directory-prefix=dist/ https://github.com/lutris/lutris/releases/download/v$(LUTRIS_VERSION)/lutris_$(LUTRIS_VERSION)_all.deb
 
+.PHONY: user.js
+user.js:
+	mkdir -pv build/ dist/
+	wget --continue --no-verbose https://github.com/nodiscc/user.js/archive/$(USERJS_VERSION).zip -O build/user.js-$(USERJS_VERSION).zip
+	unzip build/user.js-$(USERJS_VERSION).zip -d build/
+	mkdir -pv user.js/usr/share/user.js/ user.js/usr/share/doc/user.js/
+	cd build/user.js-$(USERJS_VERSION)/ && make systemwide_user.js
+	cp -v build/user.js-$(USERJS_VERSION)/user.js user.js/usr/share/user.js/user.js
+	cp -v build/user.js-$(USERJS_VERSION)/systemwide_user.js user.js/usr/share/user.js/systemwide_user.js
+	cp -v build/user.js-$(USERJS_VERSION)/LICENSE user.js/usr/share/doc/user.js/LICENCE
+	cp -v build/user.js-$(USERJS_VERSION)/README.md user.js/usr/share/doc/user.js/README.md
+	cp -v build/user.js-$(USERJS_VERSION)/gen-readme.sh user.js/usr/share/doc/user.js/gen-readme.sh
+	echo "https://github.com/pyllyukko/user.js#installation" > user.js/usr/share/doc/user.js/INSTALL
+	echo "Install user.js to ~/.mozilla/firefox/XXXXXXXX.your_profile_name/user.js for a single profile," >> user.js/usr/share/doc/user.js/INSTALL
+	echo "or systemwide_user.js to /etc/firefox-esr/firefox-esr.js for system-wide installation" >> user.js/usr/share/doc/user.js/INSTALL
+	sed -i "s/%%USERJS_VERSION%%/$(USERJS_VERSION)/g" user.js/DEBIAN/control
+	chmod -v 0755 user.js/DEBIAN/
+	dpkg-deb --build user.js/
+	mv -v user.js.deb dist/user.js_$(USERJS_PACKAGE_VERSION)_amd64.deb
+
+
 clean:
-	rm -rf build/ dist/ yt-dlp/usr/local/bin/yt-dlp bleachbit-cleanerml/usr/share/bleachbit/cleaners/*xml
+	rm -rf build/ dist/ yt-dlp/usr/local/bin/yt-dlp bleachbit-cleanerml/usr/share/bleachbit/cleaners/*xml user.js/usr/share/
