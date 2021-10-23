@@ -74,7 +74,7 @@ user.js:
 	sed -i "s/%%USERJS_VERSION%%/$(USERJS_VERSION)/g" user.js/DEBIAN/control
 	chmod -v 0755 user.js/DEBIAN/
 	dpkg-deb --build user.js/
-	mv -v user.js.deb dist/user.js_$(USERJS_PACKAGE_VERSION)_amd64.deb
+	mv -v user.js.deb dist/user.js_$(USERJS_PACKAGE_VERSION)_all.deb
 
 
 clean:
