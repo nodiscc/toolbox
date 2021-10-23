@@ -63,7 +63,7 @@ pages:
     - aptly publish repo -batch -passphrase=${APTLY_GPG_PASSPHRASE} -gpg-key="${APTLY_GPG_KEY_ID}" public
     - mv ~/.aptly/public .
     - gpg --armor --output public/gpg.key --export ${APTLY_GPG_KEY_ID}
-    - cp PACKAGING/index.html public/index.html && find public/pool/ -type f >> public/index.html && echo '</pre>' >> public/index.html
+    - cp PACKAGING/index.html public/index.html && find public/pool/ -type f >> public/index.html && echo '</pre>' | sed 's|public/|https://nodiscc.gitlab.io/toolbox/|g' >> public/index.html
   artifacts:
     paths:
       - public
