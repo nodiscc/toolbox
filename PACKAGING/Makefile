@@ -72,7 +72,7 @@ user.js:
 	echo "Install user.js to ~/.mozilla/firefox/XXXXXXXX.your_profile_name/user.js for a single profile," >> user.js/usr/share/doc/user.js/INSTALL
 	echo "or systemwide_user.js to /etc/firefox-esr/firefox-esr.js for system-wide installation" >> user.js/usr/share/doc/user.js/INSTALL
 	sed -i "s/%%USERJS_VERSION%%/$(USERJS_VERSION)/g" user.js/DEBIAN/control
-	chmod -v 0755 user.js/DEBIAN/
+	chmod -v 0755 user.js/DEBIAN/ user.js/DEBIAN/postinst user.js/DEBIAN/prerm
 	dpkg-deb --build user.js/
 	mv -v user.js.deb dist/user.js_$(USERJS_PACKAGE_VERSION)_all.deb
 
