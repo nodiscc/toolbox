@@ -1,0 +1,9 @@
+#!/bin/sh
+set -e
+if [ "$1" = remove ]; then
+    [ -L /etc/firefox-esr/firefox-esr.js ] && rm /etc/firefox-esr/firefox-esr.js
+    dpkg-divert --remove --package user.js --rename --divert /etc/firefox-esr/firefox-esr.js.firefox-esr-dpkg-dist /etc/firefox-esr/firefox-esr.js
+fi
+#DEBHELPER#
+exit 0
+

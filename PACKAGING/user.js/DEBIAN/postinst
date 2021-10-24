@@ -1,0 +1,9 @@
+#!/bin/sh
+set -e
+if [ "$1" = configure ]; then
+    dpkg-divert --add --package user.js --rename --divert /etc/firefox-esr/firefox-esr.js.firefox-esr-dpkg-dist /etc/firefox-esr/firefox-esr.js
+    [ \! -e /etc/firefox-esr/firefox-esr.js -o -L /etc/firefox-esr/firefox-esr.js ] && ln -sf /usr/share/user.js/systemwide_user.js /etc/firefox-esr/firefox-esr.js
+fi
+#DEBHELPER#
+exit 0
+
