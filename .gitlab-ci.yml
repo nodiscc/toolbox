@@ -39,6 +39,7 @@ test-packages:
   needs:
     - build-packages
   script:
+    - mkdir -p /etc/firefox-esr/ && touch /etc/firefox-esr/firefox-esr.js
     - dpkg -i --force-depends PACKAGING/dist/*.deb
 
 pages:
