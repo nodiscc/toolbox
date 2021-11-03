@@ -31,6 +31,8 @@ docker-compose up -d #restart updated containers
 
 Gitlab CI run pipeline with variables from URL parameters `.../pipelines/new?ref=my_branch&var[foo]=bar&file_var[file_foo]=file_bar`
 
+Gitlab latest artifacts URL https://gitlab.com/USER/PROJECT/-/jobs/artifacts/master/browse/PACKAGING/dist?job=build-packages
+
 systemctl daemon-reload error `Failed to reload daemon: Refusing to reload, not enough space available on /run/systemd. ` -> `sudo mkdir /var/log/journal && sudo systemctl restart systemd-journald`
 
 apachectl `start/stop/restart/fullstatus/status/graceful/graceful-stop/configtest/startssl`
