@@ -1,0 +1,11 @@
+[Unit]
+Description=Pulseaudio Sound Server
+After=network.target
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/pulseaudio
+
+[Install]
+WantedBy=multi-user.target
+PrivateTmp=true

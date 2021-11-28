@@ -1,0 +1,17 @@
+---
+
+##### PULSEAUDIO #####
+
+# yes/no: auto-configure the ansible controller as a pulseaudio client (fetch the cookie)
+pulseaudio_configure_local_cookie: no
+
+# yes/no: start/stop the pulseaudio sound server, enable/disable it on boot
+pulseaudio_enable_service: yes
+
+# number of audio output channels on the server's soundcard (2 for stereo, 6 for 5.1...)
+pulseaudio_output_channels: '2'
+
+# yes/no: enable publishing the pulseaudio sink over avahi/mDNS
+# this will cause pulseaudio clients on the same LAN to auto-detect the server
+# as available output sink (provided they have the same pulse cookie)
+pulseaudio_enable_mdns_publishing: 'yes'

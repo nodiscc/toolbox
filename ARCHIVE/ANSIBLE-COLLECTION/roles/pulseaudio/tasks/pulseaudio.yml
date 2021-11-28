@@ -1,0 +1,107 @@
+---
+
+# pulseaudio role
+
+##### PACKAGES
+
+- name: install pulseaudio audio server and ALSA
+  apt:
+    state: present
+    cache_valid_time: 900
+    package:
+      - pulseaudio-module-zeroconf
+      - pulseaudio-utils
+      - pulseaudio
+      - alsa-utils
+      - libasound2
+      - libasound2-plugins
+      - libasound2-plugin-equal
+      - alsa-oss
+      - avahi-daemon
+      - avahi-utils
+      - dbus-x11
+
+##### DOWNLOADS - NONE
+
+##### CONFIGURATION
+
+- name: copy pulseaudio configuration
+  template: src={{ item.src }} dest={{ item.dest }}
+  with_items:
+    - { src: 'etc_pulse_daemon.conf.j2', dest: '/etc/pulse/daemon.conf' }
+    - { src: 'etc_pulse_client.conf.j2', dest: '/etc/pulse/client.conf' }
+    - { src: 'etc_pulse_system.pa.j2', dest: '/etc/pulse/system.pa' }
+  notify: restart pulseaudio
+
+- name: copy pulseaudio systemd service
+  copy: src=etc_systemd_system_pulseaudio.service dest=/etc/systemd/system/pulseaudio.service
+  notify: restart pulseaudio
+
+- name: copy avahi-daemon configuration
+  template: src=etc_avahi_avahi-daemon.conf.j2 dest=/etc/avahi/avahi-daemon.conf
+  notify: restart pulseaudio
+
+##### FAIL2BAN - TODO
+
+##### BACKUPS - NONE
+
+##### COMMAND-LINE/MISC INSTALLATION STEPS
+
+- name: create pulse group
+  group: name=pulse state=present system=yes
+
+- name: create /var/run/pulse directory
+  file: state=directory path=/var/run/pulse owner=root group=pulse mode=0770
+
+- name: create pulse user
+  user: name=pulse system=yes groups=pulse,audio createhome=no home=/var/run/pulse
+
+##### CLIENT/LOCAL CONFIGURATION #####
+
+# wrapper to find current $HOME
+- set_fact:
+    local_home: "{{ lookup('env','HOME') }}"
+  when: pulseaudio_configure_local_cookie
+
+- name: copy remote pulse cookie to local machine
+  fetch: src="/var/run/pulse/.config/pulse/cookie" dest="{{ item }}" flat=yes
+  with_items:
+    - "{{ playbook_dir }}/data/secrets/pulse-cookie"
+    - "{{ local_home }}/.config/pulse/cookie"
+  when: pulseaudio_configure_local_cookie
+
+- name: restart local pulseaudio instance
+  become: no
+  delegate_to: localhost
+  command: killall pulseaudio
+  when: pulseaudio_configure_local_cookie
+
+# TODO document client config, install paprefs, paman, pasystray, pavumeter, pavucontrol, pulseaudio-module-zeroconf, pulseaudio, pulseaudio-utils, gstreamer0.10-pulseaudio, gstreamer1.0-pulseaudio, avahi-daemon, start avahi-daemon
+# TODO set volume to 90% (config value?)
+# TODO test audio wth pacmd play-file <filename> <sinkname>
+# TODO configure/document RTP support/Airplay
+
+##### SERVICES #####
+
+- name: disable pulseaudio service
+  service: name={{ item }} state=stopped enabled=no
+  with_items:
+    - pulseaudio
+    - avahi-daemon
+  when: not pulseaudio_enable_service
+  tags: services
+
+- name: enable pulseaudio service
+  service: name={{ item }} state=started enabled=yes
+  with_items:
+    - pulseaudio
+    - avahi-daemon
+  when: not pulseaudio_enable_service
+  tags: services
+
+##### OTHER #####
+
+- name: create pulseaudio-installed status file
+  template: src=var_lib_srv01_pulseaudio-installed.j2 dest=/var/lib/srv01/pulseaudio-installed owner=root group=root mode=0600
+
+# TODO: display pulseaudio cookie in a handler?

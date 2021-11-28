@@ -1,0 +1,6 @@
+---
+
+- include: pulseaudio.yml
+  become: yes
+  tags:
+    - pulseaudio
