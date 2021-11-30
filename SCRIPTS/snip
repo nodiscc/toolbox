@@ -6,13 +6,14 @@
 # TODO: separate results with a newline
 # TODO: snip -a without arguments: open nano to type the snippet, and save it to snippets file when nano closes
 set -o errexit
-set -o nouset
+set -o nounset
 
 # shellcheck disable=SC1090
 source ~/.config/snip.conf || \
-	echo 'export snippetsfile=""' > ~/.config/snip.conf && \
+	(echo 'export snippetsfile=""' > ~/.config/snip.conf && \
+    chmod u+x ~/.config/snip.conf && \
 	echo "Please set the path to your snippets file in ~/.config/snip.conf" 1>&2 && \
-	exit 1
+	exit 1)
 
 USAGE="$(basename "$0") [searchterm] [-a text to add] [-o]
 	search term		word to look for in snippets file
