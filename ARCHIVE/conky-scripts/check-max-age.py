@@ -48,5 +48,6 @@ if __name__ == "__main__":
         reason = seconds_to_dhm(age)
     else:
         reason = error
-    icon = '${font Liberation}${color2}✘${color}${font}' if status == 'error' else '${font Liberation}${color3}✔${color}${font}'
-    print(os.path.basename(path) + ' ' + icon + ' ' + reason)
+    default_font='${font Roboto:pixelsize=12}'
+    icon = '${font Liberation:pixelsize=12}${color2}✘${color}' if status == 'error' else '${font Liberation:pixelsize=12}${color3}✔${color}'
+    print(default_font + os.path.basename(path) + ' ' + icon + ' ' + default_font + reason)
