@@ -14,7 +14,11 @@ import secretstorage
 from contextlib import closing
 
 # set this to False to ignore self-signed certificate warnings
-caldav_ssl_verify_cert=True
+caldav_ssl_verify_cert=False
+# ellipsize task summaries longer than this number of characters
+summary_maxlength = 40
+# max. number of tasks to display
+limit = 20
 
 # get credentials from freedesktop secretstorage
 with closing(secretstorage.dbus_init()) as conn:
@@ -37,7 +41,12 @@ client = caldav.DAVClient(url=caldav_url, username=username, password=password, 
 caldav_principal = client.principal()
 caldav_calendar = caldav_principal.calendar(name="Personnel")
 assert(caldav_calendar)
-caldav_todos = caldav_calendar.todos(sort_keys='priority', include_completed=False)
-print("Here is some more icalendar data:")
+caldav_todos = caldav_calendar.todos(sort_keys='due', include_completed=False)
+task_index = 0
 for task in caldav_todos:
-    print(task.vobject_instance.vtodo.summary.value)
+    if task_index != limit:
+        summary = task.vobject_instance.vtodo.summary.value
+        print(summary[0:summary_maxlength] + '...' if len(summary) > summary_maxlength else summary) 
+        task_index += 1
+    else:
+        exit(0)
