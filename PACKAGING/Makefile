@@ -45,6 +45,7 @@ pidgin_opensteamworks:
 	checkinstall --pkgname=pidgin-opensteamworks --arch=amd64 --pkglicense=GPL-3.0 \
 		--pkgsource https://github.com/EionRobb/pidgin-opensteamworks \
 		--pkgversion $(PIDGIN_OPENSTEAMWORKS_VERSION) \
+		--maintainer='nodiscc <nodiscc@gmail.com>' \
 		--nodoc \
 		--default \
 		--install=no \
