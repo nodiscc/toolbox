@@ -13,7 +13,7 @@ def get_status(path, max_age):
     '''get the status of the file (ok: more recent than threshold, error: older or file absent)'''
     if not os.path.isfile(path):
         status = 'error'
-        error = 'file absent'
+        error = 'ABSENT'
         age = None
     else:
         modtime = os.path.getmtime(path)
@@ -43,11 +43,11 @@ def seconds_to_dhm(time_in_seconds):
 if __name__ == "__main__":
     path = sys.argv[1]
     max_age = sys.argv[2]
+    label = sys.argv[3]
     status, age, error = get_status(path, max_age)
     if error is None:
         reason = seconds_to_dhm(age)
     else:
         reason = error
-    default_font='${font Roboto:pixelsize=12}'
-    icon = '${font Liberation:pixelsize=12}${color2}✘${color}' if status == 'error' else '${font Liberation:pixelsize=12}${color3}✔${color}'
-    print(default_font + os.path.basename(path) + ' ' + icon + ' ' + default_font + reason)
+    icon = '${font Liberation}${color2}✘${font}' if status == 'error' else '${font Liberation:pixelsize=12}${color3}✔${color}'
+    print('${color1}' + label + ' ' + icon + ' ' + reason + '${color}')
