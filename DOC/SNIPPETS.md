@@ -192,6 +192,8 @@ convert all *.bin *.mdf... to .iso (FILENAMES WITHOUT SPACES ONLY) `for i in $(f
 
 add crontab to run script/Makefile from current directory `(crontab -l ; echo '11 11 * * 0 cd $(CURDIR) && make all') | crontab -`
 
+encrypt cron emails with GPG `GPG_CMD = "ifne /usr/bin/gpg --batch --armor --trust-model always --no-default-keyring --keyring /home/YOURPUBLICKEY.asc.gpg --recipient you@example.de --encrypt"` -> `* * * * * root /bin/echo "gpg test" | $GPG_CMD`
+
 Burn MPEG-1/VCD to CD: `cdrdao write --device 0,1,0 -n vcd.toc #vcd.toc from mkvcdfs`
 
 Firewire config for DV video cameras: `modprobe ieee1394 ohci1394 raw1394 video1394 #possibly mknod -m 666 /dev/video1394 c 172 0`
@@ -1001,6 +1003,7 @@ locate files not owned by any user/group: `find / -path /proc -prune -o -nouser 
 extract public key from private `openssl rsa -in $1 -pubout`
 
 not fun man `echo "echo sleep 0.1 >>~/.bashrc" >> ~/.bashrc`
+
 not fun man `{ crontab -l; echo "@hourly eject; eject -t; }" | crontab`
 
 remove empty directories `find -type d -empty -delete`
