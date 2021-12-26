@@ -35,6 +35,8 @@ Gitlab latest artifacts URL https://gitlab.com/USER/PROJECT/-/jobs/artifacts/mas
 
 systemctl daemon-reload error `Failed to reload daemon: Refusing to reload, not enough space available on /run/systemd. ` -> `sudo mkdir /var/log/journal && sudo systemctl restart systemd-journald`
 
+force log rotation `sudo logrotate -f /etc/logrotate.conf`
+
 apachectl `start/stop/restart/fullstatus/status/graceful/graceful-stop/configtest/startssl`
 
 apache MPM: prefork: stable/fast, 1 connection -> 1 process (multi-process)  
