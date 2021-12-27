@@ -1,0 +1,14 @@
+namespace: nodiscc
+name: toolbox
+version: 0.0.1
+readme: README.md
+authors:
+  - nodiscc <nodiscc@gmail.com>
+description: "Less-maintained ansible roles"
+license: "GPL-3.0-or-later"
+tags: []
+dependencies: {}
+repository: "https://gitlab.com/nodiscc/toolbox"
+documentation: "https://xsrv.readthedocs.io"
+homepage: "https://xsrv.readthedocs.io"
+issues: "https://gitlab.com/nodiscc/toolbox/-/issues"
