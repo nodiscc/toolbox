@@ -111,6 +111,8 @@ libvirt Select Virtio display output instead of QNX if image is not properly sca
 
 libvirt keyboard not working: set the proper keymap in VM settings
 
+libvirt sendkeys to VM `/bin/sh -c 'sleep 6; for key in KEY_ESC KEY_A KEY_U KEY_T KEY_O KEY_SPACE KEY_U KEY_R KEY_L KEY_EQUAL KEY_H KEY_T KEY_T KEY_P KEY_S "KEY_LEFTSHIFT KEY_SEMICOLON" KEY_SLASH KEY_SLASH KEY_G KEY_I KEY_T KEY_L KEY_A KEY_B KEY_DOT KEY_C KEY_O KEY_M KEY_SLASH KEY_N KEY_O KEY_D KEY_I KEY_S KEY_C KEY_C KEY_SLASH KEY_X KEY_S KEY_R KEY_V KEY_SLASH KEY_MINUS KEY_SLASH KEY_R KEY_A KEY_W KEY_SLASH KEY_T KEY_E KEY_S KEY_T KEY_S KEY_MINUS KEY_L KEY_I KEY_B KEY_V KEY_I KEY_R KEY_T KEY_SLASH KEY_T KEY_E KEY_S KEY_T KEY_S KEY_SLASH KEY_P KEY_R KEY_E KEY_S KEY_E KEY_E KEY_D KEY_DOT KEY_T KEY_X KEY_T KEY_ENTER; do virsh send-key debian10-base --codeset linux $$key >/dev/null; sleep 0.08; done' & \`
+
 open .mozlz4: `apt-get install liblz4-dev; git clone https://github.com/andikleen/lz4json.git; cd lz4json; make; ./lz4jsoncat ~/.mozilla/firefox/*/bookmarkbackups/*.jsonlz4`
 
 bash increment variable `var=$((var+1))` OR `((var=var+1))` OR `((var+=1))` OR `((var++))`
@@ -251,8 +253,6 @@ disk transfer speed test `hdparm -t /dev/sdX`
 disk read speed tests `dd if=$REPERTOIRE/speedtestfile.tx of=/dev/null`
 
 watch for file modifications in a directory `inotifywait -rm --event modify --event moved_to $REPERTOIRE/`
-
-force disk verification on next startup/reboot `touch /forcefsck`
 
 create empty file `touch emptyfile` or `> emptyfile`
 
@@ -888,8 +888,6 @@ colorize selected words, print everything else normally `egrep --color=auto 'DOW
 
 generate a random password `pwgen -s 15`
 
-force disk verification at next reboot `touch /forcefsck`
-
 Copy SCSI disk a to SCSI disk b `dd if=/dev/sda | pv -pt | dd of=/dev/sdb`
 
 rsync OS to another drive `rsync -avH /<src-root> /<dst-root>; mount --bind /dev /<dst-root>/dev; chroot /<dst-root>; grub-install /dev/<dst-dev>; #then edit uuids in /etc/fstab`. Or use clonezilla and expand the destination partition with gparted. 
@@ -1125,7 +1123,7 @@ Link-local/private networks <https://tools.ietf.org/html/rfc6890> Special-Purpos
 
 mysql dump/backup AND compress database: `mysqldump -u myuser --password -p -C wallabag > /tmp/wallabag_backup.sql.tgz`
 
-force automatic fsck: kernel boot parameters: `fsck.repair=yes fsck.force=yes`
+force automatic fsck: kernel boot parameters: `fsck.repair=yes fsck.force=yes` (add to `GRUB_CMDLINE_LINUX_DEFAULT` in `/etc/default/grub`). `touch /forcefsck` or `FSCKFIX=yes` in `/etc/default/rcS` does not work anymore on systemd
 
 get public IP address: `curl https://icanhazip.com/`
 
