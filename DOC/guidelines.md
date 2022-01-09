@@ -1,0 +1,26 @@
+### Guidelines
+
+- Clean, consistent, efficient, fast, and reliable
+- Test early
+- Error early
+- Keep solutions simple as there's always room for improvement later
+- Do one thing at a time and do it well
+- Eliminate WIP
+- Understand the business first
+- Collect metrics data
+- Avoid vanity metrics
+- Keep environments the same (networking, names, software...)
+- Automate security
+- Whitelist-based policies
+- Backups
+- Ability to roll back
+- Spend time eliminating waste/noise/files/accounts/products...
+- Look at what other teams are doing, maybe they already did it
+- Document document document
+- Checklists for manual work
+- Simple backlog, todo, doing and done
+- Make it visible
+- Realistic roadmap for the team
+- An ounce of good design is worth a pound of automation
+- Learn by doing
+- Good luck

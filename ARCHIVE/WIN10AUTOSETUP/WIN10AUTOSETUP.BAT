@@ -701,16 +701,18 @@ REM Install Windows Subsytem for Linux
 "%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
 :: TODO choco feature enable -n allowGlobalConfirmation
 
-choco install 7zip.install --yes
-choco install sumatrapdf.install --yes
-choco install libreoffice-fresh --yes
+:: Internet
 choco install firefoxesr --yes
 choco install mumble --yes
 choco install jre8 --yes
 choco install deluge --yes
 choco install nextcloud-client --yes
+choco install wget --yes
 choco install winscp --yes
-choco install youtube-dl --yes
+choco install putty.install --yes
+
+:: Multimedia
+choco install tartube --yes
 choco install vlc --yes
 choco install quodlibet --yes
 choco install opencodecs --yes
@@ -721,7 +723,15 @@ choco install mixxx --yes
 choco install blender --yes
 choco install obs --yes
 choco install gimp --yes
+:: choco install asio4all
+
+:: Office
 choco install dia --yes
+choco install libreoffice-fresh --yes
+choco install sumatrapdf.install --yes
+
+:: System/utility/development
+choco install 7zip.install --yes
 choco install nirlauncher --yes
 choco install sysinternals --yes
 choco install openhardwaremonitor --yes
@@ -730,13 +740,13 @@ choco install win32diskimager --yes
 choco install windirstat --yes
 choco install virtualbox --yes
 choco install pwgen --yes
-choco install putty.install --yes
 choco install notepadplusplus --yes
-choco install cdburnerxp --yes
 choco install meld --yes
 choco install resourcehacker.portable --yes
 choco install git --yes
-choco install wget --yes
+:: choco install cdburnerxp --yes
+
+:: Games
 choco install steam --yes
 choco install playnite --yes
 

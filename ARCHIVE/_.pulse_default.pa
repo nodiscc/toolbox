@@ -1,0 +1,4 @@
+# add pulseaudio input/outputs to/from JACK
+load-module module-jack-sink connect=0 sink_name=jack_out_default client_name=pa_default
+load-module module-jack-source connect=0 source_name=jack_in_default client_name=pa_default
+load-module module-native-protocol-unix
