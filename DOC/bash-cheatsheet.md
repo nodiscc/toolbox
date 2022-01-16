@@ -11,10 +11,12 @@ Ctrl+Y   paste the buffer
 Ctrl+W   Erase previous word
 Ctrl+XE  edit and run a new command in text editor
 Ctrl+XX  move between EOL and current cursor position
+Ctrl+C   terminate the running command/send SIGTERM
+Ctrl+Z   suspend the running command  see job control
 Alt+?    Show current completion list
-Alt+U    make word uppercase
 Alt+C    capitalize the word
-Alt+D    delete word
+Alt+L    make the word lowercase
+Alt+U    make word uppercase
 Alt+*    insert all possible completions
 ESC.     insert last argument of previous command
 ```
