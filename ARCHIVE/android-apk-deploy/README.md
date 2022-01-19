@@ -8,7 +8,7 @@ Simple script to deploy .apk android applications over USB
  - Do not link a Google account at install time
  - [Enable devloper mode](https://developer.android.com/studio/debug/dev-options.html#enable)
  - Connect the devices over USB
- - Clone the repository `git clone https://git.mazedia.fr/mazedia/android-deploy-tools`
+ - Clone the repository `git clone`
  - Put your `.apk` files in `apk/`
  - Configure names of applications to deploy in `config`
  - Run `./install-requirements.sh` to install adb and java
