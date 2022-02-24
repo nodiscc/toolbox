@@ -1,4 +1,4 @@
-# xsrv.reverse_ssh_tunnel
+# toolbox.reverse_ssh_tunnel
 
 This role will setup a [reverse SSH tunnel](https://www.howtoforge.com/reverse-ssh-tunneling) to a _remote_ host, that allows connecting back to the host (_local_) through the established tunnel. This tunnel can be used if the _local_ host's SSH server cannot be reached directly from the Internet (for example if you have no control over the NAT device between the Internet and the host, or a firewall prevents inbound connections to the host).
 
@@ -11,7 +11,7 @@ See [meta/main.yml](meta/main.yml)
 - hosts: local.CHANGEME.org
   roles:
     - nodiscc.xsrv.common # optional, firewall, ssh hardening, bruteforce protection, user configuration
-    - nodiscc.xsrv.reverse_ssh_tunnel
+    - nodiscc.toolbox.reverse_ssh_tunnel
 
 # host_vars/local.CHANGEME.org/local.CHANGEME.org.yml
 reverse_ssh_tunnel_local_user: "CHANGEME"
@@ -59,6 +59,6 @@ TODO
 
 ## References/Documentation
 
-- https://github.com/nodiscc/xsrv/tree/master/roles/reverse_ssh_tunnel
-- https://gitlab.com/nodiscc/xsrv/-/tree/master/roles/reverse_ssh_tunnel
+- https://github.com/nodiscc/tooblox/tree/master/ARCHIVE/ANSIBLE-COLLECTION/roles/reverse_ssh_tunnel
+- https://gitlab.com/nodiscc/toolbox/-/tree/master/ARCHIVE/ANSIBLE-COLLECTION/roles/reverse_ssh_tunnel
 - https://stdout.root.sx/links/?searchterm=ssh
