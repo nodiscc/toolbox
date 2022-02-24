@@ -1,0 +1,13 @@
+# local user and private key used to establish the tunnel
+reverse_ssh_tunnel_local_user: "CHANGEME"
+reverse_ssh_tunnel_privatekey: "/home/CHANGEME/.ssh/id_rsa"
+# port/socket to listen on on the remote host, that allows tunneling to this host
+reverse_ssh_tunnel_listen_port: 19997
+# remote SSH host/port/username
+reverse_ssh_tunnel_remote_host: "tunnel.CHANGEME.org"
+reverse_ssh_tunnel_remote_port: 22
+reverse_ssh_tunnel_remote_user: "CHANGEME"
+# local SSH port
+reverse_ssh_tunnel_local_port: 22
+# yes/no: enable/disable the reverse tunnel service, start it at boot
+reverse_ssh_tunnel_enabled: yes

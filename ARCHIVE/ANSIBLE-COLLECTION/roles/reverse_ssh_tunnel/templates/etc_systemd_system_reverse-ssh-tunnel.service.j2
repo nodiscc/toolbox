@@ -1,0 +1,15 @@
+[Unit]
+Description=Reverse SSH tunnel
+After=network.target
+
+[Service]
+User={{ reverse_ssh_tunnel_local_user }}
+
+ExecStart=/usr/bin/ssh -NTC -o ServerAliveInterval=60 -o ExitOnForwardFailure=yes -o StrictHostKeyChecking=no -i {{ reverse_ssh_tunnel_privatekey }} -p {{ reverse_ssh_tunnel_remote_port }} -R {{ reverse_ssh_tunnel_listen_port }}:localhost:{{ reverse_ssh_tunnel_local_port }} {{ reverse_ssh_tunnel_remote_user }}@{{ reverse_ssh_tunnel_remote_host }}
+
+# Restart every >2 seconds to avoid StartLimitInterval failure
+RestartSec=10
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

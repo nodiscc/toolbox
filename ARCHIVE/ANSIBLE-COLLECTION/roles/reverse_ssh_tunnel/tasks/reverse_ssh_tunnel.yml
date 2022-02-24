@@ -1,0 +1,18 @@
+- name: copy systemd unit file for reverse ssh tunnel
+  template:
+    src: etc_systemd_system_reverse-ssh-tunnel.service.j2
+    dest: /etc/systemd/system/reverse-ssh-tunnel.service
+    owner: root
+    group: root
+    mode: 0644
+  notify: reload systemd unit files
+
+- name: apply reverse-ssh-tunnel configuration
+  meta: flush_handlers
+
+- name: enable/disable start/stop reverse-ssh-tunnel service
+  systemd:
+    name: reverse-ssh-tunnel
+    enabled: "{{ reverse_ssh_tunnel_enabled }}"
+    state: "{{ 'started' if reverse_ssh_tunnel_enabled else 'stopped' }}"
+  ignore_errors: "{{ ansible_check_mode|bool }}"
