@@ -1,22 +1,32 @@
 - include: checks.yml
   tags:
     - mariadb
-    - lamp
     - checks
 
 - include: mariadb.yml
   become: yes
   tags:
     - mariadb
-    - lamp
 
-- include: monitoring.yml
+- include: netdata.yml
   become: yes
   tags:
     - mariadb
-    - lamp
     - monitoring
-  when: "'nodiscc.xsrv.monitoring' in role_names"
+    - netdata
+  when:
+    - ansible_local.netdata.ansible_managed is defined
+    - ansible_local.netdata.ansible_managed|bool
+
+- include: rsyslog.yml
+  become: yes
+  tags:
+    - mariadb
+    - monitoring
+    - rsyslog
+  when:
+    - ansible_local.rsyslog.ansible_managed is defined
+    - ansible_local.rsyslog.ansible_managed|bool
 
 - include: fact.yml
   become: yes

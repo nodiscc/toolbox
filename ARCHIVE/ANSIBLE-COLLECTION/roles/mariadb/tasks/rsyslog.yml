@@ -1,0 +1,8 @@
+# rsyslog - monitor mysql error log
+
+input(type="imfile"
+      File="/var/log/mysql/error.log"
+      readMode="0"
+      Tag="mysql"
+      Facility="daemon"
+      PersistStateInterval="0")
