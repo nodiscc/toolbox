@@ -1227,8 +1227,17 @@ set pulseaudio volume: pactl set-sink-volume @DEFAULT_SINK@ +5%
 openssl show certificate info: `echo | openssl s_client -showcerts -servername google.com -connect gnupg.org:443 2>/dev/null | openssl x509 -inform pem -noout -text`
 
 
-packet capture on remote machine and display in local wireshark: ssh root@remoteserver "tcpdump -c 1000 -nn -w - not port 22" | wireshark -k -i -
+packet capture on remote machine and display in local wireshark: ssh root@remoteserver `tcpdump -c 1000 -nn -w - not port 22" | wireshark -k -i -`
 
+```
+tcpdump -i eth0 # capture packets on interface
+tcpdump -i any # capture packets on all interfaces
+tcpdump -i eth0 port 443 # capture packets on port 443
+tcpdump -i eth0 portange 1-1024 # capture packets on port range
+tcpdump -i eth0 host 1.2.3.4/22 # capture packets matching host ip address
+tcpdump -i eth0 src 1.2.3.4 # capture packets from ip address
+tcpdump -i eth0 dst 1.2.3.4 # capture packets to ip address
+```
 
 SSH copy local folder to remote: tar -cvj /datafolder | ssh remoteserver "tar -xj -C /datafolder"
 
