@@ -18,7 +18,7 @@ fi
 number=0
 while [ $number -lt 16 ]
 do
-        ARRAY=`echo $ARRAY ; egrep "URxvt.color$number[\: ]|\*color$number[\: ]" $XRESFILE | egrep -v "^\!"| awk '{print $NF}'`
+        ARRAY=`echo $ARRAY ; egrep "URxvt.color$number[\: ]|\*\.color$number[\: ]" $XRESFILE | egrep -v "^\!"| awk '{print $NF}'`
         number=$(($number+1))
 done
 
