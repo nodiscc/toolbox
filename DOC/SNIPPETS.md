@@ -93,6 +93,11 @@ Network increase memory of socket buffers `echo 262143 > /proc/sys/core/rmem_max
 
 ffmpeg cut between 310th and 500th frame `ffmpeg -i constellaion003.mkv -vf 'select=gte(n\,301)*lte(n\,500)'` output.mkv (breaks video index/length/seek?)
 
+stabilize video `ffmpeg -i input.mp4 -vf vidstabdetect=shakiness=10:accuracy=15 -f null - && ffmpeg -i input.mp4 -vf vidstabtransform=smoothing=30:input="transforms.trf" output.mp4` (shakiness/accuration are optional)
+
+mount root filesystem ead-only (SD card): `ro` in kernel command line, `ro÷` option in `/etc/fstab`; `rm -rf /var/log /etc/resolv.conf && ln -s /run/log /var/log  && ln -sf /run/resolv.conf  /etc/
+`
+
 find duplicate images and display in image viewer `findimagedupes -v=fp  -R -f=fp_data  ~/images; findimagedupes -v=fp  -R -f=fp_data  -p=/usr/bin/feh ~/images`
 
 debian simple sid backport: First, check for a backport on [debian-backports].  If unavailable: 1) Add a deb-src line for sid (not a deb line!); ask me about [deb-src sid] 2) enable debian-backports (see [bdo]) 3) aptitude update; aptitude install build-essential; aptitude build-dep packagename; apt-get -b source packagename; 4) install the resultant debs.  To change compilation options, see [package recompile]; for versions newer than sid see [uupdate]. (from #debian dpkg bot)
