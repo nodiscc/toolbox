@@ -201,6 +201,8 @@ convert all *.bin *.mdf... to .iso (FILENAMES WITHOUT SPACES ONLY) `for i in $(f
 
 add crontab to run script/Makefile from current directory `(crontab -l ; echo '11 11 * * 0 cd $(CURDIR) && make all') | crontab -`
 
+graph Makefile target dependencies `sudo apt install make2graph && LANG=C make -Bnd | make2graph -r | dot -Tpng -o out.png`
+
 encrypt cron emails with GPG `GPG_CMD = "ifne /usr/bin/gpg --batch --armor --trust-model always --no-default-keyring --keyring /home/YOURPUBLICKEY.asc.gpg --recipient you@example.de --encrypt"` -> `* * * * * root /bin/echo "gpg test" | $GPG_CMD`
 
 Burn MPEG-1/VCD to CD: `cdrdao write --device 0,1,0 -n vcd.toc #vcd.toc from mkvcdfs`
