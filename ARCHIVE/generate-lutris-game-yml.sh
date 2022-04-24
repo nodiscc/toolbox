@@ -1,13 +1,22 @@
 #!/bin/bash
 # Description: Add Playstation games to lutris game library, from a directory of .iso files
 # Status: PROTOTYPE
+# BUGS: error when running the game:
+
+# Traceback (most recent call last):
+#   File "/usr/lib/python3/dist-packages/lutris/gui/lutriswindow.py", line 409, in update_revealer
+#     self.game_bar = GameBar(game, self.game_actions, self.application)
+#   File "/usr/lib/python3/dist-packages/lutris/gui/widgets/game_bar.py", line 30, in __init__
+#     self.service = services.get_services()[db_game["service"]]()
+# KeyError: '0.0'
+
 # Author: nodiscc@gmail.com
-# License: GPLv3
-# TODO: PYTHON NOW
+# License: GPL-3.0
+# Usage: generate-lutris-game-yml.sh /path/to/iso/directory
 
 set -o errexit
 set -o nounset
-iso_directory="/media/EXT4-2TB-B/GAMES/000-NOTORRENT/000-LTS/000-EMUL-PSX/000-PSX"
+iso_directory="$1"
 yml_directory="${iso_directory}/lutris"
 
 function sanitize_filename {
@@ -47,7 +56,7 @@ for i in $isofiles; do
 		echo "libretro: {}" >> "$yml_filename"
 		echo "system: {}" >> "$yml_filename"
 		echo "writing database entry ..."
-		sqlite3 ~/.local/share/lutris/pga.db "INSERT INTO games VALUES ('$db_next_index','$gametitle','$sanitized_title','','','Sony PlayStation','libretro','','','',0,1,$timestamp,'','','','${sanitized_title}-${timestamp}','','',0.0);"
+		sqlite3 ~/.local/share/lutris/pga.db "INSERT INTO games VALUES ('$db_next_index','$gametitle','$sanitized_title','','','Sony PlayStation','libretro','','','',0,1,$timestamp,'','','','${sanitized_title}-${timestamp}','','',0.0,0);"
 		db_next_index=$(( db_next_index + 1 ))
 	fi
 done
