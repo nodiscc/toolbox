@@ -710,6 +710,13 @@ choco install nextcloud-client --yes
 choco install wget --yes
 choco install winscp --yes
 choco install putty.install --yes
+:: choco install filezilla
+:: choco install realvnc
+:: choco install openvpn
+:: choco install googlechrome --yes
+:: choco install googledrive --yes
+:: choco install dropbox --yes
+:: choco install mattermost-desktop --yes
 
 :: Multimedia
 choco install tartube --yes
@@ -724,27 +731,36 @@ choco install blender --yes
 choco install obs --yes
 choco install gimp --yes
 :: choco install asio4all
+:: choco install cdburnerxp --yes
+:: choco install xnview
+:: choco install irfanview
 
 :: Office
 choco install dia --yes
 choco install libreoffice-fresh --yes
 choco install sumatrapdf.install --yes
+:: choco install ganttproject
+
+:: Utility
+choco install 7zip.install --yes
+choco install bleachbit --yes
+choco install pwgen --yes
+choco install windirstat --yes
+choco install duplicati --yes
+:: choco install airdroid
 
 :: System/utility/development
-choco install 7zip.install --yes
 choco install nirlauncher --yes
 choco install sysinternals --yes
 choco install openhardwaremonitor --yes
-choco install bleachbit --yes
 choco install win32diskimager --yes
-choco install windirstat --yes
 choco install virtualbox --yes
-choco install pwgen --yes
 choco install notepadplusplus --yes
 choco install meld --yes
 choco install resourcehacker.portable --yes
 choco install git --yes
-:: choco install cdburnerxp --yes
+:: choco install sqlitebrowser
+
 
 :: Games
 choco install steam --yes
