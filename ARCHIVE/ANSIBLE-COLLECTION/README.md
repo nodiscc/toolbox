@@ -27,6 +27,7 @@ ansible-galaxy collection install -r requirements.yml
    - nodiscc.toolbox.pulseaudio
    - nodiscc.toolbox.mariadb
    - nodiscc.toolbox.reverse_ssh_tunnel
+   - nodiscc.toolbox.valheim_server
 ```
 
 See [Using collections](https://docs.ansible.com/ansible/latest/user_guide/collections_using.html) for more details.
