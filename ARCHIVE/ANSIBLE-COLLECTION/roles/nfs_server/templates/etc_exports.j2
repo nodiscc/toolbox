@@ -1,0 +1,3 @@
+{% for item in nfs_shares %}
+{{ item.path }}  {{ item.client }}({{ item.options | default('rw,sync,no_subtree_check') }})
+{% endfor %}

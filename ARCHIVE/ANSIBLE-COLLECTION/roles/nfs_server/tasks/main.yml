@@ -1,0 +1,3 @@
+- include: nfs-server.yml
+  become: yes
+  tags: nfs-server

@@ -1,0 +1,11 @@
+# list of NFS shares, see https://manpages.debian.org/bullseye/nfs-kernel-server/exports.5.en.html for available options.
+# Example:
+# nfs_shares:
+#   - path: /home/client1 # path to the shared directory
+#     client: "10.0.0.10.101" # allowed clients
+#   - path: /home/client2
+#     owner: root # share owner, optional
+#     group: root # share group, optional
+#     client: "10.0.10.0/24"
+#     options: "rw,sync,no_subtree_check,async" # options, optional, defaults to rw,sync,no_subtree_check
+nfs_shares: []
