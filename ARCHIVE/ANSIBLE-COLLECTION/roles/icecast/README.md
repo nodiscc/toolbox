@@ -24,7 +24,9 @@ See [meta/main.yml](meta/main.yml)
 # host_vars/my.CHANGEME.org/my.CHANGEME.org.yml
 icecast_fqdn: "radio.CHANGEME.org"
 # ansible-vault edit host_vars/my.CHANGEME.org/my.CHANGEME.org.vault.yml
-TODO
+icecast_admin_username: "CHANGEME"
+icecast_admin_password: "CHANGEME"
+icecast_relay_password: "CHANGEME"
 ```
 
 See [defaults/main.yml](defaults/main.yml) for all configuration variables
