@@ -1,0 +1,9 @@
+- name: check that mandatory variables are correctly defined
+  assert:
+    that:
+      - icecast_fqdn is not search("CHANGEME")
+      - icecast_admin_username is not search("CHANGEME")
+      - icecast_admin_password is not search("CHANGEME")
+      - icecast_relay_password is not search("CHANGEME")
+      - icecast_enable_service == icecast_enable_service|bool
+      - icecast_bitrate == icecast_bitrate|int

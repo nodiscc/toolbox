@@ -1,0 +1,14 @@
+- name: reload systemd unit files
+  systemd:
+    daemon_reload: yes
+
+- name: restart icecast
+  service:
+    name: "{{ item }}"
+    state: restarted
+    enabled: yes
+  with_items:
+    - icecast2
+    - ezstream
+  when: icecast_enable_service
+  ignore_errors: "{{ ansible_check_mode }}"

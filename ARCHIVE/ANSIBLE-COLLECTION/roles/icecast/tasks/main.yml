@@ -1,0 +1,13 @@
+- include: checks.yml
+  tags:
+    - icecast
+    - checks
+
+- include: icecast.yml
+  become: yes
+  tags: icecast
+
+- include: icecast-reload-playlist.yml
+  tags:
+    - never
+    - icecast-reload-playlist

@@ -1,0 +1,115 @@
+##### PACKAGES #####
+
+- name: install icecast2/ezstream
+  apt:
+    state: present
+    package:
+      - icecast2
+      - ezstream
+      - vorbis-tools
+
+##### CONFIGURATION #####
+
+- name: copy icecast2 configuration
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: "{{ item.group }}"
+    mode: "{{ item.mode }}"
+  notify: restart icecast
+  with_items:
+    - src: etc_icecast2_icecast.xml.j2
+      dest: /etc/icecast2/icecast.xml
+      group: icecast
+      mode: 0640
+    - src: etc_default_icecast2.j2
+      dest: /etc/default/icecast2
+      group: root
+      mode: 0600
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: copy ezstream systemd service file
+  template:
+    src: etc_systemd_system_ezstream.service.j2
+    dest: /etc/systemd/system/ezstream.service
+    mode: 0644
+  notify:
+    - reload systemd unit files
+    - restart icecast
+
+- name: copy ezstream configuration
+  template:
+    src: etc_icecast2_ezstream.xml.j2
+    dest: /etc/icecast2/ezstream.xml
+    mode: 0644
+    owner: root
+    group: icecast
+  notify: restart icecast
+  ignore_errors: "{{ ansible_check_mode }}"
+
+##### FAIL2BAN login failures handled by apache basic auth filter
+
+##### APACHE #####
+
+- name: load apache2 proxy/proxy_http modules
+  command: a2enmod {{ item }}
+  with_items:
+    - proxy
+    - proxy_http
+  args:
+    creates: /etc/apache2/mods-enabled/{{ item }}.load
+  notify: restart apache
+
+- name: copy apache2 icecast redirect/reverseproxy config
+  template:
+    src: etc_apache2_sites-available_icecast.conf.j2
+    dest: /etc/apache2/sites-available/icecast.conf
+  notify: reload apache
+
+- name: enable apache2 transmission redirect/reverseproxy
+  command: a2ensite icecast
+  args:
+    creates: "/etc/apache2/conf-enabled/icecast.conf"
+  notify: reload apache
+
+##### PLAYLIST #####
+
+- name: create playlist directory
+  file:
+    path: /var/lib/icecast/playlist
+    state: directory
+    owner: root
+    group: icecast
+    mode: 02750 # SGID
+
+- name: install icecast helper scripts
+  template:
+    src: usr_local_bin_ezstream-update-playlist.sh.j2
+    dest: /usr/local/bin/ezstream-update-playlist.sh
+    owner: root
+    group: root
+    mode: 0755
+
+- name: update ezstream playlist
+  command: /usr/local/bin/
+  notify: restart icecast
+
+- name: create symlink to ezstream playlist directory {{ ansible_user }} home
+  file:
+    state: link
+    src: /var/lib/icecast/playlist/
+    dest: "/home/{{ ansible_ssh_user }}/PLAYLIST"
+
+##### SERVICE #####
+
+- name: enable/disable start/stop icecast service
+  systemd:
+    name: "{{ item }}"
+    enabled: "{{ icecast_enable_service }}"
+    state: "{{ 'started' if icecast_enable_service else 'stopped' }}"
+    daemon_reload: yes
+  ignore_errors: "{{ ansible_check_mode|bool }}"
+  with_items:
+    - icecast2
+    - ezstream

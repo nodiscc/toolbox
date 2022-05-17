@@ -1,0 +1,5 @@
+- name: refresh ezstream playlist
+  become: yes
+  become_user: icecast2
+  command: /usr/local/bin/ezstream-update-playlist
+  changed_when: yes

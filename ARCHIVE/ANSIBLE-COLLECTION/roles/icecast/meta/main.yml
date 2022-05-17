@@ -1,0 +1,21 @@
+galaxy_info:
+  author: "nodiscc <nodiscc@gmail.com>"
+  description: "icecast2 media streaming server"
+  license: GPL-3.0
+  min_ansible_version: 2.10
+  platforms:
+    - name: Debian
+      versions:
+        - 9
+        - 10
+  galaxy_tags:
+    - icecast
+    - webradio
+    - streaming
+    - server
+    - audio
+
+dependencies:
+  # - nodiscc.xsrv.common # optional
+  # - nodiscc.xsrv.monitoring # optional
+  - nodiscc.xsrv.apache

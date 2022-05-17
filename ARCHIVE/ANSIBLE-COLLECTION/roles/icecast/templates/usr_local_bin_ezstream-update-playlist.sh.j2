@@ -1,0 +1,9 @@
+#!/bin/bash
+# Description: Create an m3u playlist from files in a directory
+# Note: 'find' output is affected by the locale. Make sure to set an UTF-8 locale
+set -o errexit
+set -o nounset
+
+files=$(find /var/lib/icecast/playlist/ -type f -iname "*.ogg" -iname "*.mp3" -iname "*.flac") || true
+if [[ "$files" == "" ]]; then files="/var/lib/icecast/demo.ogg"; fi
+echo "$files" >| /etc/icecast/playlist.txt

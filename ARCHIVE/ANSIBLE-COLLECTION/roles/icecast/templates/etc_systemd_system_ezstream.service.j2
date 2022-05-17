@@ -1,0 +1,15 @@
+[Unit]
+Description=Ezstream Service
+After=icecast2.service
+
+[Service]
+Type=simple
+User=icecast2
+Group=icecast
+ExecStart=/usr/bin/ezstream -q -c /etc/icecast2/ezstream.xml
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+After=icecast2.service

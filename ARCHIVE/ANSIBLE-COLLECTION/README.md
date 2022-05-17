@@ -29,6 +29,7 @@ ansible-galaxy collection install -r requirements.yml
    - nodiscc.toolbox.reverse_ssh_tunnel
    - nodiscc.toolbox.nfs_server
    - nodiscc.toolbox.valheim_server
+   - nodiscc.xsrv.icecast
 ```
 
 See [Using collections](https://docs.ansible.com/ansible/latest/user_guide/collections_using.html) for more details.
