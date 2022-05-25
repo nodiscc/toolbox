@@ -92,7 +92,7 @@
     mode: 0755
 
 - name: update ezstream playlist
-  command: /usr/local/bin/
+  command: /usr/local/bin/ezstream-update-playlist.sh
   notify: restart icecast
 
 - name: create symlink to ezstream playlist directory {{ ansible_user }} home
