@@ -12,6 +12,8 @@ icecast_bitrate: 128
 icecast_info_name: 'Audio stream'
 # icecast stream metadata Homepage/URL
 icecast_info_url: 'https://{{ icecast_fqdn }}'
+# mode for icecast SSL/TLS certificates
+icecast_https_mode: 'selfsigned'
 # username/password for web interface administration. Unused but must be set
 icecast_admin_username: "CHANGEME20"
 icecast_admin_password: "CHANGEME20"
