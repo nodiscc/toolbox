@@ -22,11 +22,11 @@
     - src: etc_icecast2_icecast.xml.j2
       dest: /etc/icecast2/icecast.xml
       group: icecast
-      mode: 0640
+      mode: "0640"
     - src: etc_default_icecast2.j2
       dest: /etc/default/icecast2
       group: root
-      mode: 0600
+      mode: "0600"
   ignore_errors: "{{ ansible_check_mode }}"
 
 - name: copy ezstream systemd service file
