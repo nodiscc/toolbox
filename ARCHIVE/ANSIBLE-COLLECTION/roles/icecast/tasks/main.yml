@@ -7,6 +7,18 @@
   become: yes
   tags: icecast
 
+- include: ssl-selfsigned.yml
+  become: yes
+  tags:
+    - icecast
+    - ssl
+
+- include: apache.yml
+  become: yes
+  tags:
+    - icecast
+    - apache
+
 - include: icecast-reload-playlist.yml
   tags:
     - never

@@ -48,31 +48,6 @@
   notify: restart icecast
   ignore_errors: "{{ ansible_check_mode }}"
 
-##### FAIL2BAN login failures handled by apache basic auth filter
-
-##### APACHE #####
-
-- name: load apache2 proxy/proxy_http modules
-  command: a2enmod {{ item }}
-  with_items:
-    - proxy
-    - proxy_http
-  args:
-    creates: /etc/apache2/mods-enabled/{{ item }}.load
-  notify: restart apache
-
-- name: copy apache2 icecast redirect/reverseproxy config
-  template:
-    src: etc_apache2_sites-available_icecast.conf.j2
-    dest: /etc/apache2/sites-available/icecast.conf
-  notify: reload apache
-
-- name: enable apache2 transmission redirect/reverseproxy
-  command: a2ensite icecast
-  args:
-    creates: "/etc/apache2/conf-enabled/icecast.conf"
-  notify: reload apache
-
 ##### PLAYLIST #####
 
 - name: create playlist directory
