@@ -4,6 +4,10 @@
       - icecast_fqdn is not search("CHANGEME")
       - icecast_admin_username is not search("CHANGEME")
       - icecast_admin_password is not search("CHANGEME")
+      - icecast_source_password is not search("CHANGEME")
       - icecast_relay_password is not search("CHANGEME")
       - icecast_enable_service == icecast_enable_service|bool
       - icecast_bitrate == icecast_bitrate|int
+      - icecast_info_name is string
+      - icecast_info_url is string
+      - icecast_https_mode in ['selfsigned']
