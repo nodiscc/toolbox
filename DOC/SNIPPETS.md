@@ -727,17 +727,19 @@ firewall iptables: Block traffic from an IP address `iptables -A INPUT -s $IP -j
 
 configure username/email for commits:  ``git config --global user.name example; git config --global user.email example@gmail.com ``
 
-git afficher une ancienne révision d'un fichier: ``git show <rev>:path/fo/file.ext``
+git show old revision of a file: ``git show <rev>:path/fo/file.ext``
+
+git override commit date `git commit --date='2005-04-07T22:13:13'`
 
 git ignore changes in already tracked file: ``git update-index --assume-unchanged <file>``. To start tracking changes again: ``git update-index --no-assume-unchanged <file>``
 
-Find the date of the first commit in a git repository: `$ git rev-list --all|tail -n1|xargs git show|grep -v diff|head -n1|cut -f1-3 -d' '`
+git Find the date of the first commit in a repository: `$ git rev-list --all|tail -n1|xargs git show|grep -v diff|head -n1|cut -f1-3 -d' '`
 
-Generate changelog since a git tag `git log --oneline 0.9.1-mathcore...master | cut -f1 -d" " --complement  |sort`
+git Generate changelog since a tag `git log --oneline 0.9.1-mathcore...master | cut -f1 -d" " --complement  |sort`
 
 git checkout a remote branch (and make it a local branch) `git checkout -b test origin/test`
 
-`git diff --cached` to review staged changes
+git review staged changes (but not committed yet) `git diff --cached`
 
 git auto prune remote branches `fetch.prune = true`
 
@@ -915,6 +917,8 @@ firefox enable Ctrl+Tab previews `browser.ctrlTab.previews = true` in about:conf
 firefox clear bookmarks favicon cache `find ~/ -name "favicons.sqlite*" - exec rm '{}' \;`
 
 firefox force addons compatibility `extensions.checkCompatibility = false` in about:config
+
+firefox dump bookmarks from places database `echo 'select parent,url from moz_bookmarks, moz_places where moz_places.id=moz_bookmarks.fk;' | sqlite3 ~/.mozilla/firefox/xyz.default-esr/places.sqlite | sort -n`
 
 fix tearing compton `compton --backend glx --vsync opengl-swc` au cas où on a du tearing
 
@@ -1121,6 +1125,8 @@ update debian changelog: `dch -a`
 OpenDNS servers: 208.67.222.222 and 208.67.220.220
 
 fix optimus/bumblebee lockup at boot: kernel boot parameters `nouveau.modeset=0 acpi_osi=Linux acpi_osi="!Windows 2015"`
+
+Linux boot ACPI kernel parameters `acpi_osi=Linux` solves some problems related to backlight handling, volume control keys, power management... Set `acpi=off` to fix debian installer hang after video mode selection on some laptops
 
 Network classes: A /8 0-127; B /16 128-191; C /24 192-223; D multicast 224-239; E reserved 240-255
 

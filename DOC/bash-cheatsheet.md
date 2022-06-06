@@ -213,3 +213,6 @@ $ ps -ef | tee >(awk '$1=="tom"' >toms-procs.txt) \
 - convert text to uppercase `upper() { echo ${@^^}; }`
 
 
+---------------------------------------------------------
+
+![](https://i.imgur.com/44jqQ.png)
