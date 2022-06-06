@@ -1,0 +1,75 @@
+# list of libvirt networks
+# https://docs.ansible.com/ansible/latest/collections/community/libvirt/virt_net_module.html
+# https://libvirt.org/formatnetwork.html
+# Example:
+# libvirt_networks:
+#  - name: default
+#    mac_address: "52:54:00:4f:b1:01"
+#    forward_dev: "eth0" # optional
+#    bridge_name: "virbr2"
+#    ip_address: "10.0.100.1"
+#    netmask: "255.255.255.0"
+#    dhcp_start: "10.0.100.128" # optional
+#    dhcp_end: "10.0.100.254" # optional
+#    autostart: yes # optional, yes/no, default yes
+#    state: active # optional, active/inactive/present/absent, default active
+libvirt_networks: []
+
+# list of libvirt storage pools
+# https://libvirt.org/formatstorage.html
+# https://docs.ansible.com/ansible/latest/collections/community/libvirt/virt_pool_module.html
+# Example:
+# libvirt_storage_pools:
+#  - name: pool0
+#    path: /var/lib/libvirt/pools/pool0
+#    mode: "0750" # optional, QUOTED, default 0750
+#    owner_uid: "1003" # optional, QUOTED, default 0 (root)
+#    group_gid: "64055" # optional, QUOTED, default 64055 (libvirt-qemu)
+#    autostart: yes # optional, default yes
+#    state: inactive # optional, active/inactive/present/absent/undefined/deleted, default active
+#  - name: delete-this-pool
+#    state: undefined
+#  - name: delete-this-pool-and-its-contents
+#    state: deleted
+libvirt_storage_pools: []
+
+# list of libvirt VMs - EXPERIMENTAL
+# https://docs.ansible.com/ansible/latest/collections/community/libvirt/virt_module.html
+# https://libvirt.org/formatdomain.html
+# https://manpages.debian.org/virsh
+# to delete a VM, set its state: to 'absent', and optionally one of the following attributes (yes/no): remove_all_storage, delete_snapshots
+# when state: absent, only the name: parameter is required
+# Example:
+# libvirt_vms:
+#  - name: vm01.CHANGEME.org
+#    state: running # running/destroyed/paused/running/shutdown/absent
+#    autostart: yes # optional, default yes
+#    mem_mb: 128
+#    vcpu: 1
+#    disks:
+#      - source_file: '/var/lib/libvirt/images/vm01.CHANGEME.org.qcow2'
+#        target_dev: vda # name of the target device inside the guest
+#        type: qcow2 # optional, default qcow2
+#        target_bus: virtio # optional, default virtio
+#    mac_address: '52:54:00:5d:41:01'
+#    network: default
+#  - name: remove.this.vm
+#    state: absent
+#    remove_all_storage: yes
+#    delete_snapshots: yes
+libvirt_vms: []
+
+# number of VMs to shutdown in parallel when the hypervisor is being shut down
+libvirt_parallel_shutdown_number: 3
+
+# NAT/port forwarding to libvirt VMs
+# Example:
+# libvirt_port_forwards:
+#   - host_ip: 192.168.1.20 # forward traffic arriving on this IP address on the libvirt host
+#     host_port: 443 # forward traffic arriving on this port
+#     protocol: tcp # (tcp/udp) forward traffic using this protocol
+#     vm_ip: 10.0.0.101 # forward traffic to this IP address
+#     vm_port: 443 # forward traffic to this port
+#     vm_name: vm01.CHANGEME.org # VM name (rules will be applied/removed when this VM starts/shuts down)
+#     bridge: virbr1 # bridge used by the VM's libvirt network, see virsh net-dumpxml
+libvirt_port_forwards: []

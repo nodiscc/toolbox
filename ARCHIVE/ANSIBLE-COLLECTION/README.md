@@ -1,6 +1,6 @@
 # nodiscc.toolbox
 
-Less-maintained ansible roles
+Less-maintained/experimental ansible roles
 
 ## Installation
 
@@ -29,7 +29,9 @@ ansible-galaxy collection install -r requirements.yml
    - nodiscc.toolbox.reverse_ssh_tunnel
    - nodiscc.toolbox.nfs_server
    - nodiscc.toolbox.valheim_server
-   - nodiscc.xsrv.icecast
+   - nodiscc.toolbox.icecast
+   - nodiscc.toolbox.libvirt
 ```
 
 See [Using collections](https://docs.ansible.com/ansible/latest/user_guide/collections_using.html) for more details.
+See [xsrv](https://xsrv.readthedocs.io/) for production-ready roles.
