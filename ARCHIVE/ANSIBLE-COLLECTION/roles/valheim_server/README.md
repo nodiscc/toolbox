@@ -24,6 +24,19 @@ A [Steam](https://store.steampowered.com/) account is required. It is recommende
 
 On first deployment, leave `steamcmd_guard_code: "CHANGEME"`. The role will fail and a guard code will be sent to you by mail - then set `steamcmd_guard_code` to the correct value (example `steam_guard_code: "ZBLX6UY"`) and apply the role again.
 
+If your server is behind a NAT/port forwarding device, the following ports must be forwarded to the server:
+
+```
+TCP 2456-2457
+TCP 27015
+TCP 27030
+TCP 27036-27037
+UDP 2456-2457
+UDP 4380
+UDP 27000-27031
+UDP 27036
+```
+
 ## Backups
 
 `/home/steam/.config/unity3d/IronGate/Valheim` must be backed up. Example using the `backup` role from a remote server:
