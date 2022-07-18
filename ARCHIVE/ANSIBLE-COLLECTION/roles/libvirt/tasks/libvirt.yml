@@ -27,7 +27,7 @@
     dest: /etc/libvirt/hooks/qemu
     owner: root
     group: root
-    mode: 0644
+    mode: 0755
   notify: restart libvirtd
   ignore_errors: "{{ ansible_check_mode }}"
 
