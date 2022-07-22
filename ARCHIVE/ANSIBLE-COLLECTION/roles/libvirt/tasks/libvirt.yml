@@ -69,3 +69,12 @@
   ignore_errors: "{{ ansible_check_mode }}"
 
 #- name: delete virtual machines # TODO
+
+- name: enable libvirtd/libvirt-guests services
+  service:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  with_items:
+    - libvirtd
+    - libvirt-guests
