@@ -4,6 +4,7 @@
   delegate_facts: true
   with_items: "{{ autoreadme_limit }}"
   ignore_unreachable: yes
+  no_log: yes
 
 - name: update local documentation
   blockinfile:

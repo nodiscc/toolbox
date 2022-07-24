@@ -8,34 +8,14 @@ This role automatically inserts useful host information in your project's README
 
 See [meta/main.yml](meta/main.yml)
 
+This role is meant to be used from a one-shot, [ad-hoc]() ansible command. Adding the role to your playbook is not needed.
 
-This role should be applied on `localhost` **after** other hosts/roles have been deployed. Ansible [facts](https://docs.ansible.com/ansible/latest/user_guide/playbooks_vars_facts.html) installed by other roles/gathered by the [setup](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/setup_module.html) module are used to retrieve information which will be included in the README.md.
-
-```yaml
-# inventory.yml
-all:
-  hosts:
-    host1:
-    host2:
-...
-local:
-  hosts:
-    localhost:
-      connection: local
+```bash
+# from ansible command-line
+ansible --module-name "ansible.builtin.include_role" --args "name=nodiscc.toolbox.autoreadme"  --verbose --diff --connection local localhost
 ```
 
-```yaml
-# playbook.yml
-- hosts: all:!localhost
-  roles:
-    - role1
-    - role2
-...
-# insert this at the end of your main playbook
-- hosts: localhost
-  roles:
-    - nodiscc.xsrv.autoreadme
-```
+The role must be run **after** other roles have been deployed to your hosts, as it uses [local facts](https://docs.ansible.com/ansible/latest/user_guide/playbooks_vars_facts.html) installed by other roles/gathered by the [setup](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/setup_module.html) module to retrieve information which will be included in the README.md.
 
 See [defaults/main.yml](defaults/main.yml) for all configuration variables.
 
