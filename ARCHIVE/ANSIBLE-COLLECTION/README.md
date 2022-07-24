@@ -34,7 +34,7 @@ ansible-galaxy collection install -r requirements.yml
 
 - hosts: localhost
   roles:
-    - nodiscc.xsrv.autoreadme
+    - nodiscc.toolbox.autoreadme
 ```
 
 See [Using collections](https://docs.ansible.com/ansible/latest/user_guide/collections_using.html) for more details.
