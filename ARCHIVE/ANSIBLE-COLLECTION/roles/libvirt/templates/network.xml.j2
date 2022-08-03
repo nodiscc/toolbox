@@ -1,7 +1,7 @@
 <network>
   <name>{{ item.name }}</name>
 {% if item.forward_dev is defined %}
-  <forward dev='{{ item.forward_dev }}' mode='nat'>
+  <forward dev='{{ item.forward_dev }}' mode='route'>
     <interface dev='{{ item.forward_dev }}'/>
   </forward>
 {% endif %}
