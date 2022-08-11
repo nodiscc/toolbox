@@ -21,6 +21,15 @@
     group: root
     mode: 0644
 
+- name: enable libvirtd/libvirt-guests services
+  service:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  with_items:
+    - libvirtd
+    - libvirt-guests
+
 - name: configure libvirt port forwards
   template:
     src: etc_libvirt_hooks_qemu.j2
@@ -63,19 +72,15 @@
 - name: define virtual machines
   community.libvirt.virt:
     command: define
-    xml: "{{ lookup('template', 'vm.xml.j2' ) }}"
+    xml: "{{ lookup('file', item.xml_file ) }}"
     autostart: "{{ item.autostart | default(True) }}"
   when: item.state != 'absent'
   with_items: "{{ libvirt_vms }}"
   ignore_errors: "{{ ansible_check_mode }}"
 
-#- name: delete virtual machines # TODO
-
-- name: enable libvirtd/libvirt-guests services
-  service:
-    name: "{{ item }}"
-    state: started
-    enabled: yes
-  with_items:
-    - libvirtd
-    - libvirt-guests
+- name: start/stop/delete virtual machines
+  community.libvirt.virt:
+    name: "{{ item.name }}"
+    state: "{{ item.state | default('present') }}"
+  with_items: "{{ libvirt_vms }}"
+  ignore_errors: "{{ ansible_check_mode }}"

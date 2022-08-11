@@ -33,7 +33,6 @@ libvirt_networks: []
 #    state: deleted
 libvirt_storage_pools: []
 
-# list of libvirt VMs - EXPERIMENTAL
 # https://docs.ansible.com/ansible/latest/collections/community/libvirt/virt_module.html
 # https://libvirt.org/formatdomain.html
 # https://manpages.debian.org/virsh
@@ -42,17 +41,9 @@ libvirt_storage_pools: []
 # Example:
 # libvirt_vms:
 #  - name: vm01.CHANGEME.org
-#    state: running # running/destroyed/paused/running/shutdown/absent
+#    state: running # running/destroyed/paused/running/shutdown/absent, default present
 #    autostart: yes # optional, default yes
-#    mem_mb: 128
-#    vcpu: 1
-#    disks:
-#      - source_file: '/var/lib/libvirt/images/vm01.CHANGEME.org.qcow2'
-#        target_dev: vda # name of the target device inside the guest
-#        type: qcow2 # optional, default qcow2
-#        target_bus: virtio # optional, default virtio
-#    mac_address: '52:54:00:5d:41:01'
-#    network: default
+#    xml_file: "data/libvirt/vm01.CHANGEME.org.xml"
 #  - name: remove.this.vm
 #    state: absent
 #    remove_all_storage: yes
