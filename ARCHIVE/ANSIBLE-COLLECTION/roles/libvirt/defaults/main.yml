@@ -64,6 +64,6 @@ libvirt_port_forwards: []
 # list of systemd units that should be started before libvirtd starts (for example mount units)
 # Example:
 # libvirt_service_after:
-#  - mnt-KVMSTORAGE1
-#  - mnt-KVMSTORAGE2
+#  - mnt-KVMSTORAGE1.mount
+#  - mnt-KVMSTORAGE2.mount
 libvirt_service_after: []

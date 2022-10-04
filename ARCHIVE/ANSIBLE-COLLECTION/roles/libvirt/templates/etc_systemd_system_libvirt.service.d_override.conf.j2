@@ -1,6 +1,0 @@
-{% if libvirt_service_after %}
-[Unit]
-{% for item in libvirt_service_after %}
-After={{ item }}
-{% endfor %}
-{% endif %}
