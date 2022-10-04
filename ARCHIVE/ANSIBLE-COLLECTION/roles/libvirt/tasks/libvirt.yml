@@ -21,6 +21,15 @@
     group: root
     mode: 0644
 
+- name: configure libvirt systemd unit overrides
+  template:
+    src: etc_systemd_system_libvirt.service.d_override.conf.j2
+    dest: /etc/systemd/system/libvirt.service.d/override.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: reload systemd unit files
+
 - name: enable libvirtd/libvirt-guests services
   service:
     name: "{{ item }}"
@@ -69,18 +78,21 @@
   with_items: "{{ libvirt_storage_pools }}"
   ignore_errors: "{{ ansible_check_mode }}"
 
-- name: define virtual machines
+- name: create/define virtual machines
   community.libvirt.virt:
     command: define
     xml: "{{ lookup('file', item.xml_file ) }}"
     autostart: "{{ item.autostart | default(True) }}"
-  when: item.state != 'absent'
+  when: item.state in ['present', 'running', 'stopped', 'shutdown']
   with_items: "{{ libvirt_vms }}"
   ignore_errors: "{{ ansible_check_mode }}"
 
-- name: start/stop/delete virtual machines
+- name: delete/undefine virtual machines
   community.libvirt.virt:
+    command: undefine
     name: "{{ item.name }}"
-    state: "{{ item.state | default('present') }}"
+  when: item.state == "absent"
   with_items: "{{ libvirt_vms }}"
   ignore_errors: "{{ ansible_check_mode }}"
+
+# - name: start/stop libvirt VMs

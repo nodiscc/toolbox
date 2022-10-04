@@ -36,18 +36,14 @@ libvirt_storage_pools: []
 # https://docs.ansible.com/ansible/latest/collections/community/libvirt/virt_module.html
 # https://libvirt.org/formatdomain.html
 # https://manpages.debian.org/virsh
-# to delete a VM, set its state: to 'absent', and optionally one of the following attributes (yes/no): remove_all_storage, delete_snapshots
-# when state: absent, only the name: parameter is required
 # Example:
 # libvirt_vms:
 #  - name: vm01.CHANGEME.org
-#    state: running # running/destroyed/paused/running/shutdown/absent, default present
+#    state: present # present/running/stopped/shutdown/absent, default present (absent deletes the VM)
 #    autostart: yes # optional, default yes
-#    xml_file: "data/libvirt/vm01.CHANGEME.org.xml"
+#    xml_file: "data/libvirt/vm01.CHANGEME.org.xml" # path to XML file containing the VM definition, required when state: present/running/stopped/shutdown
 #  - name: remove.this.vm
 #    state: absent
-#    remove_all_storage: yes
-#    delete_snapshots: yes
 libvirt_vms: []
 
 # number of VMs to shutdown in parallel when the hypervisor is being shut down
@@ -64,3 +60,10 @@ libvirt_parallel_shutdown_number: 3
 #     vm_name: vm01.CHANGEME.org # VM name (rules will be applied/removed when this VM starts/shuts down)
 #     bridge: virbr1 # bridge used by the VM's libvirt network, see virsh net-dumpxml
 libvirt_port_forwards: []
+
+# list of systemd units that should be started before libvirtd starts (for example mount units)
+# Example:
+# libvirt_service_after:
+#  - mnt-KVMSTORAGE1
+#  - mnt-KVMSTORAGE2
+libvirt_service_after: []
