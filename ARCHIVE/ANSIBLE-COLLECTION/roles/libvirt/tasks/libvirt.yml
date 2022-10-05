@@ -99,6 +99,8 @@
   community.libvirt.virt:
     command: list_vms
   register: listed_vms
+  check_mode: no # always run
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: delete/undefine virtual machines
   community.libvirt.virt:
