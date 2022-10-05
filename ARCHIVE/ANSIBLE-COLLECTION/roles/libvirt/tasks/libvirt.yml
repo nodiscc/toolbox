@@ -86,6 +86,8 @@
   with_items: "{{ libvirt_storage_pools }}"
   ignore_errors: "{{ ansible_check_mode }}"
 
+##### VMS #####
+
 - name: create/define virtual machines
   community.libvirt.virt:
     command: define
@@ -94,6 +96,7 @@
   when: item.state in ['present', 'running', 'destroyed', 'shutdown']
   with_items: "{{ libvirt_vms }}"
   ignore_errors: "{{ ansible_check_mode }}"
+  tags: libvirt-vms
 
 - name: list virtual machines
   community.libvirt.virt:
@@ -101,6 +104,7 @@
   register: listed_vms
   check_mode: no # always run
   ignore_errors: "{{ ansible_check_mode }}"
+  tags: libvirt-vms
 
 - name: stop VMs to be deleted
   community.libvirt.virt:
@@ -111,6 +115,7 @@
     - item.name in listed_vms.list_vms
   with_items: "{{ libvirt_vms }}"
   ignore_errors: "{{ ansible_check_mode }}"
+  tags: libvirt-vms
 
 - name: delete/undefine virtual machines
   community.libvirt.virt:
@@ -121,6 +126,7 @@
     - item.name in listed_vms.list_vms
   with_items: "{{ libvirt_vms }}"
   ignore_errors: "{{ ansible_check_mode }}"
+  tags: libvirt-vms
 
 - name: start/pause/shutdown/stop libvirt VMs
   community.libvirt.virt:
@@ -129,3 +135,4 @@
   when: item.state in ['present', 'running', 'destroyed', 'shutdown']
   with_items: "{{ libvirt_vms }}"
   ignore_errors: "{{ ansible_check_mode }}"
+  tags: libvirt-vms
