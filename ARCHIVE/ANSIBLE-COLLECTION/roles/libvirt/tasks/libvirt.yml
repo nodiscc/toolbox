@@ -93,7 +93,7 @@
     command: define
     xml: "{{ lookup('file', item.xml_file ) }}"
     autostart: "{{ item.autostart | default(True) }}"
-  when: item.state in ['present', 'running', 'destroyed', 'shutdown']
+  when: (item.state is not defined) or (item.state in ['present', 'running', 'destroyed', 'shutdown'])
   with_items: "{{ libvirt_vms }}"
   ignore_errors: "{{ ansible_check_mode }}"
   tags: libvirt-vms
@@ -111,6 +111,7 @@
     name: "{{ item.name }}"
     state: "destroyed"
   when:
+    - item.state is defined
     - item.state == "absent"
     - item.name in listed_vms.list_vms
   with_items: "{{ libvirt_vms }}"
@@ -122,6 +123,7 @@
     command: undefine
     name: "{{ item.name }}"
   when:
+    - item.state is defined
     - item.state == "absent"
     - item.name in listed_vms.list_vms
   with_items: "{{ libvirt_vms }}"
@@ -132,7 +134,9 @@
   community.libvirt.virt:
     name: "{{ item.name }}"
     state: "{{ item.state }}"
-  when: item.state in ['present', 'running', 'destroyed', 'shutdown']
+  when:
+    - item.state is defined
+    - item.state in ['running', 'destroyed', 'shutdown']
   with_items: "{{ libvirt_vms }}"
   ignore_errors: "{{ ansible_check_mode }}"
   tags: libvirt-vms
