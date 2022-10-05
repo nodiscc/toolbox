@@ -33,15 +33,14 @@ libvirt_networks: []
 #    state: deleted
 libvirt_storage_pools: []
 
-# https://docs.ansible.com/ansible/latest/collections/community/libvirt/virt_module.html
-# https://libvirt.org/formatdomain.html
-# https://manpages.debian.org/virsh
+# List of libvirt VMs to create/start/stop/shutdown/delete
+# state: absent deletes the VM BUT NOT THEIR DISKS/STORAGE VOLUMES (a.k.a. virsh --delete-all-storage)
 # Example:
 # libvirt_vms:
 #  - name: vm01.CHANGEME.org
-#    state: present # present/running/stopped/shutdown/absent, default present (absent deletes the VM)
+#    state: present # present/running/stopped/shutdown/absent, default present
 #    autostart: yes # optional, default yes
-#    xml_file: "data/libvirt/vm01.CHANGEME.org.xml" # path to XML file containing the VM definition, required when state: present/running/stopped/shutdown
+#    xml_file: "{{ playbook_dir }}/data/libvirt/vm01.CHANGEME.org.xml" # path to XML file containing the VM definition (https://libvirt.org/formatdomain.html), required when state: present/running/stopped/shutdown
 #  - name: remove.this.vm
 #    state: absent
 libvirt_vms: []

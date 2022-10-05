@@ -95,11 +95,18 @@
   with_items: "{{ libvirt_vms }}"
   ignore_errors: "{{ ansible_check_mode }}"
 
+- name: list virtual machines
+  community.libvirt.virt:
+    command: list_vms
+  register: listed_vms
+
 - name: delete/undefine virtual machines
   community.libvirt.virt:
     command: undefine
     name: "{{ item.name }}"
-  when: item.state == "absent"
+  when:
+    - item.state == "absent"
+    - item.name in listed_vms.list_vms
   with_items: "{{ libvirt_vms }}"
   ignore_errors: "{{ ansible_check_mode }}"
 
