@@ -28,7 +28,7 @@
     fail_msg: "One or more variables are not correctly defined. Check role documentation: https://gitlab.com/nodiscc/xsrv/-/tree/master/roles/libvirt"
     that:
       - item.name is string
-      - (item.state is not defined) or (item.state in ['present', 'running', 'stopped', 'shutdown', 'absent'])
+      - (item.state is not defined) or (item.state in ['present', 'running', 'destroyed', 'shutdown', 'absent'])
       - (item.xml_file is string) or (item.state == "absent")
       - (item.autostart is not defined) or (item.autostart == item.autostart | bool) or (item.state == "absent")
   with_items: "{{ libvirt_vms }}"
