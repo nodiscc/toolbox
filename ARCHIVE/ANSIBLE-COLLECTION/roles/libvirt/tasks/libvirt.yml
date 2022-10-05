@@ -102,6 +102,16 @@
   check_mode: no # always run
   ignore_errors: "{{ ansible_check_mode }}"
 
+- name: stop VMs to be deleted
+  community.libvirt.virt:
+    name: "{{ item.name }}"
+    state: "destroyed"
+  when:
+    - item.state == "absent"
+    - item.name in listed_vms.list_vms
+  with_items: "{{ libvirt_vms }}"
+  ignore_errors: "{{ ansible_check_mode }}"
+
 - name: delete/undefine virtual machines
   community.libvirt.virt:
     command: undefine
