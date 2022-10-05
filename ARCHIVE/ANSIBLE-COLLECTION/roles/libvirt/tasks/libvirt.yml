@@ -114,6 +114,7 @@
 
 - name: start/pause/shutdown/stop libvirt VMs
   community.libvirt.virt:
+    name: "{{ item.name }}"
     state: "{{ item.state }}"
   when: item.state in ['present', 'running', 'destroyed', 'shutdown']
   with_items: "{{ libvirt_vms }}"

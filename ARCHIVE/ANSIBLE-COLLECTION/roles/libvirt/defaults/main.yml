@@ -38,7 +38,7 @@ libvirt_storage_pools: []
 # 'state: destroyed' stops the VM without proper shutdown
 # Example:
 # libvirt_vms:
-#  - name: vm01.CHANGEME.org
+#  - name: vm01.CHANGEME.org # name of the VM/guest
 #    state: present # present/running/destroyed/shutdown/absent, default present
 #    autostart: yes # optional, default yes
 #    xml_file: "{{ playbook_dir }}/data/libvirt/vm01.CHANGEME.org.xml" # path to XML file containing the VM definition (https://libvirt.org/formatdomain.html), required when state: present/running/destroyed/shutdown
@@ -50,6 +50,7 @@ libvirt_vms: []
 libvirt_parallel_shutdown_number: 3
 
 # NAT/port forwarding to libvirt VMs
+# TODO restart libvirtd when firewalld restarts, else forwarding rules are erased
 # Example:
 # libvirt_port_forwards:
 #   - host_ip: 192.168.1.20 # forward traffic arriving on this IP address on the libvirt host
