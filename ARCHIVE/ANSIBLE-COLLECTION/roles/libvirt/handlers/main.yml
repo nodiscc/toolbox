@@ -4,6 +4,9 @@
     name: libvirtd
     state: restarted
     enabled: yes
+  listen:
+    - restart firewalld
+    - reload firewalld
 
 - name: reload systemd unit files
   become: yes
