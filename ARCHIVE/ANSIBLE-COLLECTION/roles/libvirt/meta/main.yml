@@ -1,4 +1,5 @@
-# @tag libvirt - setup libvirt virtualizatation toolkit
+# @tag libvirt - setup libvirt virtualization toolkit
+# @tag libvirt-storage - setup libvirt storage pools
 
 galaxy_info:
   role_name: libvirt

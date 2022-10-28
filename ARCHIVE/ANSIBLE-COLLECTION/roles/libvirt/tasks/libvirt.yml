@@ -75,15 +75,13 @@
   ignore_errors: "{{ ansible_check_mode }}"
   tags: libvirt-storage
 
-# TODO autostart does not work
-# TODO activate pools after creation
 - name: create storage pools
   community.libvirt.virt_pool:
     name: "{{ item.name }}"
     command: define
     xml: "{{ lookup('template', 'pool.xml.j2' ) }}"
     autostart: "{{ item.autostart | default(True) }}"
-    state: "{{ item.state | default('present') }}"
+    state: "{{ item.state | default('active') }}"
   with_items: "{{ libvirt_storage_pools }}"
   ignore_errors: "{{ ansible_check_mode }}"
   tags: libvirt-storage
