@@ -73,6 +73,7 @@
     path: "{{ item.path }}"
   with_items: "{{ libvirt_storage_pools }}"
   ignore_errors: "{{ ansible_check_mode }}"
+  tags: libvirt-storage
 
 # TODO autostart does not work
 # TODO activate pools after creation
@@ -85,6 +86,7 @@
     state: "{{ item.state | default('present') }}"
   with_items: "{{ libvirt_storage_pools }}"
   ignore_errors: "{{ ansible_check_mode }}"
+  tags: libvirt-storage
 
 ##### VMS #####
 
