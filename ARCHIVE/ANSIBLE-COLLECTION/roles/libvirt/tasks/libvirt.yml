@@ -75,13 +75,21 @@
   ignore_errors: "{{ ansible_check_mode }}"
   tags: libvirt-storage
 
-- name: create storage pools
+- name: define storage pools
   community.libvirt.virt_pool:
     name: "{{ item.name }}"
     command: define
     xml: "{{ lookup('template', 'pool.xml.j2' ) }}"
+  with_items: "{{ libvirt_storage_pools }}"
+  ignore_errors: "{{ ansible_check_mode }}"
+  tags: libvirt-storage
+
+- name: start storage pools
+  community.libvirt.virt_pool:
+    command: define
+    name: "{{ item.name }}"
+    state: "{{ 'active' if (item.state is not defined or item.state == 'active') else item.state }}"
     autostart: "{{ item.autostart | default(True) }}"
-    state: "{{ item.state | default('active') }}"
   with_items: "{{ libvirt_storage_pools }}"
   ignore_errors: "{{ ansible_check_mode }}"
   tags: libvirt-storage
