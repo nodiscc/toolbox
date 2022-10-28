@@ -39,9 +39,11 @@ force log rotation `sudo logrotate -f /etc/logrotate.conf`
 
 apachectl `start/stop/restart/fullstatus/status/graceful/graceful-stop/configtest/startssl`
 
-apache MPM: prefork: stable/fast, 1 connection -> 1 process (multi-process)  
+apache MPM prefork: stable/fast, 1 connection -> 1 process (multi-process)  
 apache MPM worker: lightweight, 1 connection -> 1 thread (requires php-fpm)  
 apache MPM event: very lightweight, 1 request -> 1 thread. Use PHP-FPM anyway.
+
+apache proxypass except Letsencrypt .well-known HTTP challenge directory `ProxyPass /.well-known/acme-challenge/ !` `ProxyPassReverse /.well-known/acme-challenge/ !` before other proxy directives, `RewriteCond %{REQUEST_URI} !^/.well-known/acme-challenge/ [NC]` `RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=302]` instead of global `Redirect`
 
 python directory of currently running script `os.path.abspath(__file__)`
 
