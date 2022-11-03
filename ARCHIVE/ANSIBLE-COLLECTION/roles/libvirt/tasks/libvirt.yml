@@ -76,13 +76,12 @@
   ignore_errors: "{{ ansible_check_mode }}"
   tags: libvirt-storage
 
-- name: define storage pools
+- name: define/undefine/stop/delete storage pools
   community.libvirt.virt_pool:
     name: "{{ item.name }}"
     command: define
     xml: "{{ lookup('template', 'pool.xml.j2' ) }}"
   with_items: "{{ libvirt_storage_pools }}"
-  when: (item.state is defined) and (item.state in ['active', 'inactive', 'present'])
   ignore_errors: "{{ ansible_check_mode }}"
   tags: libvirt-storage
 
