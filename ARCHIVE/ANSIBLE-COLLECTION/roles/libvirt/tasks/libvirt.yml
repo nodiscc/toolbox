@@ -67,13 +67,13 @@
   with_items: "{{ libvirt_networks }}"
   ignore_errors: "{{ ansible_check_mode }}"
 
-- name: create storage pool paths
+- name: create storage pool directories
   file:
     state: directory
     path: "{{ item.path }}"
     mode: "{{ item.mode | default('0750') }}"
   with_items: "{{ libvirt_storage_pools }}"
-  when: (item.state is defined) and (item.state in ['active', 'inactive', 'present'])
+  when: (item.state is not defined) or (item.state in ['active', 'inactive', 'present'])
   ignore_errors: "{{ ansible_check_mode }}"
   tags: libvirt-storage
 
@@ -83,7 +83,7 @@
     command: define
     xml: "{{ lookup('template', 'pool.xml.j2' ) }}"
   with_items: "{{ libvirt_storage_pools }}"
-  when: (item.state is defined) and (item.state in ['active', 'inactive', 'present'])
+  when: (item.state is not defined) or (item.state in ['active', 'inactive', 'present'])
   ignore_errors: "{{ ansible_check_mode }}"
   tags: libvirt-storage
 
