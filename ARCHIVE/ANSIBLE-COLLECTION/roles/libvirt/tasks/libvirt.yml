@@ -71,6 +71,7 @@
   file:
     state: directory
     path: "{{ item.path }}"
+    mode: "{{ item.mode | default('0750') }}"
   with_items: "{{ libvirt_storage_pools }}"
   when: (item.state is defined) and (item.state in ['active', 'inactive', 'present'])
   ignore_errors: "{{ ansible_check_mode }}"
