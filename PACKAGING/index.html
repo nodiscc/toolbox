@@ -2,7 +2,10 @@
 Additional software for Debian 11 (Bullseye)
 
 Add this repository to your APT sources list:
-echo 'deb https://nodiscc.gitlab.io/toolbox/ bullseye main' | sudo tee /etc/apt/sources.list.d/toolbox.list && sudo apt update
+wget -O- https://nodiscc.gitlab.io/toolbox/gpg.key | gpg --dearmor > nodiscc-toolbox.gpg
+cat nodiscc-toolbox.gpg | sudo tee -a /usr/share/keyrings/nodiscc-toolbox.gpg > /dev/null
+echo 'deb [signed-by=/usr/share/keyrings/nodiscc-toolbox.gpg] https://nodiscc.gitlab.io/toolbox/ bullseye main' | sudo tee /etc/apt/sources.list.d/nodiscc-toolbox.list
+sudo apt update
 
 Sources: <a href="https://gitlab.com/nodiscc/toolbox/-/tree/master/PACKAGING">https://gitlab.com/nodiscc/toolbox/-/tree/master/PACKAGING</a>
 Build logs: <a href="https://gitlab.com/nodiscc/toolbox/-/pipelines?page=1&scope=all&ref=master">https://gitlab.com/nodiscc/toolbox/-/pipelines?page=1&scope=all&ref=master</a>
