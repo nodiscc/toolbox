@@ -1,4 +1,4 @@
-all: yt_dlp bleachbit_cleanerml pidgin_opensteamworks lutris user.js
+all: yt_dlp bleachbit_cleanerml pidgin_opensteamworks lutris user.js tartube
 
 YT_DLP_VERSION=2022.10.04
 CLEANERML_VERSION=5bc2961
@@ -7,6 +7,7 @@ PIDGIN_OPENSTEAMWORKS_VERSION=1.7
 LUTRIS_VERSION=0.5.11
 USERJS_VERSION=0.4.0
 USERJS_PACKAGE_VERSION=$(USERJS_VERSION)-1
+TARTUBE_VERSION=2.4.093
 
 yt_dlp:
 	rm -rf build/
@@ -77,6 +78,9 @@ user.js:
 	dpkg-deb --build user.js/
 	mv -v user.js.deb dist/user.js_$(USERJS_PACKAGE_VERSION)_all.deb
 
+.PHONY: tartube
+tartube:
+	wget -O dist/python3-tartube_$(TARTUBE_VERSION).deb https://github.com/axcore/tartube/releases/download/v2.4.093/python3-tartube_$(TARTUBE_VERSION).deb
 
 clean:
 	rm -rf build/ dist/ yt-dlp/usr/local/bin/yt-dlp bleachbit-cleanerml/usr/share/bleachbit/cleaners/*xml user.js/usr/share/
