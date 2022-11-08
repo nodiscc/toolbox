@@ -12,7 +12,7 @@
 #    dhcp_start: "10.0.100.128" # optional
 #    dhcp_end: "10.0.100.254" # optional
 #    autostart: yes # optional, yes/no, default yes
-#    state: prsent # optional, active/inactive/present/absent, default present
+#    state: present # optional, active/inactive/present/absent, default present
 libvirt_networks: []
 
 # list of libvirt storage pools
