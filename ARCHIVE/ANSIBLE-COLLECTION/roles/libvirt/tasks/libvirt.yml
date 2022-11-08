@@ -69,6 +69,7 @@
     state: "{{ item.state | default('active') }}"
   with_items: "{{ libvirt_networks }}"
   ignore_errors: "{{ ansible_check_mode }}"
+  when: (item.state is not defined) or (item.state in ['active', 'inactive', 'present'])
   tags: libvirt-networks
 
 - name: configure libvirt networks autostart
