@@ -1,4 +1,0 @@
-{% if libvirt_service_after %}
-[Unit]
-After={{ libvirt_service_after|join(',') }}
-{% endif %}

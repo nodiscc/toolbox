@@ -30,7 +30,6 @@ ansible-galaxy collection install -r requirements.yml
    - nodiscc.toolbox.nfs_server
    - nodiscc.toolbox.valheim_server
    - nodiscc.toolbox.icecast
-   - nodiscc.toolbox.libvirt
 
 - hosts: localhost
   roles:
