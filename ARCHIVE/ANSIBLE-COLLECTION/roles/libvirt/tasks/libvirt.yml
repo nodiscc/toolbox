@@ -47,6 +47,8 @@
     - libvirtd
     - libvirt-guests
 
+##### NETWORK #####
+
 - name: configure libvirt port forwards
   template:
     src: etc_libvirt_hooks_qemu.j2
@@ -56,6 +58,7 @@
     mode: 0755
   notify: restart libvirtd
   ignore_errors: "{{ ansible_check_mode }}"
+  tags: libvirt-port-forwards
 
 - name: configure libvirt networks
   community.libvirt.virt_net:
