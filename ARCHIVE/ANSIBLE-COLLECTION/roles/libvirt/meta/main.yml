@@ -1,5 +1,6 @@
 # @tag libvirt - setup libvirt virtualization toolkit
 # @tag libvirt-storage - setup libvirt storage pools
+# @tag libvirt-networks - setup libvirt virtual networks
 # @tag libvirt-port-forwards - setup libvirt port forwards
 
 galaxy_info:

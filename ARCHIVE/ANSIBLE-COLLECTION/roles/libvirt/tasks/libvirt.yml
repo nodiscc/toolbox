@@ -69,6 +69,19 @@
     state: "{{ item.state | default('present') }}"
   with_items: "{{ libvirt_networks }}"
   ignore_errors: "{{ ansible_check_mode }}"
+  tags: libvirt-networks
+
+- name: configure libvirt networks autostart
+  community.libvirt.virt_net:
+    name: "{{ item.name }}"
+    autostart: "{{ item.autostart | default(True) }}"
+  with_items: "{{ libvirt_networks }}"
+  when: (item.state is not defined) or (item.state in ['active', 'inactive', 'present'])
+  ignore_errors: "{{ ansible_check_mode }}"
+  tags: libvirt-networks
+
+
+##### STORAGE #####
 
 - name: create storage pool directories
   file:
