@@ -66,7 +66,7 @@
     command: define
     xml: "{{ lookup('template', 'network.xml.j2' ) }}"
     autostart: "{{ item.autostart | default(True) }}"
-    state: "{{ item.state | default('present') }}"
+    state: "{{ item.state | default('active') }}"
   with_items: "{{ libvirt_networks }}"
   ignore_errors: "{{ ansible_check_mode }}"
   tags: libvirt-networks
