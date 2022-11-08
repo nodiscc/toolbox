@@ -103,6 +103,15 @@
   ignore_errors: "{{ ansible_check_mode }}"
   tags: libvirt-storage
 
+- name: setup storage pools autostart
+  community.libvirt.virt_pool:
+    name: "{{ item.name }}"
+    autostart: "{{ item.autostart | default(True) }}"
+  with_items: "{{ libvirt_storage_pools }}"
+  when: (item.state is not defined) or (item.state in ['active', 'inactive', 'present'])
+  ignore_errors: "{{ ansible_check_mode }}"
+  tags: libvirt-storage
+
 - name: start storage pools
   community.libvirt.virt_pool:
     command: define
