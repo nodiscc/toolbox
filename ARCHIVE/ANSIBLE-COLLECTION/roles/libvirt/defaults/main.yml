@@ -50,7 +50,6 @@ libvirt_vms: []
 libvirt_parallel_shutdown_number: 3
 
 # NAT/port forwarding to libvirt VMs
-# TODO restart libvirtd when firewalld restarts, else forwarding rules are erased
 # Example:
 # libvirt_port_forwards:
 #   - host_ip: 192.168.1.20 # forward traffic arriving on this IP address on the libvirt host
