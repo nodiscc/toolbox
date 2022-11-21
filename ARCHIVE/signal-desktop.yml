@@ -1,0 +1,38 @@
+# https://signal.org/download/
+
+- name: download signal-desktop apt repository key
+  ansible.builtin.get_url:
+    url: https://updates.signal.org/desktop/apt/keys.asc
+    dest: /etc/apt/trusted.gpg.d/signal-desktop.asc
+    owner: root
+    group: root
+    mode: 0644
+
+- name: add signal-desktop apt repository
+  ansible.builtin.apt_repository:
+    repo: "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/signal-desktop.asc] https://updates.signal.org/desktop/apt xenial main"
+    filename: signal-desktop
+    state: present
+    update_cache: yes
+
+- name: install signal-desktop
+  apt:
+    package: signal-desktop
+    state: present
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: create desktop launcher directory
+  file:
+    state: directory
+    path: /usr/local/share/applications/
+    owner: root
+    group: root
+    mode: 0755
+
+- name: install desktop launcher with start-in-tray option
+  template:
+    src: usr_local_share_applications_signal-desktop.desktop.j2
+    dest: /usr/local/share/applications/signal-desktop.desktop
+    owner: root
+    group: root
+    mode: 0755
