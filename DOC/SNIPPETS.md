@@ -330,6 +330,8 @@ install xfce from netinstall: ajouter le paramètre desktop=xfce aux options de 
 
 backup and reinstall manually installed packages: `aptitude search --disable-columns -F%p '~i!~M!~v' > package_list; xargs aptitude --schedule-only install < package_list`
 
+list all packages that no package depends on `dpkg-query --show --showformat='${Package}\t${Status}\n' | tac | awk '/installed$/ {print $1}' | xargs apt-cache rdepends --installed | tac | awk '{ if (/^ /) ++deps; else if (!/:$/) { if (!deps) print; deps = 0 } }'`
+
 `optipng -nc -nb -o7 -full file.png` optimize a PNG image @cli @images
 
 find files/dirs newer than x `touch -t 197001010000 ./tmp && find . -newer ./tmp && rm -f ./tmp` @cli
@@ -874,6 +876,8 @@ disable keyboard beep: `echo 'options snd_hda_intel beep_mode=0' >> /etc/modprob
 
 parrallel zipping (faster): `find -type d -print0 | xargs -i -n1 -0 -P4 zip -r {}.zip {}`
 
+unzip 25 files at once `find . -maxdepth 1 -name '*.zip' -print0 | xargs -0 -I {} -P 25 unzip {} `
+
 Fix native screen resolution not detected in GRUB (eg. netbook monitor) `echo GRUB_TERMINAL=console' >> /etc/default/grub; echo 'GRUB_GFXPAYLOAD_LINUX=1024x600x32' >> /etc/default/grub; sudo update-grub`
 
 `acpi_osi=Linux` in GRUB's kernel command line solves some problems related to backlight handling, volume control keys, power management...
@@ -1099,6 +1103,8 @@ setup source NAT (SNAT): `iptables -t nat -A POSTROUTING -o ethpublic0 -j SNAT -
 iptables make rules permanent: `apt install iptables-permanent; iptables-save > /etc/iptables/rules.v4; cat /etc/iptables/rules.v4 | iptables-restore`
 
 extract audio from video without conversion: `ffmpeg -i video.mp4 -vn -acodec copy audio.aac`
+
+convert an image sequence to a video `ffmpeg -framerate 30 -pattern_type glob -i '*.jpg' -c:v libx264 -pix_fmt yuv420p out.mp4`
 
 build debian APT repo packages index: dpkg-scanpackages . /dev/null | gzip -9c > Packages.gz
 
