@@ -4,5 +4,5 @@ Encoding=UTF-8
 Type=X-Thumbnailer
 Name=Folder Thumbnailer
 MimeType=inode/directory;
-Exec=folder-thumbnailer %s %i %o %u
+Exec=/usr/local/bin/folder-thumbnailer %s %i %o %u
 

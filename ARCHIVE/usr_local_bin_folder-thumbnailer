@@ -1,0 +1,15 @@
+#!/bin/bash
+set -o errexit
+set -o nounset
+# TODO get current icon theme: xfconf-query -c xsettings -p /Net/IconThemeName
+# TODO embed the thumbnail in the folder icon for the current theme: /usr/share/icons/$ICONTHEMENAME/128x128/places/folder.svg
+convert -thumbnail "$1" "$2/folder.jpg" "$3" 1>/dev/null 2>&1 ||\
+convert -thumbnail "$1" "$2/.folder.jpg" "$3" 1>/dev/null 2>&1 ||\
+convert -thumbnail "$1" "$2/folder.png" "$3" 1>/dev/null 2>&1 ||\
+convert -thumbnail "$1" "$2/cover.jpg" "$3" 1>/dev/null 2>&1 ||\
+rm -f "$HOME/.cache/thumbnails/normal/$(echo -n "$4" | md5sum | cut -d " " -f1).png" ||\
+rm -f "$HOME/.thumbnails/normal/$(echo -n "$4" | md5sum | cut -d " " -f1).png" ||\
+rm -f "$HOME/.cache/thumbnails/large/$(echo -n "$4" | md5sum | cut -d " " -f1).png" ||\
+rm -f "$HOME/.thumbnails/large/$(echo -n "$4" | md5sum | cut -d " " -f1).png" ||\
+exit 1
+
