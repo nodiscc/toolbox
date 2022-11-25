@@ -1,0 +1,22 @@
+# @tag nfs-server - setup NFS server
+
+galaxy_info:
+  role_name: nfs_server
+  author: "nodiscc <nodiscc@gmail.com>"
+  description: "NFS file server"
+  license: GPL-3.0
+  min_ansible_version: "2.12"
+  platforms:
+    - name: Debian
+      versions:
+        - "11"
+  galaxy_tags:
+    - server
+    - fileserver
+    - nfs
+    - file
+    - sharing
+dependencies:
+  - nodiscc.xsrv.handlers
+  # - nodiscc.xsrv.common # optional
+  # - nodiscc.xsrv.monitoring # optional

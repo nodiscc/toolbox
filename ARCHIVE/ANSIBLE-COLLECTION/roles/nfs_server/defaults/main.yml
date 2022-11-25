@@ -1,11 +1,14 @@
-# list of NFS shares, see https://manpages.debian.org/bullseye/nfs-kernel-server/exports.5.en.html for available options.
-# Example:
-# nfs_shares:
-#   - path: /home/client1 # path to the shared directory
-#     client: "10.0.0.10.101" # allowed clients
+# list of NFS exports. Example:
+# nfs_exports:
+#   - path: /home/client1 # (required) path to export, must exist with appropriate owner/group/permissions
+#     clients: # (required) list of nfs clients to export the NFS share to
+#       - address: 192.168.1.101 # (required) address of allowed NFS client (IP address, network, hostname, or hostname with wildcards)
+#         options: rw,sync,no_subtree_check # (optional, default none) options for this export, comma-separated, see https://manpages.debian.org/bullseye/nfs-kernel-server/exports.5.en.html for a list of options
 #   - path: /home/client2
-#     owner: root # share owner, optional
-#     group: root # share group, optional
-#     client: "10.0.10.0/24"
-#     options: "rw,sync,no_subtree_check,async" # options, optional, defaults to rw,sync,no_subtree_check
-nfs_shares: []
+#     clients:
+#       - address: 192.168.1.0/24
+#         options: rw,sync,fsid=0,crossmnt,no_subtree_check,no_root_squash
+#   - path: /var/lib/app1_data
+#     clients:
+#       - address: '*'
+nfs_exports: []

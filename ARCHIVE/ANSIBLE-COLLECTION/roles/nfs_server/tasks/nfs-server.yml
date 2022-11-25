@@ -5,15 +5,7 @@
       - nfs-common
     state: present
 
-- name: create NFS share directories
-  file:
-    state: directory
-    path: "{{ item.path }}"
-    owner: "{{ item.owner | default('nobody' }}"
-    group: "{{ item.group | default('nogroup') }}"
-    mode: "{{ item.mode | de"fault('0750') }}'
-
-- name: create NFS exports
+- name: configure NFS exports
   template:
     src: etc_exports.j2
     dest: /etc/exports

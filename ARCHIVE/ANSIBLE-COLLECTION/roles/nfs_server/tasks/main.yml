@@ -1,3 +1,10 @@
-- include: nfs-server.yml
+# - name: include variable checks tasks TODO
+#   import_tasks: checks.yml
+#   tags:
+#     - nfs-server
+#     - checks
+
+- name: include NFS server tasks
+  import_tasks: nfs-server.yml
   become: yes
   tags: nfs-server

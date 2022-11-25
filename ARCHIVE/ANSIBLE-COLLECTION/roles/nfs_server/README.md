@@ -1,59 +1,42 @@
-# toollbs.nfs_server
+# xsrv.nfs_server
 
-This role will install a [NFS](https://en.wikipedia.org/wiki/Network_File_System) file server and allows configuring NFS shares.
-
+This role will install and configure a [NFS](https://en.wikipedia.org/wiki/NFS) file server.
 
 ## Requirements/dependencies/example playbook
 
-See [meta/main.yml](defaults/main.yml)
+See [meta/main.yml](meta/main.yml)
 
 ```yaml
 # playbook.yml
 - hosts: my.CHANGEME.org
   roles:
-     - nodiscc.xsrv.common # optional
-     - nodiscc.xsrv.monitoring # optional
-     - nodiscc.xsrv.nfs_server
-
-# host_vars/my.example.org/my.example.org.yml
-nfs_shares:
-  - path: /home/client1 # path to the shared directory
-    client: "10.0.0.10.101"
-  - path: /home/client2
-    owner: root
-    group: root
-    client: "10.0.10.0/24"
-    options: "rw,sync,no_subtree_check,async"
+    - nodiscc.xsrv.common # (optional) base server setup, hardening, bruteforce prevention
+    - nodiscc.xsrv.monitoring # (optional) server monitoring and log aggregation
+    - nodiscc.toolbox.nfs_server
 ```
 
-See [defaults/main.yml](defaults/main.yml) for all configuration variables.
+See [defaults/main.yml](defaults/main.yml) for all configuration variables
 
 
 ## Usage
 
-Mount shares from an authorized client, for example using the ansible [mount module](https://docs.ansible.com/ansible/latest/collections/ansible/posix/mount_module.html):
+Mount exported NFS shares on allowed clients in `/etc/fstab`:
 
-```yaml
-- name: create nfs mountpoints
-  file:
-    path: "{{ item }}"
-    state: directory
-  with_items:
-    - /mnt/nfs/home/client1
-    - /mnt/nfs/home/client2
-
-mount:
-  - src: "10.0.0.100:/home/client1"
-    dest: "/mnt/nfs/home/client1"
-    type: nfs
-    options: rw,sync,hard,intr,nosuid,nodev,noexec
-    state: present
-  - src: "10.0.0.100:/home/client2"
-    dest: "/mnt/nfs/home/client2"
-    type: nfs
-    options: rw,sync,hard,intr,nosuid,nodev,noexec
-    state: present
+```bash
+# $ sudo nano /etc/fstab
+192.168.1.100:/home/client1    /mnt/nfs/home/client1    nfs    rw,sync,hard,intr,nosuid,nodev,noexec,_netdev
+192.168.1.100:/home/client2    /mnt/nfs/home/client2    nfs    rw,sync,hard,intr,nosuid,nodev,noexec,_netdev
+# $ sudo mount -a
 ```
+
+## Tags
+
+<!--BEGIN TAGS LIST-->
+```
+nfs-server - setup NFS server
+```
+<!--END TAGS LIST-->
+
 
 ## License
 
@@ -62,4 +45,4 @@ mount:
 
 ## References
 
-- https://stdout.root.sx/links?searchtags=nfs
+- https://stdout.root.sx/links/?searchtags=nfs
