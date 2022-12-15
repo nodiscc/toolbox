@@ -6,6 +6,8 @@ git show number of commits in branch: `git rev-list --count HEAD` https://stacko
 
 git show hash of last commit: `git rev-parse --short HEAD` https://stackoverflow.com/questions/949314/how-to-retrieve-the-hash-for-the-current-commit-in-git
 
+git store credentials in libsecret/gnome-keyring `sudo apt-get install libsecret-1-0 libsecret-1-dev && cd /usr/share/doc/git/contrib/credential/libsecret &&sudo make && git config --global credential.helper /usr/share/doc/git/contrib/credential/libsecret/git-credential-libsecret`
+
 ip address/interfaces in readable format `ip -br a`
 
 python 3 http server `python3 -m http.server`
