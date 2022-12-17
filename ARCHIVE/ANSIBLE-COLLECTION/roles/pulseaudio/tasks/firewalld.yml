@@ -1,0 +1,8 @@
+- name: setup firewalld rules for pulseaudio
+  ansible.posix.firewalld:
+    zone: "internal"
+    service: pulseaudio
+    state: "enabled"
+    permanent: yes
+    immediate: yes
+  ignore_errors: "{{ ansible_check_mode }}"

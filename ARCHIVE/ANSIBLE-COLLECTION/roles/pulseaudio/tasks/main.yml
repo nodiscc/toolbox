@@ -2,3 +2,13 @@
   import_tasks: pulseaudio.yml
   become: yes
   tags: pulseaudio
+
+- name: include firewalld configuration tasks
+  import_tasks: firewalld.yml
+  become: yes
+  tags:
+    - pulseaudio
+    - firewall
+  when:
+    - ansible_local.firewalld.ansible_managed is defined
+    - ansible_local.firewalld.ansible_managed | bool
