@@ -15,7 +15,4 @@ galaxy_info:
     - server
     - LAN
 
-dependencies:
-  - src: git+https://gitlab.com/nodiscc/ansible-xsrv-common.git
-    version: master
-    name: common
+dependencies: []
