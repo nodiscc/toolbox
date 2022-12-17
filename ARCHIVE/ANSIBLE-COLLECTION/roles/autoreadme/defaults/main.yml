@@ -1,4 +1,0 @@
-# the set of hosts for which documentation should be auto-generated
-# Example: autoreadme_limit: ['host1.CHANGEME.org', 'host2.CHANGEME.org']
-autoreadme_limit: "{{ groups['all'] | difference(['localhost']) }}"
-autoreadme_template: "autoreadme.md.j2"
