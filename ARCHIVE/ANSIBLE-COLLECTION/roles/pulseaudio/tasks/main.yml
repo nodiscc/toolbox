@@ -1,4 +1,4 @@
 - name: include pulseaudio server configuration tasks
-  include_tasks: pulseaudio.yml
+  import_tasks: pulseaudio.yml
   become: yes
   tags: pulseaudio
