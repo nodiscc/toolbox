@@ -64,7 +64,7 @@
   when: pulseaudio_configure_local_cookie
 
 - name: copy remote pulse cookie to local machine
-  fetch: src="/var/run/pulse/.config/pulse/cookie" dest="{{ item }}" flat=yes
+  fetch: src="/var/run/pulse/.config/pulse/pulse-cookie" dest="{{ item }}" flat=yes
   with_items:
     - "{{ playbook_dir }}/data/secrets/pulse-cookie"
     - "{{ local_home }}/.config/pulse/cookie"
