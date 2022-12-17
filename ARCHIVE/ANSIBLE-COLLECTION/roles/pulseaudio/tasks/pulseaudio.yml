@@ -99,9 +99,4 @@
   when: not pulseaudio_enable_service
   tags: services
 
-##### OTHER #####
-
-- name: create pulseaudio-installed status file
-  template: src=var_lib_srv01_pulseaudio-installed.j2 dest=/var/lib/srv01/pulseaudio-installed owner=root group=root mode=0600
-
 # TODO: display pulseaudio cookie in a handler?
