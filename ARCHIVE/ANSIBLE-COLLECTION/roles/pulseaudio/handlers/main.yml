@@ -1,8 +1,7 @@
----
-
 - name: restart pulseaudio
   service: name={{ item }} state=restarted enabled=yes
   with_items:
     - pulseaudio
     - avahi-daemon
   when: pulseaudio_enable_service
+  ignore_errors: "{{ ansible_check_mode }}"
