@@ -1,4 +1,5 @@
 - name: restart pulseaudio
+  become: yes
   service: name={{ item }} state=restarted enabled=yes
   with_items:
     - pulseaudio
