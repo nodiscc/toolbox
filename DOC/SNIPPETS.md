@@ -257,13 +257,15 @@ FIX apt impossible de reconstruire le cache des paquets_: `sudo rm -r /var/lib/a
 
 show disk usage, exclute tmpfs filesystems `df -h -x tmpfs`
 
-disk write speed test `dd if=/>dd bs=1024 count=5M if=/dev/zero of=$REPERTOIRE/speedtestfile.tx`
+disk write speed test without memory buffered cache `dd if=/dev/zero of=diskbench bs=1M count=1024 conv=fdatasync`
+
+disk write speed test using memory buffered cache `dd if=/dev/zero of=diskbench bs=1M count=1024`
+
+disk read speed tests `echo 3 | sudo tee /proc/sys/vm/drop_caches && dd if=diskbench of=/dev/null bs=1M count=1024`
 
 disk transfer speed test `hdparm -t /dev/sdX`
 
-disk read speed tests `dd if=$REPERTOIRE/speedtestfile.tx of=/dev/null`
-
-watch for file modifications in a directory `inotifywait -rm --event modify --event moved_to $REPERTOIRE/`
+watch for file modifications in a directory `inotifywait -rm --event modify --event moved_to $DIRECTORY/`
 
 create empty file `touch emptyfile` or `> emptyfile`
 
