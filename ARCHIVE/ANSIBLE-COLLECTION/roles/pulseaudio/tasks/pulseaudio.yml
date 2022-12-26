@@ -41,9 +41,10 @@
   template: src=etc_avahi_avahi-daemon.conf.j2 dest=/etc/avahi/avahi-daemon.conf
   notify: restart pulseaudio
 
-##### FAIL2BAN - TODO
+- name: apply configuration (flush handlers)
+  meta: flush_handlers
 
-##### BACKUPS - NONE
+##### FAIL2BAN - TODO
 
 ##### COMMAND-LINE/MISC INSTALLATION STEPS
 
