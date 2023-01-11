@@ -1,6 +1,6 @@
 all: yt_dlp bleachbit_cleanerml pidgin_opensteamworks lutris user.js tartube
 
-YT_DLP_VERSION=2022.10.04
+YT_DLP_VERSION=2023.01.06
 CLEANERML_VERSION=5bc2961
 CLEANERML_PACKAGE_VERSION=0.0.1~git0
 PIDGIN_OPENSTEAMWORKS_VERSION=1.7
