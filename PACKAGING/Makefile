@@ -80,7 +80,7 @@ user.js:
 
 .PHONY: tartube
 tartube:
-	wget -O dist/python3-tartube_$(TARTUBE_VERSION).deb https://github.com/axcore/tartube/releases/download/v2.4.093/python3-tartube_$(TARTUBE_VERSION).deb
+	wget -O dist/python3-tartube_$(TARTUBE_VERSION).deb https://github.com/axcore/tartube/releases/download/v$(TARTUBE_VERSION)/python3-tartube_$(TARTUBE_VERSION).deb
 
 clean:
 	rm -rf build/ dist/ yt-dlp/usr/local/bin/yt-dlp bleachbit-cleanerml/usr/share/bleachbit/cleaners/*xml user.js/usr/share/
