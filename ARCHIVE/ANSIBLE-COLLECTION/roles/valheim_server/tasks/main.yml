@@ -1,24 +1,29 @@
-- include: checks.yml
+- name: include variable checks tasks
+  import_tasks: checks.yml
   tags:
     - valheim_server
     - steamcmd
     - checks
 
-- include: steam.yml
+- name: include steamcmd setup tasks
+  import_tasks: steam.yml
   become: yes
   tags:
     - valheim_server
     - steamcmd
 
-- include: valheim-server.yml
+- name: include valheim_server setup tasks
+  import_tasks: valheim-server.yml
   become: yes
   tags: valheim_server
 
-- include: fact.yml
+- name: include ansible facts setup tasks
+  import_tasks: fact.yml
   become: yes
   tags: valheim_server
 
-- include: firewalld.yml
+- name: include firewalld configuration tasks
+  import_tasks: firewalld.yml
   become: yes
   tags:
     - valheim_server

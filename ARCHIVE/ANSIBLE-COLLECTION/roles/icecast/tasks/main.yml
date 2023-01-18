@@ -1,25 +1,30 @@
-- include: checks.yml
+- name: include variable checks tasks
+  import_tasks : checks.yml
   tags:
     - icecast
     - checks
 
-- include: icecast.yml
+- name: include icecast setup tasks
+  import_tasks: icecast.yml
   become: yes
   tags: icecast
 
-- include: ssl-selfsigned.yml
+- name: include self-signed certificates setup tasks
+  import_tasks:  ssl-selfsigned.yml
   become: yes
   tags:
     - icecast
     - ssl
 
-- include: apache.yml
+- name: include apache configuration tasks
+  import_tasks: apache.yml
   become: yes
   tags:
     - icecast
     - apache
 
-- include: icecast-reload-playlist.yml
+- name: include manual icecast playlist reload tasks
+  import_tasks: icecast-reload-playlist.yml
   tags:
     - never
     - icecast-reload-playlist
