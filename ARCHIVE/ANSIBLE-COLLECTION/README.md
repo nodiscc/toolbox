@@ -31,6 +31,7 @@ ansible-galaxy collection install -r requirements.yml
    - nodiscc.toolbox.valheim_server
    - nodiscc.toolbox.icecast
    - nodiscc.toolbox.rss_bridge
+   - nodiscc.toolbox.rocketchat
 ```
 
 See [Using collections](https://docs.ansible.com/ansible/latest/user_guide/collections_using.html) for more details.
