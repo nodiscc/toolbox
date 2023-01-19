@@ -28,6 +28,7 @@ This role will not be maintained in the future:
 - Enabling mongodb authentication requires altering the mongo docker image/entrypoint with possible side effects, and adds maintenance burden.
 - Migrating existing mongodb instances to the newest version requires migrations with significant downtime and/or possible side effects.
 - There is no clearly defined lifecycle/EOL policy for Rocket.Chat 3.18/3.x.
+- There are unaddressed privacy/data collection issues in Rocket.CXhat (https://github.com/RocketChat/Rocket.Chat/issues/17467), and proposed patches were never considered (https://github.com/RocketChat/Rocket.Chat/pull/19971).
 
 It is advised to use the [`nodiscc.xsrv.matrix`](https://gitlab.com/nodiscc/xsrv/-/tree/master/roles/matrix) role instead, or, as a simpler alternative, the [`nodiscc.xsrv.nextcloud`](https://gitlab.com/nodiscc/xsrv/-/tree/master/roles/nextcloud) with `spreed` enabled under [`nextcloud_apps`](https://gitlab.com/nodiscc/xsrv/-/blob/master/roles/nextcloud/defaults/main.yml).
 
