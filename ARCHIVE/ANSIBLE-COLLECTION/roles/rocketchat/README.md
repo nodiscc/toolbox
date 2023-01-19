@@ -20,6 +20,17 @@ Rocket.Chat features include:
 It provides an alternative to proprietary SaaS software like Slack, Discord, Google Meet...
 
 
+## Deprecated
+
+This role will not be maintained in the future:
+- Rocket.chat v4.x removes many features from the Community Edition (CE), and makes them available only in the Entreprise Edition (EE). This includes, notably, LDAP background sync, and synchronization of LDAP accounts locked/unlocked status to Rocket.chat.
+- Community Edition documentation (including installation docs) is not maintained up-to-date.
+- Enabling mongodb authentication requires altering the mongo docker image/entrypoint with possible side effects, and adds maintenance burden.
+- Migrating existing mongodb instances to the newest version requires migrations with significant downtime and/or possible side effects.
+- There is no clearly defined lifecycle/EOL policy for Rocket.Chat 3.18/3.x.
+
+It is advised to use the [`nodiscc.xsrv.matrix`](https://gitlab.com/nodiscc/xsrv/-/tree/master/roles/matrix) role instead, or, as a simpler alternative, the [`nodiscc.xsrv.nextcloud`](https://gitlab.com/nodiscc/xsrv/-/tree/master/roles/nextcloud) with `spreed` enabled under [`nextcloud_apps`](https://gitlab.com/nodiscc/xsrv/-/blob/master/roles/nextcloud/defaults/main.yml).
+
 ## Requirements/dependencies/example playbook
 
 See [meta/main.yml](meta/main.yml)
