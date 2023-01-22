@@ -32,6 +32,7 @@ ansible-galaxy collection install -r requirements.yml
    - nodiscc.toolbox.icecast
    - nodiscc.toolbox.rss_bridge
    - nodiscc.toolbox.rocketchat
+   - nodiscc.toolbox.proxmox
 ```
 
 See [Using collections](https://docs.ansible.com/ansible/latest/user_guide/collections_using.html) for more details.
