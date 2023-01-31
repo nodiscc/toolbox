@@ -66,7 +66,7 @@ _Note:_ flashing custom firmware always presents a risk of bricking the device. 
 - Tap `Format Data` and confirm by swiping, return to the previous menu
 - Tap `Advanced Wipe`, then select the `Cache` and `System` partitions and confirm by swiping, return to the previous menu
 - Tap `Advanced` > `ADB Sideload` confirm by swiping
-- On you computer, begin transfering the LineageOS package by running:
+- On your computer, begin transfering the LineageOS package by running:
 
 ```bash
 adb sideload lineage-17.1-20210801-nightly-a5xelte-signed.zip
@@ -92,3 +92,22 @@ adb sideload lineage-17.1-20210801-nightly-a5xelte-signed.zip
 To let Android applications consume data from a web app/service that uses a self-signed TLS certificate, the certificate must be loaded to the Android certificate store. The certificate must have the `basicConstraints: "CA:TRUE"` and `key_usage: "digitalSignature,keyEncipherment"` flags set for Android to recognize it as a valid certificate.
 - Export the certificate in PEM format (from a web browser or directly from the server's `.crt` file), transfer the file to the Android device
 - Open the `.crt` file from the Android file browser, input a relevant name (eg. `rss.EXAMPLE.org self-signed`), tap `Import`
+
+
+## Edit the phone's hosts file
+
+With a non-rooted device it is impossible to edit the `/etc/hosts` file directly from the device. This must be done using `adb` (see installation instructions above) from a computer connected via USB:
+
+```bash
+# check that the device is attached and unlocked
+adb devices
+# remount the root filesystem read-write
+adb remount
+# pull a copy of the hosts file to the computer
+adb pull /etc/hosts
+# edit the file in a text editor, then
+# push it back to the phone
+adb push hosts /etc/hosts
+```
+
+Changes will be applied next time the device reconnects to a network.
