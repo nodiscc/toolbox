@@ -28,6 +28,7 @@
       - steamcmd:i386
       - acl # required for 'become' as non-root user
     state: present
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: add steam user
   user:
