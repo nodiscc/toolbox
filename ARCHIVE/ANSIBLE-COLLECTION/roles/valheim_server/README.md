@@ -1,6 +1,9 @@
 # toolbox.valheim_server
 
-This role will install and configure [Valheim](https://en.wikipedia.org/wiki/Valheim) multiplayer server using [SteamCMD](https://developer.valvesoftware.com/wiki/SteamCMD)
+This role will install and configure [Valheim](https://en.wikipedia.org/wiki/Valheim) multiplayer server using [SteamCMD](https://developer.valvesoftware.com/wiki/SteamCMD).
+
+By running this role you agree to the terms of the [Steam Client License Agreement](https://store.steampowered.com/subscriber_agreement/).
+
 
 ## Dependencies/requirements/example playbook
 

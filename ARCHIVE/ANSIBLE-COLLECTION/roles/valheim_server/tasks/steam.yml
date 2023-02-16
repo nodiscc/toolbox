@@ -22,6 +22,22 @@
   meta: flush_handlers
   tags: valheim_server
 
+- name: set debconf values for steamcmd
+  debconf: "{{ item }}"
+  loop:
+    - name: steamcmd
+      question: steam/purge
+      value: ""
+      vtype: string
+    - name: steamcmd
+      question: steam/license
+      value: ""
+      vtype: string
+    - name: steamcmd
+      question: steam/question
+      value: "I AGREE"
+      vtype: string
+
 - name: install steamcmd
   apt:
     package:
