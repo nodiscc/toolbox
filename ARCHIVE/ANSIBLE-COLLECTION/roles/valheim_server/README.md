@@ -48,3 +48,12 @@ UDP 27036
 rsnapshot_remote_backups:
   - { user: 'rsnapshot', host: 'valheim.CHANGEME.org', path: '/home/steam/.config/unity3d/IronGate/Valheim' }
 ```
+
+Restoring backups:
+
+```bash
+deploy@valheim:~$ sudo systemctl stop valheim-server.service
+root@backup:~# /usr/bin/rsync -avP --delete --numeric-ids --rsync-path="/usr/bin/sudo /usr/bin/rsync" --rsh="/usr/bin/ssh -o StrictHostKeyChecking=no" /var/backups/rsnapshot/daily.0/valheim.CHANGEME.org/home/steam/.config/unity3d/IronGate/Valheim/ rsnapshot@valheim.CHANGEME.org:/home/steam/.config/unity3d/IronGate/Valheim/
+deploy@valheim:~$ sudo chown -R steam:steam /home/steam/.config/unity3d/IronGate/Valheim/
+deploy@valheim:~$ sudo systemctl start valheim-server.service
+```
