@@ -10,7 +10,7 @@ Less-maintained/experimental ansible roles
 ```yaml
 # requirements.yml
   - name: nodiscc.toolbox
-    source: git+https://gitlab.com/nodiscc/toolbox.git#/ARCHIVE/ANSIBLE-COLLECTION/ # role from a directory in a git repository
+    source: git+https://gitlab.com/nodiscc/toolbox.git#/ARCHIVE/ANSIBLE-COLLECTION/ # collection from a directory in a git repository
     type: git
     version: master
 ```
