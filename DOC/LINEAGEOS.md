@@ -2,7 +2,7 @@
 
 
 
-<img style="float: right; margin: 10px; display: inline-block;" align="top" src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/LineageOS_17.1_default_homescreen.png/800px-LineageOS_17.1_default_homescreen.png" height="200"> [LineageOS](https://en.wikipedia.org/wiki/LineageOS) is an operating system for smartphones, tablet computers, and set-top boxes, based on [Android](https://en.wikipedia.org/wiki/Android_(operating_system)) using mostly [Free and open-source software](https://en.wikipedia.org/wiki/Free_and_open-source_software).
+<img style="float: right; margin: 10px; display: inline-block;" align="top" src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/Screenshot_LineageOS_for_microG.png/800px-Screenshot_LineageOS_for_microG.png?20171111164357" height="200"> [LineageOS](https://en.wikipedia.org/wiki/LineageOS) is an operating system for smartphones, tablet computers, and set-top boxes, based on [Android](https://en.wikipedia.org/wiki/Android_(operating_system)) using mostly [Free and open-source software](https://en.wikipedia.org/wiki/Free_and_open-source_software).
 
 
 
