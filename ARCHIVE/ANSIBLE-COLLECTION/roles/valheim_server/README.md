@@ -30,14 +30,7 @@ On first deployment, leave `steamcmd_guard_code: "CHANGEME"`. The role will fail
 If your server is behind a NAT/port forwarding device, the following ports must be forwarded to the server:
 
 ```
-TCP 2456-2457
-TCP 27015
-TCP 27030
-TCP 27036-27037
-UDP 2456-2457
-UDP 4380
-UDP 27000-27031
-UDP 27036
+UDP 2456-2458
 ```
 
 ## Backups
