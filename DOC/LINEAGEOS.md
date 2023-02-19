@@ -102,6 +102,7 @@ With a non-rooted device it is impossible to edit the `/etc/hosts` file directly
 # check that the device is attached and unlocked
 adb devices
 # remount the root filesystem read-write
+adb root
 adb remount
 # pull a copy of the hosts file to the computer
 adb pull /etc/hosts
