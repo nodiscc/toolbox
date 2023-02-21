@@ -31,6 +31,7 @@ If your server is behind a NAT/port forwarding device, the following ports must 
 
 ```
 UDP 2456-2458
+TCP 27036
 ```
 
 ## Backups
