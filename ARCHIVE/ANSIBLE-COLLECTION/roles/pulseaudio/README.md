@@ -32,6 +32,20 @@ A shared cookie is used to allow access to the pulseaudio server. To configure t
 
 **Manual client configuration:** TODO
 
+**Uninstallation:**
+
+```bash
+# to revert to a classic desktop configuration
+$ sudo firewall-cmd --zone internal --remove-service=pulseaudio
+$ sudo systemctl stop pulseaudio.service avahi-daemon.service
+$ sudo rm -r /etc/systemd/system/pulseaudio.service /etc/avahi/avahi-daemon.conf /var/run/pulse
+$ sudo systemctl daemon-reload
+$ sudo apt purge avahi-daemon avahi-utils alsa-oss libasound2-plugin-equal pulseaudio-module-zeroconf
+$ sudo apt install --reinstall libpulse0 pulseaudio
+$ sudo deluser pulse
+$ rm ~/.config/pulse/cookie
+```
+
 ## License
 
 GNU GPLv3
