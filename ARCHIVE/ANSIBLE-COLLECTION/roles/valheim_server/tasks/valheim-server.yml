@@ -12,7 +12,6 @@
   changed_when: "'downloading' in update_valheim_server.stdout"
   notify: restart valheim server
 
-
 - name: install valheim-server systemd service
   template:
     src: etc_systemd_system_valheim-server.service.j2
