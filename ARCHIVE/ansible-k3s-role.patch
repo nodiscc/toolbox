@@ -1,0 +1,170 @@
+From 95ed917ca6df1ffa95b760e246cf26f17a3f2fdc Mon Sep 17 00:00:00 2001
+From: nodiscc <nodiscc@gmail.com>
+Date: Mon, 27 Mar 2023 19:10:25 +0200
+Subject: [PATCH] add k3s role
+---
+ roles/k3s/README.md                           |  9 +++
+ roles/k3s/meta/main.yml                       | 18 ++++++
+ roles/k3s/tasks/k3s.yml                       | 64 +++++++++++++++++++
+ roles/k3s/tasks/main.yml                      |  5 ++
+ .../etc_systemd_system_k3s.service.j2         | 24 +++++++
+ 5 files changed, 120 insertions(+)
+ create mode 100644 roles/k3s/README.md
+ create mode 100644 roles/k3s/meta/main.yml
+ create mode 100644 roles/k3s/tasks/k3s.yml
+ create mode 100644 roles/k3s/tasks/main.yml
+ create mode 100644 roles/k3s/templates/etc_systemd_system_k3s.service.j2
+
+diff --git a/roles/k3s/README.md b/roles/k3s/README.md
+new file mode 100644
+index 0000000..d2f3880
+--- /dev/null
++++ b/roles/k3s/README.md
+@@ -0,0 +1,9 @@
++# k3s
++
++**Uninstall:**
++
++```bash
++sudo systemctl stop k3s
++sudo rm -rf /usr/local/bin/k3s /etc/systemd/system/k3s.service /var/lib/rancher/ /usr/local/bin/kubectl /etc/rancher
++sudo systemctl daemon-reload
++```
+diff --git a/roles/k3s/meta/main.yml b/roles/k3s/meta/main.yml
+new file mode 100644
+index 0000000..1b29e3e
+--- /dev/null
++++ b/roles/k3s/meta/main.yml
+@@ -0,0 +1,18 @@
++# @tag k3s - setup k3s lightweight kubernetes cluster
++
++galaxy_info:
++  role_name: k3s
++  author: "nodiscc <nodiscc@gmail.com>"
++  description: "Lightweight Kubernetes cluster"
++  license: "GPL-3.0"
++  min_ansible_version: "2.12"
++  platforms:
++    - name: Debian
++      versions:
++        - "11"
++  galaxy_tags:
++    - kubernetes
++    - orchestration
++    - container
++dependencies:
++  - nodiscc.xsrv.handlers
+diff --git a/roles/k3s/tasks/k3s.yml b/roles/k3s/tasks/k3s.yml
+new file mode 100644
+index 0000000..451996d
+--- /dev/null
++++ b/roles/k3s/tasks/k3s.yml
+@@ -0,0 +1,64 @@
++# Reference: https://github.com/k3s-io/k3s-ansible/
++# TODO sudo sysctl -w net.bridge.bridge-nf-call-iptables = 1
++
++- set_fact:
++    k3s_version: "v1.22.3+k3s1"
++    master_ip: "192.168.1.13"
++    node_role: master
++    k3s_enable_service: no
++
++- name: Download k3s binary
++  get_url:
++    url: https://github.com/k3s-io/k3s/releases/download/{{ k3s_version }}/k3s
++    checksum: sha256:https://github.com/k3s-io/k3s/releases/download/{{ k3s_version }}/sha256sum-amd64.txt
++    dest: /usr/local/bin/k3s
++    owner: root
++    group: root
++    mode: 0755
++
++- name: install k3s systemd service
++  register: k3s_service
++  template:
++    src: "etc_systemd_system_k3s.service.j2"
++    dest: "/etc/systemd/system/k3s.service"
++    owner: root
++    group: root
++    mode: 0644
++  notify:
++    - reload systemd unit files
++
++- meta: flush_handlers
++
++# TODO does not kill containerd-shim-runc-v2/traefik/coredns/kubepods/pause processes
++- name: start/stop/enable/disable k3s service
++  service:
++    name: k3s
++    state: "{{ 'started' if k3s_enable_service else 'stopped' }}"
++    enabled: "{{ 'yes' if k3s_enable_service else 'no' }}"
++  tags: services
++  ignore_errors: "{{ ansible_check_mode }}"
++
++- name: wait for node-token file to be created
++  wait_for:
++    path: "/var/lib/rancher/k3s/server/node-token"
++
++- name: read node-token file contents
++  slurp:
++    path: "/var/lib/rancher/k3s/server/node-token"
++  register: node_token
++  when: node_role == 'master'
++
++- name: store node-token to variable
++  set_fact:
++    token: "{{ node_token.content | b64decode | regex_replace('\n', '') }}"
++  when: node_role == 'master'
++
++- name: update k3s master IP address in configuration file
++  command: /usr/local/bin/k3s kubectl config set-cluster default --server=https://{{ master_ip }}:6443
++  changed_when: true
++
++- name: create kubectl -> k3s symoblic link
++  file:
++    src: /usr/local/bin/k3s
++    dest: /usr/local/bin/kubectl
++    state: link
+diff --git a/roles/k3s/tasks/main.yml b/roles/k3s/tasks/main.yml
+new file mode 100644
+index 0000000..f0f1648
+--- /dev/null
++++ b/roles/k3s/tasks/main.yml
+@@ -0,0 +1,5 @@
++- name: include k3s configuration tasks
++  import_tasks: k3s.yml
++  become: yes
++  tags:
++    - k3s
+diff --git a/roles/k3s/templates/etc_systemd_system_k3s.service.j2 b/roles/k3s/templates/etc_systemd_system_k3s.service.j2
+new file mode 100644
+index 0000000..586cd86
+--- /dev/null
++++ b/roles/k3s/templates/etc_systemd_system_k3s.service.j2
+@@ -0,0 +1,24 @@
++[Unit]
++Description=Lightweight Kubernetes
++Documentation=https://k3s.io
++After=network-online.target
++
++[Service]
++Type=notify
++ExecStartPre=-/sbin/modprobe br_netfilter
++ExecStartPre=-/sbin/modprobe overlay
++ExecStart=/usr/local/bin/k3s server --data-dir /var/lib/rancher/k3s {{ extra_server_args | default("") }}
++KillMode=process
++Delegate=yes
++# Having non-zero Limit*s causes performance problems due to accounting overhead
++# in the kernel. We recommend using cgroups to do container-local accounting.
++LimitNOFILE=1048576
++LimitNPROC=infinity
++LimitCORE=infinity
++TasksMax=infinity
++TimeoutStartSec=0
++Restart=always
++RestartSec=5s
++
++[Install]
++WantedBy=multi-user.target
+-- 
+2.30.2
+
