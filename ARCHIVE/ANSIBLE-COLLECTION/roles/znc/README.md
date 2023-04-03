@@ -47,5 +47,11 @@ TODO
 
 ## References
 
-- https://stdout.root.sx/links/?searchterm=irc
-
+- https://wiki.znc.in/Pidgin
+- https://wiki.znc.in/ZNC
+- https://wiki.znc.in/Configuration
+- https://wiki.znc.in/FAQ
+- https://wiki.znc.in/Modules
+- https://wiki.znc.in/Fail2ban
+- https://wiki.archlinux.org/title/ZNC
+- https://wiki.debian.org/ZNC
