@@ -1,0 +1,24 @@
+- name: check that mandatory variables are correctly defined
+  assert:
+    quiet: yes
+    that: "{{ item }}"
+    fail_msg: "One or more variables are not correctly defined. Check role documentation: https://gitlab.com/nodiscc/xsrv/-/tree/master/roles/znc"
+  with_items:
+    - znc_enable_service == znc_enable_service | bool
+    - znc_debug_log == znc_debug_log | bool
+    - znc_modules | type_debug == "list"
+    - znc_users | type_debug == "list"
+    - znc_firewalld_zones | type_debug == "list"
+
+- name: check that variables are correctly defined (znc_users)
+  assert:
+    quiet: yes
+    that:
+      - item.nickname is string
+      - (item.admin is not defined) or (item.admin == item.admin | bool)
+      - item.password is string
+      - item.password_salt| length == 20
+      - item.networks | type_debug == "list"
+    fail_msg: "One or more znc users are not correctly defined. Check role documentation: https://gitlab.com/nodiscc/xsrv/-/tree/master/roles/znc"
+  no_log: yes
+  with_items: "{{ znc_users }}"

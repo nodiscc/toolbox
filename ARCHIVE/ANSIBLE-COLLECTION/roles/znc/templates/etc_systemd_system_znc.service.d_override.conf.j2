@@ -1,0 +1,5 @@
+{% if znc_debug_log %}
+[Service]
+ExceStart=
+ExecStart=/usr/bin/znc -f --datadir=/var/lib/znc --debug
+{% endif %}

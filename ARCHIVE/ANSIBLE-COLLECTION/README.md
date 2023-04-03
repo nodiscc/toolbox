@@ -1,6 +1,6 @@
 # nodiscc.toolbox
 
-Less-maintained/experimental ansible roles
+Less-maintained/experimental ansible [roles](roles/)
 
 ## Installation
 
@@ -33,6 +33,7 @@ ansible-galaxy collection install -r requirements.yml
    - nodiscc.toolbox.rss_bridge
    - nodiscc.toolbox.rocketchat
    - nodiscc.toolbox.proxmox
+   - nodiscc.toolbox.znc
 ```
 
 See [Using collections](https://docs.ansible.com/ansible/latest/user_guide/collections_using.html) for more details.

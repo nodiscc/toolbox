@@ -1,0 +1,47 @@
+- name: install znc
+  apt:
+    package: znc
+    state: present
+
+- name: create config directory
+  file:
+    path: /var/lib/znc/configs
+    state: directory
+    owner: root
+    group: _znc
+    mode: 0750
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: create directory for znc systemd overrides
+  file:
+    state: directory
+    path: /etc/systemd/system/znc.service.d/
+    owner: root
+    group: root
+    mode: 0755
+
+- name: configure znc systemd unit overrides
+  template:
+    src: etc_systemd_system_znc.service.d_override.conf.j2
+    dest: /etc/systemd/system/znc.service.d/override.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: reload systemd unit files
+
+- name: copy znc configuration
+  template:
+    src: var_lib_znc_configs_znc.conf.j2
+    dest: /var/lib/znc/configs/znc.conf
+    owner: root
+    group: _znc
+    mode: 0660
+  ignore_errors: "{{ ansible_check_mode }}"
+  notify: restart znc
+
+- name: enable/disable start/stop znc service
+  systemd:
+    name: znc
+    enabled: "{{ znc_enable_service }}"
+    state: "{{ 'started' if znc_enable_service else 'stopped' }}"
+  ignore_errors: "{{ ansible_check_mode }}"

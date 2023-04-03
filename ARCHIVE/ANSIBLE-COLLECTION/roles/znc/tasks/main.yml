@@ -1,0 +1,88 @@
+- name: include variable checks tasks
+  import_tasks: checks.yml
+  tags:
+    - znc
+    - checks
+
+# - name: include self-signed certificates configuration tasks
+#   import_tasks: ssl-selfsigned.yml
+#   become: yes
+#   tags:
+#     - znc
+#     - ssl
+# TODO
+
+- name: include znc configuration tasks
+  import_tasks: znc.yml
+  become: yes
+  tags: znc
+
+# TODO Nov 21 17:56:15 shaarli-test znc[161526]: [2022-11-21 17:56:15.234463] (10.0.10.1) ZNC -> CLI [:irc.znc.in 464 test20221121 :Invalid Password] 
+# - name: include fail2ban configuration tasks
+#   import_tasks: fail2ban.yml
+#   become: yes
+#   tags:
+#     - znc
+#     - fail2ban
+#   when:
+#     - ansible_local.fail2ban.ansible_managed is defined
+#     - ansible_local.fail2ban.ansible_managed | bool
+
+- name: include firewalld configuration tasks
+  import_tasks: firewalld.yml
+  become: yes
+  tags:
+    - znc
+    - firewall
+  when:
+    - ansible_local.firewalld.ansible_managed is defined
+    - ansible_local.firewalld.ansible_managed | bool
+
+# - name: include apache configuration tasks
+#   import_tasks: apache.yml
+#   become: yes
+#   tags:
+#     - znc
+#     - apache
+#   when:
+#     - ansible_local.apache.ansible_managed is defined
+#     - ansible_local.apache.ansible_managed | bool
+
+- name: include rsyslog configuration tasks
+  import_tasks: rsyslog.yml
+  become: yes
+  tags:
+    - znc
+    - monitoring
+    - rsyslog
+  when:
+    - ansible_local.rsyslog.ansible_managed is defined
+    - ansible_local.rsyslog.ansible_managed | bool
+
+
+# - name: include netdata configuration tasks
+#   import_tasks: netdata.yml
+#   become: yes
+#   tags:
+#     - znc
+#     - monitoring
+#     - netdata
+#   when:
+#     - ansible_local.netdata.ansible_managed is defined
+#     - ansible_local.netdata.ansible_managed | bool
+# TODO ignore failed service state when the list of znc_users is empty
+# │Nov 21 18:49:29 shaarli-test znc[172088]: You must define at least one user in your config.                                                                                                                                                                                   │
+# │Nov 21 18:49:29 shaarli-test znc[172088]: Unrecoverable config error.                                                                                                                                                                                                         │
+
+
+# - name: include ansible facts configuration tasks
+#   import_tasks: fact.yml
+#   become: yes
+#   tags: znc
+
+- name: apply configuration (flush handlers)
+  meta: flush_handlers
+  tags:
+    - znc
+    - monitoring
+    - fail2ban

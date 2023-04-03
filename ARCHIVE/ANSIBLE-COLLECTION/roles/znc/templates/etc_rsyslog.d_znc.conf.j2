@@ -1,0 +1,7 @@
+# rsyslog configuration for znc logs
+
+input(type="imfile"
+      File="/var/lib/znc/moddata/adminlog/znc.log"
+      Tag="znc-adminlog:"
+      Facility="daemon"
+      PersistStateInterval="0")

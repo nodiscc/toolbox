@@ -1,0 +1,30 @@
+# enable the ZNC service (yes/no)
+znc_enable_service: yes
+# enable debug logging (yes/no) (very noisy, logs channel messages as well as system messages)
+znc_debug_log: no
+# list of enabled ZNC modules (https://wiki.znc.in/Modules)
+znc_modules:
+  - webadmin
+  - chansaver
+  - adminlog
+# list of ZNC users
+# Example:
+# znc_users:
+#   - nickname: test20221121 # nickname for the IRC user
+#     admin: yes # (optional, yes/no, default yes) whether the user has admin rights
+#     password: CHANGEME # user password
+#     password_salt: 'CHANGEME20' # random salt, 20 characters long
+#     networks: # list of IRC networks/servers to connect to
+#       - server: irc.libera.chat # server hostname
+#         port: 6697 # IRC server port
+#         channels: # list of channels to join (including leading #)
+#           - '#matrix'
+#           - '#python'
+znc_users: []
+# firewall zones for the znc service, if nodiscc.xsrv.common/firewalld role is deployed
+# 'zone:' is one of firewalld zones, set 'state:' to 'disabled' to remove the rule (the default is state: enabled)
+znc_firewalld_zones:
+  - zone: internal
+    state: enabled
+  - zone: public
+    state: disabled

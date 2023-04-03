@@ -1,0 +1,8 @@
+- name: configure rsyslog to aggregate znc logs to syslog
+  template:
+    src: etc_rsyslog.d_znc.conf.j2
+    dest: /etc/rsyslog.d/znc.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart rsyslog
