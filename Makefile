@@ -18,12 +18,15 @@ mirrors:
 	$(call call_aria2c,$(BIN_WINDOWS_DIR)/,bin-windows.urls.list)
 	$(call call_aria2c,$(BIN_DATA_DIR)/,bin-data.urls.list)
 
-tests: shellcheck
+tests: test-shellcheck test-ansible-lint
 
-shellcheck:
+test-shellcheck:
 	for i in $$(find SCRIPTS/ -maxdepth 1 -type f); do \
 		if grep '^#!/bin/bash' "$$i" >/dev/null; then \
 		shellcheck "$$i" || exit 0 ; fi; done
+
+test-ansible-lint:
+	cd ARCHIVE/ANSIBLE-COLLECTION/ && make
 
 packaging:
 	cd PACKAGING/ && make
