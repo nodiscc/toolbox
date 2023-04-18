@@ -54,8 +54,9 @@
 - name: create /var/run/pulse directory
   file: state=directory path=/var/run/pulse owner=root group=pulse mode=0770
 
-- name: create pulse user
-  user: name=pulse system=yes groups=pulse,audio createhome=no home=/var/run/pulse
+# not needed, created automatically when installing pulseaudio
+#- name: create pulse user
+#  user: name=pulse system=yes groups=pulse,audio createhome=no home=/var/run/pulse
 
 ##### CLIENT/LOCAL CONFIGURATION #####
 
