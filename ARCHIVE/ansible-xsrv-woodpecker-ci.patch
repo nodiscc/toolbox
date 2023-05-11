@@ -135,9 +135,6 @@ index 00000000..08085989
 +
 +This role will install [Woodpecker CI](https://woodpecker-ci.org/), a simple [Continuous Integration](https://en.wikipedia.org/wiki/Continuous_integration) engine with great extensibility.
 +
-+[![](https://i.imgur.com/nFDfFUos.png)](https://i.imgur.com/nFDfFUo.png)
-+
-+
 +## Requirements/dependencies/example playbook
 +
 +See [meta/main.yml](meta/main.yml)

@@ -11,9 +11,6 @@ Send by e-mail
 Share on Twitter
 `javascript:location.href='http://twitter.com/share?url='+encodeURIComponent(window.location.href)+'&text='+encodeURIComponent(document.title)`
 
-Upload to Imgur
-`javascript:void(window.location='http://api.imgur.com/2/upload.json?url='+encodeURIComponent(window.location.href));`
-
 Shorten with ur1.ca
 `javascript:myForm=document.createElement(%22form%22);myForm.style.display=%22none%22;myForm.method=%22post%22;myForm.action=%22http://ur1.ca/%22;myInput=document.createElement(%22input%22);myInput.setAttribute(%22name%22,%22longurl%22);myInput.setAttribute(%22value%22,document.URL);myForm.appendChild(myInput);document.body.appendChild(myForm);myForm.submit();document.body.removeChild(myForm);`
 
