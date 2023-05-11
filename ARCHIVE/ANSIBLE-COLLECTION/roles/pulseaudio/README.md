@@ -3,7 +3,7 @@
 This role will install the [PulseAudio](https://en.wikipedia.org/wiki/Pulseaudio) sound server.
 It allows you to stream audio from a computer (all sounds or only selected applications) on your network to the server's soundcard output. Your devices can play sound to speakers connected to the server.
 
-[![](https://imgur.com/GbWW8aF.png)](https://imgur.com/GbWW8aF.png)
+[![](https://gitlab.com/nodiscc/toolbox/-/raw/master/DOC/SCREENSHOTS/GbWW8aF.png)](https://gitlab.com/nodiscc/toolbox/-/raw/master/DOC/SCREENSHOTS/GbWW8aF.png)
 
 ## Requirements/dependencies/example playbook
 

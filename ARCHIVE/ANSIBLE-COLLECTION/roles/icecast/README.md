@@ -4,8 +4,8 @@ This role will install [Icecast](https://en.wikipedia.org/wiki/Icecast) server, 
 
 A continuous audio stream will be generated from media files placed in the `~/PLAYLIST` directory on the server (currently, only OGG audio files are supported).
 
-[![](https://i.imgur.com/gFv229u.png)](https://i.imgur.com/c7180pa.png)
-[![](https://i.imgur.com/3wqkckz.png)](https://i.imgur.com/6GAjBB4.png)
+[![](https://gitlab.com/nodiscc/toolbox/-/raw/master/DOC/SCREENSHOTS/gFv229u.png)](https://gitlab.com/nodiscc/toolbox/-/raw/master/DOC/SCREENSHOTS/c7180pa.png)
+[![](https://gitlab.com/nodiscc/toolbox/-/raw/master/DOC/SCREENSHOTS/3wqkckz.png)](https://gitlab.com/nodiscc/toolbox/-/raw/master/DOC/SCREENSHOTS/6GAjBB4.png)
 
 
 ## Requirements/dependencies/example playbook

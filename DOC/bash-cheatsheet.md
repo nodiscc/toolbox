@@ -215,4 +215,4 @@ $ ps -ef | tee >(awk '$1=="tom"' >toms-procs.txt) \
 
 ---------------------------------------------------------
 
-![](https://i.imgur.com/44jqQ.png)
+![](bash-shell-keybindings.png)

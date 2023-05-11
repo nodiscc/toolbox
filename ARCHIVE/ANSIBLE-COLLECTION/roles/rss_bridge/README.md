@@ -4,7 +4,7 @@ This role will install [RSS-Bridge](https://github.com/RSS-Bridge/rss-bridge),  
 
 RSS-Bridge is not a feed reader or feed aggregator, but a tool to generate feeds that are consumed by feed readers and feed aggregators, for example [Tiny Tiny RSS](../tt_rss).
 
-[![](https://i.imgur.com/th1p7L5.png)](https://i.imgur.com/th1p7L5.png)
+[![](https://gitlab.com/nodiscc/toolbox/-/raw/master/DOC/SCREENSHOTS/th1p7L5.png)](https://gitlab.com/nodiscc/toolbox/-/raw/master/DOC/SCREENSHOTS/th1p7L5.png)
 
 
 ## Requirements/dependencies/example playbook

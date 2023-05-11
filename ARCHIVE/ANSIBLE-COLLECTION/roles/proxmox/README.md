@@ -6,7 +6,7 @@ This role will perform basic setup steps for [Proxmox](hhttps://en.wikipedia.org
 
 > Proxmox Virtual Environment (Proxmox VE or PVE) is an open-source software server for virtualization management. It is a Debian-based Linux distribution and allows deployment and management of virtual machines and containers. Proxmox VE includes a web console and command-line tools.
 
-[![](https://i.imgur.com/7DYZfcC.png)](https://i.imgur.com/7DYZfcC.png)
+[![](https://gitlab.com/nodiscc/toolbox/-/raw/master/DOC/SCREENSHOTS/7DYZfcC.png)](https://gitlab.com/nodiscc/toolbox/-/raw/master/DOC/SCREENSHOTS/7DYZfcC.png)
 
 
 ## Requirements/dependencies/example playbook

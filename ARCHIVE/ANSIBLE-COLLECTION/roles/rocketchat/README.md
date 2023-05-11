@@ -2,7 +2,7 @@
 
 This role will install and configure [rocket.chat](https://rocket.chat), a self-hosted instant messaging and communication platform. 
 
-[![](https://i.imgur.com/Fsb8xym.png)](https://i.imgur.com/Fsb8xym.png)
+[![](https://gitlab.com/nodiscc/toolbox/-/raw/master/DOC/SCREENSHOTS/Fsb8xym.png)](https://gitlab.com/nodiscc/toolbox/-/raw/master/DOC/SCREENSHOTS/Fsb8xym.png)
 
 Rocket.Chat features include:
 - Public/private group chats (channels)
