@@ -1,0 +1,12 @@
+- name: copy extra icons
+  become: yes
+  copy:
+    src: roles/homepage-extra-icons/files/
+    dest: "/var/www/{{ homepage_fqdn }}/res/"
+    owner: root
+    group: root
+    mode: "0644"
+  ignore_errors: "{{ ansible_check_mode }}"
+  tags:
+    - homepage
+    - homepage-extra-icons
