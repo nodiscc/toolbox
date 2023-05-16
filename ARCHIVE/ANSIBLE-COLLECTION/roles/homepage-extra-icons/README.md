@@ -1,4 +1,4 @@
-# toolbox.monitoring
+# toolbox.homepage_extra_icons
 
 This role installs additional icons for the [nodiscc.xsrv.homepage](`https://gitlab.com/nodiscc/xsrv/-/tree/master/roles/homepage/`) role, which can be used in the `icon:` keys of `homepage_custom_links`.
 
