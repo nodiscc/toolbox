@@ -1,7 +1,7 @@
 - name: copy extra icons
   become: yes
   copy:
-    src: roles/homepage-extra-icons/files/
+    src: ./
     dest: "/var/www/{{ homepage_fqdn }}/res/"
     owner: root
     group: root
