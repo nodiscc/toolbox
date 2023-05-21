@@ -8,13 +8,21 @@ git show hash of last commit: `git rev-parse --short HEAD` https://stackoverflow
 
 git store credentials in libsecret/gnome-keyring `sudo apt-get install libsecret-1-0 libsecret-1-dev && cd /usr/share/doc/git/contrib/credential/libsecret &&sudo make && git config --global credential.helper /usr/share/doc/git/contrib/credential/libsecret/git-credential-libsecret`
 
+git shallow submodules `git config -f .gitmodules submodule.<name>.shallow bool`
+
+git use hooks directory from local repo `git config core.hooksPath .githook`
+
+git checkout github Pull Requests locally ` fetch = +refs/pull/*/head:refs/remotes/origin/pr/*`
+
+git edit submodule URL: edit the .gitmodules file and run git submodule sync
+
+git bypass ssl certificate verification `git -c http.sslVerify=false clone https://example.com/path/to/git`
+
 ip address/interfaces in readable format `ip -br a`
 
 python 3 http server `python3 -m http.server`
 
 iptables trace packets: `iptables -A ..... -j TRACE; tail -f /var/log/kern.log | grep 'TRACE:'`
-
-git bypass ssl certificate verification `git -c http.sslVerify=false clone https://example.com/path/to/git`
 
 send mail from common line `echo "My message" | mail -s subject user@gmail.com`
 
@@ -23,12 +31,12 @@ python pretty-print dicts: `#import pprint; pp = pprint.PrettyPrinter(indent=4);
 sphinx/recommonmark support markdown tables: add `sphinx_markdown_tables` to `extensions` list, add `sphinx-markdown-tables` to `docs/requirements.txt`, add `  install:    - requirements: docs/requirements.txt` to `readthedocs.yml`
 
 ```bash
-docker-compose up #démarrage en mpode detached
-docker-compose ps #vérifier que les containers sont up
-docker-compose stop plexpy #stop single container
-docker-compose up -d #après ajout d'un bloc au .yml, lancer nvx containers
-docker-compose pull #update containers
-docker-compose up -d #restart updated containers
+docker-compose up # start in detached mode
+docker-compose ps # check that containers are up
+docker-compose stop plexpy # stop single container
+docker-compose up -d # run new containers after editing docker-compose.yml
+docker-compose pull # update containers
+docker-compose up -d # restart updated containers
 ```
 
 Gitlab CI run pipeline with variables from URL parameters `.../pipelines/new?ref=my_branch&var[foo]=bar&file_var[file_foo]=file_bar`
@@ -50,6 +58,8 @@ apache proxypass except Letsencrypt .well-known HTTP challenge directory `ProxyP
 python directory of currently running script `os.path.abspath(__file__)`
 
 python set environment variable `os.environ['LD_LIBRARY_PATH'] = "my_path"`
+
+get full path of a file `readlink -f file.txt` or `realpath file.txt`
 
 iptables/netfilter NAT Enable forwarding `echo 1 > /proc/sys/net/ipv4/ip_forward`
 
@@ -128,6 +138,12 @@ bash increment variable `var=$((var+1))` OR `((var=var+1))` OR `((var+=1))` OR `
 
 bash docs: Use error-if-unset `${placeholders?}` and join commands with `&&` to make it easier and safer to copy-paste shell commands from technical documentation.
 
+bash test if string contains substring: `[[ $string == *"substring"* ]]` (wilcards) or `[[ $string =~ "substring" ]]` (regex)
+
+bash test if string begins with substring `[[ $string == substring* ]]`
+
+bash if OR conditions `if [[ foo || bar || baz ]] ; then`
+
 python md5 hash string `import hashlib; hashlib.md5('chaine à hasher').hexdigest()`
 
 Force running handler even if triggering tasks have not `changed`: `--force-handler` or `force_handlers = True` in ansible.cfg; and task `- meta: flush_handlers` to fire your handlers at a specific point
@@ -172,6 +188,8 @@ Virtualbox exit scale mode `Host key + C`
 https://stackoverflow.com/questions/20318770 send mail from linux terminal in one line `echo "My message" | mail -s subject user@gmail.com`
 
 print 25th line of file: `sed 25!d file.txt `
+
+get n25th line of command output  `ls -l | sed -n 2p`
 
 keep only file extension  `echo $FILE | sed 's/.*\./``/`
 
@@ -300,6 +318,8 @@ find files modified since 60 minutes `find $DIRECTORY -mmin 60` -print
 
 find empty directories `find $DIRECTORY -maxdepth 1 -type d -empty`
 
+remove empty directories `find -type d -empty -delete`
+
 find the target for a symlink: `$FILE | awk '{print $6}`
 
 display the full executable path for a command `which $COMMAND`
@@ -324,8 +344,6 @@ locate files and move them to specified directory `locate -0 -i *barthes* | xarg
 
 ssh `socat -d -d TCP-L:22,reuseaddr,fork SYSTEM:"nc \$SOCAT_PEERADDR 22"` Confuse people SSHing to your host with a redirect back to theirs.
 
-################################################################################
-
 quick permission fix: `find $dir -type d -print0 | xargs -0 chmod 0770; find $dir -type f -print0 | xargs -0 chmod 0660`
 
 extract still images from video: `ffmpeg -i input_file.mp4 -r 1 image_%4d.png`
@@ -346,7 +364,7 @@ Take a snapshot from your webcam using mplayer. Assumes your webcam is at /dev/v
 
 output your microphone to a remote computer's speaker `dd if=/dev/dsp | ssh -c arcfour -C username@host dd of=/dev/dsp` @audio @cli
 
-Find largest files in directory and subdirectories  `find . -printf '%s %p\n'|sort -nr|head`
+Find largest files in directory and subdirectories  `find . -printf '%s %p\n' | sort -nr | head`
 
 
 CLI connect to WEP wifi network: `iwconfig wlan0; iw dev wlan0 scan, ip link set wlan0 up; iw dev wlan0 connect [network SSID] key 0:[WEP key]`
@@ -357,6 +375,8 @@ bash forkbomb `:(){ :|:& };:`
 
 bash: generate a random number between 0 and 5 `echo $(($RANDOM %6))`
 
+bash get extension of filename `echo ${filename##*.}`
+
 invert screen colors`xcalib -i -a`
 
 check video direct rendering/hardware acceleration `glxinfo | grep -i "direct rendering"`
@@ -366,6 +386,8 @@ DIsplay number of workspaces `wmctrl -d`
 Define number of workspaces `wmctrl -n $NOMBRE_BUREAUX`
 
 Start network interface configuration/de-configuration (from /etc/network/interfaces): `ifup/ifdown eth0`
+
+/etc/network/interfaces run a script when network card comes up/down (plugged/unplugged) `pre-up, post-up, pre-down, post-down`
 
 NetworkManager create bridge `nmcli con add ifname br0 type bridge con-name br0; nmcli con modify br0 bridge.stp no; nmcli con add type bridge-slave ifname enp0s31f6 master br0`
 
@@ -488,7 +510,9 @@ convert unix timestamp to date `date +"%d/%m/%Y %X" -d @$UNIX_TIME`
 
 print a message on all open terminals `echo "Message" | wall`
 
-print previous command return code `echo $?` bash
+bash print previous command return code `echo $?`
+
+bash show number of arguments passed to a script `echo $#`
 
 X11 keylogger (without root) `xinput list; xinput test $INPUT_ID`
 
@@ -500,12 +524,11 @@ translations: convert .po to .mo `msgfmt -cv -o fr_FR.mo fr_FR.po`
 
 show how deep we are in subshells `echo $BASH_SUBSHELL` 
 
-git change branch in bare repo: `git symbolic-ref HEAD refs/heads/mybranchname @git`
-
-
 `wget --mirror --page-requisites --convert-links http://stackexchange.com` (infinite recursion depth) https://softwarerecs.stackexchange.com/questions/7344/how-to-create-an-offline-copy-of-a-website @scraping
 
 associate mimetype with program/.desktop launcher `xdg-mime default magnet-video-player.desktop x-scheme-handler/magnet`
+
+freedesktop register icon for filetype `xdg-icon-resource install --context mimetypes --size 48 myicon-file-type.png x-application-mytype` + create a [xml file for the mime type](http://standards.freedesktop.org/shared-mime-info-spec/shared-mime-info-spec-latest.html) + register it with `xdg-mime install mytype-mime.xml`
 
 >greybot (#bash bot): August is the month when all your scripts break because you placed $(date +%m) in a variable and tried to do arithmetic with it, without removing the leading zeros. 08 is considered octal. Use $((10#$month)) to force decimal, or strip the zero.
 
@@ -659,11 +682,13 @@ set display brightness `gksu 'echo "7" > ./devices/pci0000:00/0000:00:02.0/backl
 
 power: display power management information `acpi -abit`
 
-retirer les données EXIF d'une image `mogrify -strip $IMAGE`
+remove EXIF data from an image `mogrify -strip $IMAGE` or `mat2 $IMAGE`
 
-convertir un PDF couleur en niveaux de gris `convert -colorspace GRAY original.pdf grayscale.pdf`
+convert PDF to grayscale `convert -colorspace GRAY original.pdf grayscale.pdf`
 
-ajouter une étiquette en bas d'une image `convert $IMAGE -background Orange label:"$LABEL" -gravity Center -append $NEWIMAGE` (ajouter `+swap` pour ajouter l'étiquette en haut)
+generate a 100x100 red PNG image `convert -size 100x100 xc:#990000 whatever.png`
+
+add a label at the bottom of an image `convert $IMAGE -background Orange label:"$LABEL" -gravity Center -append $NEWIMAGE` (add `+swap` to add the label on top instead)
 
 crack a password-protected pdf file `pdfcrack -f fichier.pdf; qpdf --password=$PASSWORD --decrypt fichier.pdf nouveaufichier.pdf`
 
@@ -671,11 +696,11 @@ ansible hash password https://stackoverflow.com/questions/19292899 `python -c 'i
 
 force user to change password `chage -d 0 username`
 
-sauvegarder le résultat d'une commande dans une image `$COMMANDE | convert -background black -fill white label:@- $COMMANDE.png`
+save command output to an image `$COMMANDE | convert -background black -fill white label:@- $COMMANDE.png`
 
-lire une vidéo sans serveur X (en console) `mplayer -vo fbdev $VIDEOFILE`
+play a video without X11/in the console `mplayer -vo fbdev $VIDEOFILE`
 
-Capturer une vidéo de l'affichage (screencast) `ffmpeg -f x11grab -show_region 1 -y -r 25 -s $RESOLUTION -i :0.0+0,0 -b 8000000 screencast.webm`
+capture screen to a video file (screencast `ffmpeg -f x11grab -show_region 1 -y -r 25 -s $RESOLUTION -i :0.0+0,0 -b 8000000 screencast.webm`
 
 List all soundcards and digital audio playback/record devices `aplay -l`; `arecord -l`
 
@@ -693,17 +718,17 @@ ffmpeg keep only 3 first seconds `ffmpeg -i video.mp4 -ss 00:00:00 -t 00:00:03.0
 
 Afficher un calendrier `cal`
 
-créer un pdf depuis le manuel d'une commande `man -t $COMMANDE | ps2pdf - > $COMMANDE.pdf`
+create a PDF of a manpage `man -t $COMMANDE | ps2pdf - > $COMMANDE.pdf`
 
-Voir combien de temps une commande met à se terminer `time $COMMANDE`
+time command execution `time $COMMANDE`
 
 chronometer (`Ctrl+C` to stop) `time cat`
 
-Optimiser une image JPG `jpegtran -copy none -optimize $IMAGE temp.jpg; jpegtran -copy none -progressive temp.jpg monimage.jpg`
+optimize a JPEG image `jpegtran -copy none -optimize image.jpg temp.jpg; jpegtran -copy none -progressive temp.jpg image.jpg` or `jpegoptim -m80 image.jpg`
 
-convertir un fichier video en mp4 `ffmpeg  -i "$FICHIER.avi" "$FICHIER.mp4"`
+comvert video to mp4 `ffmpeg  -i "$FICHIER.avi" "$FICHIER.mp4"`
 
-créer une vidéo à partir d'un morceau en mp3 et de la couverture d'album en jpg `ffmpeg -r 1 -loop 1 -y -i cover.jpg -i audio.mp3 -acodec copy -shortest video.mp4`
+create a video froma an audio file and an image (e.g. album cover) `ffmpeg -r 1 -loop 1 -y -i cover.jpg -i audio.mp3 -acodec copy -shortest video.mp4`
 
 rename all .jpeg and .JPG files to .jpg `rename 's/\.jpe?g$/.jpg/i' *`
 
@@ -733,9 +758,15 @@ firewall iptables: Set Default Chain Policies `iptables -P INPUT DROP; iptables 
 
 firewall iptables: Block traffic from an IP address `iptables -A INPUT -s $IP -j DROP`
 
-configure username/email for commits:  ``git config --global user.name example; git config --global user.email example@gmail.com ``
+git change branch in bare repo: `git symbolic-ref HEAD refs/heads/mybranchname @git`
 
-git show old revision of a file: ``git show <rev>:path/fo/file.ext``
+git add empty directory to a git repository: create an empty `.gitignore` file in the directory
+
+git introduce unrelated branch into a repository `git checkout --orphan new_branch`
+
+git configure username/email for commits: `git config --global user.name example; git config --global user.email example@gmail.com`
+
+git show old revision of a file: `git show <rev>:path/fo/file.ext`
 
 git override commit date `git commit --date='2005-04-07T22:13:13'`
 
@@ -749,13 +780,19 @@ git checkout a remote branch (and make it a local branch) `git checkout -b test 
 
 git review staged changes (but not committed yet) `git diff --cached`
 
+git show differences between two branches for one file: `git diff master -- file`
+
+git show changed files between 2 commits: `git diff --name-only commit1...commit2`
+
+git show diff between tips of two branches `git diff branch1..branch2`
+
+git show diff between tip of branch and common ancestor with other branch `git diff branch1...branch2`
+
 git auto prune remote branches `fetch.prune = true`
 
 git update (pull) all submodules `git submodule update --recursive --init`
 
 git pick only part of a given commit `cherry-pick -n <commit>; git reset; git add -p <file>`
-
-git show differences between two branches for one file: `git diff master -- file`
 
 Doing `git remote set-url --add --push <remote_name> <url>` adds a pushurl for a given remote, which overrides the default URL for pushes. However, you may add multiple pushurls for a given remote, which then allows you to push to multiple remotes using a single git push
 
@@ -781,6 +818,8 @@ Virtualization stack on Debian (TODO): sudo aptitude install qemu-launcher virt-
 
 KVM/QEMU enable nesetd virtualization (eg proxmox in libvirt: `options kvm-intel nested=Y` or `options kvm-amd nested=1` in `/etc/modprobe.d/kvm-nested.conf`
 
+KVM/QEMU convert VMDK disk image to raw `qemu-img convert source.vmdk -O raw destination.bin`
+
 Change Android device MAC address `su; busybox ifconfig eth0 hw ether 00:11:22:33:44:55`
 Android recovery mode: Power + Vol UP (+Home)
 
@@ -792,21 +831,23 @@ run VM in headless mode in Virtualbox GUI :`Shift`+ Run
 
 apt remove stale config files `aptitude -y purge ~c`
 
-@regex `grep -E '[0-9]{4}'` matche 4 nombres de 0 à 9 consécutifs @regex
+regex match 4 consecutive digits `grep -E '[0-9]{4}'`
 
-@regex `()` are used to group, to make operators apply to one or more thing. For example, `(ab)+` applies the `+` to `ab`, not just `b`. @regex
+regex `()` are used to group, to make operators apply to one or more thing. For example, `(ab)+` applies the `+` to `ab`, not just `b`.
 
-@regex `*` matches 0 or more of what's before it. For example, `f\*ck` matches `ck`, `fck`, `ffck`, and so on, with literally any number of `f` characters. @regex
+regex `*` matches 0 or more of what's before it. For example, `f\*ck` matches `ck`, `fck`, `ffck`, and so on, with literally any number of `f` characters.
 
-@regex `+` is like `*`, except it matches 1 or more, so `f+ck` would match `fck`, `ffck`, and so on, but not `ck`. Note that if you have `*` you don't need `+`, as `ff*ck` is equivalent to `f+ck`. @regex
+regex `+` is like `*`, except it matches 1 or more, so `f+ck` would match `fck`, `ffck`, and so on, but not `ck`. Note that if you have `*` you don't need `+`, as `ff*ck` is equivalent to `f+ck`.
 
-@regex `?` matches either 0 or 1 of what came before it. `f?ck` matches either `ck` or `fck`. @regex
+regex `?` matches either 0 or 1 of what came before it. `f?ck` matches either `ck` or `fck`.
 
-@regex `|` is alternation, which picks between alternatives. `(f|d)ck` matches either `fck` or `dck`. @regex
+regex `|` is alternation, which picks between alternatives. `(f|d)ck` matches either `fck` or `dck`.
 
-@regex `.` matches any single character. `.ck` will match `ack`, `bck`, `cck`, `dck`, and so on. You usually use `.` in conjunction with `+` or `*` or some other repetition character; for example, `.*` means to match literally anything or nothing at all (any character, 0 or more times) and `.+` matches any non-empty string (any character, 1 or more times). @regex
+regex `.` matches any single character. `.ck` will match `ack`, `bck`, `cck`, `dck`, and so on. You usually use `.` in conjunction with `+` or `*` or some other repetition character; for example, `.*` means to match literally anything or nothing at all (any character, 0 or more times) and `.+` matches any non-empty string (any character, 1 or more times).
 
-@regex There are a *lot* of extensions to this basic set; unfortunately, they vary between tool and language. http://en.wikipedia.org/wiki/Perl_Compatible_Regular_Expressions are a fairly common 'extended' regular expression syntax, but by no means universal. @regex
+regex There are a *lot* of extensions to this basic set; unfortunately, they vary between tool and language. http://en.wikipedia.org/wiki/Perl_Compatible_Regular_Expressions are a fairly common 'extended' regular expression syntax, but by no means universal.
+
+regex match text between `This is` and `sentence`: `(?<=This is)(.*)(?=sentence)`
 
 >debian non-free network/wifi card drivers! For your Wi-fi card to work, and if installing Debian, you will need to; either install from the http://cdimage.debian.org/cdimage/unofficial/non-free/cd-including-firmware/ unofficial cd image with included non-free firmwares (Wi-fi will work during the setup procedure); or install using a wired connection. Anyway you have to enable non-free software during setup, and, after initial setup, manually install the firmware-linux-nonfree firmware-atheros packages.
 
@@ -1004,11 +1045,6 @@ fix sound crackles in mpv `--softvol=yes`
 
 limit user processes to 10000 `/etc/security/limits.conf: user hard nproc 10000`
 
-
-checkout github Pull Requests locally ` fetch = +refs/pull/*/head:refs/remotes/origin/pr/*`
-
-git use hooks directory from local repo `git config core.hooksPath .githook`
-
 list listening ports (from local machine): `netstat -tulp` or `ss -pau`
 
 list listening ports (from remote machine): `nmap -sTU`
@@ -1027,14 +1063,7 @@ not fun man `echo "echo sleep 0.1 >>~/.bashrc" >> ~/.bashrc`
 
 not fun man `{ crontab -l; echo "@hourly eject; eject -t; }" | crontab`
 
-remove empty directories `find -type d -empty -delete`
-
 find all files owned by an user: `find / -path /proc -prune -o -user <account> -ls`
-
-
-git shallow submodules `git config -f .gitmodules submodule.<name>.shallow bool`
-
-edit git submodule URL: edit the .gitmodules file and run git submodule sync
 
 Virtualbox create virtual disk linked to raw disk/USB drive: `VBoxManage internalcommands createrawvmdk -filename "</path/to/file>.vmdk" -rawdisk /dev/sda`. User must be in vboxusers group. Unerlying block device must be rw for user.
 
@@ -1065,8 +1094,6 @@ bind ACLs `/etc/bind/named.conf.options: acl mynetworks { 172.21.16.0/22; 192.16
 bind listen only on IPv4 `/etc/systemd/system/multi-user.target.wants/bind9.service: ExecStart: /usr/bin/named -4 -f -u bind`
 
 bind zone definition `/etc/bind/named.conf.local: zone "example.com" { type master/slave/forward; forward only; forwarders {x.x.x.x;}; masters {x.x.x.x;}; allow-transfer {x.x.x.x;}; file "/var/cache/bind/db.example.com";};`
-
-git show changed files between 2 commits: `git diff --name-only SHA1 SHA2`
 
 free disk space charts in HTML: `dfc -c always -p -tmpfs,devtmpfs,cgroup,cgmfs -e html >| /var/log/last-dfc.html`
 
