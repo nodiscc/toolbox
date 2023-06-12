@@ -51,14 +51,14 @@
     dest: "/root/rss-bridge-{{ rss_bridge_version }}.zip"
     owner: root
     group: root
-    mode: 0640
+    mode: "0640"
   when: rss_bridge_action == 'initial' or rss_bridge_action == 'upgrade'
 
 - name: create rss-bridge zip extraction directory
   file:
     path: /root/rss-bridge-unpack
     state: directory
-    mode: 0750
+    mode: "0750"
   when: rss_bridge_action == 'initial' or rss_bridge_action == 'upgrade'
   check_mode: no # create even in check mode so that following tasks don't fail
 
@@ -103,7 +103,7 @@
     dest: /var/www/{{ rss_bridge_fqdn }}/config.ini.php
     owner: root
     group: www-data
-    mode: 0640
+    mode: "0640"
   no_log: yes # file contains sensitive values (username/password), dont log/show diff
 
 ### CLEANUP ###

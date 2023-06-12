@@ -9,7 +9,7 @@
     state: directory
     owner: "{{ item.owner }}"
     group: "{{ item.group }}"
-    mode: 0770
+    mode: "0770"
     path: "{{ item.path }}"
   with_items:
     - { path: "/var/lib/rocket.chat/db", owner: "999", group: "999" }
@@ -22,7 +22,7 @@
     dest: /var/lib/rocket.chat/docker-compose.yml
     owner: root
     group: root
-    mode: 0600
+    mode: "0600"
 
 - name: copy mongodb initialization script
   template:
@@ -30,7 +30,7 @@
     dest: /var/lib/rocket.chat/mongo-init.js
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
 
 - name: create/update rocketchat docker stack
   docker_stack:

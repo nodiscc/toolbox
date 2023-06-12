@@ -33,7 +33,7 @@
   template:
     src: etc_systemd_system_ezstream.service.j2
     dest: /etc/systemd/system/ezstream.service
-    mode: 0644
+    mode: "0644"
   notify:
     - reload systemd unit files
     - restart icecast
@@ -42,7 +42,7 @@
   template:
     src: etc_icecast2_ezstream.xml.j2
     dest: /etc/icecast2/ezstream.xml
-    mode: 0640
+    mode: "0640"
     owner: root
     group: icecast
   notify: restart icecast
@@ -56,7 +56,7 @@
     state: directory
     owner: root
     group: icecast
-    mode: 02750 # SGID
+    mode: "02750" # SGID
 
 - name: install icecast helper scripts
   template:
@@ -64,7 +64,7 @@
     dest: /usr/local/bin/ezstream-update-playlist.sh
     owner: root
     group: root
-    mode: 0755
+    mode: "0755"
 
 - name: update ezstream playlist
   command: /usr/local/bin/ezstream-update-playlist.sh

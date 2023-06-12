@@ -4,7 +4,7 @@
     dest: /etc/systemd/system/reverse-ssh-tunnel.service
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
   notify: reload systemd unit files
 
 - name: apply reverse-ssh-tunnel configuration

@@ -9,7 +9,7 @@
     state: directory
     owner: root
     group: _znc
-    mode: 0750
+    mode: "0750"
   ignore_errors: "{{ ansible_check_mode }}"
 
 - name: create directory for znc systemd overrides
@@ -18,7 +18,7 @@
     path: /etc/systemd/system/znc.service.d/
     owner: root
     group: root
-    mode: 0755
+    mode: "0755"
 
 - name: configure znc systemd unit overrides
   template:
@@ -26,7 +26,7 @@
     dest: /etc/systemd/system/znc.service.d/override.conf
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
   notify: reload systemd unit files
 
 - name: copy znc configuration
@@ -35,7 +35,7 @@
     dest: /var/lib/znc/configs/znc.conf
     owner: root
     group: _znc
-    mode: 0660
+    mode: "0660"
   ignore_errors: "{{ ansible_check_mode }}"
   notify: restart znc
 

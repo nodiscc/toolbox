@@ -4,5 +4,5 @@
     dest: /etc/netdata/health.d/processes.conf.d/mariadb.conf
     owner: root
     group: netdata
-    mode: 0640
+    mode: "0640"
   notify: assemble netdata configuration

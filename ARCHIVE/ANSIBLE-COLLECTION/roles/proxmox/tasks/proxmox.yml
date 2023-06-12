@@ -4,7 +4,7 @@
     dest: /etc/apt/sources.list.d/proxmox-no-subscription.list
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
   notify: update apt cache
 
 - name: migration - remove files from old versions of the role
