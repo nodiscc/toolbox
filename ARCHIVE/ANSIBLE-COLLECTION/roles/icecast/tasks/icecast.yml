@@ -72,7 +72,7 @@
   notify: restart icecast
   changed_when: yes
 
-- name: create symlink to ezstream playlist directory {{ ansible_user }} home
+- name: create symlink to ezstream playlist directory in ansible user home
   file:
     state: link
     src: /var/lib/icecast/playlist/

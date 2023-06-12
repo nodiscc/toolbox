@@ -13,6 +13,6 @@ galaxy_info:
     - audio
     - streaming
     - server
-    - LAN
+    - lan
 
 dependencies: []

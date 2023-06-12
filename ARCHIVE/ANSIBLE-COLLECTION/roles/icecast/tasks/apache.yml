@@ -20,4 +20,3 @@
   args:
     creates: "/etc/apache2/conf-enabled/icecast.conf"
   notify: reload apache
-
