@@ -92,10 +92,11 @@
     removes: '/var/www/{{ rss_bridge_fqdn }}'
   when: rss_bridge_action == 'upgrade'
 
-- name: move rss-bridge extraction directory to install directory
+- name: move rss-bridge extraction directory to install directory (always returns changed)
   command:
     cmd: mv /root/rss-bridge-unpack/rss-bridge-{{ rss_bridge_version }} '/var/www/{{ rss_bridge_fqdn }}'
   when: rss_bridge_action == 'initial' or rss_bridge_action == 'upgrade'
+  changed_when: yes
 
 ### CONFIG ###
 

@@ -83,15 +83,10 @@
 
 ##### CLIENT/LOCAL CONFIGURATION #####
 
-# wrapper to find current $HOME
-- set_fact:
-    local_home: "{{ lookup('env', 'HOME') }}"
-  when: pulseaudio_configure_local_cookie
-
 - name: copy remote pulse cookie to local machine
   fetch:
     src: "/var/run/pulse/.config/pulse/pulse-cookie"
-    dest: "{{ local_home }}/.config/pulse/cookie"
+    dest: "{{ lookup('env', 'HOME') }}/.config/pulse/cookie"
     flat: yes
   when: pulseaudio_configure_local_cookie
 

@@ -23,7 +23,7 @@
   tags: valheim_server
 
 - name: set debconf values for steamcmd
-  debconf: "{{ item }}"
+  debconf: "{{ item }}" # noqa args[module] # false positive
   loop:
     - name: steamcmd
       question: steam/purge
