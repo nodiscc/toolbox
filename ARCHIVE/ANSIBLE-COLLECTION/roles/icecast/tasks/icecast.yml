@@ -84,7 +84,7 @@
     enabled: "{{ icecast_enable_service }}"
     state: "{{ 'started' if icecast_enable_service else 'stopped' }}"
     daemon_reload: yes
-  ignore_errors: "{{ ansible_check_mode|bool }}"
+  ignore_errors: "{{ ansible_check_mode }}"
   with_items:
     - icecast2
     - ezstream

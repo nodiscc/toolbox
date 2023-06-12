@@ -15,4 +15,4 @@
     name: reverse-ssh-tunnel
     enabled: "{{ reverse_ssh_tunnel_enabled }}"
     state: "{{ 'started' if reverse_ssh_tunnel_enabled else 'stopped' }}"
-  ignore_errors: "{{ ansible_check_mode|bool }}"
+  ignore_errors: "{{ ansible_check_mode }}"
