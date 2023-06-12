@@ -95,12 +95,13 @@
     flat: yes
   when: pulseaudio_configure_local_cookie
 
-- name: restart local pulseaudio instance
+- name: restart local pulseaudio instance (always returns changed)
   become: no
   delegate_to: localhost
   command:
     cmd: killall pulseaudio
   when: pulseaudio_configure_local_cookie
+  changed_when: yes
 
 # TODO document client config, install paprefs, paman, pasystray, pavumeter, pavucontrol, pulseaudio-module-zeroconf, pulseaudio, pulseaudio-utils, gstreamer0.10-pulseaudio, gstreamer1.0-pulseaudio, avahi-daemon, start avahi-daemon
 # TODO set volume to 90% (config value?)

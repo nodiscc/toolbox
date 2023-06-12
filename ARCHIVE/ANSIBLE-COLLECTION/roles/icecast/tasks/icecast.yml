@@ -66,9 +66,11 @@
     group: root
     mode: "0755"
 
-- name: update ezstream playlist
-  command: /usr/local/bin/ezstream-update-playlist.sh
+- name: update ezstream playlist (always returns changed)
+  command:
+    cmd: /usr/local/bin/ezstream-update-playlist.sh
   notify: restart icecast
+  changed_when: yes
 
 - name: create symlink to ezstream playlist directory {{ ansible_user }} home
   file:

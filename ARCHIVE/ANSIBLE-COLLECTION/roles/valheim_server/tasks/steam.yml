@@ -12,11 +12,11 @@
   failed_when: result_i386_check.rc > 1
   check_mode: no
 
-- name: Enable i386 architecture
+- name: Enable i386 architecture (always returns changed)
   command: dpkg --add-architecture i386
   when: result_i386_check.rc == 1
-  register: enable_i386_architecture
   notify: update apt cache
+  changed_when: yes
 
 - name: apply configuration (flush handlers)
   meta: flush_handlers
