@@ -66,7 +66,7 @@
     path: /var/run/pulse
     owner: root
     group: pulse
-    mode: 0770
+    mode: "0770"
 
 # not needed, created automatically when installing pulseaudio
 #- name: create pulse user
