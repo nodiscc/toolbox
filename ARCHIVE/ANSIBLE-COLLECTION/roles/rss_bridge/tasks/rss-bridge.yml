@@ -86,13 +86,15 @@
   ignore_errors: "{{ ansible_check_mode }}"
 
 - name: move old rss-bridge installation to temporary dir
-  command: mv '/var/www/{{ rss_bridge_fqdn }}' '/var/www/{{ rss_bridge_fqdn }}.old'
+  command:
+    cmd: mv '/var/www/{{ rss_bridge_fqdn }}' '/var/www/{{ rss_bridge_fqdn }}.old'
   args:
     removes: '/var/www/{{ rss_bridge_fqdn }}'
   when: rss_bridge_action == 'upgrade'
 
 - name: move rss-bridge extraction directory to install directory
-  command: mv /root/rss-bridge-unpack/rss-bridge-{{ rss_bridge_version }} '/var/www/{{ rss_bridge_fqdn }}'
+  command:
+    cmd: mv /root/rss-bridge-unpack/rss-bridge-{{ rss_bridge_version }} '/var/www/{{ rss_bridge_fqdn }}'
   when: rss_bridge_action == 'initial' or rss_bridge_action == 'upgrade'
 
 ### CONFIG ###

@@ -26,7 +26,9 @@
 ##### CONFIGURATION
 
 - name: copy pulseaudio configuration
-  template: src={{ item.src }} dest={{ item.dest }}
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
   with_items:
     - { src: 'etc_pulse_daemon.conf.j2', dest: '/etc/pulse/daemon.conf' }
     - { src: 'etc_pulse_client.conf.j2', dest: '/etc/pulse/client.conf' }
@@ -34,11 +36,15 @@
   notify: restart pulseaudio
 
 - name: copy pulseaudio systemd service
-  copy: src=etc_systemd_system_pulseaudio.service dest=/etc/systemd/system/pulseaudio.service
+  copy:
+    src: etc_systemd_system_pulseaudio.service
+    dest: /etc/systemd/system/pulseaudio.service
   notify: restart pulseaudio
 
 - name: copy avahi-daemon configuration
-  template: src=etc_avahi_avahi-daemon.conf.j2 dest=/etc/avahi/avahi-daemon.conf
+  template:
+    src: etc_avahi_avahi-daemon.conf.j2
+    dest: /etc/avahi/avahi-daemon.conf
   notify: restart pulseaudio
 
 - name: apply configuration (flush handlers)
@@ -49,10 +55,18 @@
 ##### COMMAND-LINE/MISC INSTALLATION STEPS
 
 - name: create pulse group
-  group: name=pulse state=present system=yes
+  group:
+    name: pulse
+    state: present
+    system: yes
 
 - name: create /var/run/pulse directory
-  file: state=directory path=/var/run/pulse owner=root group=pulse mode=0770
+  file:
+    state: directory
+    path: /var/run/pulse
+    owner: root
+    group: pulse
+    mode: 0770
 
 # not needed, created automatically when installing pulseaudio
 #- name: create pulse user
@@ -75,7 +89,8 @@
 - name: restart local pulseaudio instance
   become: no
   delegate_to: localhost
-  command: killall pulseaudio
+  command:
+    cmd: killall pulseaudio
   when: pulseaudio_configure_local_cookie
 
 # TODO document client config, install paprefs, paman, pasystray, pavumeter, pavucontrol, pulseaudio-module-zeroconf, pulseaudio, pulseaudio-utils, gstreamer0.10-pulseaudio, gstreamer1.0-pulseaudio, avahi-daemon, start avahi-daemon
@@ -86,7 +101,10 @@
 ##### SERVICES #####
 
 - name: disable pulseaudio service
-  service: name={{ item }} state=stopped enabled=no
+  service:
+    name: "{{ item }}"
+    state: stopped
+    enabled: no
   with_items:
     - pulseaudio
     - avahi-daemon
@@ -94,7 +112,10 @@
   tags: services
 
 - name: enable pulseaudio service
-  service: name={{ item }} state=started enabled=yes
+  service:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
   with_items:
     - pulseaudio
     - avahi-daemon
