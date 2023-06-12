@@ -29,6 +29,9 @@
   template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: "0664"
   with_items:
     - { src: 'etc_pulse_daemon.conf.j2', dest: '/etc/pulse/daemon.conf' }
     - { src: 'etc_pulse_client.conf.j2', dest: '/etc/pulse/client.conf' }
@@ -39,12 +42,18 @@
   copy:
     src: etc_systemd_system_pulseaudio.service
     dest: /etc/systemd/system/pulseaudio.service
+    owner: root
+    group: root
+    mode: "0664"
   notify: restart pulseaudio
 
 - name: copy avahi-daemon configuration
   template:
     src: etc_avahi_avahi-daemon.conf.j2
     dest: /etc/avahi/avahi-daemon.conf
+    owner: root
+    group: root
+    mode: "0664"
   notify: restart pulseaudio
 
 - name: apply configuration (flush handlers)
