@@ -1,8 +1,9 @@
-# rsyslog - monitor mysql error log
-
-input(type="imfile"
-      File="/var/log/mysql/error.log"
-      readMode="0"
-      Tag="mysql"
-      Facility="daemon"
-      PersistStateInterval="0")
+- name: configure rsyslog to aggregate mariadb logs to syslog
+  template:
+    src: etc_rsyslog.d_mariadb.conf.j2
+    dest: /etc/rsyslog.d/mariadb.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: restart rsyslog
+  tags: rsyslog
