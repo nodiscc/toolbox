@@ -17,7 +17,7 @@
   become: yes
   tags: znc
 
-# TODO Nov 21 17:56:15 shaarli-test znc[161526]: [2022-11-21 17:56:15.234463] (10.0.10.1) ZNC -> CLI [:irc.znc.in 464 test20221121 :Invalid Password] 
+# TODO Nov 21 17:56:15 shaarli-test znc[161526]: [2022-11-21 17:56:15.234463] (10.0.10.1) ZNC -> CLI [:irc.znc.in 464 test20221121 :Invalid Password]
 # - name: include fail2ban configuration tasks
 #   import_tasks: fail2ban.yml
 #   become: yes

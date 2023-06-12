@@ -19,6 +19,7 @@ icecast_admin_username: "CHANGEME20"
 icecast_admin_password: "CHANGEME20"
 # Password to connect an icecast relay. Unused but must be set
 icecast_relay_password: "CHANGEME20"
-
+# max number of allowed simultaneous clients
 icecast_max_clients: 100
+# max number of allowed simultaneous sources
 icecast_max_sources: 2

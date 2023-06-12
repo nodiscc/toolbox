@@ -78,14 +78,14 @@
     mode: "0770"
 
 # not needed, created automatically when installing pulseaudio
-#- name: create pulse user
-#  user: name=pulse system=yes groups=pulse,audio createhome=no home=/var/run/pulse
+# - name: create pulse user
+#   user: name=pulse system=yes groups=pulse,audio createhome=no home=/var/run/pulse
 
 ##### CLIENT/LOCAL CONFIGURATION #####
 
 # wrapper to find current $HOME
 - set_fact:
-    local_home: "{{ lookup('env','HOME') }}"
+    local_home: "{{ lookup('env', 'HOME') }}"
   when: pulseaudio_configure_local_cookie
 
 - name: copy remote pulse cookie to local machine

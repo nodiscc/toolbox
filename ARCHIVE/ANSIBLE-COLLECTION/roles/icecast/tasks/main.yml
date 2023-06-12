@@ -10,7 +10,7 @@
   tags: icecast
 
 - name: include self-signed certificates setup tasks
-  import_tasks:  ssl-selfsigned.yml
+  import_tasks: ssl-selfsigned.yml
   become: yes
   tags:
     - icecast
