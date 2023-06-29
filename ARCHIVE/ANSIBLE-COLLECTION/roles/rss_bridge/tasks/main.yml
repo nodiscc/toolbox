@@ -7,6 +7,9 @@
 - name: load distribution-specific variables
   include_vars:
     file: "{{ ansible_facts.distribution }}-{{ ansible_facts.distribution_release }}.yml"
+  tags:
+    - rss_bridge
+    - apache
 
 - name: include rss-bridge configuration tasks
   import_tasks: rss-bridge.yml
