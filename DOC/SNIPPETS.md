@@ -480,8 +480,6 @@ samba fstab mount entry: `//172.21.24.3/myshare /mnt/mysharemountpoint cifs _net
 
 network display routing table `netstat -rn` or `ip r`
 
-scan local network `nmap -sP 192.168.1.0/24`
-
 network Serve the current directory on port 8080 `python -m SimpleHTTPServer 8080`, python3 `python3 -m http.server 8080`
 
 firewall deny requests from 1 IP address `sudo ufw  insert 1 deny from $IP_ADDRESS`
@@ -1049,6 +1047,12 @@ list listening ports (from local machine): `netstat -tulp` or `ss -pau`
 
 list listening ports (from remote machine): `nmap -sTU`
 
+scan local network `nmap -sP 192.168.1.0/24`
+
+test specific open port `nmap -PNp {port} {host}` `nc -vz {host} {port}`
+
+nmap scan specific port for vulnerability `nmap -p 445 --script smb-vuln-ms17-010 192.168.1.55` (scripts at `/usr/share/nmap/scripts/`)
+
 detect listening ports (using TCP/UDP sockets from local machine): `lsof -i -n | egrep "COMMAND|LISTEN|UDP"`
 
 list ipv6 listening ports `ss -6pau`
@@ -1139,6 +1143,8 @@ convert an image sequence to a video `ffmpeg -framerate 30 -pattern_type glob -i
 
 build debian APT repo packages index: dpkg-scanpackages . /dev/null | gzip -9c > Packages.gz
 
+npm/nodejs fix yarnpkg error `Cannot find module '@babel/runtime/helpers/interopRequireWildcard'` on Debian 11 `export NODE_PATH=/usr/lib/nodejs:/usr/share/nodejs`
+
 mount a specific partition from an ISO/disk image file: `sudo losetup /dev/loop0 blankimg.iso ; sudo losetup /dev/loop1 blankimg.iso -o 1048576; sudo mount /dev/loop1 /mnt/` where 1048576 is fdisk's number of sectors * number of bytes-per-sector (here 2048x512)
 
 detach all loop devices: `losetup -D`
@@ -1150,8 +1156,6 @@ type unicode character from keyboard in linux: Ctrl + Shift + U, 2b50, Enter
 virtualbox change resolution: VBoxManage controlvm "Name of VM" setvideomodehint 1366 768 32
 
 http://xmodulo.com/limit-network-bandwidth-linux.html `trickle -d 300 firefox %u`
-
-https://www.cyberciti.biz/faq/ping-test-a-specific-port-of-machine-ip-address-using-linux-unix/ `nmap -PNp {port} {host}` `nc -vz {host} {port}`
 
 view contents of files matching a pattern, prefixed by the filename: `grep . *.txt`
 
