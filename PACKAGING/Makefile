@@ -5,7 +5,7 @@ CLEANERML_VERSION=5bc2961
 CLEANERML_PACKAGE_VERSION=0.0.1~git0
 PIDGIN_OPENSTEAMWORKS_VERSION=1.7
 LUTRIS_VERSION=0.5.13
-USERJS_VERSION=0.7.1
+USERJS_VERSION=0.8.0
 USERJS_PACKAGE_VERSION=$(USERJS_VERSION)-1
 TARTUBE_VERSION=2.4.386
 
@@ -63,13 +63,13 @@ user.js:
 	mkdir -pv build/ dist/
 	wget --continue --no-verbose https://github.com/nodiscc/user.js/archive/$(USERJS_VERSION).zip -O build/user.js-$(USERJS_VERSION).zip
 	unzip build/user.js-$(USERJS_VERSION).zip -d build/
-	mkdir -pv user.js/usr/share/user.js/ user.js/usr/share/doc/user.js/
+	mkdir -pv user.js/usr/share/user.js/ user.js/usr/share/doc/user.js/ user.js/usr/lib/firefox-esr/distribution/
 	cd build/user.js-$(USERJS_VERSION)/ && make systemwide_user.js
 	cp -v build/user.js-$(USERJS_VERSION)/user.js user.js/usr/share/user.js/user.js
 	cp -v build/user.js-$(USERJS_VERSION)/systemwide_user.js user.js/usr/share/user.js/systemwide_user.js
+	cp -v build/user.js-$(USERJS_VERSION)/policies.json user.js/usr/lib/firefox-esr/distribution/policies.json
 	cp -v build/user.js-$(USERJS_VERSION)/LICENSE user.js/usr/share/doc/user.js/LICENCE
 	cp -v build/user.js-$(USERJS_VERSION)/README.md user.js/usr/share/doc/user.js/README.md
-	cp -v build/user.js-$(USERJS_VERSION)/gen-readme.sh user.js/usr/share/doc/user.js/gen-readme.sh
 	echo "https://github.com/pyllyukko/user.js#installation" > user.js/usr/share/doc/user.js/INSTALL
 	echo "Install user.js to ~/.mozilla/firefox/XXXXXXXX.your_profile_name/user.js for a single profile," >> user.js/usr/share/doc/user.js/INSTALL
 	echo "or systemwide_user.js to /etc/firefox-esr/firefox-esr.js for system-wide installation" >> user.js/usr/share/doc/user.js/INSTALL
