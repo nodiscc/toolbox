@@ -1,0 +1,4 @@
+https://gitlab.com/nodiscc/user.js#installation
+Install user.js to ~/.mozilla/firefox/XXXXXXXX.your_profile_name/user.js for a single profile,
+or systemwide_user.js to /etc/firefox-esr/firefox-esr.js for system-wide installation.
+Copy policies.json to /usr/lib/firefox-esr/distribution/policies.json

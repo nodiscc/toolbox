@@ -71,9 +71,6 @@ user.js:
 	cp -v build/user.js-$(USERJS_VERSION)/policies.json user.js/usr/lib/firefox-esr/distribution/policies.json
 	cp -v build/user.js-$(USERJS_VERSION)/LICENSE user.js/usr/share/doc/user.js/LICENCE
 	cp -v build/user.js-$(USERJS_VERSION)/README.md user.js/usr/share/doc/user.js/README.md
-	echo "https://github.com/pyllyukko/user.js#installation" > user.js/usr/share/doc/user.js/INSTALL
-	echo "Install user.js to ~/.mozilla/firefox/XXXXXXXX.your_profile_name/user.js for a single profile," >> user.js/usr/share/doc/user.js/INSTALL
-	echo "or systemwide_user.js to /etc/firefox-esr/firefox-esr.js for system-wide installation" >> user.js/usr/share/doc/user.js/INSTALL
 	sed -i "s/%%USERJS_VERSION%%/$(USERJS_VERSION)/g" user.js/DEBIAN/control
 	chmod -v 0755 user.js/DEBIAN/ user.js/DEBIAN/postinst user.js/DEBIAN/prerm
 	dpkg-deb --build user.js/
