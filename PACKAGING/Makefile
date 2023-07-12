@@ -1,4 +1,4 @@
-all: yt_dlp bleachbit_cleanerml pidgin_opensteamworks lutris user.js tartube
+all: yt_dlp bleachbit_cleanerml lutris user.js tartube
 
 YT_DLP_VERSION=2023.07.06
 CLEANERML_VERSION=5bc2961
@@ -35,24 +35,25 @@ bleachbit_cleanerml:
 	dpkg-deb --build bleachbit-cleanerml/
 	mv -v bleachbit-cleanerml.deb dist/bleachbit-cleanerml_$(CLEANERML_PACKAGE_VERSION)+$(CLEANERML_VERSION)_all.deb
 
-pidgin_opensteamworks:
-	rm -rf build/
-	mkdir -p build/ dist/
-	cd build/ && \
-	wget --continue --no-verbose https://github.com/EionRobb/pidgin-opensteamworks/archive/refs/tags/$(PIDGIN_OPENSTEAMWORKS_VERSION).zip && \
-	unzip -q $(PIDGIN_OPENSTEAMWORKS_VERSION).zip
-	echo "Steam plugin for Pidgin/libpurple" > build/pidgin-opensteamworks-$(PIDGIN_OPENSTEAMWORKS_VERSION)/steam-mobile/description-pak
-	cd build/pidgin-opensteamworks-$(PIDGIN_OPENSTEAMWORKS_VERSION)/steam-mobile/ && \
-	checkinstall --pkgname=pidgin-opensteamworks --arch=amd64 --pkglicense=GPL-3.0 \
-		--pkgsource https://github.com/EionRobb/pidgin-opensteamworks \
-		--pkgversion $(PIDGIN_OPENSTEAMWORKS_VERSION) \
-		--maintainer='nodiscc <nodiscc@gmail.com>' \
-		--nodoc \
-		--default \
-		--install=no \
-		--showinstall \
-		--requires="libpurple0,libglib2.0-0,libjson-glib-1.0-0,libnss3"
-	mv -v build/pidgin-opensteamworks-$(PIDGIN_OPENSTEAMWORKS_VERSION)/steam-mobile/pidgin-opensteamworks_$(PIDGIN_OPENSTEAMWORKS_VERSION)-1_amd64.deb dist/
+# disabled, plugin broken (https://github.com/EionRobb/pidgin-opensteamworks/issues/206)
+# pidgin_opensteamworks:
+# 	rm -rf build/
+# 	mkdir -p build/ dist/
+# 	cd build/ && \
+# 	wget --continue --no-verbose https://github.com/EionRobb/pidgin-opensteamworks/archive/refs/tags/$(PIDGIN_OPENSTEAMWORKS_VERSION).zip && \
+# 	unzip -q $(PIDGIN_OPENSTEAMWORKS_VERSION).zip
+# 	echo "Steam plugin for Pidgin/libpurple" > build/pidgin-opensteamworks-$(PIDGIN_OPENSTEAMWORKS_VERSION)/steam-mobile/description-pak
+# 	cd build/pidgin-opensteamworks-$(PIDGIN_OPENSTEAMWORKS_VERSION)/steam-mobile/ && \
+# 	checkinstall --pkgname=pidgin-opensteamworks --arch=amd64 --pkglicense=GPL-3.0 \
+# 		--pkgsource https://github.com/EionRobb/pidgin-opensteamworks \
+# 		--pkgversion $(PIDGIN_OPENSTEAMWORKS_VERSION) \
+# 		--maintainer='nodiscc <nodiscc@gmail.com>' \
+# 		--nodoc \
+# 		--default \
+# 		--install=no \
+# 		--showinstall \
+# 		--requires="libpurple0,libglib2.0-0,libjson-glib-1.0-0,libnss3"
+# 	mv -v build/pidgin-opensteamworks-$(PIDGIN_OPENSTEAMWORKS_VERSION)/steam-mobile/pidgin-opensteamworks_$(PIDGIN_OPENSTEAMWORKS_VERSION)-1_amd64.deb dist/
 
 lutris:
 	mkdir -p dist/
