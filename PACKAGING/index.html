@@ -1,10 +1,10 @@
 <pre>
-Additional software for Debian 11 (Bullseye)
+Additional software for Debian 12 (Bookworm)
 
 Add this repository to your APT sources list:
 wget -O- https://nodiscc.gitlab.io/toolbox/gpg.key | gpg --dearmor > nodiscc-toolbox.gpg
 cat nodiscc-toolbox.gpg | sudo tee -a /usr/share/keyrings/nodiscc-toolbox.gpg > /dev/null
-echo 'deb [signed-by=/usr/share/keyrings/nodiscc-toolbox.gpg] https://nodiscc.gitlab.io/toolbox/ bullseye main' | sudo tee /etc/apt/sources.list.d/nodiscc-toolbox.list
+echo 'deb [signed-by=/usr/share/keyrings/nodiscc-toolbox.gpg] https://nodiscc.gitlab.io/toolbox/ bookworm main' | sudo tee /etc/apt/sources.list.d/nodiscc-toolbox.list
 sudo apt update
 
 Sources: <a href="https://gitlab.com/nodiscc/toolbox/-/tree/master/PACKAGING">https://gitlab.com/nodiscc/toolbox/-/tree/master/PACKAGING</a>
