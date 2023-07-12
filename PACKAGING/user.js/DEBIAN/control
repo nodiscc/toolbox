@@ -1,11 +1,11 @@
 Package: user.js
 Source: user.js
-Version: 0.2-1
+Version: %%USERJS_VERSION%%
 Architecture: all
 Maintainer: nodiscc <nodiscc@gmail.com>
 Suggests: firefox-esr
 Section: net
 Priority: optional
-Homepage: https://github.com/nodiscc/user.js/
+Homepage: https://gitlab.com/nodiscc/user.js/
 Description: Firefox configuration hardening
  A user.js configuration file for Mozilla Firefox designed to harden browser settings and make it more secure.
