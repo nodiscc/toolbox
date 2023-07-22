@@ -215,6 +215,8 @@ sed in-place replace and create backup of original file `for f in *.php; do sed 
 
 remove all lines starting with `#` or blank lines `sed -e '/^[ ]*#/d' -e '/^$/d' /etc/samba/smb.conf`
 
+php assign a variable as a reference to another variable, not a copy `$var = &$othervar`
+
 https://stackoverflow.com/questions/2181712/ Simple way to convert HH:MM:SS (hours:minutes:seconds.split seconds) to seconds `echo "00:20:40.25" | awk -F: '{ print ($1 * 3600) + ($2 * 60) + $3 }'`
 
 coonvert a directory of .GIG (GigaSampler) files to WAV: `for i in *.gig; do name="$(basename $i .gig)"; mkdir $name; gigextract "$i" "$name/"; done`
