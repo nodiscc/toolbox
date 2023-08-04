@@ -1,0 +1,54 @@
+[general]
+distance = 50
+useNetWMFullscreen = true
+ignoreSkipTaskbar = true
+updateFreq = 60.0
+lazyTrans = true
+pipePath = /tmp/skippy-xd-fifo
+movePointerOnStart = false
+movePointerOnSelect = false
+movePointerOnRaise = false
+switchDesktopOnActivate = true
+useNameWindowPixmap = false
+forceNameWindowPixmap = false
+includeFrame = true
+allowUpscale = true
+showAllDesktops = false
+showUnmapped = true
+preferredIconSize = 48
+clientDisplayModes = thumbnail-icon thumbnail icon filled none
+showIconsOnThumbnails = true
+iconFillSpec = orig mid mid #555555
+fillSpec = orig mid mid #FFFFFF
+background = 1920x1200 scale mid mid #000000 /path/to/wallhaven-313216.jpg
+
+[xinerama]
+showAll = false
+
+[normal]
+tint = black
+tintOpacity = 0
+opacity = 255
+
+[highlight]
+tint = #101020
+tintOpacity = 64
+opacity = 255
+
+[tooltip]
+show = true
+followsMouse = true
+offsetX = 20
+offsetY = 20
+align = left
+border = #404040
+background = #404040
+opacity = 128
+text = #ffffff
+textShadow = black
+font = Roboto-11
+
+[bindings]
+miwMouse1 = focus
+miwMouse2 = close-ewmh
+miwMouse3 = iconify

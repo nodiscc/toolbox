@@ -8,7 +8,8 @@ LUTRIS_VERSION=0.5.16
 USERJS_VERSION=0.10.0
 USERJS_PACKAGE_VERSION=$(USERJS_VERSION)-1
 TARTUBE_VERSION=2.5.0
-
+SKIPPY_XD_VERSION=397216ca67074c71314f5e9a6e3f1710ccabc29e
+SKIPPY_XD_PACKAGE_VERSION=0.0.1~git0
 yt_dlp:
 	rm -rf build/
 	mkdir -p build/ dist/ yt-dlp/usr/bin
@@ -75,6 +76,17 @@ user.js:
 	chmod -v 0755 user.js/DEBIAN/ user.js/DEBIAN/postinst user.js/DEBIAN/prerm
 	dpkg-deb --build user.js/
 	mv -v user.js.deb dist/user.js_$(USERJS_PACKAGE_VERSION)_all.deb
+
+.PHONY: skippy-xd
+skippy-xd:
+	# requirements: sudo apt install libx11-dev libxft-dev libxcomposite-dev libxdamage-dev libxfixes-dev libxext-dev libxinerama-dev libjpeg-dev libgif-dev
+	mkdir -pv build/ dist/
+	wget --continue --no-verbose https://github.com/dreamcat4/skippy-xd/archive/$(SKIPPY_XD_VERSION).zip -O build/skippy-xd-$(SKIPPY_XD_VERSION).zip
+	unzip build/skippy-xd-$(SKIPPY_XD_VERSION).zip -d build/
+	cd build/skippy-xd-$(SKIPPY_XD_VERSION)/ && make
+	# TODO copy built-skippy-xd to /usr/local/bin
+	# TODO config file skippy-xd.rc
+
 
 .PHONY: tartube
 tartube:
