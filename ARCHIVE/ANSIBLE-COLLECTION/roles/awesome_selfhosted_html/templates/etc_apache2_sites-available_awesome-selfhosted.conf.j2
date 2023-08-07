@@ -1,0 +1,37 @@
+<VirtualHost *:80>
+    DocumentRoot /var/www/{{ awesome_selfhosted_html_fqdn }}
+    ServerName {{ awesome_selfhosted_html_fqdn }}
+    ServerAdmin webmaster@{{ awesome_selfhosted_html_fqdn }}
+    # Redirect all HTTP requests to HTTPS
+    RewriteEngine On
+    RewriteCond %{HTTPS} off
+    RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
+</VirtualHost>
+
+{% if awesome_selfhosted_html_https_mode == 'letsencrypt' %}
+<MDomain {{ awesome_selfhosted_html_fqdn }}>
+  MDRequireHttps permanent
+</MDomain>
+{% endif %}
+
+<VirtualHost *:443>
+  ServerName  {{ awesome_selfhosted_html_fqdn }}
+  ServerAdmin webmaster@{{ awesome_selfhosted_html_fqdn }}
+  SSLEngine on
+{% if awesome_selfhosted_html_https_mode == 'selfsigned' %}
+  SSLCertificateFile /etc/ssl/certs/{{ awesome_selfhosted_html_fqdn }}.crt
+  SSLCertificateKeyFile /etc/ssl/private/{{ awesome_selfhosted_html_fqdn }}.key
+{% endif %}
+{% if not awesome_selfhosted_html_enable_service %}
+  DocumentRoot /var/www/maintenance/
+  ErrorDocument 503 /maintenance.html
+  RewriteEngine On
+  RewriteCond %{REQUEST_URI} !=/maintenance.html
+  RewriteRule ^.*$ - [R=503,L]
+{% else %}
+  DocumentRoot /var/www/{{ awesome_selfhosted_html_fqdn }}
+  DirectoryIndex index.html
+  Header set X-Frame-Options SAMEORIGIN
+  Header always set Content-Security-Policy "script-src 'self' 'unsafe-inline'; frame-ancestors 'self'"
+{% endif %}
+</VirtualHost>

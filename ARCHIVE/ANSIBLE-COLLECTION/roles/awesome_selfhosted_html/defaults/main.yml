@@ -1,0 +1,9 @@
+##### AWESOME-SELFHOSTED STATIC WEBSITE #####
+# fully qualified domain name of the website
+awesome_selfhosted_html_fqdn: "awesome-selfhosted.CHANGEME.org"
+# HTTPS and SSL/TLS certificate mode for the awesome-selfhosted webserver virtualhost
+#   letsencrypt: acquire a certificate from letsencrypt.org
+#   selfsigned: generate a self-signed certificate
+awesome_selfhosted_html_https_mode: "selfsigned"
+# enable/disable the awesome-selfhosted virtualhost (redirect users to maintenance page if disabled)
+awesome_selfhosted_html_enable_service: yes

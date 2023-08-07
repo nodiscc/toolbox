@@ -1,0 +1,12 @@
+[Unit]
+Description=Pull latest version of awesome-selfhosted-html
+
+[Service]
+Type=simple
+ExecStartPre=/usr/bin/git remote update
+ExecStart=/usr/bin/git reset --hard origin/gh-pages
+WorkingDirectory=/var/www/{{ awesome_selfhosted_html_fqdn }}
+SyslogIdentifier=awesome-selfhosted-html
+
+[Install]
+WantedBy=multi-user.target

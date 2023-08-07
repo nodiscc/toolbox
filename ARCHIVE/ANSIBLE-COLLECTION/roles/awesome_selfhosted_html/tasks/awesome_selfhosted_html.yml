@@ -1,0 +1,47 @@
+# installation/setup tasks for EXAMPLE component, such as:
+# - install packages
+# - download binaries/zips
+# - verify binary downloads using checksums and/or GPG keys
+# - create users/groups
+# - create configuration/data directories
+# - install binaries to $PATH
+# - copy configuration files
+# - create databases/tables
+# - create application admin/user accounts
+# - start/stop service
+
+- name: clone/update awesome-selfhoted-html repository
+  git:
+    repo: "https://github.com/nodiscc/awesome-selfhosted-html-preview"
+    dest: "/var/www/{{ awesome_selfhosted_html_fqdn }}"
+    version: gh-pages
+  diff: no
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: configure automatic update systemd service
+  template:
+    src: etc_systemd_system_awesome-selfhosted-html-update.service.j2
+    dest: /etc/systemd/system/awesome-selfhosted-html-update.service
+    owner: root
+    group: root
+    mode: "0644"
+  notify: reload systemd unit files
+
+- name: configure automatic update systemd timer
+  template:
+    src: etc_systemd_system_awesome-selfhosted-html-update.timer.j2
+    dest: /etc/systemd/system/awesome-selfhosted-html-update.timer
+    owner: root
+    group: root
+    mode: "0644"
+  notify: reload systemd unit files
+
+- name: apply configuration (flush handlers)
+  meta: flush_handlers
+
+- name: enable automatic update systemd timer
+  systemd:
+    name: awesome-selfhosted-html-update.timer
+    state: started
+    enabled: true
+  ignore_errors: "{{ ansible_check_mode }}"
