@@ -105,10 +105,6 @@ Network Allow more ports to be available: `echo 1024 65000 > /proc/sys/net/ipv4/
 
 Network increase memory of socket buffers `echo 262143 > /proc/sys/core/rmem_max,default`
 
-ffmpeg cut between 310th and 500th frame `ffmpeg -i constellaion003.mkv -vf 'select=gte(n\,301)*lte(n\,500)'` output.mkv (breaks video index/length/seek?)
-
-stabilize video `ffmpeg -i input.mp4 -vf vidstabdetect=shakiness=10:accuracy=15 -f null - && ffmpeg -i input.mp4 -vf vidstabtransform=smoothing=30:input="transforms.trf" output.mp4` (shakiness/accuration are optional)
-
 mount root filesystem ead-only (SD card): `ro` in kernel command line, `ro÷` option in `/etc/fstab`; `rm -rf /var/log /etc/resolv.conf && ln -s /run/log /var/log  && ln -sf /run/resolv.conf  /etc/
 `
 
@@ -239,14 +235,6 @@ alsa set card index by kernel module name: `/etc/modprobe.d: options snd-hda-int
 
 alsa set card indexes when multiple cards are using the same module: `lsmod; modinfo snd-usb-audio; lsusb; /etc/modprobe.d: options snd-usb-audio index=1,2,3 vid=0x046d,0x046d,0x0d8c pid=0x0a29,0x0a13,0x000e`
 
-convert AVI to MP4: `$ ffmpeg -b 1250k -i japantrip_01.avi japantrip_01.mp4`
-
-convert AVI to M4V: `ffmpeg -i input.avi -acodec libfaac -ab 128k -ar 44100 -vcodec mpeg4 -b 1250K output.m4v`
-
-convert AVI tio MOV: `ffmpeg -i "input.avi" -acodec libmp3lame -ab 192 "output.mov"`
-
-crop video to 720px x 600px and aligned 240px from the top: `avconv -i input.webm -vf crop=720:600:0:240 output.mpeg`
-
 list ansible tags: `ansible-playbook site.yml --list-tags 2>/dev/null | awk -F '[' '{ print $2 }' |tail -n1 | sed -e 's/, /\n/g' | pr -3 -t`
 
 find images larger than 1280px wide: `find . -name '*.png' -exec file {} \; | sed 's/\(.*png\): .* \([0-9]* x [0-9]*\).*/\2 \1/' | awk 'int($1) > 1280 {print}'`
@@ -347,8 +335,6 @@ locate files and move them to specified directory `locate -0 -i *barthes* | xarg
 ssh `socat -d -d TCP-L:22,reuseaddr,fork SYSTEM:"nc \$SOCAT_PEERADDR 22"` Confuse people SSHing to your host with a redirect back to theirs.
 
 quick permission fix: `find $dir -type d -print0 | xargs -0 chmod 0770; find $dir -type f -print0 | xargs -0 chmod 0660`
-
-extract still images from video: `ffmpeg -i input_file.mp4 -r 1 image_%4d.png`
 
 install xfce from netinstall: ajouter le paramètre desktop=xfce aux options de boot de l'installeur
 
@@ -700,23 +686,45 @@ save command output to an image `$COMMANDE | convert -background black -fill whi
 
 play a video without X11/in the console `mplayer -vo fbdev $VIDEOFILE`
 
-capture screen to a video file (screencast `ffmpeg -f x11grab -show_region 1 -y -r 25 -s $RESOLUTION -i :0.0+0,0 -b 8000000 screencast.webm`
-
 List all soundcards and digital audio playback/record devices `aplay -l`; `arecord -l`
 
 pulseaudio list output sinks `pacmd list-sinks`
 
 pulseaudio set volume `pacmd set-sink-volume <index> <volume> #where volume=1-65535`
 
-ffmpeg remove first 7 seconds from video file `ffmpeg -i video.mp4 -vcodec copy -acodec copy -ss 7 fin.mp4`
+ffmpeg cut between 310th and 500th frame `ffmpeg -i constellaion003.mkv -vf 'select=gte(n\,301)*lte(n\,500)'` output.mkv (breaks video index/length/seek?)
 
-ffmpeg concatenate video files `MP4Box -add debut.mp4 -cat fin.mp4 video_modifiee.mp4`
+stabilize video `ffmpeg -i input.mp4 -vf vidstabdetect=shakiness=10:accuracy=15 -f null - && ffmpeg -i input.mp4 -vf vidstabtransform=smoothing=30:input="transforms.trf" output.mp4` (shakiness/accuration are optional)
 
-ffmpeg capture frame at 100 seconds `ffmpeg -i "video.mp4" -vcodec mjpeg -vframes 1 -an -f rawvideo -s 640x360 -ss 100 "capture.jpg"`
+convert AVI to MP4: `ffmpeg -b 1250k -i japantrip_01.avi japantrip_01.mp4`
 
-ffmpeg keep only 3 first seconds `ffmpeg -i video.mp4 -ss 00:00:00 -t 00:00:03.015 debut.mp4`
+convert AVI to M4V: `ffmpeg -i input.avi -acodec libfaac -ab 128k -ar 44100 -vcodec mpeg4 -b 1250K output.m4v`
 
-Afficher un calendrier `cal`
+convert AVI to MOV: `ffmpeg -i "input.avi" -acodec libmp3lame -ab 192 "output.mov"`
+
+crop video to 720px x 600px and aligned 240px from the top: `ffmpeg -i input.webm -vf crop=720:600:0:240 output.mpeg`
+
+extract still images from video: `ffmpeg -i input_file.mp4 -r 1 image_%4d.png`
+
+capture screen to a video file (screencast) `ffmpeg -f x11grab -show_region 1 -y -r 25 -s $RESOLUTION -i :0.0+0,0 -b 8000000 screencast.webm`
+
+remove first 7 seconds from video file `ffmpeg -i video.mp4 -vcodec copy -acodec copy -ss 7 fin.mp4`
+
+concatenate video files `ffmpeg -add debut.mp4 -cat fin.mp4 video_modifiee.mp4`
+
+capture frame at 100 seconds `ffmpeg -i "video.mp4" -vcodec mjpeg -vframes 1 -an -f rawvideo -s 640x360 -ss 100 "capture.jpg"`
+
+keep only 3 first seconds of video `ffmpeg -i video.mp4 -ss 00:00:00 -t 00:00:03.015 debut.mp4`
+
+resize video `ffmpeg -i input.mp4 -vf scale=1920:1080 -c:a copy -preset slow output.mp4`
+
+create a video from an audio file and an image (e.g. album cover) `ffmpeg -r 1 -loop 1 -y -i cover.jpg -i audio.mp3 -acodec copy -shortest video.mp4`
+
+extract audio from video without conversion: `ffmpeg -i video.mp4 -vn -acodec copy audio.aac`
+
+convert an image sequence to a video `ffmpeg -framerate 30 -pattern_type glob -i '*.jpg' -c:v libx264 -pix_fmt yuv420p out.mp4`
+
+show calendar `cal`
 
 create a PDF of a manpage `man -t $COMMANDE | ps2pdf - > $COMMANDE.pdf`
 
@@ -725,10 +733,6 @@ time command execution `time $COMMANDE`
 chronometer (`Ctrl+C` to stop) `time cat`
 
 optimize a JPEG image `jpegtran -copy none -optimize image.jpg temp.jpg; jpegtran -copy none -progressive temp.jpg image.jpg` or `jpegoptim -m80 image.jpg`
-
-comvert video to mp4 `ffmpeg  -i "$FICHIER.avi" "$FICHIER.mp4"`
-
-create a video froma an audio file and an image (e.g. album cover) `ffmpeg -r 1 -loop 1 -y -i cover.jpg -i audio.mp3 -acodec copy -shortest video.mp4`
 
 rename all .jpeg and .JPG files to .jpg `rename 's/\.jpe?g$/.jpg/i' *`
 
@@ -1138,10 +1142,6 @@ show configured network interfaces IP addresses: `ip -c addr`
 setup source NAT (SNAT): `iptables -t nat -A POSTROUTING -o ethpublic0 -j SNAT --to 8.9.10.11`
 
 iptables make rules permanent: `apt install iptables-permanent; iptables-save > /etc/iptables/rules.v4; cat /etc/iptables/rules.v4 | iptables-restore`
-
-extract audio from video without conversion: `ffmpeg -i video.mp4 -vn -acodec copy audio.aac`
-
-convert an image sequence to a video `ffmpeg -framerate 30 -pattern_type glob -i '*.jpg' -c:v libx264 -pix_fmt yuv420p out.mp4`
 
 build debian APT repo packages index: dpkg-scanpackages . /dev/null | gzip -9c > Packages.gz
 
