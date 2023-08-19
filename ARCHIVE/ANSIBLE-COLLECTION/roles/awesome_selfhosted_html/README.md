@@ -21,6 +21,7 @@ awesome_selfhosted_html_fqdn: "awesome-selfhosted.CHANGEME.org"
 
 See [defaults/main.yml](defaults/main.yml) for all configuration variables.
 
+When `awesome_selfhosted_html_https_mode: letsencrypt`, DNS record for `awesome_selfhosted_html_fqdn` pointing to the web server. Additionally, when `awesome_selfhosted_html_redirect_www_to_non_www: yes` (the default), DNS record for www.`awesome_selfhosted_html_fqdn` pointing to the web server.
 
 ## Usage
 
