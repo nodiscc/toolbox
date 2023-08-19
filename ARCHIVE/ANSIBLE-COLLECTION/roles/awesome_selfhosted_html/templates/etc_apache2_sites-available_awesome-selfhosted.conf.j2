@@ -2,10 +2,12 @@
     DocumentRoot /var/www/{{ awesome_selfhosted_html_fqdn }}
     ServerName {{ awesome_selfhosted_html_fqdn }}
     ServerAdmin webmaster@{{ awesome_selfhosted_html_fqdn }}
+{% if awesome_selfhosted_html_https_mode == 'selfsigned' %}
     # Redirect all HTTP requests to HTTPS
     RewriteEngine On
     RewriteCond %{HTTPS} off
     RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
+{% endif %}
 </VirtualHost>
 
 {% if awesome_selfhosted_html_https_mode == 'letsencrypt' %}
