@@ -7,3 +7,4 @@
     - awesome_selfhosted_html_fqdn is not search('CHANGEME')
     - awesome_selfhosted_html_https_mode in ['selfsigned', 'letsencrypt']
     - awesome_selfhosted_html_enable_service == awesome_selfhosted_html_enable_service | bool
+    - awesome_selfhosted_html_redirect_www_to_non_www == awesome_selfhosted_html_redirect_www_to_non_www | bool

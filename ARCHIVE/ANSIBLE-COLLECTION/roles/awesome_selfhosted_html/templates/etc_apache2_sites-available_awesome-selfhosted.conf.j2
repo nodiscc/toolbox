@@ -1,11 +1,18 @@
+{% if awesome_selfhosted_html_redirect_www_to_non_www %}
 <VirtualHost *:80>
-    DocumentRoot /var/www/{{ awesome_selfhosted_html_fqdn }}
-    ServerName {{ awesome_selfhosted_html_fqdn }}
+  ServerName www.{{ awesome_selfhosted_html_fqdn }}
+  Redirect permanent / http://{{ awesome_selfhosted_html_fqdn }}/
+</VirtualHost>
+{% endif %}
+
+<VirtualHost *:80>
+  ServerName {{ awesome_selfhosted_html_fqdn }}
+  DocumentRoot /var/www/{{ awesome_selfhosted_html_fqdn }}
 {% if awesome_selfhosted_html_https_mode == 'selfsigned' %}
-    # Redirect all HTTP requests to HTTPS
-    RewriteEngine On
-    RewriteCond %{HTTPS} off
-    RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
+  # Redirect all HTTP requests to HTTPS
+  RewriteEngine On
+  RewriteCond %{HTTPS} off
+  RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
 {% endif %}
 </VirtualHost>
 
@@ -13,6 +20,22 @@
 <MDomain {{ awesome_selfhosted_html_fqdn }}>
   MDRequireHttps permanent
 </MDomain>
+{% if awesome_selfhosted_html_redirect_www_to_non_www %}
+<MDomain www.{{ awesome_selfhosted_html_fqdn }}>
+  MDRequireHttps permanent
+</MDomain>
+{% endif %}
+{% endif %}
+
+{% if awesome_selfhosted_html_redirect_www_to_non_www %}
+<VirtualHost *:443>
+  ServerName www.{{ awesome_selfhosted_html_fqdn }}
+  Redirect permanent / https://{{ awesome_selfhosted_html_fqdn }}/
+{% if awesome_selfhosted_html_https_mode == 'selfsigned' %}
+  SSLCertificateFile /etc/ssl/certs/{{ awesome_selfhosted_html_fqdn }}.crt
+  SSLCertificateKeyFile /etc/ssl/private/{{ awesome_selfhosted_html_fqdn }}.key
+{% endif %}
+</VirtualHost>
 {% endif %}
 
 <VirtualHost *:443>

@@ -5,5 +5,7 @@ awesome_selfhosted_html_fqdn: "awesome-selfhosted.CHANGEME.org"
 #   letsencrypt: acquire a certificate from letsencrypt.org
 #   selfsigned: generate a self-signed certificate
 awesome_selfhosted_html_https_mode: "selfsigned"
+# (yes/no) redirect www.{{ awesome_selfhosted_html_fqdn }} to {{ awesome_selfhosted_html_fqdn }}
+awesome_selfhosted_html_redirect_www_to_non_www: yes
 # enable/disable the awesome-selfhosted virtualhost (redirect users to maintenance page if disabled)
 awesome_selfhosted_html_enable_service: yes

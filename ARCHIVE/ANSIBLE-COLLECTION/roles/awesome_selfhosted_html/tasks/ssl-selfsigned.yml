@@ -7,24 +7,33 @@
 
 - name: generate openssl private key
   openssl_privatekey:
-    path: "/etc/ssl/private/{{ awesome_selfhosted_html_fqdn }}.key"
+    path: "/etc/ssl/private/{{ item }}.key"
   notify: restart apache
   ignore_errors: "{{ ansible_check_mode }}"
+  with_items:
+    - "{{ awesome_selfhosted_html_fqdn }}"
+    - "www.{{ awesome_selfhosted_html_fqdn }}"
 
 - name: generate openssl certificate signing request
   openssl_csr:
-    path: "/etc/ssl/private/{{ awesome_selfhosted_html_fqdn }}.csr"
-    privatekey_path: "/etc/ssl/private/{{ awesome_selfhosted_html_fqdn }}.key"
-    common_name: "{{ awesome_selfhosted_html_fqdn }}"
+    path: "/etc/ssl/private/{{ item }}.csr"
+    privatekey_path: "/etc/ssl/private/{{ item }}.key"
+    common_name: "{{ item }}"
     key_usage: "digitalSignature,keyEncipherment"
     basicConstraints: "CA:TRUE"
   ignore_errors: "{{ ansible_check_mode }}"
+  with_items:
+    - "{{ awesome_selfhosted_html_fqdn }}"
+    - "www.{{ awesome_selfhosted_html_fqdn }}"
 
 - name: generate self-signed openssl certificate
   openssl_certificate:
-    path: "/etc/ssl/certs/{{ awesome_selfhosted_html_fqdn }}.crt"
-    privatekey_path: "/etc/ssl/private/{{ awesome_selfhosted_html_fqdn }}.key"
-    csr_path: "/etc/ssl/private/{{ awesome_selfhosted_html_fqdn }}.csr"
+    path: "/etc/ssl/certs/{{ item }}.crt"
+    privatekey_path: "/etc/ssl/private/{{ item }}.key"
+    csr_path: "/etc/ssl/private/{{ item }}.csr"
     provider: selfsigned
   notify: restart apache
   ignore_errors: "{{ ansible_check_mode }}"
+  with_items:
+    - "{{ awesome_selfhosted_html_fqdn }}"
+    - "www.{{ awesome_selfhosted_html_fqdn }}"

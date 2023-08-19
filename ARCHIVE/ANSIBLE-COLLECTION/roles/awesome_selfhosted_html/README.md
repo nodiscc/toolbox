@@ -12,7 +12,7 @@ See [meta/main.yml](meta/main.yml)
 - hosts: my.CHANGEME.org
   roles:
     - nodiscc.xsrv.apache # web server and SSL/TLS certificates
-    - nodiscc.xsrv.awesome_selfhosted_html
+    - nodiscc.toolbox.awesome_selfhosted_html
 
 # required variables
 # host_vars/my.CHANGEME.org/my.CHANGEME.org.yml
