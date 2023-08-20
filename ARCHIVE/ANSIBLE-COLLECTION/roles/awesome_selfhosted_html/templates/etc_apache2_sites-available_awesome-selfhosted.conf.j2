@@ -31,6 +31,7 @@
 <VirtualHost *:443>
   ServerName www.{{ awesome_selfhosted_html_fqdn }}
   Redirect permanent / https://{{ awesome_selfhosted_html_fqdn }}/
+  SSLEngine On
 {% if awesome_selfhosted_html_https_mode == 'selfsigned' %}
   SSLCertificateFile /etc/ssl/certs/{{ awesome_selfhosted_html_fqdn }}.crt
   SSLCertificateKeyFile /etc/ssl/private/{{ awesome_selfhosted_html_fqdn }}.key
