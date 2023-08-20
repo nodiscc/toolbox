@@ -57,5 +57,6 @@
   DirectoryIndex index.html
   Header set X-Frame-Options SAMEORIGIN
   Header always set Content-Security-Policy "script-src 'self' 'unsafe-inline'; frame-ancestors 'self'"
+  Header set Cache-Control "max-age=300, public"
 {% endif %}
 </VirtualHost>
