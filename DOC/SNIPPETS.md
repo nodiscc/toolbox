@@ -221,7 +221,7 @@ convert all *.bin *.mdf... to .iso (FILENAMES WITHOUT SPACES ONLY) `for i in $(f
 
 add crontab to run script/Makefile from current directory `(crontab -l ; echo '11 11 * * 0 cd $(CURDIR) && make all') | crontab -`
 
-graph Makefile target dependencies `sudo apt install make2graph && LANG=C make -Bnd | make2graph -r | dot -Tpng -o out.png`
+graph Makefile target dependencies `git clone https://github.com/lindenb/makefile2graph && cd makefile2graph && make && cd ../ && LANG=C make -Bnd | make2graph -r | dot -Tpng -o out.png`
 
 encrypt cron emails with GPG `GPG_CMD = "ifne /usr/bin/gpg --batch --armor --trust-model always --no-default-keyring --keyring /home/YOURPUBLICKEY.asc.gpg --recipient you@example.de --encrypt"` -> `* * * * * root /bin/echo "gpg test" | $GPG_CMD`
 
@@ -238,6 +238,8 @@ alsa set card indexes when multiple cards are using the same module: `lsmod; mod
 list ansible tags: `ansible-playbook site.yml --list-tags 2>/dev/null | awk -F '[' '{ print $2 }' |tail -n1 | sed -e 's/, /\n/g' | pr -3 -t`
 
 find images larger than 1280px wide: `find . -name '*.png' -exec file {} \; | sed 's/\(.*png\): .* \([0-9]* x [0-9]*\).*/\2 \1/' | awk 'int($1) > 1280 {print}'`
+
+convert SVG to PNG `rsvg-convert -w 1024 -h 1024 infile.svg -o outfile.png`
 
 test disk reading speed `hdparm -t * 3` (real speed)
 
