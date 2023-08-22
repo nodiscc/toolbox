@@ -12,7 +12,7 @@
 
 - name: clone/update awesome-selfhoted-html repository
   git:
-    repo: "https://github.com/nodiscc/awesome-selfhosted-html-preview"
+    repo: "https://github.com/awesome-selfhosted/awesome-selfhosted-html"
     dest: "/var/www/{{ awesome_selfhosted_html_fqdn }}"
     version: gh-pages
   diff: no
