@@ -1,4 +1,4 @@
-# toolbox.EXAMPLE
+# toolbox.znc
 
 This role will install [ZNC](https://en.wikipedia.org/wiki/ZNC), an IRC network bouncer or BNC.
 

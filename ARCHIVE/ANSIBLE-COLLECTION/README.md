@@ -39,6 +39,7 @@ ansible-galaxy collection install -r requirements.yml
    - nodiscc.toolbox.znc
    - nodiscc.toolbox.homepage_extra_icons
    - nodiscc.toolbox.awesome_selfhosted_html
+   - nodiscc.toolbox.docker
 ```
 
 See [Using collections](https://docs.ansible.com/ansible/latest/user_guide/collections_using.html) for more details.
