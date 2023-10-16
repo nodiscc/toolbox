@@ -16,7 +16,7 @@ https://github.com/github/hub/releases/download/v2.3.0-pre10/hub-linux-amd64-2.3
 https://github.com/jliljebl/flowblade/releases/download/v2.8.0.2/flowblade-2.8.0.2-1_all.deb
 https://github.com/junegunn/fzf-bin/releases/download/0.15.9/fzf-0.15.9-linux_amd64.tgz
 https://github.com/kmkolasinski/AwesomeBump/releases/download/Linuxv5.0/AwesomeBumpV5.Bin64Linux.tar.gz
-https://github.com/mifi/lossless-cut/releases/download/v3.56.0/LosslessCut-linux-x64.tar.bz2
+https://github.com/mifi/lossless-cut/releases/download/v3.58.0/LosslessCut-linux-x64.tar.bz2
 https://github.com/mltframework/shotcut/releases/download/v17.09/shotcut-linux-x86_64-170904.tar.bz2
 https://github.com/vrana/adminer/releases/download/v4.8.1/adminer-4.8.1.php
 https://packagecontrol.io/Package%20Control.sublime-package
@@ -33,14 +33,14 @@ https://github.com/ventoy/Ventoy/releases/download/v1.0.96/ventoy-1.0.96-linux.t
 #http://ftp.de.debian.org/debian/pool/main/a/alarm-clock-applet/alarm-clock-applet_0.3.4-1+b1_amd64.deb
 https://github.com/dungeon-revealer/dungeon-revealer/releases/download/v1.17.1/dungeon-revealer-linux-x64-v1.17.1.zip
 https://github.com/derat/soundalike/releases/download/v0.1/soundalike-0.1-linux-amd64.tar.gz
-https://github.com/upscayl/upscayl/releases/download/v2.8.5/upscayl-2.8.5-linux.AppImage
+https://github.com/upscayl/upscayl/releases/download/v2.9.0/upscayl-2.9.0-linux.AppImage
 https://github.com/0x90d/videoduplicatefinder/releases/download/3.0.x/App-linux-x64.tar.gz
 https://github.com/mikf/gallery-dl/releases/download/v1.26.0/gallery-dl.bin
 https://github.com/mikf/gallery-dl/releases/download/v1.26.0/gallery-dl.bin.sig
 https://github.com/snes9xgit/snes9x/releases/download/1.62.3/Snes9x-1.62.3-x86_64.AppImage
 https://github.com/anthonyraymond/joal/releases/download/2.1.33/joal.tar.gz
 https://github.com/sigoden/aichat/releases/download/v0.8.0/aichat-v0.8.0-x86_64-unknown-linux-musl.tar.gz
-https://github.com/aquasecurity/trivy/releases/download/v0.45.1/trivy_0.45.1_Linux-64bit.tar.gz
+https://github.com/aquasecurity/trivy/releases/download/v0.46.0/trivy_0.46.0_Linux-64bit.tar.gz
 #https://apt.metasploit.com/pool/main/m/metasploit-framework/metasploit-framework_6.3.25%2B20230708102721~1rapid7-1_amd64.deb
 https://gitea.com/gitea/tea/releases/download/v0.9.2/tea-0.9.2-linux-amd64
 https://gitea.com/gitea/tea/releases/download/v0.9.2/tea-0.9.2-linux-amd64.asc
