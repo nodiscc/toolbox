@@ -2,11 +2,11 @@
   apt:
     state: present
     package:
-      - "php{{ php_fpm_version }}-xml"
-      - "php{{ php_fpm_version }}-mbstring"
-      - "php{{ php_fpm_version }}-curl"
-      - "{{ php_json_package }}"
-      - "php{{ php_fpm_version }}-sqlite3"
+      - "php{{ rss_bridge_php_fpm_version }}-xml"
+      - "php{{ rss_bridge_php_fpm_version }}-mbstring"
+      - "php{{ rss_bridge_php_fpm_version }}-curl"
+      - "{{ rss_bridge_php_json_package }}"
+      - "php{{ rss_bridge_php_fpm_version }}-sqlite3"
 
 ### GET/SET FACTS ###
 

@@ -13,7 +13,7 @@
 - name: copy php-fpm configuration
   template:
     src: etc_php_PHPVERSION_fpm_pool.d_rss-bridge.conf.j2
-    dest: /etc/php/{{ php_fpm_version }}/fpm/pool.d/rss-bridge.conf
+    dest: /etc/php/{{ rss_bridge_php_fpm_version }}/fpm/pool.d/rss-bridge.conf
     mode: "0644"
   notify: restart php-fpm
 

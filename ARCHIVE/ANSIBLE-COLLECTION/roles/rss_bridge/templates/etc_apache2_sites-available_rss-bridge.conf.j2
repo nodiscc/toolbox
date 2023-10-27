@@ -25,7 +25,7 @@ MDomain {{ rss_bridge_fqdn }}
 {% endif %}
 
   <FilesMatch \.php$>
-    SetHandler "proxy:unix:/run/php/php7.4-fpm-rss-bridge.sock|fcgi://localhost"
+    SetHandler "proxy:unix:/run/php/php{{ rss_bridge_php_fpm_version }}-fpm-rss-bridge.sock|fcgi://localhost"
   </FilesMatch>
 
   <FilesMatch ".+\.(?!(jpg|php|png|css|js|jpeg|ico)$)[^\.]+?$">

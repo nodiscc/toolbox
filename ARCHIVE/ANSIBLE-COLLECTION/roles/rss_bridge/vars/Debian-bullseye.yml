@@ -1,2 +1,2 @@
-php_fpm_version: "7.4"
-php_json_package: "php7.4-json"
+rss_bridge_php_fpm_version: "7.4"
+rss_bridge_php_json_package: "php7.4-json"
