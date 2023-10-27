@@ -20,6 +20,8 @@ git bypass ssl certificate verification `git -c http.sslVerify=false clone https
 
 ip address/interfaces in readable format `ip -br a`
 
+postgresql list users `\du`
+
 python 3 http server `python3 -m http.server`
 
 iptables trace packets: `iptables -A ..... -j TRACE; tail -f /var/log/kern.log | grep 'TRACE:'`
@@ -148,6 +150,7 @@ Ansible check if shell command changed a file: `stat: path=... get_md5=yes; regi
 
 ansible exclude host from playbook run `ansible-playbook --limit '!hoost1:!host2' yourPlaybook.yml`
 
+ansible libvirt inventory plugin `echo -e 'plugin: community.libvirt.libvirt\nuri: "qemu:///system"' > kvm.yml; sudo apt install pkg-config libvirt-dev; ansible-inventory --list --inventory kvm.yml`
 
 >DECOMPOSE. THE. PROBLEM.
 
