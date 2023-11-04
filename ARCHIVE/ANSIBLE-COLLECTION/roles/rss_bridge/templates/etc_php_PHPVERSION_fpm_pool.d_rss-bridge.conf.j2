@@ -1,7 +1,7 @@
 [rss-bridge]
 user = www-data
 group = www-data
-listen = /run/php/php7.4-fpm-rss-bridge.sock
+listen = /run/php/php{{ rss_bridge_php_fpm_version }}-fpm-rss-bridge.sock
 listen.owner = www-data
 listen.group = www-data
 listen.allowed_clients = 127.0.0.1
