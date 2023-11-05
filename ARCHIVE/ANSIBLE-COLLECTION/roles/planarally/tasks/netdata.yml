@@ -1,0 +1,9 @@
+- name: install netdata checks for planarally
+  template:
+    src: etc_netdata_go.d_httpcheck.conf.d_planarally.conf.j2
+    dest: /etc/netdata/go.d/httpcheck.conf.d/planarally.conf
+    owner: root
+    group: netdata
+    mode: "0640"
+  notify: assemble netdata configuration
+  ignore_errors: "{{ ansible_check_mode }}"

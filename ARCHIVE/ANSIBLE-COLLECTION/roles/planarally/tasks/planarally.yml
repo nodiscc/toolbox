@@ -1,0 +1,113 @@
+### REQUIREMENTS ###
+
+- name: install requirements for python virtualenv
+  apt:
+    package:
+      - python3-venv
+      - python3-pip
+    state: present
+
+
+### USER ###
+
+- name: create planarally user
+  user:
+    name: planarally
+    state: present
+    home: /var/lib/planarally
+    create_home: no
+
+### DOWNLOAD/INSTALLATION ###
+
+- name: download planarally zip
+  get_url:
+    url: "https://github.com/Kruptein/PlanarAlly/releases/download/{{ planarally_version }}/planarally-bin-{{ planarally_version }}.zip"
+    dest: "/root/planarally-bin-{{ planarally_version }}.zip"
+    owner: planarally
+    group: planarally
+    mode: "0640"
+
+- name: create planarally directories
+  file:
+    state: directory
+    path: "{{ item.path }}"
+    owner: "{{ item.owner }}"
+    group: "{{ item.group }}"
+    mode: "{{ item.mode }}"
+  ignore_errors: "{{ ansible_check_mode }}"
+  with_items:
+    - path: /usr/lib/planarally
+      owner: planarally
+      group: planarally
+      mode: "0775"
+    - path: /var/lib/planarally
+      owner: planarally
+      group: planarally
+      mode: "0770"
+    - path: /usr/lib/planarally/server/static/assets
+      owner: planarally
+      group: planarally
+      mode: "0770"
+    - path: /usr/lib/planarally/server/static/temp
+      owner: planarally
+      group: planarally
+      mode: "0770"
+    - path: "/root/planarally-{{ planarally_version }}-unpack"
+      owner: planarally
+      group: planarally
+      mode: "0775"
+
+- name: extract planarally zip
+  unarchive:
+    src: "/root/planarally-bin-{{ planarally_version }}.zip"
+    dest: "/root/planarally-{{ planarally_version }}-unpack/"
+    remote_src: yes
+    owner: planarally
+    group: planarally
+    mode: "u=rwX,g=rwX,o=rX"
+  no_log: True
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: copy planarally extraction directory to install directory
+  copy: 
+    remote_src: yes
+    src: "/root/planarally-{{ planarally_version }}-unpack/server"
+    dest: "/usr/lib/planarally"
+    owner: planarally
+    group: planarally
+    mode: "u=rwX,g=rwX,o=rX"
+    directory_mode: "u=rwX,g=rwX,o=rX"
+  changed_when: yes
+
+- name: install planarally dependencies in virtualenv
+  become: yes
+  become_user: planarally
+  pip:
+    requirements: "/usr/lib/planarally/server/requirements.txt"
+    virtualenv: "/var/lib/planarally/.venv"
+    virtualenv_command: python3 -m venv
+    extra_args: --force
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: copy planarally configuration file
+  template:
+    src: "etc_planarally_server_config.cfg.j2"
+    dest: "/usr/lib/planarally/server/server_config.cfg"
+    owner: planarally
+    group: planarally
+    mode: "0660"
+  notify: restart planarally
+
+- name: install planarally systemd service/unit file
+  template:
+    src: "etc_systemd_system_planarally.service.j2"
+    dest: "/etc/systemd/system/planarally.service"
+    mode: "0664"
+  notify:
+    - reload systemd unit files
+    - restart planarally
+
+# re-read systemd service configuration
+- name: apply configuration (flush handlers)
+  meta: flush_handlers
+

@@ -1,0 +1,43 @@
+[Unit]
+Description=PlanarAlly virtual tabletop
+After=network.target
+StartLimitIntervalSec=10s
+StartLimitBurst=4
+
+[Service]
+User=planarally
+Group=planarally
+Type=simple
+WorkingDirectory=/var/lib/planarally/
+#Environment=
+ExecStart=/var/lib/planarally/.venv/bin/python /usr/lib/planarally/server/planarally.py
+Restart=always
+RestartSec=2s
+# Hardening directives
+CapabilityBoundingSet=
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+NoNewPrivileges=yes
+PrivateDevices=yes
+PrivateMounts=yes
+PrivateTmp=yes
+PrivateUsers=yes
+ProtectClock=yes
+ProtectControlGroups=yes
+ProtectHome=yes
+ProtectKernelLogs=yes
+ProtectKernelModules=yes
+ProtectKernelTunables=yes
+ProtectProc=invisible
+ProtectSystem=strict
+ReadWritePaths=/var/lib/planarally/ /usr/lib/planarally/server/
+ReadOnlyPaths=/var/lib/planarally/.venv/
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+SystemCallArchitectures=native
+SystemCallErrorNumber=EPERM
+SystemCallFilter=@system-service
+
+[Install]
+WantedBy=multi-user.target
