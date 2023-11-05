@@ -7,7 +7,6 @@
       - python3-pip
     state: present
 
-
 ### USER ###
 
 - name: create planarally user
@@ -69,7 +68,7 @@
   ignore_errors: "{{ ansible_check_mode }}"
 
 - name: copy planarally extraction directory to install directory
-  copy: 
+  copy:
     remote_src: yes
     src: "/root/planarally-{{ planarally_version }}-unpack/server"
     dest: "/usr/lib/planarally"
@@ -110,4 +109,3 @@
 # re-read systemd service configuration
 - name: apply configuration (flush handlers)
   meta: flush_handlers
-
