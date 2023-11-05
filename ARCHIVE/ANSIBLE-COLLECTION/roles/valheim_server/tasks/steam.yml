@@ -57,6 +57,7 @@
 # Note: on the first attempt at running this role login will fail with "FAILED login with result code Invalid Login Auth Code"
 # Set steamcmd_guard_code to the guard code received by mail and run the role again
 - name: login to steam without guard code (trigger sending guard code to e-mail)
+  become: yes
   become_user: steam
   command: >
     /usr/games/steamcmd +login {{ steamcmd_username }} {{ steamcmd_password }}
@@ -70,6 +71,7 @@
     - "'Logged in OK' not in steamcmd_login.stdout"
 
 - name: login to steam with guard code (if this fails set steamcmd_guard_code to code received by mail)
+  become: yes
   become_user: steam
   command: >
     /usr/games/steamcmd

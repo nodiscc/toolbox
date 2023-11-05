@@ -1,5 +1,6 @@
 # https://valheim.fandom.com/wiki/Valheim_Dedicated_Server
 - name: install/update valheim server - this can take a while
+  become: yes
   become_user: steam
   command: >
     /usr/games/steamcmd
