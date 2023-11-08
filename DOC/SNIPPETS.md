@@ -440,6 +440,8 @@ DDOS mitigation: Set `net.netfilter.nf_conntrack_max` to a lower value.
 
 DDOS mitigation nullroute sources: `ip route add blackhole 172.16.1.0/24; ip route show` (this harms network performance if you have a large routing table, but less than iptables `DROP` rules)
 
+DDOS mitigation apache directives `RequestReadTimeout, TimeOut, KeepAliveTimeout, LimitRequestBody, LimitRequestFields, LimitRequestFieldSize, LimitRequestLine, LimitXMLRequestBody, MaxRequestWorkers`
+
 bash herestring `while read x; do cmd "$x"; done <<< "string"`
 
 bash herestring `read IFS=: read h m s <<< "12:13:00"`
@@ -1196,7 +1198,7 @@ TCP handshake: A SYN, B SYN-ACK, A ACK, ESTABLISHED
 
 SYN flood/spoofing attack detection: `netstat -n -p TCP` : connections in SYN_RECV state. Or look in TCP statisctics for `tcpHalfOpenDrop` connection (`netstat -s -p TCP | grep tcpHalfOpenDrop`). Protection: turn on syn cookies, or increase TCP backlog queue (`net.ipv4.tcp_max_syn_backlog`), or decrease number of SYN-ACK reply attempts (`tcp_synack_retries`) <https://www.symantec.com/connect/articles/hardening-tcpip-stack-syn-attacks>
 
-
+find all files hardlinked to a file `find . -samefile /path/to/file`
 
 docker run command in container `docker run -i -t --entrypoint /bin/bash 95158d7abcde #image ID`
 
