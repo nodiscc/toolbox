@@ -1076,6 +1076,8 @@ locate files not owned by any user/group: `find / -path /proc -prune -o -nouser 
 
 extract public key from private `openssl rsa -in $1 -pubout`
 
+Would you like to hear an OpenSSL joke? It's 64k letters long and you can repeat it back to me when I'm done.  It's "A".
+
 not fun man `echo "echo sleep 0.1 >>~/.bashrc" >> ~/.bashrc`
 
 not fun man `{ crontab -l; echo "@hourly eject; eject -t; }" | crontab`
