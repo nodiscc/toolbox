@@ -1,0 +1,4 @@
+#!/bin/bash
+set -o errexit
+set -o nounset
+curl -s -I "https://web.archive.org/save/$1" | egrep '^location:' | awk '{ print $2 }'; 
