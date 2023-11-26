@@ -1,0 +1,584 @@
+From fac8bbc4914669ff8cec8564a52f9493dc53d06f Mon Sep 17 00:00:00 2001
+From: nodiscc <nodiscc@gmail.com>
+Date: Wed, 12 Apr 2023 14:50:54 +0200
+Subject: [PATCH] add matrix-appservice-irc (Matrix-IRC bridge) - run it from a
+ rootless podman container (user matrix-appservice-irc) - register the bridge
+ against the locally running synapse instance, insert configuration in synapse
+ conf.d/ directory - generate a systemd unit file
+
+---
+ host_vars/demo1.xinit.se/demo1.xinit.se.yml   |   1 +
+ roles/matrix-appservice-irc/defaults/main.yml |   2 +
+ roles/matrix-appservice-irc/handlers/main.yml |  24 +++
+ roles/matrix-appservice-irc/meta/main.yml     |  20 ++
+ roles/matrix-appservice-irc/tasks/checks.yml  |   8 +
+ roles/matrix-appservice-irc/tasks/main.yml    |  19 ++
+ .../tasks/matrix-appservice-irc.yml           | 168 ++++++++++++++++
+ .../utils-matrix-appservice-irc-uninstall.yml |  61 ++++++
+ .../etc_matrix-appservice-irc_config.yaml.j2  | 182 ++++++++++++++++++
+ ...matrix-synapse_conf.d_app_services.yaml.j2 |   1 +
+ 10 files changed, 486 insertions(+)
+ create mode 100644 roles/matrix-appservice-irc/defaults/main.yml
+ create mode 100644 roles/matrix-appservice-irc/handlers/main.yml
+ create mode 100644 roles/matrix-appservice-irc/meta/main.yml
+ create mode 100644 roles/matrix-appservice-irc/tasks/checks.yml
+ create mode 100644 roles/matrix-appservice-irc/tasks/main.yml
+ create mode 100644 roles/matrix-appservice-irc/tasks/matrix-appservice-irc.yml
+ create mode 100644 roles/matrix-appservice-irc/tasks/utils-matrix-appservice-irc-uninstall.yml
+ create mode 100644 roles/matrix-appservice-irc/templates/etc_matrix-appservice-irc_config.yaml.j2
+ create mode 100644 roles/matrix-appservice-irc/templates/etc_matrix-synapse_conf.d_app_services.yaml.j2
+
+diff --git a/host_vars/demo1.xinit.se/demo1.xinit.se.yml b/host_vars/demo1.xinit.se/demo1.xinit.se.yml
+index d7090b2d..d8676c3a 100644
+--- a/host_vars/demo1.xinit.se/demo1.xinit.se.yml
++++ b/host_vars/demo1.xinit.se/demo1.xinit.se.yml
+@@ -173,6 +173,7 @@ matrix_synapse_ldap: yes
+ matrix_synapse_base_dn: "ou=users,dc=xinit,dc=se"
+ matrix_synapse_ldap_bind_dn: "cn=bind,ou=system,dc=xinit,dc=se"
+ matrix_synapse_ldap_validate_certs: no
++matrix_appservice_irc_db_password: vuv34iDn1GU65igM6cNN # TEMP
+ 
+ ##### AWESOME_SELFHOSTED_HTML
+ awesome_selfhosted_html_fqdn: "awesome-selfhosted.xinit.se"
+diff --git a/roles/matrix-appservice-irc/defaults/main.yml b/roles/matrix-appservice-irc/defaults/main.yml
+new file mode 100644
+index 00000000..39ed9e7c
+--- /dev/null
++++ b/roles/matrix-appservice-irc/defaults/main.yml
+@@ -0,0 +1,2 @@
++matrix_appservice_irc_db_password: "CHANGEME"
++matrix_appservice_irc_version: "release-1.0.1"
+diff --git a/roles/matrix-appservice-irc/handlers/main.yml b/roles/matrix-appservice-irc/handlers/main.yml
+new file mode 100644
+index 00000000..ccfddbf9
+--- /dev/null
++++ b/roles/matrix-appservice-irc/handlers/main.yml
+@@ -0,0 +1,24 @@
++- name: generate matrix-appservice-irc registration file
++  become: yes
++  become_user: matrix-appservice-irc
++  containers.podman.podman_container:
++    name: matrix-appservice-irc-registration
++    image: docker.io/matrixdotorg/matrix-appservice-irc:{{ matrix_appservice_irc_version }}
++    network: host
++    cap_drop: ALL
++    rm: yes
++    detach: no
++    volumes:
++      - "/etc/matrix-appservice-irc:/config"
++      - "/var/lib/matrix-appservice-irc:/data"
++    entrypoint: node
++    command: "app.js --generate-registration --file /config/appservice-registration-irc.yaml --url http://localhost:8090 --config /config/config.yaml --localpart appservice-irc"
++  ignore_errors: "{{ ansible_check_mode }}"
++
++- name: restart synapse
++  become: yes
++  service:
++    name: matrix-synapse
++    state: restarted
++    enabled: yes
++  ignore_errors: "{{ ansible_check_mode }}"
+diff --git a/roles/matrix-appservice-irc/meta/main.yml b/roles/matrix-appservice-irc/meta/main.yml
+new file mode 100644
+index 00000000..0f6408eb
+--- /dev/null
++++ b/roles/matrix-appservice-irc/meta/main.yml
+@@ -0,0 +1,20 @@
++# @tag matrix-appservice-irc - setup matrix IRC bridge
++# @tag matrix-synapse-admin - setup matrix/synapse server administration web interface
++
++galaxy_info:
++  role_name: matrix-appservice-irc
++  author: "nodiscc <nodiscc@gmail.com>"
++  description: "Matrix IRC bridge"
++  license: "GPL-3.0"
++  min_ansible_version: "2.12"
++  platforms:
++    - name: Debian
++      versions:
++        - "12"
++  galaxy_tags:
++    - irc
++dependencies:
++  - nodiscc.xsrv.handlers
++  # - nodiscc.xsrv.common # optional
++  # - nodiscc.xsrv.monitoring # optional
++  # - nodiscc.xsrv.apache # required in the standard configuration
+diff --git a/roles/matrix-appservice-irc/tasks/checks.yml b/roles/matrix-appservice-irc/tasks/checks.yml
+new file mode 100644
+index 00000000..c4bf788d
+--- /dev/null
++++ b/roles/matrix-appservice-irc/tasks/checks.yml
+@@ -0,0 +1,8 @@
++- name: check that mandatory variables are correctly defined
++  assert:
++    quiet: yes
++    that: "{{ item }}"
++    fail_msg: "One or more variables are not correctly defined. Check role documentation: https://gitlab.com/nodiscc/xsrv/-/tree/master/roles/matrix"
++  with_items:
++    - matrix_appservice_irc_db_password is not search("CHANGEME")
++    - matrix_appservice_irc_version is string
+diff --git a/roles/matrix-appservice-irc/tasks/main.yml b/roles/matrix-appservice-irc/tasks/main.yml
+new file mode 100644
+index 00000000..1a473e88
+--- /dev/null
++++ b/roles/matrix-appservice-irc/tasks/main.yml
+@@ -0,0 +1,19 @@
++- name: include variable checks tasks
++  import_tasks: checks.yml
++  tags:
++    - matrix-appservice-irc
++    - matrix-synapse-admin
++    - checks
++
++- name: include matrix-appservice-irc setup tasks
++  import_tasks: matrix-appservice-irc.yml
++  tags: matrix-appservice-irc
++
++##### UTILITIES ####
++# These tasks are tagged 'never' and will never run unless one of their tags is explicitly passed on the command line
++- name: include docker uninstallation tasks
++  import_tasks: utils-matrix-appservice-irc-uninstall.yml
++  become: yes
++  tags:
++    - never
++    - utils-matrix-appservice-irc-uninstall
+diff --git a/roles/matrix-appservice-irc/tasks/matrix-appservice-irc.yml b/roles/matrix-appservice-irc/tasks/matrix-appservice-irc.yml
+new file mode 100644
+index 00000000..4c69ccc5
+--- /dev/null
++++ b/roles/matrix-appservice-irc/tasks/matrix-appservice-irc.yml
+@@ -0,0 +1,168 @@
++# TODO enable session lingering
++
++##### USER #####
++
++- name: create matrix-appservice-irc user
++  become: yes
++  user:
++    name: matrix-appservice-irc
++    state: present
++    home: /var/lib/matrix-appservice-irc
++    create_home: no
++
++- name: check if systemd/logind session lingering is enabled
++  stat:
++    path: "/var/lib/systemd/linger/matrix-appservice-irc"
++  register: linger_file
++
++- name: enable systemd/logind session lingering
++  become: yes
++  command:
++    cmd: loginctl enable-linger matrix-appservice-irc
++  when: not linger_file.stat.exists
++
++##### DATABASE #####
++
++- name: install packages for postgresql support
++  become: yes
++  apt:
++    state: present
++    package:
++      - python3-psycopg2
++      - acl # required to use 'become' unprivileged user
++
++- name: create matrix-appservice-irc postgresql user
++  become: yes
++  become_user: postgres
++  postgresql_user:
++    name: "matrix-appservice-irc"
++    state: present
++    no_password_changes: yes
++  ignore_errors: "{{ ansible_check_mode }}"
++
++- name: set nexctloud postgresql user password
++  become: yes
++  become_user: postgres
++  postgresql_user:
++    name: "matrix-appservice-irc"
++    password: "{{ matrix_appservice_irc_db_password }}"
++  when: matrix_appservice_irc_db_password is defined
++  no_log: True
++  ignore_errors: "{{ ansible_check_mode }}"
++
++- name: create matrix-appservice-irc postgresql database
++  become: yes
++  become_user: postgres
++  postgresql_db:
++    name: "matrix-appservice-irc"
++    state: present
++    encoding: 'UNICODE'
++    owner: 'matrix-appservice-irc'
++  ignore_errors: "{{ ansible_check_mode }}"
++
++- name: grant privileges on matrix-appservice-irc database to matrix-appservice-irc postgresql user
++  become: yes
++  become_user: postgres
++  postgresql_privs:
++    db: "matrix-appservice-irc"
++    privs: ALL
++    type: database
++    role: "matrix-appservice-irc"
++  ignore_errors: "{{ ansible_check_mode }}"
++
++##### INSTALLATION #####
++
++- name: create matrix-appservice-irc directories
++  become: yes
++  file:
++    path: "{{ item }}"
++    state: directory
++    owner: matrix-appservice-irc
++    group: matrix-synapse
++    mode: 0750
++  with_items:
++    - /etc/matrix-appservice-irc
++    - /var/lib/matrix-appservice-irc
++
++- name: generate matrix-appservice-irc passkey
++  become: yes
++  become_user: "matrix-appservice-irc"
++  command:
++    cmd: "openssl genpkey -out /var/lib/matrix-appservice-irc/passkey.pem -outform PEM -algorithm RSA -pkeyopt rsa_keygen_bits:2048"
++    creates: "/var/lib/matrix-appservice-irc/passkey.pem"
++  ignore_errors: "{{ ansible_check_mode }}"
++
++- name: pull matrix-appservice-irc podman image
++  become: yes
++  become_user: matrix-appservice-irc
++  containers.podman.podman_image:
++    name: "docker.io/matrixdotorg/matrix-appservice-irc:{{ matrix_appservice_irc_version }}"
++  ignore_errors: "{{ ansible_check_mode }}"
++
++- name: copy matrix-appservice-irc configuration
++  become: yes
++  template:
++    src: etc_matrix-appservice-irc_config.yaml.j2
++    dest: /etc/matrix-appservice-irc/config.yaml
++    owner: matrix-appservice-irc
++    group: matrix-appservice-irc
++    mode: 0600
++  no_log: yes
++  ignore_errors: "{{ ansible_check_mode }}"
++  notify: generate matrix-appservice-irc registration file
++
++- name: apply configuration (flush handlers)
++  meta: flush_handlers
++
++- name: configure synapse app_service_config_files
++  become: yes
++  template:
++    src: etc_matrix-synapse_conf.d_app_services.yaml.j2
++    dest: /etc/matrix-synapse/conf.d/app_services.yaml
++    owner: root
++    group: root
++    mode: "0644"
++  notify: restart synapse
++
++- name: apply configuration (flush handlers)
++  meta: flush_handlers
++
++- name: run matrix-appservice-irc container
++  become: yes
++  become_user: matrix-appservice-irc
++  containers.podman.podman_container:
++    name: matrix-appservice-irc
++    image: "docker.io/matrixdotorg/matrix-appservice-irc:{{ matrix_appservice_irc_version }}"
++    network: host
++    rm: yes
++    volumes:
++      - "/etc/matrix-appservice-irc:/config"
++      - "/var/lib/matrix-appservice-irc:/data"
++    entrypoint: node
++    command: "app.js --config /config/config.yaml --file /config/appservice-registration-irc.yaml --publish 127.0.0.1:8090"
++  tags: matrix-appservice-irc-run
++
++- name: generate systemd unit file for matrix-appservice-irc container
++  become: yes
++  become_user: matrix-appservice-irc
++  containers.podman.podman_generate_systemd:
++    name: matrix-appservice-irc
++    use_names: yes
++    new: yes
++    dest: ~/.config/systemd/user
++  notify: reload systemd unit files
++  ignore_errors: "{{ ansible_check_mode }}"
++
++- name: apply configuration (flush handlers)
++  meta: flush_handlers
++
++# use sudo systemctl --user --machine matrix-appservice-irc@ list-units to list another user's services
++- name: enable matrix-appservice-irc service
++  become: yes
++  become_user: matrix-appservice-irc
++  systemd:
++    name: container-matrix-appservice-irc.service
++    scope: user
++    state: started
++    enabled: yes
++  ignore_errors: "{{ ansible_check_mode }}"
+diff --git a/roles/matrix-appservice-irc/tasks/utils-matrix-appservice-irc-uninstall.yml b/roles/matrix-appservice-irc/tasks/utils-matrix-appservice-irc-uninstall.yml
+new file mode 100644
+index 00000000..cb65fd47
+--- /dev/null
++++ b/roles/matrix-appservice-irc/tasks/utils-matrix-appservice-irc-uninstall.yml
+@@ -0,0 +1,61 @@
++- name: disable systemd/logind session lingering
++  become: yes
++  command:
++    cmd: loginctl disable-linger matrix-appservice-irc
++  register: loginctl_disable_linger
++  failed_when: loginctl_disable_linger.rc != 0 and 'Failed to look up user matrix-appservice-irc' not in loginctl_disable_linger.stderr
++
++# - name: stop matrix-appservice-irc container
++#   become: yes
++#   become_user: matrix-appservice-irc 
++#   containers.podman.podman_container:
++#     name: matrix-appservice-irc
++#     state: absent
++
++- name: stop matrix-appservice-irc service
++  become: yes
++  become_user: matrix-appservice-irc
++  systemd:
++    name: "{{ item }}"
++    scope: user
++    state: stopped
++    enabled: no
++  ignore_errors: yes
++  with_items:
++    - podman.service
++    - podman.socket
++    - container-matrix-appservice-irc.service
++    - dbus.service
++
++- name: remove matrix-appservice-irc user
++  user:
++    name: matrix-appservice-irc
++    state: absent
++    remove: yes
++
++- name: remove matrix-appservice-irc postgresql database
++  become: yes
++  become_user: postgres
++  postgresql_db:
++    name: "matrix-appservice-irc"
++    state: absent
++
++
++- name: remove matrix-appservice-irc postgresql user
++  become: yes
++  become_user: postgres
++  postgresql_user:
++    name: "matrix-appservice-irc"
++    state: absent
++
++- name: remove matrix-appservice-irc data and configuration
++  file:
++    state: absent
++    path: "{{ item }}"
++  with_items:
++    - /var/lib/matrix-appservice-irc
++    - /etc/matrix-appservice-irc
++    - /var/lib/systemd/linger/matrix-appservice-irc
++    - /etc/matrix-synapse/conf.d/app_services.yaml
++  notify: restart synapse
++  diff: no
+diff --git a/roles/matrix-appservice-irc/templates/etc_matrix-appservice-irc_config.yaml.j2 b/roles/matrix-appservice-irc/templates/etc_matrix-appservice-irc_config.yaml.j2
+new file mode 100644
+index 00000000..4149e8b3
+--- /dev/null
++++ b/roles/matrix-appservice-irc/templates/etc_matrix-appservice-irc_config.yaml.j2
+@@ -0,0 +1,182 @@
++
++homeserver:
++  url: "http://127.0.0.1:8008"
++  # media_url: "http://media.repo:8008"
++  # dropMatrixMessagesAfterSecs: 300 # 5 minutes
++  domain: "{{ matrix_synapse_fqdn }}"
++  enablePresence: false
++  # bindPort: 8090
++  # bindHostname: 127.0.0.1
++
++ircService:
++  servers:
++    irc.libera.chat:
++      name: "LiberaChat"
++      onlyAdditionalAddresses: false
++      # networkId: "LiberaChat"
++      # icon: mxc://matrix.org/LpsSLrbANVrEIEOgEaVteItf
++      port: 6697
++      ssl: true
++      sslselfsign: false
++      sasl: false
++      allowExpiredCerts: false
++      # tlsOptions:
++      sendConnectionMessages: true
++      quitDebounce:
++        delayMinMs: 3600000 # 1h
++        delayMaxMs: 7200000 # 2h
++      modePowerMap:
++        o: 50
++        v: 1
++      botConfig:
++        enabled: true
++        nick: "MatrixBot"
++        username: "matrixbot"
++        # password: "helloworld"
++        joinChannelsIfNoUsers: true
++      privateMessages:
++        enabled: true
++        federate: false
++      dynamicChannels:
++        enabled: true
++        createAlias: true
++        published: true
++        useHomeserverDirectory: false
++        joinRule: public
++        groupId: +$SERVER:localhost
++        federate: false
++        aliasTemplate: "#irc_$SERVER_$CHANNEL"
++      membershipLists:
++        floodDelayMs: 10000
++        global:
++          ircToMatrix:
++            initial: false
++            incremental: false
++            requireMatrixJoined: false
++          matrixToIrc:
++            initial: false
++            incremental: false
++        rooms: []
++        channels: []
++        ignoreIdleUsersOnStartup:
++          enabled: true
++          idleForHours: 720
++      # mappings:
++      matrixClients:
++        userTemplate: "@irc_$SERVER_$NICK"
++        displayName: "$NICK"
++        joinAttempts: -1
++      ircClients:
++        nickTemplate: "$DISPLAY[m]"
++        allowNickChanges: true
++        maxClients: 30
++        ipv6:
++          only: false
++          # prefix: "2001:0db8:85a3::"  # modify appropriately
++          blocks: []
++        idleTimeout: 10800
++        reconnectIntervalMs: 5000
++        concurrentReconnectLimit: 50
++        lineLimit: 3
++        # userModes: "R"
++        realnameFormat: "mxid"
++        # pingTimeoutMs: 600000
++        # pingRateMs: 60000
++        kickOn:
++          channelJoinFailure: true
++          ircConnectionFailure: true
++          userQuit: true
++  bridgeInfoState:
++    enabled: false
++    initial: false
++  ident:
++    enabled: false
++    port: 1113
++    address: "::"
++  # encodingFallback: "ISO-8859-15"
++  logging:
++    level: "debug"
++    logfile: "debug.log"
++    errfile: "errors.log"
++    toConsole: true
++    maxFiles: 5
++  metrics:
++    enabled: false
++    port: 7001
++    host: 127.0.0.1
++    userActivityThresholdHours: 72 # 3 days
++    remoteUserAgeBuckets:
++      - "1h"
++      - "1d"
++      - "1w"
++  debugApi:
++    enabled: false
++    port: 11100
++  provisioning:
++    enabled: true
++    widget: true
++    # secret: $generateMe
++    requestTimeoutSeconds: 300
++    rules:
++      userIds:
++        exempt: []
++        conflict: []
++    roomLimit: 50
++    # apiPrefix: "/_matrix/provision"
++    # ratelimit: true
++    http:
++      port: 7700
++    # openIdDisallowedIpRanges:
++    #  - '127.0.0.0/8'
++    #  - '10.0.0.0/8'
++    #  - '172.16.0.0/12'
++    #  - '192.168.0.0/16'
++    #  - '100.64.0.0/10'
++    #  - '192.0.0.0/24'
++    #  - '169.254.0.0/16'
++    #  - '192.88.99.0/24'
++    #  - '198.18.0.0/15'
++    #  - '192.0.2.0/24'
++    #  - '198.51.100.0/24'
++    #  - '203.0.113.0/24'
++    #  - '224.0.0.0/4'
++    #  - '::1/128'
++    #  - 'fe80::/10'
++    #  - 'fc00::/7'
++    #  - '2001:db8::/32'
++    #  - 'ff00::/8'
++    #  - 'fec0::/10'
++  passwordEncryptionKeyPath: "/data/passkey.pem"
++  matrixHandler:
++    eventCacheSize: 4096
++    shortReplyTemplate: "$NICK: $REPLY"
++    longReplyTemplate: "<$NICK> \"$ORIGINAL\" <- $REPLY"
++    shortReplyTresholdSeconds: 300
++  # RMAUlimit: 100
++  # userActivity:
++    # minUserActiveDays: 1
++    # inactiveAfterDays: 30
++  ircHandler:
++    mapIrcMentionsToMatrix: "on"
++    # powerLevelGracePeriod: 1000
++  # permissions:
++  # '*': admin
++  # 'matrix.org': admin
++  # '@fibble:matrix.org': admin
++  perRoomConfig:
++    enabled: false
++    # lineLimitMax: 5
++    # allowUnconnectedMatrixUsers: true
++  banLists:
++    rooms: []
++advanced:
++  maxHttpSockets: 1000
++  maxTxnSize: 10000000
++sentry:
++  enabled: false
++  dsn: "https://<key>@sentry.io/<project>"
++  # environment: ""
++  # serverName: ""
++database:
++  engine: "postgres"
++  connectionString: "postgres://matrix-appservice-irc:{{ matrix_appservice_irc_db_password }}@127.0.0.1:5432/matrix-appservice-irc"
+diff --git a/roles/matrix-appservice-irc/templates/etc_matrix-synapse_conf.d_app_services.yaml.j2 b/roles/matrix-appservice-irc/templates/etc_matrix-synapse_conf.d_app_services.yaml.j2
+new file mode 100644
+index 00000000..a72f852d
+--- /dev/null
++++ b/roles/matrix-appservice-irc/templates/etc_matrix-synapse_conf.d_app_services.yaml.j2
+@@ -0,0 +1 @@
++app_service_config_files: ['/etc/matrix-appservice-irc/appservice-registration-irc.yaml']
+-- 
+2.39.2
+
