@@ -171,16 +171,14 @@ https://www.cyberciti.biz/faq/how-to-test-the-network-speedthroughput-between-tw
 
 split files into individual words `fmt -1 < words.txt`
 
+audacity split track or selection in half/quarter... `Tools > Regular Interval Labels`
 
-Youtube channel RSS Feed: `https://www.youtube.com/feeds/videos.xml?channel_id=$channel_external_id`
-
-
-tmux Command mode: `Ctrl+b`
-tmux `%` séparer la fenêtre en deux gauche et droite
-tmux `"` séparer la fenêtre en deux haut et bas
-tmux  flèche droite, gauche` etc : changer de pane.
-tmux `d` détacher la session (comme screen)
-tmux attach se rattacher à une session tmux existante
+tmux command mode: `Ctrl+b`
+tmux split window in 2 vertical panes `%`
+tmux split window in 2 horizontal panes `"`
+tmux change pane `left arrow, right arrow`
+tmux detach session `d`
+tmux attach existing session `tmux attach $SESSION`
 
 Virtualbox exit scale mode `Host key + C`
 
