@@ -23,7 +23,8 @@
     mode: "0644"
   notify: apply sysctl configuration
 
-- meta: flush_handlers
+- name: apply configuration (flush handlers)
+  meta: flush_handlers
 
 - name: setup firewalld rules for k8s
   ansible.posix.firewalld:
@@ -33,7 +34,8 @@
     permanent: yes
     immediate: yes
 
-- meta: flush_handlers
+- name: apply configuration (flush handlers)
+  meta: flush_handlers
 
 - name: install required packages
   apt:
@@ -49,4 +51,5 @@
     mode: "0644"
   notify: restart containerd
 
-- meta: flush_handlers
+- name: apply configuration (flush handlers)
+  meta: flush_handlers

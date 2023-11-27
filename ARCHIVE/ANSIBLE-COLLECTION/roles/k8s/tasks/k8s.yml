@@ -16,7 +16,8 @@
     mode: "0644"
   notify: update apt cache
 
-- meta: flush_handlers
+- name: apply configuration (flush handlers)
+  meta: flush_handlers
 
 - name: install k8s packages
   apt:
@@ -28,16 +29,17 @@
 
 - name: remove swap space from fstab
   mount:
-   path: none
-   fstype: swap
-   state: absent
+    path: none
+    fstype: swap
+    state: absent
   tags: k8s-swap
 
 # TODO always returns changed
-- name: disable swap
+- name: disable swap (always returns changed)
   command:
     cmd: swapoff -a --verbose
   tags: k8s-swap
+  changed_when: yes
 
 ##### MASTER NODE #####
 
@@ -54,11 +56,13 @@
   register: k8s_join_command
   delegate_to: "{{ k8s_master_node }}"
   when: (ansible_local.k8s.ansible_managed is not defined) and (k8s_node_role == "worker")
+  changed_when: yes
 
 - name: join the k8s cluster
   command:
     cmd: "{{ k8s_join_command.stdout_lines[0] }}"
   when: (ansible_local.k8s.ansible_managed is not defined) and (k8s_node_role == "worker")
+  changed_when: yes
 
 ##### FACTS #####
 
@@ -76,7 +80,8 @@
   notify: update ansible facts
   ignore_errors: "{{ ansible_check_mode }}"
 
-- meta: flush_handlers
+- name: apply configuration (flush handlers)
+  meta: flush_handlers
 
 ##### CLUSTER INFO #####
 
@@ -90,4 +95,3 @@
   debug:
     msg: "{{ k8s_status }}"
   tags: k8s-cluster-info
-
