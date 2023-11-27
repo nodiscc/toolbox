@@ -1,0 +1,4 @@
+# k8s node role (master/worker)
+# k8s_node_role: master
+# if the host is a worker, inventory hostname of the master to get the join token from
+k8s_master_node: "k8-master.CHANGEME.org"

@@ -1,0 +1,21 @@
+galaxy_info:
+  role_name: k8s
+  author: "nodiscc <nodiscc@gmail.com>"
+  description: "Kubernetes node"
+  license: GPL-3.0
+  min_ansible_version: "2.12"
+  platforms:
+    - name: Debian
+      versions:
+        - "12"
+  galaxy_tags:
+    - k8s
+    - kubernetes
+    - paas
+    - orchestration
+    - orchestrator
+    - iac
+dependencies:
+  - nodiscc.xsrv.handlers
+  # - nodiscc.xsrv.common # optional
+  # - nodiscc.xsrv.monitoring # optional

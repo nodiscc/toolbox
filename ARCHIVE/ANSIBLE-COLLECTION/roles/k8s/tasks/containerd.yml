@@ -1,0 +1,52 @@
+- name: copy kernel modules configuration
+  template:
+    src: etc_modules-load.d_k8s.conf.j2
+    dest: /etc/modules-load.d/k8s.conf
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: load kernel modules
+  modprobe:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - overlay
+    - br_netfilter
+
+- name: copy sysctl configuration
+  template:
+    src: etc_sysctl.d_k8s.conf.j2
+    dest: /etc/sysctl.d/k8s.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: apply sysctl configuration
+
+- meta: flush_handlers
+
+- name: setup firewalld rules for k8s
+  ansible.posix.firewalld:
+    zone: internal
+    service: kube-apiserver
+    state: enabled
+    permanent: yes
+    immediate: yes
+
+- meta: flush_handlers
+
+- name: install required packages
+  apt:
+    package: containerd
+    state: present
+
+- name: copy containerd configuration
+  template:
+    src: etc_containerd_config.toml.j2
+    dest: /etc/containerd/config.toml
+    owner: root
+    group: root
+    mode: "0644"
+  notify: restart containerd
+
+- meta: flush_handlers

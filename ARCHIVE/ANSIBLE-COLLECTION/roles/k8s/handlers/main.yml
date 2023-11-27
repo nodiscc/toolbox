@@ -1,0 +1,5 @@
+- name: restart containerd
+  become: yes
+  systemd:
+    name: containerd.service
+    state: restarted

@@ -1,0 +1,16 @@
+- name: check that mandatory variables are correctly defined
+  assert:
+    quiet: yes
+    that: "{{ item }}"
+    fail_msg: "One or more variables are not correctly defined. Check role documentation."
+  with_items:
+    - k8s_node_role in ['master', 'worker']
+
+- name: check that mandatory variables are correctly defined (k8s worker nodes)
+  assert:
+    quiet: yes
+    that: "{{ item }}"
+    fail_msg: "One or more variables are not correctly defined. Check role documentation."
+  with_items:
+    - k8s_master_node is not search("CHANGEME")
+  when: k8s_node_role == "worker"

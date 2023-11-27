@@ -1,0 +1,93 @@
+- name: copy k8s APT repository GPG key
+  copy:
+    src: usr_share_keyrings_k8s.gpg
+    dest: /usr/share/keyrings/k8s.gpg
+    owner: root
+    group: root
+    mode: "0644"
+  notify: update apt cache
+
+- name: copy k8s sources.list
+  template:
+    src: etc_apt_sources.list.d_k8s.list.j2
+    dest: /etc/apt/sources.list.d/k8s.list
+    owner: root
+    group: root
+    mode: "0644"
+  notify: update apt cache
+
+- meta: flush_handlers
+
+- name: install k8s packages
+  apt:
+    package:
+      - kubelet
+      - kubeadm
+      - kubectl
+      - python3-kubernetes
+
+- name: remove swap space from fstab
+  mount:
+   path: none
+   fstype: swap
+   state: absent
+  tags: k8s-swap
+
+# TODO always returns changed
+- name: disable swap
+  command:
+    cmd: swapoff -a --verbose
+  tags: k8s-swap
+
+##### MASTER NODE #####
+
+- name: initialize k8s cluster
+  command: kubeadm init --cri-socket=/var/run/containerd/containerd.sock
+  changed_when: yes
+  when: (ansible_local.k8s.ansible_managed is not defined) and (k8s_node_role == "master")
+
+#### WORKER NODE #####
+
+- name: get join token from master node
+  command:
+    cmd: kubeadm token create --print-join-command
+  register: k8s_join_command
+  delegate_to: "{{ k8s_master_node }}"
+  when: (ansible_local.k8s.ansible_managed is not defined) and (k8s_node_role == "worker")
+
+- name: join the k8s cluster
+  command:
+    cmd: "{{ k8s_join_command.stdout_lines[0] }}"
+  when: (ansible_local.k8s.ansible_managed is not defined) and (k8s_node_role == "worker")
+
+##### FACTS #####
+
+- name: create ansible facts.d directory
+  file:
+    path: /etc/ansible/facts.d
+    state: directory
+    mode: "0755"
+
+- name: create k8s fact file
+  template:
+    src: etc_ansible_facts.d_k8s.fact.j2
+    dest: /etc/ansible/facts.d/k8s.fact
+    mode: "0644"
+  notify: update ansible facts
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- meta: flush_handlers
+
+##### CLUSTER INFO #####
+
+- name: get cluster information
+  kubernetes.core.k8s_cluster_info:
+    kubeconfig: "{{ '/etc/kubernetes/admin.conf' if k8s_node_role == 'master' else '/etc/kubernetes/kubelet.conf' }}"
+  register: k8s_status
+  tags: k8s-cluster-info
+
+- name: show cluster information
+  debug:
+    msg: "{{ k8s_status }}"
+  tags: k8s-cluster-info
+

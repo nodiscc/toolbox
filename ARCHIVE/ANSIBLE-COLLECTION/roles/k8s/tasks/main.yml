@@ -1,0 +1,18 @@
+- name: include variable checks tasks
+  import_tasks: checks.yml
+  tags:
+    - k8s
+    - checks
+
+- name: include containerd setup tasks
+  import_tasks: containerd.yml
+  become: yes
+  tags:
+    - k8s
+    - k8s-containerd
+
+- name: include k8s setup tasks
+  import_tasks: k8s.yml
+  become: yes
+  tags:
+    - k8s
