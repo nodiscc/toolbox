@@ -1,0 +1,10 @@
+/* fixes thunderbird 115 card view read and unread messages looking identical */
+/* requires toolkit.legacyUserProfileCustomizations.stylesheets = true in about:config */
+/* file must be name userChrome.css and be placed under ~/.thunderbird/PROFILENAME/chrome/ */
+tr[data-properties~="untagged"][data-properties~="read"] div.thread-card-subject-container {
+  color: #777777 !important;
+}
+tr[data-properties~="untagged"][data-properties~="read"].selected div.thread-card-subject-container {
+  color: white !important;
+}
+
