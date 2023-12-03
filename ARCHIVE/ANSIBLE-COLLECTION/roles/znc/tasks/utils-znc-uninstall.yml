@@ -23,3 +23,8 @@
   notify:
     - reload systemd unit files
     - restart rsyslog
+
+- name: remove znc package
+  apt:
+    package: znc
+    state: absent
