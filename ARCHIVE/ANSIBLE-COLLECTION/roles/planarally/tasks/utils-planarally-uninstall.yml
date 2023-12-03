@@ -1,0 +1,27 @@
+- name: stop planarally service
+  systemd:
+    name: planarally.service
+    state: stopped
+
+- name: remove planarally-related configuration
+  file:
+    state: absent
+    path: "{{ item }}"
+  with_items:
+    - /etc/apache2/sites-available/planarally.conf
+    - /usr/lib/planarally
+    - /var/lib/planarally
+    - /etc/systemd/system/planarally.service
+    - /etc/rsnapshot.d/planarally.conf
+    - /etc/netdata/go.d/httpcheck.conf.d/planarally.conf
+  notify:
+    - reload systemd unit files
+    - restart apache2
+    - check rsnapshot configuration
+    - restart netdata
+
+- name: remove planarally user
+  user:
+    name: planarally
+    state: absent
+    remove: yes

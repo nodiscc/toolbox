@@ -71,3 +71,12 @@
 - name: apply configuration (flush handlers)
   meta: flush_handlers
   tags: planarally
+
+##### UTILITIES ####
+# These tasks are tagged 'never' and will never run unless one of their tags is explicitly passed on the command line
+- name: include planarally uninstallation tasks
+  import_tasks: utils-planarally-uninstall.yml
+  become: yes
+  tags:
+    - never
+    - utils-planarally-uninstall

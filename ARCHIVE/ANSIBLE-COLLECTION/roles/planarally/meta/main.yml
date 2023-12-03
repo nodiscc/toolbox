@@ -1,4 +1,5 @@
 # @tag planarally - setup planarally virtual tabletop
+# @tag utils-planarally-uninstall - (manual) uninstall planarally
 
 galaxy_info:
   role_name: planarally
