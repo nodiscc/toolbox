@@ -1,4 +1,5 @@
 # @tag rss_bridge - setup rss-bridge - The RSS feed for websites missing it
+# @tag utils-rss-bridge-uninstall - uninstall rss-bridge
 
 galaxy_info:
   role_name: rss_bridge

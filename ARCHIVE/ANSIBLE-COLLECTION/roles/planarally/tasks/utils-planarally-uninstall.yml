@@ -18,7 +18,7 @@
     - reload systemd unit files
     - restart apache
     - check rsnapshot configuration
-    - restart netdata
+    - assemble netdata configuration
 
 - name: remove planarally user
   user:

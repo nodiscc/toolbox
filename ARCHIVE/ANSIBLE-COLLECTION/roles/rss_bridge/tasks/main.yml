@@ -10,6 +10,7 @@
   tags:
     - rss_bridge
     - apache
+    - utils-rss-bridge-uninstall
 
 - name: include rss-bridge configuration tasks
   import_tasks: rss-bridge.yml
@@ -61,3 +62,12 @@
 - name: apply configuration (flush handlers)
   meta: flush_handlers
   tags: rss_bridge
+
+##### UTILITIES ####
+# These tasks are tagged 'never' and will never run unless one of their tags is explicitly passed on the command line
+- name: include znc uninstallation tasks
+  import_tasks: utils-rss-bridge-uninstall.yml
+  become: yes
+  tags:
+    - never
+    - utils-rss-bridge-uninstall

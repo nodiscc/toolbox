@@ -15,7 +15,7 @@
     src: etc_php_PHPVERSION_fpm_pool.d_rss-bridge.conf.j2
     dest: /etc/php/{{ rss_bridge_php_fpm_version }}/fpm/pool.d/rss-bridge.conf
     mode: "0644"
-  notify: restart php-fpmv  (rss_bridge)
+  notify: restart php-fpm (rss_bridge)
 
 - name: copy apache2 virtualhost configuration
   template:
