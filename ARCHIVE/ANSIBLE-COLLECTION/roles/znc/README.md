@@ -32,6 +32,10 @@ See [defaults/main.yml](defaults/main.yml) for all configuration variables.
 TODO
 
 
+### Uninstallation
+
+Use the `utils-znc-uninstall` ansible tag (`TAGS=utils-znc-uninstall xsrv deploy default my.CHANGEME.org`)
+
 ## Tags
 
 <!--BEGIN TAGS LIST-->

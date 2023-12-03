@@ -40,6 +40,10 @@ Planarally is currently missing support for d100/percentile dice rolls https://g
 See the included [rsnapshot configuration](templates/etc_rsnapshot.d_planarally.conf.j2) for the [backup](https://gitlab.com/nodiscc/xsrv/-/tree/master/roles/backup) role.
 
 
+### Uninstallation
+
+Use the `utils-planarally-uninstall` ansible tag (`TAGS=utils-planarally-uninstall xsrv deploy default my.CHANGEME.org`)
+
 ## Tags
 
 <!--BEGIN TAGS LIST-->

@@ -62,19 +62,8 @@ There is no data to backup/restore.
 
 ### Uninstallation
 
-```bash
-# remove the role from your playbook
-xsrv edit-playbook
-# remove all rss_bridge_* configuration variables from your hosts configuration
-xsrv edit-host
-xsrv edit-vault
-```
+Use the `utils-rss-bridge-uninstall` ansible tag (`TAGS=utils-rss-bridge-uninstall xsrv deploy my.CHANGEME.org`)
 
-```bash
-sudo rm -r /etc/php/*/fpm/pool.d/rss-bridge.conf /etc/apache2/sites-available/rss-bridge.conf /etc/apache2/sites-enabled/rss-bridge.conf /etc/ansible/facts.d/rss_bridge.fact /etc/netdata/go.d/httpcheck.conf.d/rss-bridge.conf /var/www/rss-bridge*
-sudo find  /etc/netdata/go.d/httpcheck.conf.d/ -type f | sort | xargs sudo cat | sudo tee  /etc/netdata/go.d/httpcheck.conf
-sudo systemctl restart php8.2-fpm apache2
-```
 
 ## Tags
 
