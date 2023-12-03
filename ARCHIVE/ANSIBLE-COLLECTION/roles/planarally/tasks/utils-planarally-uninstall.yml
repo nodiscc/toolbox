@@ -16,7 +16,7 @@
     - /etc/netdata/go.d/httpcheck.conf.d/planarally.conf
   notify:
     - reload systemd unit files
-    - restart apache2
+    - restart apache
     - check rsnapshot configuration
     - restart netdata
 
