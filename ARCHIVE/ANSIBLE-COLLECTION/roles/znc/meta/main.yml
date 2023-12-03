@@ -1,4 +1,6 @@
 # @tag znc - setup ZNC IRC bouncer
+# @tag utils-znc-uninstall - (manual) uninstall ZNC IRC bounder
+
 galaxy_info:
   role_name: znc
   author: "nodiscc <nodiscc@gmail.com>"

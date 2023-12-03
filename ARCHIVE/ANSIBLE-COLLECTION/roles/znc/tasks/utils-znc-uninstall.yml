@@ -1,0 +1,25 @@
+- name: remove firewalld rules for znc
+  ansible.posix.firewalld:
+    zone: "{{ item.zone }}"
+    service: ircs
+    state: disabled
+    permanent: yes
+    immediate: yes
+  with_items: "{{ znc_firewalld_zones }}"
+
+- name: stop znc service
+  systemd:
+    name: znc.service
+    state: stopped
+
+- name: remove znc-related configuration
+  file:
+    state: absent
+    path: "{{ item }}"
+  with_items:
+    - /etc/rsyslog.d/znc.conf
+    - /var/lib/znc
+    - /etc/systemd/system/znc.service.d/
+  notify:
+    - reload systemd unit files
+    - restart rsyslog
