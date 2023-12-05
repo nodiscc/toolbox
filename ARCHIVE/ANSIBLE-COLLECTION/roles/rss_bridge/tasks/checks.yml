@@ -1,7 +1,7 @@
 - name: check that mandatory variables are correctly defined
   assert:
     quiet: yes
-    that: "{{ item }}"
+    that: item
     fail_msg: "One or more variables are not correctly defined. Check role documentation: https://gitlab.com/nodiscc/toolbox/-/tree/master/ARCHIVE/ANSIBLE-COLLECTION/roles/rss_bridge"
   with_items:
     - rss_bridge_fqdn is not search('CHANGEME')
@@ -11,7 +11,7 @@
 - name: check that variables are correctly defined (rss-bridge authentication)
   assert:
     quiet: yes
-    that: "{{ item }}"
+    that: item
     fail_msg: "One or more variables are not correctly defined. Check role documentation: https://gitlab.com/nodiscc/toolbox/-/tree/master/ARCHIVE/ANSIBLE-COLLECTION/roles/rss_bridge"
   when: rss_bridge_auth_enabled | bool
   with_items:
