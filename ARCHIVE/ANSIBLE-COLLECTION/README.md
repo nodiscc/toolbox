@@ -12,8 +12,7 @@ Less-maintained, experimental or project-specific ansible [roles](roles/).
   - name: https://gitlab.com/nodiscc/xsrv.git
     type: git
     version: release
-  - name: nodiscc.toolbox
-    source: git+https://gitlab.com/nodiscc/toolbox.git#/ARCHIVE/ANSIBLE-COLLECTION/ # collection from a directory in a git repository
+  - name: git+https://gitlab.com/nodiscc/toolbox.git#/ARCHIVE/ANSIBLE-COLLECTION/ # collection from a directory in a git repository
     type: git
     version: master
 ```
