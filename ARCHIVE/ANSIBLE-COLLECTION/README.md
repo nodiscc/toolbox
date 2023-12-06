@@ -41,6 +41,7 @@ ansible-galaxy collection install -r requirements.yml
    - nodiscc.toolbox.docker
    - nodiscc.toolbox.planarally
    - nodiscc.toolbox.k8s
+   - nodiscc.toolbox.vscodium
 ```
 
 See [Using collections](https://docs.ansible.com/ansible/latest/user_guide/collections_using.html) for more details.

@@ -1,0 +1,19 @@
+# @tag vscodium - setup vscodium text/source code editor/IDE
+
+galaxy_info:
+  role_name: vscodium
+  author: "nodiscc <nodiscc@gmail.com>"
+  description: "Free/Libre and Open-Source distribution of the VSCode text/source code editor/IDE"
+  license: "GPL-3.0"
+  min_ansible_version: "2.12"
+  platforms:
+    - name: Debian
+      versions:
+        - "12"
+  galaxy_tags:
+    - ide
+    - editor
+    - vscode
+    - text
+    - desktop
+dependencies: []
