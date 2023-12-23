@@ -1,9 +1,9 @@
 - name: check that mandatory variables are correctly defined
   assert:
     quiet: yes
-    that: item
+    that: "{{ item }}"
     fail_msg: "One or more variables are not correctly defined. Check role documentation: https://gitlab.com/nodiscc/xsrv/-/tree/master/ARCHIVE/ANSIBLE_COLLECTION/roles/planarally"
-  with_items:
+  loop:
     - planarally_fqdn is not search('CHANGEME')
     - planarally_version is string
     - planarally_https_mode in ['selfsigned', 'letsencrypt']

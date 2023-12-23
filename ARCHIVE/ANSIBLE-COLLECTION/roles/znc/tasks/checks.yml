@@ -1,9 +1,9 @@
 - name: check that mandatory variables are correctly defined
   assert:
     quiet: yes
-    that: item
+    that: "{{ item }}"
     fail_msg: "One or more variables are not correctly defined. Check role documentation: https://gitlab.com/nodiscc/xsrv/-/tree/master/roles/znc"
-  with_items:
+  loop:
     - znc_enable_service == znc_enable_service | bool
     - znc_debug_log == znc_debug_log | bool
     - znc_modules | type_debug == "list"
@@ -21,4 +21,4 @@
       - item.networks | type_debug == "list"
     fail_msg: "One or more znc users are not correctly defined. Check role documentation: https://gitlab.com/nodiscc/xsrv/-/tree/master/roles/znc"
   no_log: yes
-  with_items: "{{ znc_users }}"
+  loop: "{{ znc_users }}"

@@ -1,9 +1,9 @@
 - name: check that mandatory variables are correctly defined
   assert:
     quiet: yes
-    that: item
+    that: "{{ item }}"
     fail_msg: "One or more variables are not correctly defined. Check role documentation: https://gitlab.com/nodiscc/toolbox/-/blob/master/ARCHIVE/ANSIBLE-COLLECTION/roles/awesome_selfhosted_html/defaults/main.yml"
-  with_items:
+  loop:
     - awesome_selfhosted_html_fqdn is not search('CHANGEME')
     - awesome_selfhosted_html_https_mode in ['selfsigned', 'letsencrypt']
     - awesome_selfhosted_html_enable_service == awesome_selfhosted_html_enable_service | bool
