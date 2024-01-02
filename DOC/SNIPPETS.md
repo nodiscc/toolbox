@@ -823,8 +823,6 @@ git mirror a Mediawiki wiki locally (no images) `git clone mediawiki:http://url.
 
 git mirror a Mediawiki wiki locally (with images) `git -c remote.origin.mediaImport=true clone mediawiki:http://url.to/wiki`
 
-Virtualization stack on Debian (TODO): sudo aptitude install qemu-launcher virt-manager libvirt-bin lvm2 qemu virt-viewer qemu-kvm bridge-utils; sudo addgroup $USER libvirt
-
 KVM/QEMU enable nesetd virtualization (eg proxmox in libvirt: `options kvm-intel nested=Y` or `options kvm-amd nested=1` in `/etc/modprobe.d/kvm-nested.conf`
 
 KVM/QEMU convert VMDK disk image to raw `qemu-img convert source.vmdk -O raw destination.bin`
@@ -1127,6 +1125,8 @@ python list builtins: dir(__builtins__)
 inotify: inotifywait -m -r -e modify,attrib,close_write,move,create,delete /tmp
 
 LVM: fdisk, pvcreate, vgextend, pvmove, vgreduce/vgsplit
+
+rebuild initramfs with LVM support (from a live system): `sudo mkdir /target; sudo mount /dev/VolGroup00/root /target; sudo mount /dev/VolGroup00/var /target/var; sudo mount /dev/vda1 /target/boot; sudo mount -o bind /proc /target/proc; sudo mount -o bind /sys /target/sys; sudo mount -o bind /dev /target/dev; sudo mount -o bind /dev/pts /target/dev/pts; sudo chroot /target; apt update; apt install lvm2; update-initramfs -uv; exit; sudo umount /target/dev/pts /target/dev /target/sys /target/proc /target/boot /target/var /target; sudo poweroff`
 
 SSL/TLS X509 cert to text: `openssl x509 -in cert.pem -text`
 
