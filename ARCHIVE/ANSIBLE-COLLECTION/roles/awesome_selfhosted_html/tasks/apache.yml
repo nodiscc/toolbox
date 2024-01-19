@@ -27,3 +27,9 @@
     path: /etc/hosts
     line: '127.0.0.1	{{ awesome_selfhosted_html_fqdn }}' # noqa no-tabs
     state: present
+
+- name: add a hosts file entry for the awesome-selfhosted server fqdn (with www prefix)
+  lineinfile:
+    path: /etc/hosts
+    line: '127.0.0.1	www.{{ awesome_selfhosted_html_fqdn }}' # noqa no-tabs
+    state: "{{ 'present' if awesome_selfhosted_html_redirect_www_to_non_www else 'absent' }}"

@@ -11,6 +11,7 @@ See [meta/main.yml](meta/main.yml)
 # playbook.yml
 - hosts: my.CHANGEME.org
   roles:
+    - nodiscc.xsrv.monitoring_netdata # (optional) web server health monitoring
     - nodiscc.xsrv.apache # web server and SSL/TLS certificates
     - nodiscc.toolbox.awesome_selfhosted_html
 

@@ -1,0 +1,18 @@
+{% if awesome_selfhosted_html_enable_service %}
+  - name: awesome-selfhosted-html
+    timeout: 5
+    tls_skip_verify: true
+    update_every: 10
+    url: https://127.0.0.1/tags/backup.html
+    headers:
+      Host: "{{ awesome_selfhosted_html_fqdn }}"
+{% if awesome_selfhosted_html_redirect_www_to_non_www %}
+  - name: awesome-selfhosted-html-www
+    timeout: 5
+    tls_skip_verify: true
+    update_every: 30
+    url: https://127.0.0.1/tags/backup.html
+    headers:
+      Host: "www.{{ awesome_selfhosted_html_fqdn }}"
+{% endif %}
+{% endif %}
