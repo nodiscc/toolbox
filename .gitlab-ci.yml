@@ -98,3 +98,11 @@ pages:
 #     url: https://prod.example.com
 #   only:
 #     - tags
+
+### EXAMPLE WARNING ###
+# This job will only display a (!) warning symbol in the pipeline status and will not prevent following stages from running https://docs.gitlab.com/ee/ci/yaml/#allow_failure
+# lint_but_only_warn:
+#   stage: lint
+#   allow_failure: true
+#   script:
+#     - shellcheck /path/to/non-compliant-script.sh
