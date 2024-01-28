@@ -23,3 +23,18 @@ doc_tags:
 		rm tags.tmp.md && \
 		mv README.tmp.md $$i/README.md; \
 	done
+
+doc_roles_list:
+	@roles_list_md=$$(for i in roles/*/meta/main.yml; do \
+		name=$$(grep "role_name: " "$$i" | awk -F': ' '{print $$2}'); \
+		description=$$(grep "description: " "$$i" | awk -F': ' '{print $$2}' | sed 's/"//g'); \
+		echo "- [$$name](roles/$$name) - $$description"; \
+		done) && \
+		echo "$$roles_list_md" >| roles-list.tmp.md && \
+		awk ' \
+		BEGIN {p=1} \
+		/^<!--BEGIN ROLES LIST-->/ {print;system("cat roles-list.tmp.md | sort --version-sort");p=0} \
+		/^<!--END ROLES LIST-->/ {p=1} \
+		p' README.md >> README.tmp.md && \
+		mv README.tmp.md README.md && \
+		rm roles-list.tmp.md
