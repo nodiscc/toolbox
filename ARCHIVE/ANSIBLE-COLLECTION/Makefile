@@ -9,3 +9,17 @@ test-ansible-lint:
 	pip3 install isort ansible-lint==6.21.1 ansible==8.5.0 && \
 	ansible-galaxy collection install git+https://gitlab.com/nodiscc/xsrv.git && \
 	ansible-lint -v -x fqcn[action-core],fqcn[action],name[casing],yaml[truthy],schema[meta],yaml[line-length],var-naming[no-role-prefix] roles/*
+
+doc_tags:
+	@for i in roles/*; do \
+		echo $$i; \
+		tags_list=$$(grep '^# @' $$i/meta/main.yml); \
+		echo -e "\`\`\`\n$$tags_list\n\`\`\`" | sed 's/# @tag //g'> tags.tmp.md && \
+		awk ' \
+			BEGIN { p=1} \
+			/^<!--BEGIN TAGS LIST-->/ {print;system("cat tags.tmp.md");p=0} \
+			/^<!--END TAGS LIST-->/ {p=1} \
+			p' $$i/README.md >> README.tmp.md && \
+		rm tags.tmp.md && \
+		mv README.tmp.md $$i/README.md; \
+	done
