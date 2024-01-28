@@ -10,6 +10,9 @@ test-ansible-lint:
 	ansible-galaxy collection install git+https://gitlab.com/nodiscc/xsrv.git && \
 	ansible-lint -v -x fqcn[action-core],fqcn[action],name[casing],yaml[truthy],schema[meta],yaml[line-length],var-naming[no-role-prefix] roles/*
 
+# manual: udpate auto-generated documentation
+doc: doc_tags doc_roles_list
+
 doc_tags:
 	@for i in roles/*; do \
 		echo $$i; \
