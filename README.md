@@ -2,6 +2,8 @@
 
 APT repository: https://nodiscc.gitlab.io/toolbox/
 
+Ansible collection: [ARCHIVE/ANSIBLE-COLLECTION](ARCHIVE/ANSIBLE-COLLECTION)
+
 ```
 License: MIT
  Permission is hereby granted, free of charge, to any person obtaining
