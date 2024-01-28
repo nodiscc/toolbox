@@ -1,3 +1,5 @@
+# @tag mariadb - setup mariadb database engine
+
 galaxy_info:
   role_name: mariadb
   author: "nodiscc <nodiscc@gmail.com>"

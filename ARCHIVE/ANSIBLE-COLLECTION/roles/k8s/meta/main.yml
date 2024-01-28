@@ -1,7 +1,9 @@
+# @tag rocketchat - setup k8s container orchestrator
+
 galaxy_info:
   role_name: k8s
   author: "nodiscc <nodiscc@gmail.com>"
-  description: "Kubernetes node"
+  description: "Container management platform/orchestrator"
   license: GPL-3.0
   min_ansible_version: "2.12"
   platforms:

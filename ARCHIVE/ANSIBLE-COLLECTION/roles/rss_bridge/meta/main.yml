@@ -4,7 +4,7 @@
 galaxy_info:
   role_name: rss_bridge
   author: "nodiscc <nodiscc@gmail.com>"
-  description: "The RSS feed for websites missing it"
+  description: "generate RSS feeds for websites missing them"
   license: GPL-3.0
   min_ansible_version: "2.12"
   platforms:
