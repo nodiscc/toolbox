@@ -2,6 +2,24 @@
 
 Less-maintained, experimental or project-specific ansible [roles](roles/).
 
+<!--BEGIN ROLES LIST-->
+- [awesome_selfhosted_html](roles/awesome_selfhosted_html) - awesome-selfhosted static website
+- [docker](roles/docker) - application containerization platform
+- [homepage-extra-icons](roles/homepage-extra-icons) - additional icons for the nodiscc.xsrv.homepage role
+- [icecast](roles/icecast) - media streaming server
+- [k8s](roles/k8s) - Container management platform/orchestrator
+- [mariadb](roles/mariadb) - MariaDB database engine
+- [nfs_server](roles/nfs_server) - NFS file server
+- [planarally](roles/planarally) - virtual tabletop (VTT)
+- [proxmox](roles/proxmox) - Proxmox VE hypervisor configuration
+- [pulseaudio](roles/pulseaudio) - local network sound server
+- [rocketchat](roles/rocketchat) - instant messaging & communication platform
+- [rss_bridge](roles/rss_bridge) - generate RSS feeds for websites missing them
+- [valheim_server](roles/valheim_server) - Valheim multiplayer server
+- [vscodium](roles/vscodium) - free/Libre and Open-Source distribution of the VSCode text/source code editor/IDE
+- [znc](roles/znc) - IRC bouncer
+<!--END ROLES LIST-->
+
 ## Installation
 
 - [Install ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html) 2.12 or later
