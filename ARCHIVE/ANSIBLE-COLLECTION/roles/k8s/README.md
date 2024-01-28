@@ -43,6 +43,7 @@ TODO
 
 <!--BEGIN TAGS LIST-->
 ```
+rocketchat - setup k8s container orchestrator
 ```
 <!--END TAGS LIST-->
 

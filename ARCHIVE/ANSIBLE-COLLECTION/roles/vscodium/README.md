@@ -35,6 +35,7 @@ None. You may backup your `~/.vscode-oss/` directory manually.
 
 <!--BEGIN TAGS LIST-->
 ```
+vscodium - setup vscodium text/source code editor/IDE
 ```
 <!--END TAGS LIST-->
 

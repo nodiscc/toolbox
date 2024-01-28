@@ -18,6 +18,9 @@ See [meta/main.yml](meta/main.yml)
 ## Tags
 
 <!--BEGIN TAGS LIST-->
+```
+homepage-extra-icons - install additional icons for the nodiscc.xsrv.homepage role
+```
 <!--END TAGS LIST-->
 
 ## License

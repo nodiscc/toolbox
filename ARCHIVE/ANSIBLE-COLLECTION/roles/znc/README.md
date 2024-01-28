@@ -40,6 +40,8 @@ Use the `utils-znc-uninstall` ansible tag (`TAGS=utils-znc-uninstall xsrv deploy
 
 <!--BEGIN TAGS LIST-->
 ```
+znc - setup ZNC IRC bouncer
+utils-znc-uninstall - (manual) uninstall ZNC IRC bounder
 ```
 <!--END TAGS LIST-->
 

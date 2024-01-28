@@ -70,6 +70,7 @@ Use the `utils-rss-bridge-uninstall` ansible tag (`TAGS=utils-rss-bridge-uninsta
 <!--BEGIN TAGS LIST-->
 ```
 rss_bridge - setup rss-bridge - The RSS feed for websites missing it
+utils-rss-bridge-uninstall - uninstall rss-bridge
 ```
 <!--END TAGS LIST-->
 

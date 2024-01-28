@@ -48,6 +48,8 @@ Use the `utils-planarally-uninstall` ansible tag (`TAGS=utils-planarally-uninsta
 
 <!--BEGIN TAGS LIST-->
 ```
+planarally - setup planarally virtual tabletop
+utils-planarally-uninstall - (manual) uninstall planarally
 ```
 <!--END TAGS LIST-->
 
