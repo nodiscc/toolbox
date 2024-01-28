@@ -1,7 +1,7 @@
 # @tag homepage-extra-icons - install additional icons for the nodiscc.xsrv.homepage role
 
 galaxy_info:
-  role_name: homepage-extra-icons
+  role_name: homepage_extra_icons
   author: "nodiscc <nodiscc@gmail.com>"
   description: "additional icons for the nodiscc.xsrv.homepage role"
   license: GPL-3.0
