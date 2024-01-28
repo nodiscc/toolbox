@@ -1,0 +1,16 @@
+# @tag rss2email - setup rss2email
+
+galaxy_info:
+  role_name: rss2email
+  author: "nodiscc <nodiscc@gmail.com>"
+  description: "receive RSS feeds by email"
+  license: "GPL-3.0"
+  min_ansible_version: "2.12"
+  platforms:
+    - name: Debian
+      versions:
+        - "12"
+  galaxy_tags:
+    - rss2email
+dependencies:
+  - nodiscc.xsrv.handlers

@@ -1,0 +1,33 @@
+- name: include variable checks tasks
+  import_tasks: checks.yml
+  tags:
+    - rss2email
+    - checks
+
+- name: include rss2email configuration tasks
+  import_tasks: rss2email.yml
+  become: yes
+  tags:
+    - rss2email
+
+- name: include rsnapshot/backup configuration tasks
+  import_tasks: backups.yml
+  become: yes
+  tags:
+    - rss2email
+    - backup
+  when:
+    - ansible_local.backup.ansible_managed is defined
+    - ansible_local.backup.ansible_managed | bool
+
+- name: include ansible facts configuration tasks
+  import_tasks: fact.yml
+  become: yes
+  tags: rss2email
+
+- name: apply configuration (flush handlers)
+  meta: flush_handlers
+  tags:
+    - rss2email
+    - monitoring
+    - fail2ban

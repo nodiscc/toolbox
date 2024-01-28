@@ -1,0 +1,12 @@
+[Unit]
+Description=Run rss2email
+After=network-online.target
+
+[Install]
+WantedBy=timers.target
+
+[Timer]
+Unit=rss2email.service
+Persistent=true
+OnCalendar=*-*-* *:00:11
+OnBootSec=1s

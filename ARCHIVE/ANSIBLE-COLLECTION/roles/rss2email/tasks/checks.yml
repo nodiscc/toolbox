@@ -1,0 +1,8 @@
+- name: check that mandatory variables are correctly defined
+  assert:
+    quiet: yes
+    that: "{{ item }}"
+    fail_msg: "One or more variables are not correctly defined. Check role documentation: https://gitlab.com/nodiscc/xsrv/-/tree/master/ARCHIVE/ANSIBLE_COLLECTION/roles/rss2email"
+  loop:
+    - rss2email_email_address is not search('CHANGEME')
+    - rss2email_feeds | type_debug == 'list'

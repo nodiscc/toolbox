@@ -1,0 +1,13 @@
+##### RSS2EMAIL #####
+# mail address to send RSS feed updates to
+rss2email_email_address: "{{ xsrv_admin_email | default('CHANGEME@CHANGEME.org') }}"
+# list of RSS/ATOM feeds to watch/send email updates for.
+# Example:
+# rss2email_feeds:
+#   - name: ansible-releases # (required) unique name for this feed
+#     url: https://pypi.org/rss/project/ansible/releases.xml # (required) URL of the RSS/ATOM feed
+#   - name: gitea-releases
+#     url: https://github.com/go-gitea/gitea/releases.atom
+#   - name: shaarli-releases
+#     url: https://github.com/shaarli/Shaarli/releases.atom
+rss2email_feeds: []

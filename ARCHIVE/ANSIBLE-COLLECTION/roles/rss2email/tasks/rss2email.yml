@@ -1,0 +1,79 @@
+##### USER #####
+- name: create rss2email user
+  user:
+    name: rss2email
+    state: present
+    home: /var/lib/rss2email
+    create_home: yes
+
+- name: add the rss2email user to the msmtp group
+  user:
+    name: rss2email
+    groups: msmtp
+    append: yes
+  when: (ansible_local.msmtp.ansible_managed is defined) and (ansible_local.msmtp.ansible_managed | bool)
+
+##### PACKAGES #####
+
+- name: install rss2email
+  apt:
+    package: rss2email
+    state: present
+
+##### CONFIGURATION #####
+
+- name: create rss2email configuration directory
+  file:
+    path: "/var/lib/rss2email/.config"
+    state: directory
+    owner: rss2email
+    group: rss2email
+    mode: "0700"
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: configure rss2email
+  template:
+    src: var_lib_rss2email_.config_rss2email.cfg.j2
+    dest: /var/lib/rss2email/.config/rss2email.cfg
+    owner: rss2email
+    group: rss2email
+    mode: "0640"
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: configure rss2email post-process filter
+  copy:
+    src: usr_lib_python3_dist-packages_rss2email_post_process_titlefix.py
+    dest: /usr/lib/python3/dist-packages/rss2email/post_process/titlefix.py
+    owner: root
+    group: root
+    mode: "0644"
+
+##### CRON #####
+
+- name: configure automatic update systemd service
+  template:
+    src: etc_systemd_system_rss2email.service.j2
+    dest: /etc/systemd/system/rss2email.service
+    owner: root
+    group: root
+    mode: "0644"
+  notify: reload systemd unit files
+
+- name: configure automatic update systemd timer
+  template:
+    src: etc_systemd_system_rss2email.timer.j2
+    dest: /etc/systemd/system/rss2email.timer
+    owner: root
+    group: root
+    mode: "0644"
+  notify: reload systemd unit files
+
+- name: apply configuration (flush handlers)
+  meta: flush_handlers
+
+- name: enable automatic update systemd timer
+  systemd:
+    name: rss2email.timer
+    state: started
+    enabled: true
+  ignore_errors: "{{ ansible_check_mode }}"

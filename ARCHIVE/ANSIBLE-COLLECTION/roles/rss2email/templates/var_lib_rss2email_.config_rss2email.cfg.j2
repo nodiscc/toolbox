@@ -1,0 +1,91 @@
+[DEFAULT]
+from = user@rss2email.invalid
+user-agent = rss2email/__VERSION__ (__URL__)
+use-8bit = False
+force-from = False
+use-publisher-email = False
+name-format = {feed-title}: {author}
+to = {{ rss2email_email_address }}
+proxy = 
+feed-timeout = 60
+same-server-fetch-interval = 0
+active = True
+digest = False
+date-header = False
+date-header-order = modified, issued, created, expired
+bonus-header = 
+trust-guid = True
+trust-link = False
+reply-changes = False
+encodings = US-ASCII, ISO-8859-1, UTF-8, BIG5, ISO-2022-JP
+post-process = rss2email.post_process.titlefix process
+digest-post-process = 
+html-mail = True
+multipart-html = True
+use-css = True
+css = h1 {
+	font: 18pt Georgia, "Times New Roman";
+	}
+	body {
+	font: 12pt Arial;
+	}
+	a:link {
+	font: 12pt Arial;
+	font-weight: bold;
+	color: #0000cc;
+	}
+	blockquote {
+	font-family: monospace;
+	}
+	.header {
+	background: #e0ecff;
+	border-bottom: solid 4px #c3d9ff;
+	padding: 5px;
+	margin-top: 0px;
+	color: red;
+	}
+	.header a {
+	font-size: 20px;
+	text-decoration: none;
+	}
+	.footer {
+	background: #c3d9ff;
+	border-top: solid 4px #c3d9ff;
+	padding: 5px;
+	margin-bottom: 0px;
+	}
+	border: solid 4px #c3d9ff;
+	}
+	margin-left: 5px;
+	margin-right: 5px;
+	}
+unicode-snob = False
+links-after-each-paragraph = False
+inline-links = True
+wrap-links = True
+body-width = 0
+email-protocol = sendmail
+sendmail = /usr/sbin/sendmail
+sendmail_config = 
+smtp-auth = False
+smtp-username = username
+smtp-password = password
+smtp-server = smtp.example.net
+smtp-port = 465
+smtp-ssl = False
+imap-auth = False
+imap-username = username
+imap-password = password
+imap-server = imap.example.net
+imap-port = 143
+imap-ssl = False
+imap-mailbox = INBOX
+maildir-path = ~/Maildir
+maildir-mailbox = INBOX
+verbose = info
+
+{% for feed in rss2email_feeds %}
+[feed.{{ feed.name }}]
+url = {{ feed.url}}
+
+{% endfor %}

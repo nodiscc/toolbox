@@ -1,0 +1,13 @@
+[Unit]
+Description=Run rss2email
+
+[Service]
+User=rss2email
+Group=rss2email
+Type=simple
+ExecStart=/usr/bin/r2e run
+WorkingDirectory=/var/lib/rss2email/
+SyslogIdentifier=rss2email
+
+[Install]
+WantedBy=multi-user.target

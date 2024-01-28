@@ -1,0 +1,6 @@
+- name: copy rsnapshot configuration for rss2email backups
+  template:
+    src: etc_rsnapshot.d_rss2email.conf.j2
+    dest: /etc/rsnapshot.d/rss2email.conf
+    mode: "0600"
+  notify: check rsnapshot configuration
