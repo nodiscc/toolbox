@@ -1,4 +1,4 @@
-# @tag rocketchat - setup k8s container orchestrator
+# @tag k8s - setup k8s container orchestrator
 
 galaxy_info:
   role_name: k8s
