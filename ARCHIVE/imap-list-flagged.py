@@ -4,8 +4,8 @@ List emails with flag status set, unread email, gitea assigned issues
 Requirements:
     sudo apt install python3-venv python3-pip
     python3 -m venv ~/.venv && source ~/.venv/bin/activate && pip3 install secretstorage requests
-USAGE: source ~/.venv/bin/activate && imap-list-flagged.py --help
-On first run the program will ask for the the required IMAP/Gitea creadentials which will be stored in your desktop environment's secret storage (e.g. gnome-keyring). These credentials can be retrieved/deleted using `secret-tool` or `seahorse` (Password and Keys gaphical application).
+USAGE: source ~/.venv/bin/activate && ./pywip --help
+On first run the program will ask for the the required IMAP/Gitea credentials which will be stored in your desktop environment's secret storage (e.g. gnome-keyring). These credentials can be retrieved/deleted using `secret-tool` or `seahorse` (Password and Keys gaphical application).
 """
 
 import os
@@ -43,81 +43,55 @@ def print_imap_subjects(conn, args, folder, criterion, symbol):
 def list_unread(args, folders_list, imap_credentials):
     """List unread email"""
     print('----------------- □ UNREAD -----------------------')
-    conn = imaplib.IMAP4_SSL(imap_credentials['imap_server'], 993)
-    conn.login(imap_credentials['imap_username'], imap_credentials['imap_password'])
+    conn = imaplib.IMAP4_SSL(imap_credentials['server_address'], 993)
+    conn.login(imap_credentials['username'], imap_credentials['password'])
     for folder in folders_list:
         print_imap_subjects(conn, args, folder, '(UNSEEN)', '□')
 
 def list_flagged(args, folders_list, imap_credentials):
     print('----------------- ⇱ FLAGGED ----------------------')
     """List email with flagged status set"""
-    conn = imaplib.IMAP4_SSL(imap_credentials['imap_server'], 993)
-    conn.login(imap_credentials['imap_username'], imap_credentials['imap_password'])
+    conn = imaplib.IMAP4_SSL(imap_credentials['server_address'], 993)
+    conn.login(imap_credentials['username'], imap_credentials['password'])
     for folder in folders_list:
         print_imap_subjects(conn, args, folder, '(FLAGGED)', '⇱')
 
 def list_gitea_assigned(args, gitea_credentials):
     print('----------------- ⊚ ASSIGNED ---------------------')
     """List gitea issues/PRs assigned to the authenticated user"""
-    gitea_auth_headers = {'Authorization': 'Bearer ' + gitea_credentials['gitea_token']}
-    api_url = gitea_credentials['gitea_url'] + '/api/v1/repos/issues/search?assigned=true&limit=10000&state=open'
+    gitea_auth_headers = {'Authorization': 'Bearer ' + gitea_credentials['password']}
+    api_url = gitea_credentials['server_address'] + '/api/v1/repos/issues/search?assigned=true&limit=10000&state=open'
     response = requests.get(api_url, verify=False, headers=gitea_auth_headers)
     for i in response.json():
         out_line = '⊚ ' + i['repository']['name'] + ': ' + i['title']
         print(out_line[0:args.max_line_length])
 
-# DEBT factorize with get_gitea_credentials
-def get_imap_credentials():
-    """retrieve imap_server, imap_username, imap_password from secret storage,
-       if not found, ask for them interactively and store them in the secret storage
-    """
+def get_credentials(application_name, secret_collection_title, server_address_question_label, username_question_label, password_question_label):
+    """Retrieve credentials from secret storage, if none found matching application_name, create a collection containing the credentials"""
     with closing(secretstorage.dbus_init()) as conn:
         collection = secretstorage.get_default_collection(conn)
-        items = collection.search_items({'application': 'imap_utils.py'})
+        items = collection.search_items({'application': application_name})
         try:
             item = next(items)
         except StopIteration:
-            print('No credentials found. Please provide IMAP server, username and password:')
-            imap_server = input('Enter IMAP server address: ')
-            imap_username = input('Enter IMAP username: ')
-            imap_password = input('Enter IMAP password: ')
-            collection.create_item ('IMAP credentials (imap_utils.py)', {'application': 'imap_utils.py', 'imap_server': imap_server, 'imap_username': imap_username}, imap_password)
+            new_collection = {'application': application_name}
+            print('No credentials found. Please provide them now:')
+            server_address = input(server_address_question_label)
+            new_collection['server_address'] = server_address
+            if username_question_label is not None:
+                username = input(username_question_label)
+                new_collection['username'] = username
+            password = input(password_question_label)
+            collection.create_item (secret_collection_title, new_collection, password)
             print('Credentials stored in secret storage.')
-            items = collection.search_items({'application': 'imap_utils.py'})
+            items = collection.search_items({'application': application_name})
             item = next(items)
-        imap_server = item.get_attributes()['imap_server']
-        imap_username = item.get_attributes()['imap_username']
-        imap_password = item.get_secret().decode("utf-8")
-        return {
-            'imap_server': imap_server,
-            'imap_username': imap_username,
-            'imap_password': imap_password
-        }
-
-# DEBT factorize with get_imap_credentials
-def get_gitea_credentials():
-    """retrieve gitea_server and gitea_token from secret storage,
-       if not found, ask for them interactively and store them in the secret storage
-    """
-    with closing(secretstorage.dbus_init()) as conn:
-        collection = secretstorage.get_default_collection(conn)
-        items = collection.search_items({'application': 'pydashboard-gitea'})
-        try:
-            item = next(items)
-        except StopIteration:
-            print('No credentials found. Please provide Gitea server URL and Personal Access Token:')
-            gitea_url = input('Enter Gitea server URL: ')
-            gitea_token = input('Enter Gitea Personal Access Token: ')
-            collection.create_item ('Gitea credentials (pydashboard-gitea)', {'application': 'pydashboard-gitea', 'gitea_url': gitea_url}, gitea_token)
-            print('Credentials stored in secret storage.')
-            items = collection.search_items({'application': 'pydashboard-gitea'})
-            item = next(items)
-        gitea_url = item.get_attributes()['gitea_url']
-        gitea_token = item.get_secret().decode("utf-8")
-        return {
-            'gitea_url': gitea_url,
-            'gitea_token': gitea_token
-        }
+        credentials = {}
+        credentials['server_address'] = item.get_attributes()['server_address']
+        if username_question_label is not None:
+            credentials['username'] = item.get_attributes()['username']
+        credentials['password'] = item.get_secret().decode("utf-8")
+        return credentials
 
 def main():
     """Main loop"""
@@ -129,14 +103,28 @@ def main():
     args = parser.parse_args()
     folders_list = args.folders_list.split(",")
     actions_list = args.actions_list.split(",")
-    imap_credentials = get_imap_credentials()
-    gitea_credentials = get_gitea_credentials()
+    imap_credentials = get_credentials(
+        application_name='pydashboard-imap',
+        secret_collection_title='IMAP credentials (pywip)',
+        server_address_question_label="Enter IMAP server address: ",
+        username_question_label="Enter IMAP username: ",
+        password_question_label="Enter IMAP password: "
+        )
+    gitea_credentials = get_credentials(
+        application_name='pydashboard-gitea',
+        secret_collection_title='Gitea credentials (pywip)',
+        server_address_question_label="Enter Gitea server URL: ",
+        username_question_label=None,
+        password_question_label="Enter Gitea Personal Access Token: "
+        )
+    # TODO add support for CalDAV events, merge from get_caldav_events.py
     for action in actions_list:
         if action == 'all':
             list_unread(args, folders_list, imap_credentials)
             list_flagged(args, folders_list, imap_credentials)
             list_gitea_assigned(args, gitea_credentials)
         elif action == 'list-unread':
+            # TODO support for multiple IMAP accounts
             list_unread(args, folders_list, imap_credentials)
         elif action == 'list-flagged':
             list_flagged(args, folders_list, imap_credentials)
