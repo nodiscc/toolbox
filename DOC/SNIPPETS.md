@@ -24,6 +24,8 @@ postgresql list users `\du`
 
 python 3 http server `python3 -m http.server`
 
+conky view all available characters in Xft font `xfd -fa FONTNAME`
+
 iptables trace packets: `iptables -A ..... -j TRACE; tail -f /var/log/kern.log | grep 'TRACE:'`
 
 send mail from common line `echo "My message" | mail -s subject user@gmail.com`
