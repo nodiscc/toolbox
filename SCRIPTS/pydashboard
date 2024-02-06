@@ -6,7 +6,7 @@ TT-RSS starred articles, Toggl Track time entries.
 Requirements:
   sudo apt install python3-venv python3-pip
   python3 -m venv ~/.venv && source ~/.venv/bin/activate && pip3 install secretstorage requests caldav icalendar
-USAGE: source ~/.venv/bin/activate && ./pywip --help
+USAGE: source ~/.venv/bin/activate && ./pydashboard --help
 On first run the program will ask for the required credentials for each service, and store them in
 your desktop environment's secret storage (e.g. gnome-keyring, keepassxc...), so this program
 requires a running Freedesktop SecretStorage service. These credentials can be retrieved, edited,
@@ -31,7 +31,7 @@ def list_unread(args, folders_list):
     # TODO support for multiple IMAP accounts
     imap_credentials = get_credentials(
         application_name='pydashboard-imap',
-        secret_collection_title='IMAP credentials (pywip)',
+        secret_collection_title='IMAP credentials (pydashboard)',
         server_address_question_label="Enter IMAP server address: ",
         username_question_label="Enter IMAP username: ",
         password_question_label="Enter IMAP password: ")
@@ -46,7 +46,7 @@ def list_flagged(args, folders_list):
     # TODO support for multiple IMAP accounts
     imap_credentials = get_credentials(
         application_name='pydashboard-imap',
-        secret_collection_title='IMAP credentials (pywip)',
+        secret_collection_title='IMAP credentials (pydashboard)',
         server_address_question_label="Enter IMAP server address: ",
         username_question_label="Enter IMAP username: ",
         password_question_label="Enter IMAP password: ")
@@ -62,7 +62,7 @@ def list_gitea_assigned(args):
     # TODO doc: must generate token from https://GITEA_URL/user/settings/applications
     gitea_credentials = get_credentials(
         application_name='pydashboard-gitea',
-        secret_collection_title='Gitea credentials (pywip)',
+        secret_collection_title='Gitea credentials (pydashboard)',
         server_address_question_label="Enter Gitea server URL: ",
         username_question_label=None,
         password_question_label="Enter Gitea Personal Access Token: ")
@@ -80,7 +80,7 @@ def list_ttrss_marked(args):
     # TODO doc: must create an app password under preferences > personal data/authentication > app passwords > generate password
     ttrss_credentials = get_credentials(
         application_name='pydashboard-ttrss',
-        secret_collection_title='TT-RSS credentials (pywip)',
+        secret_collection_title='TT-RSS credentials (pydashboard)',
         server_address_question_label="Enter TT-RSS server URL: ",
         username_question_label="Enter TT-RSS username: ",
         password_question_label="Enter TT-RSS password: ")
@@ -124,7 +124,7 @@ def list_caldav_events(args):
     # https://caldav.readthedocs.io/en/latest/
     caldav_credentials = get_credentials(
         application_name='pydashboard-caldav',
-        secret_collection_title='CalDAV credentials (pywip)',
+        secret_collection_title='CalDAV credentials (pydashboard)',
         server_address_question_label='Enter CalDAV address (e.g. https://nexctloud.example.org/remote.php/dav/calendars/user/personal/): ',
         username_question_label='Enter CalDAV username: ',
         password_question_label='Enter CalDAV password: ')
@@ -163,7 +163,7 @@ def list_caldav_todos(args):
     """
     caldav_credentials = get_credentials(
         application_name='pydashboard-caldav',
-        secret_collection_title='CalDAV credentials (pywip)',
+        secret_collection_title='CalDAV credentials (pydashboard)',
         server_address_question_label='Enter CalDAV address (e.g. https://nexctloud.example.org/remote.php/dav/calendars/user/personal/): ',
         username_question_label='Enter CalDAV username: ',
         password_question_label='Enter CalDAV password: ')
@@ -195,7 +195,7 @@ def list_toggl_week_totals():
     # TODO doc: must get token from https://track.toggl.com/profile
     toggltrack_credentials = get_credentials(
         application_name='pydashboard-toggltrack',
-        secret_collection_title='Toggl Track credentials (pywip)',
+        secret_collection_title='Toggl Track credentials (pydashboard)',
         server_address_question_label=None,
         username_question_label=None,
         password_question_label="Enter Toggl Track token: ")
