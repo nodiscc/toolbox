@@ -18,7 +18,7 @@ mirrors:
 	$(call call_aria2c,$(BIN_WINDOWS_DIR)/,bin-windows.urls.list)
 	$(call call_aria2c,$(BIN_DATA_DIR)/,bin-data.urls.list)
 
-tests: test-shellcheck test-ansible-lint
+tests: test-shellcheck test-ansible-lint test-pylint
 
 test-shellcheck:
 	for i in $$(find SCRIPTS/ -maxdepth 1 -type f); do \
