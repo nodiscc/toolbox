@@ -13,8 +13,6 @@ requires a running Freedesktop SecretStorage service. These credentials can be r
 or deleted using `secret-tool` or `seahorse` (`Password and Keys` graphical application). 
 """
 
-import os
-import sys
 import argparse
 import secretstorage
 import email
