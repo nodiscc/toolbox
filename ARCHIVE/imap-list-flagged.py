@@ -189,7 +189,7 @@ def list_caldav_todos(args):
     result = todos[:args.caldav_todos_limit]
     print('\n'.join(result))
 
-def list_toggl_week_totals(args):
+def list_toggl_week_totals():
     """Compute total hours per week filed on Toggl Track, compute overtime"""
     # DOC: https://developers.track.toggl.space/docs/api/time_entries
     # TODO doc: must get token from https://track.toggl.com/profile
@@ -329,7 +329,7 @@ def main():
         elif action == 'ttrss-marked':
             list_ttrss_marked(args)
         elif action == 'toggl-timer':
-            list_toggl_week_totals(args)
+            list_toggl_week_totals()
 
 if __name__ == "__main__":
     main()
