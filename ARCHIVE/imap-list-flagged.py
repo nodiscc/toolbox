@@ -71,7 +71,7 @@ def list_gitea_assigned(args):
     print('----------------- ⊚ ASSIGNED ---------------------')
     gitea_auth_headers = {'Authorization': 'Bearer ' + gitea_credentials['password']}
     api_url = gitea_credentials['server_address'] + '/api/v1/repos/issues/search?assigned=true&limit=10000&state=open'
-    response = requests.get(api_url, verify=False, headers=gitea_auth_headers)
+    response = requests.get(api_url, verify=False, headers=gitea_auth_headers, timeout=60)
     for i in response.json():
         out_line = '⊚ ' + i['repository']['name'] + ': ' + i['title']
         print(out_line[0:args.max_line_length])
