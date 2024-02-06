@@ -69,7 +69,7 @@ def list_gitea_assigned(args):
     print('----------------- ⊚ ASSIGNED ---------------------')
     gitea_auth_headers = {'Authorization': 'Bearer ' + gitea_credentials['password']}
     api_url = gitea_credentials['server_address'] + '/api/v1/repos/issues/search?assigned=true&limit=10000&state=open'
-    response = requests.get(api_url, verify=False, headers=gitea_auth_headers, timeout=60)
+    response = requests.get(api_url, verify=args.ssl_verify, headers=gitea_auth_headers, timeout=60)
     for i in response.json():
         out_line = '⊚ ' + i['repository']['name'] + ': ' + i['title']
         print(out_line[0:args.max_line_length])
@@ -93,7 +93,7 @@ def list_ttrss_marked(args):
     ttrss_headers = {"Content-Type": "application/json"}
     response = ttrss_session.post(
         ttrss_credentials['server_address'] + '/api/',
-        verify=False,
+        verify=args.ssl_verify,
         headers=ttrss_headers,
         data=ttrss_login_data)
     auth = json.loads(response.text)
@@ -107,7 +107,7 @@ def list_ttrss_marked(args):
         "limit": args.ttrss_limit})
     response = ttrss_session.post(
         ttrss_credentials['server_address'] + '/api/',
-        verify=False,
+        verify=args.ssl_verify,
         headers=ttrss_headers,
         data=ttrss_query_data)
     data = json.loads(response.text)
@@ -132,7 +132,7 @@ def list_caldav_events(args):
     caldav_client = caldav.DAVClient(url=caldav_credentials['server_address'],
                             username=caldav_credentials['username'],
                             password=caldav_credentials['password'],
-                            ssl_verify_cert=False)
+                            ssl_verify_cert=args.ssl_verify)
     caldav_principal = caldav_client.principal()
     caldav_calendar = caldav_principal.calendar(name=args.caldav_calendar_name)
     assert(caldav_calendar)
@@ -171,7 +171,7 @@ def list_caldav_todos(args):
     caldav_client = caldav.DAVClient(url=caldav_credentials['server_address'],
                             username=caldav_credentials['username'],
                             password=caldav_credentials['password'],
-                            ssl_verify_cert=False)
+                            ssl_verify_cert=args.ssl_verify)
     caldav_principal = caldav_client.principal()
     caldav_calendar = caldav_principal.calendar(name=args.caldav_calendar_name)
     assert(caldav_calendar)
@@ -306,6 +306,7 @@ def main():
     parser.add_argument('--calendar-max-days', dest='caldav_calendar_maxdays', default=7, help='Only show CalDAV events for the next N days (default 7)')
     parser.add_argument('--todos-limit', dest='caldav_todos_limit', default=7, help='Only show the top N CalDAV todos by priority (default 7)')
     parser.add_argument('--ttrss-limit', dest='ttrss_limit', default=20, help='Only show up to n TT-RSS marked articles (default 20)')
+    parser.add_argument('--insecure', dest='ssl_verify', action='store_false', help='Disable CalDAV/Gitea/TT-RSS SSL/TLS certificate verification')
     args = parser.parse_args()
     folders_list = args.folders_list.split(",")
     actions_list = args.actions_list.split(",")
