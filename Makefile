@@ -25,6 +25,13 @@ test-shellcheck:
 		if grep '^#!/bin/bash' "$$i" >/dev/null; then \
 		shellcheck "$$i" || exit 0 ; fi; done
 
+test-pylint:
+	python3 -m venv .venv && \
+	source .venv/bin/activate && \
+	pip3 install wheel && \
+	pip3 install pylint secretstorage requests caldav icalendar && \
+	pylint --disable fixme ARCHIVE/imap-list-flagged.py
+
 test-ansible-lint:
 	cd ARCHIVE/ANSIBLE-COLLECTION/ && make
 
