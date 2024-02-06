@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
-# TODO add support for CalDAV events, merge from get_caldav_events.py
 """
 Command-line tool to fetch info from various sources and display them in a short, actionable list.
-Supports IMAP flagged messages, Gitea assigned issues/PRs, TT-RSS starred articles, Toggl Track time
-entries.
+Supports Caldav tasks/TODOs, CalDAV events, IMAP unread/flagged messages, Gitea assigned issues/PRs,
+TT-RSS starred articles, Toggl Track time entries.
 Requirements:
   sudo apt install python3-venv python3-pip
-  python3 -m venv ~/.venv && source ~/.venv/bin/activate && pip3 install secretstorage requests
+  python3 -m venv ~/.venv && source ~/.venv/bin/activate && pip3 install secretstorage requests caldav icalendar
 USAGE: source ~/.venv/bin/activate && ./pywip --help
 On first run the program will ask for the required credentials for each service, and store them in
-your desktop environment's secret storage (e.g. gnome-keyring). These credentials can be retrieved
-or deleted using `secret-tool` or `seahorse` (`Password and Keys` graphical application).
+your desktop environment's secret storage (e.g. gnome-keyring, keepassxc...), so this program
+requires a running Freedesktop SecretStorage service. These credentials can be retrieved, edited,
+or deleted using `secret-tool` or `seahorse` (`Password and Keys` graphical application). 
 """
 
 import os
@@ -23,6 +23,8 @@ import requests
 import json
 import decimal
 import datetime
+import caldav
+import icalendar
 from contextlib import closing
 from base64 import b64encode
 
@@ -86,33 +88,108 @@ def list_ttrss_marked(args):
         password_question_label="Enter TT-RSS password: ")
     print('----------------- ⊚ TT-RSS MARKED ----------------')
     ttrss_session = requests.Session()
-    tt_rss_login_data = json.dumps({
+    ttrss_login_data = json.dumps({
         "op": "login",
         "user": ttrss_credentials['username'],
         "password": ttrss_credentials['password']})
-    tt_rss_headers = {"Content-Type": "application/json"}
+    ttrss_headers = {"Content-Type": "application/json"}
     response = ttrss_session.post(
         ttrss_credentials['server_address'] + '/api/',
         verify=False,
-        headers=tt_rss_headers,
-        data=tt_rss_login_data)
+        headers=ttrss_headers,
+        data=ttrss_login_data)
     auth = json.loads(response.text)
     session_id = auth['content']['session_id']
-    tt_rss_query_data = json.dumps({
+    ttrss_query_data = json.dumps({
         "sid": session_id,
         "op": "getHeadlines",
         "feed_id": -1,
         "view_mode": "all_articles",
-        "feed_dates": "date_reverse"})
+        "feed_dates": "date_reverse",
+        "limit": args.ttrss_limit})
     response = ttrss_session.post(
         ttrss_credentials['server_address'] + '/api/',
         verify=False,
-        headers=tt_rss_headers,
-        data=tt_rss_query_data)
+        headers=ttrss_headers,
+        data=ttrss_query_data)
     data = json.loads(response.text)
     for article in data['content']:
         out_line = '▽ ' + article['title']
         print(out_line[0:args.max_line_length])
+
+def list_caldav_events(args):
+    """
+    List events from a CalDAV server in the next days
+    Only tested against Nextcloud
+    """
+    # https://icalendar.readthedocs.io/en/latest/
+    # https://caldav.readthedocs.io/en/latest/
+    caldav_credentials = get_credentials(
+        application_name='pydashboard-caldav',
+        secret_collection_title='CalDAV credentials (pywip)',
+        server_address_question_label='Enter CalDAV address (e.g. https://nexctloud.example.org/remote.php/dav/calendars/user/personal/): ',
+        username_question_label='Enter CalDAV username: ',
+        password_question_label='Enter CalDAV password: ')
+    print('----------------- ◌ EVENTS ----------------------')
+    caldav_client = caldav.DAVClient(url=caldav_credentials['server_address'],
+                            username=caldav_credentials['username'],
+                            password=caldav_credentials['password'],
+                            ssl_verify_cert=False)
+    caldav_principal = caldav_client.principal()
+    caldav_calendar = caldav_principal.calendar(name=args.caldav_calendar_name)
+    assert(caldav_calendar)
+    now = datetime.datetime.now()
+    caldav_events = caldav_calendar.search(
+        start=now,
+        end=now + datetime.timedelta(days=args.caldav_calendar_maxdays),
+        event=True,
+        expand=True,
+        sort_keys=('dtstart',))
+    for event in caldav_events:
+        ical_event = icalendar.Calendar.from_ical(event.data)
+        for component in ical_event.walk():
+            if component.name == "VEVENT":
+                summary = component.get('summary')
+                start_datetime = component.get('dtstart').dt
+                start = start_datetime.strftime('%a %d/%m %H:%M')
+                end_datetime = component.get('dtend').dt
+                duration_datetime = end_datetime - start_datetime
+                duration = 'h'.join(str(duration_datetime).split(':')[:2])
+                out_line = '◌ {} {} {}'.format(start, duration, summary)
+                print(out_line[0:args.max_line_length])
+
+def list_caldav_todos(args):
+    """
+    List todos from a CalDAV server, sorted by priority
+    Only tested against Nextcloud
+    """
+    caldav_credentials = get_credentials(
+        application_name='pydashboard-caldav',
+        secret_collection_title='CalDAV credentials (pywip)',
+        server_address_question_label='Enter CalDAV address (e.g. https://nexctloud.example.org/remote.php/dav/calendars/user/personal/): ',
+        username_question_label='Enter CalDAV username: ',
+        password_question_label='Enter CalDAV password: ')
+    print('----------------- ▧ TODOS -------------------------')
+    caldav_client = caldav.DAVClient(url=caldav_credentials['server_address'],
+                            username=caldav_credentials['username'],
+                            password=caldav_credentials['password'],
+                            ssl_verify_cert=False)
+    caldav_principal = caldav_client.principal()
+    caldav_calendar = caldav_principal.calendar(name=args.caldav_calendar_name)
+    assert(caldav_calendar)
+    caldav_todos = caldav_calendar.todos(include_completed=False)
+    todos = []
+    for todo in caldav_todos:
+        summary = todo.vobject_instance.vtodo.summary.value
+        try:
+            priority = todo.vobject_instance.vtodo.priority.value
+        except AttributeError:
+            priority = "9"
+        out_line = '▧ {} {}'.format(priority, summary)
+        todos.append(out_line[0:args.max_line_length])
+    todos.sort()
+    result = todos[:args.caldav_todos_limit]
+    print('\n'.join(result))
 
 def list_toggl_week_totals(args):
     """Compute total hours per week filed on Toggl Track, compute overtime"""
@@ -161,6 +238,7 @@ def list_toggl_week_totals(args):
         end_date = end_date + datetime.timedelta(days=7)
     print('◔ TOTAL OVERTIME ON THIS PERIOD: {}H'.format(total_overtime))
 
+
 def print_imap_subjects(conn, args, folder, criterion, symbol):
     """print subjects of messages matching the search criterion in a folder, prefixed with a symbol"""
     prefix = folder.replace('INBOX/', '') + ': '
@@ -190,6 +268,7 @@ def get_credentials(application_name, secret_collection_title,
     Retrieve credentials from secret storage, if none found matching application_name,
     create a collection containing the credentials
     """
+    # https://secretstorage.readthedocs.io/
     with closing(secretstorage.dbus_init()) as conn:
         collection = secretstorage.get_default_collection(conn)
         items = collection.search_items({'application': application_name})
@@ -220,19 +299,29 @@ def get_credentials(application_name, secret_collection_title,
 def main():
     """Main loop"""
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
-    parser.add_argument('--actions', dest='actions_list', type=str, default='all', help='list of actions to run, e.g. list-flagged,list-unread,gitea-assigned,ttrss-marked,toggl-timer (default all)')
+    parser.add_argument('--actions', dest='actions_list', type=str, default='all', help='list of actions to run, e.g. caldav-events,caldav-todos,list-flagged,list-unread,gitea-assigned,ttrss-marked,toggl-timer (default all)')
     parser.add_argument('--folders-list', dest='folders_list', type=str, default='INBOX', help='list of folders to fetch, e.g. INBOX,somedir/subdir,other (default INBOX)')
     parser.add_argument('--line-length', dest='max_line_length', type=int, default=10000, help='truncate output lines to this number of characters (default 10000)')
     parser.add_argument('--hide-folder-names', dest='hide_folder_names', action='store_true', help='dont output folder names before mail subjects')
+    parser.add_argument('--calendar-name', dest='caldav_calendar_name', default='Personnel', help='Name of the CalDAV calendar (default "Personnel")')
+    parser.add_argument('--calendar-max-days', dest='caldav_calendar_maxdays', default=7, help='Only show CalDAV events for the next N days (default 7)')
+    parser.add_argument('--todos-limit', dest='caldav_todos_limit', default=7, help='Only show the top N CalDAV todos by priority (default 7)')
+    parser.add_argument('--ttrss-limit', dest='ttrss_limit', default=20, help='Only show up to n TT-RSS marked articles (default 20)')
     args = parser.parse_args()
     folders_list = args.folders_list.split(",")
     actions_list = args.actions_list.split(",")
     for action in actions_list:
         if action == 'all':
+            list_caldav_todos(args)
+            list_caldav_events(args)
             list_unread(args, folders_list)
             list_flagged(args, folders_list)
             list_gitea_assigned(args)
             list_ttrss_marked(args)
+        elif action == 'caldav-todos':
+            list_caldav_todos(args)
+        elif action == 'caldav-events':
+            list_caldav_events(args)
         elif action == 'list-unread':
             list_unread(args, folders_list)
         elif action == 'list-flagged':
