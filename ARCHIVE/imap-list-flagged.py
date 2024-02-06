@@ -219,7 +219,8 @@ def list_toggl_week_totals():
         data = requests.get(
             'https://api.track.toggl.com/api/v9/me/time_entries',
             headers=toggl_headers,
-            params=toggl_params)
+            params=toggl_params,
+            timeout=60)
         j = json.loads(data.text)
         total_duration_sec = 0
         for time_entry in j:
