@@ -245,11 +245,11 @@ def print_imap_subjects(conn, args, folder, criterion, symbol):
     if args.hide_folder_names:
         prefix = ''
     conn.select(folder, readonly=True)
-    imap_status, imap_response = conn.search(None, criterion)
+    _, imap_response = conn.search(None, criterion)
     message_uids = imap_response[0].split()
     # print("[INFO] {} unread messages in {}".format(len(message_uids), folder))
     for message_uid in message_uids:
-        status, message_data = conn.fetch(message_uid, '(BODY.PEEK[HEADER])')
+        _, message_data = conn.fetch(message_uid, '(BODY.PEEK[HEADER])')
         for response_part in message_data:
             if isinstance(response_part, tuple):
                 msg = email.message_from_bytes(response_part[1])
