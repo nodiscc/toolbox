@@ -122,6 +122,7 @@ def list_caldav_events(args):
     """
     # https://icalendar.readthedocs.io/en/latest/
     # https://caldav.readthedocs.io/en/latest/
+    # TODO if event day is today, replace weekday name with TDY, if event day is tomorrow replace weekday name with TMW
     caldav_credentials = get_credentials(
         application_name='pydashboard-caldav',
         secret_collection_title='CalDAV credentials (pydashboard)',
