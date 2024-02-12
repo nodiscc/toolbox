@@ -11,7 +11,7 @@ set -o nounset
 project="${1:-default}"
 groupnames="${2:-all}"
 
-all_hosts=$(cd ~/playbooks/$project && .venv/bin/ansible "$groupnames" --list-hosts|tail -n +2)
+all_hosts=$(cd ~/playbooks/$project && ANSIBLE_VERBOSITY=0 .venv/bin/ansible "$groupnames" --list-hosts|tail -n +2)
 for i in $all_hosts; do \
 shortname=$(echo "$i" | cut -d'.' -f1); \
 curl --max-time 1 --silent --insecure "https://$i:19999/api/v1/alarms" | \
