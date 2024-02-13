@@ -187,10 +187,10 @@ def list_caldav_todos(args):
         except AttributeError:
             priority = "9"
         out_line = '▧ {} {}'.format(priority, summary)
-        todos.append(out_line)
+        todos.append(format_output(out_line, args))
     todos.sort()
     result = todos[:args.caldav_todos_limit]
-    print(format_output('\n'.join(result), args))
+    print('\n'.join(result))
 
 def list_toggl_week_totals():
     """Compute total hours per week filed on Toggl Track, compute overtime"""
