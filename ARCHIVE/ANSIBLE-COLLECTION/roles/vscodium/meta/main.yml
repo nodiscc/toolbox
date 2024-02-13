@@ -16,4 +16,5 @@ galaxy_info:
     - vscode
     - text
     - desktop
-dependencies: []
+dependencies:
+  - nodiscc.xsrv.handlers

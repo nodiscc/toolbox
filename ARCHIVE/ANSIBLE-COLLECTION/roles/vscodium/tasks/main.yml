@@ -1,4 +1,5 @@
 - name: import vscodium configuration tasks
+  become: yes
   import_tasks: vscodium.yml
   tags:
     - desktop

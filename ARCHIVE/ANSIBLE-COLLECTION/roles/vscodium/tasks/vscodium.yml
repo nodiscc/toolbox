@@ -1,14 +1,18 @@
-- name: add vscodium apt key
-  apt_key:
-    url: https://gitlab.com/paulcarroty/vscodium-deb-rpm-repo/raw/master/pub.gpg
-    state: present
+- name: install vscodium APT repository signing key
+  copy:
+    src: usr_share_keyrings_vscodium-archive-keyring.gpg
+    dest: /usr/share/keyrings/vscodium-archive-keyring.gpg
+    owner: root
+    group: root
 
 - name: add vscodium apt repository
-  apt_repository:
-    repo: 'deb https://download.vscodium.com/debs vscodium main'
-    filename: vscodium
-    state: present
-    update_cache: yes
+  template:
+    src: etc_apt_sources.list.d_vscodium.list.j2
+    dest: /etc/apt/sources.list.d/vscodium.list
+    owner: root
+    group: root
+    mode: "0644"
+  notify: update apt cache
 
 # TODO set sysctl fs.inotify.max_user_watches=524288
 
