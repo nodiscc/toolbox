@@ -4,6 +4,7 @@
     dest: /usr/share/keyrings/vscodium-archive-keyring.gpg
     owner: root
     group: root
+    mode: "0644"
 
 - name: add vscodium apt repository
   template:
