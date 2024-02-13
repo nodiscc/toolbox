@@ -2,7 +2,7 @@
 """
 Command-line tool to fetch info from various sources and display them in a short, actionable list.
 Supports Caldav tasks/TODOs, CalDAV events, IMAP unread/flagged messages, Gitea assigned issues/PRs,
-TT-RSS starred articles, Toggl Track time entries.
+TT-RSS starred articles, Toggl Track time entries, file last modification time.
 Requirements:
   sudo apt install python3-venv python3-pip
   python3 -m venv ~/.venv && source ~/.venv/bin/activate && pip3 install secretstorage requests caldav icalendar
@@ -240,6 +240,19 @@ def list_toggl_week_totals():
         end_date = end_date + datetime.timedelta(days=7)
     print('◔ TOTAL OVERTIME ON THIS PERIOD: {}H'.format(total_overtime))
 
+def check_mtime(args):
+    """Check last modification time of a file, return warning if older than --max-mtime seconds"""
+    file_path = args.mtime_file
+    mtime = datetime.datetime.fromtimestamp(os.path.getmtime(file_path))
+    now = datetime.datetime.now()
+    max_mtime = now - datetime.timedelta(seconds=int(args.max_mtime))
+    if mtime < max_mtime:
+        age = max_mtime - mtime
+        out_line = '%%COLOR_RED%%▧%%COLOR_RESET%% {} {} old'.format(os.path.basename(file_path),
+                                                                    age)
+        print(format_output(out_line, args))
+
+##### UTILITIES #####
 
 def print_imap_subjects(conn, args, folder, criterion, symbol):
     """print subjects of messages matching the search criterion in a folder, prefixed with a symbol"""
@@ -315,7 +328,7 @@ def format_output(text, args):
 def main():
     """Main loop"""
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
-    parser.add_argument('--actions', dest='actions_list', type=str, default='all', help='list of actions to run, e.g. caldav-events,caldav-todos,list-flagged,list-unread,gitea-assigned,ttrss-marked,toggl-timer (default all)')
+    parser.add_argument('--actions', dest='actions_list', type=str, default='all', help='list of actions to run, e.g. caldav-events,caldav-todos,list-flagged,list-unread,gitea-assigned,ttrss-marked,toggl-timer,check-mtime (default all)')
     parser.add_argument('--folders-list', dest='folders_list', type=str, default='INBOX', help='list of folders to fetch, e.g. INBOX,somedir/subdir,other (default INBOX)')
     parser.add_argument('--line-length', dest='max_line_length', type=int, default=10000, help='truncate output lines to this number of characters (default 10000)')
     parser.add_argument('--hide-folder-names', dest='hide_folder_names', action='store_true', help='dont output folder names before mail subjects')
@@ -324,6 +337,8 @@ def main():
     parser.add_argument('--todos-limit', dest='caldav_todos_limit', default=7, help='Only show the top N CalDAV todos by priority (default 7)')
     parser.add_argument('--ttrss-limit', dest='ttrss_limit', default=20, help='Only show up to n TT-RSS marked articles (default 20)')
     parser.add_argument('--insecure', dest='ssl_verify', action='store_false', help='Disable CalDAV/Gitea/TT-RSS SSL/TLS certificate verification')
+    parser.add_argument('--mtime-file', dest='mtime_file', help='Path to file to check with check-mtime')
+    parser.add_argument('--max-mtime', dest='max_mtime', default=604800, help='Max time since last modification of file, above which to raise a warning (seconds, default 604800 = 1 week)')
     parser.add_argument('--output-format', dest='output_format', default='shell', choices=['shell', 'conky'], help='Output format (default shell)')
     args = parser.parse_args()
     folders_list = args.folders_list.split(",")
@@ -350,6 +365,11 @@ def main():
             list_ttrss_marked(args)
         elif action == 'toggl-timer':
             list_toggl_week_totals()
+        elif action == 'check-mtime':
+            check_mtime(args)
+        else:
+            print('ERROR: unknown action {}'.format(action))
+            sys.exit(1)
 
 if __name__ == "__main__":
     main()
