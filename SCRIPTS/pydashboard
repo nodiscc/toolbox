@@ -13,6 +13,8 @@ requires a running Freedesktop SecretStorage service. These credentials can be r
 or deleted using `secret-tool` or `seahorse` (`Password and Keys` graphical application). 
 """
 
+import os
+import re
 import argparse
 import secretstorage
 import email
@@ -72,7 +74,7 @@ def list_gitea_assigned(args):
     response = requests.get(api_url, verify=args.ssl_verify, headers=gitea_auth_headers, timeout=60)
     for i in response.json():
         out_line = '⊚ ' + i['repository']['name'] + ': ' + i['title']
-        print(out_line[0:args.max_line_length])
+        print(format_output(out_line, args))
 
 def list_ttrss_marked(args):
     """List TT-RSS starred articles"""
@@ -113,7 +115,7 @@ def list_ttrss_marked(args):
     data = json.loads(response.text)
     for article in data['content']:
         out_line = '▽ ' + article['title']
-        print(out_line[0:args.max_line_length])
+        print(format_output(out_line, args))
 
 def list_caldav_events(args):
     """
@@ -129,7 +131,7 @@ def list_caldav_events(args):
         server_address_question_label='Enter CalDAV address (e.g. https://nexctloud.example.org/remote.php/dav/calendars/user/personal/): ',
         username_question_label='Enter CalDAV username: ',
         password_question_label='Enter CalDAV password: ')
-    print('----------------- ◌ EVENTS ----------------------')
+    print('----------------- ◌ EVENTS -----------------------')
     caldav_client = caldav.DAVClient(url=caldav_credentials['server_address'],
                             username=caldav_credentials['username'],
                             password=caldav_credentials['password'],
@@ -155,7 +157,7 @@ def list_caldav_events(args):
                 duration_datetime = end_datetime - start_datetime
                 duration = 'h'.join(str(duration_datetime).split(':')[:2])
                 out_line = '◌ {} {} {}'.format(start, duration, summary)
-                print(out_line[0:args.max_line_length])
+                print(format_output(out_line, args))
 
 def list_caldav_todos(args):
     """
@@ -185,10 +187,10 @@ def list_caldav_todos(args):
         except AttributeError:
             priority = "9"
         out_line = '▧ {} {}'.format(priority, summary)
-        todos.append(out_line[0:args.max_line_length])
+        todos.append(out_line)
     todos.sort()
     result = todos[:args.caldav_todos_limit]
-    print('\n'.join(result))
+    print(format_output('\n'.join(result), args))
 
 def list_toggl_week_totals():
     """Compute total hours per week filed on Toggl Track, compute overtime"""
@@ -259,7 +261,7 @@ def print_imap_subjects(conn, args, folder, criterion, symbol):
                 else:
                     subject = decoded_header.replace('\r', '').replace('\n', '')
                 out_line = symbol + ' ' + prefix + subject
-                print(out_line[0:args.max_line_length])
+                print(format_output(out_line, args))
 
 def get_credentials(application_name, secret_collection_title,
                     server_address_question_label, username_question_label,
@@ -296,6 +298,20 @@ def get_credentials(application_name, secret_collection_title,
         credentials['password'] = item.get_secret().decode("utf-8")
         return credentials
 
+def format_output(text, args):
+    """Format output based on max_line_length and output_format"""
+    actual_line_length = len(re.sub(r'(%%COLOR_RED%%|%%COLOR_RESET%%)', '', text))
+    diff_to_actual = len(text) - actual_line_length
+    if args.output_format == 'conky':
+        text = text.replace('#', '\#')
+        text = text.replace('%%COLOR_RED%%', '${color3}')
+        text = text.replace('%%COLOR_RESET%%', '${color}')
+    elif args.output_format == 'shell':
+        text = text.replace('%%COLOR_RED%%', '\033[31m')
+        text = text.replace('%%COLOR_RESET%%', '\033[0m')
+    max_line_length = args.max_line_length + diff_to_actual
+    return text[0:max_line_length]
+
 def main():
     """Main loop"""
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
@@ -308,6 +324,7 @@ def main():
     parser.add_argument('--todos-limit', dest='caldav_todos_limit', default=7, help='Only show the top N CalDAV todos by priority (default 7)')
     parser.add_argument('--ttrss-limit', dest='ttrss_limit', default=20, help='Only show up to n TT-RSS marked articles (default 20)')
     parser.add_argument('--insecure', dest='ssl_verify', action='store_false', help='Disable CalDAV/Gitea/TT-RSS SSL/TLS certificate verification')
+    parser.add_argument('--output-format', dest='output_format', default='shell', choices=['shell', 'conky'], help='Output format (default shell)')
     args = parser.parse_args()
     folders_list = args.folders_list.split(",")
     actions_list = args.actions_list.split(",")
