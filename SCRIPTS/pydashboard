@@ -15,6 +15,7 @@ or deleted using `secret-tool` or `seahorse` (`Password and Keys` graphical appl
 
 import os
 import re
+import sys
 import argparse
 import secretstorage
 import email
@@ -316,7 +317,7 @@ def format_output(text, args):
     actual_line_length = len(re.sub(r'(%%COLOR_RED%%|%%COLOR_RESET%%)', '', text))
     diff_to_actual = len(text) - actual_line_length
     if args.output_format == 'conky':
-        text = text.replace('#', '\#')
+        text = text.replace('#', '\#') # pylint: disable=anomalous-backslash-in-string
         text = text.replace('%%COLOR_RED%%', '${color3}')
         text = text.replace('%%COLOR_RESET%%', '${color}')
     elif args.output_format == 'shell':
