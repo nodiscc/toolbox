@@ -14,6 +14,7 @@
     create_home: yes
 
 - name: install bitmagnet
+  become: yes
   become_user: bitmagnet
   command:
     cmd: "go install -v github.com/bitmagnet-io/bitmagnet@{{ bitmagnet_version }}"
@@ -70,4 +71,3 @@
 # re-read systemd service configuration
 - name: apply configuration (flush handlers)
   meta: flush_handlers
-

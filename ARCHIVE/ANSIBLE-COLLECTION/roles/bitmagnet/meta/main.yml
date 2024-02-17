@@ -15,7 +15,8 @@ galaxy_info:
     - p2p
     - dht
     - crawler
-    - search-engine
+    - search
+    - engine
 dependencies:
   - nodiscc.xsrv.handlers
   # - nodiscc.xsrv.common # optional
