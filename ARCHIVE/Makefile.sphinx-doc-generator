@@ -1,13 +1,4 @@
-#!/usr/bin/make
-# Change the default shell /bin/sh which does not implement 'source'
-# source is needed to work in a python virtualenv
 SHELL := /bin/bash
-
-# install documentation generator (sphinx + markdown + theme + html-to-pdf)
-install_dev_docs:
-	python3 -m venv .venv/
-	source .venv/bin/activate && pip3 install sphinx recommonmark sphinx_rtd_theme
-	wget -O /tmp/wkhtmltox_0.12.5-1.stretch_amd64.deb 'https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.5/wkhtmltox_0.12.5-1.stretch_amd64.deb' && sudo dpkg -i /tmp/wkhtmltox_0.12.5-1.stretch_amd64.deb
 
 doc: doc_html doc_pdf
 
@@ -17,9 +8,11 @@ SPHINXBUILD   ?= sphinx-build
 SOURCEDIR     = doc/md    # répertoire source (markdown)
 BUILDDIR      = doc/html  # répertoire destination (html)
 doc_html:
-	source .venv/bin/activate && sphinx-build -c doc/ -b html doc/md doc/html
+	source .venv/bin/activate && pip3 install sphinx recommonmark sphinx_rtd_theme && \
+	sphinx-build -c doc/ -b html doc/md doc/html
 
 # PDF documentation generation
+# Requirements: wkhtmltopdf
 doc_pdf:
 	mkdir -p doc/pdf/
-	/usr/local/bin/wkhtmltopdf doc/html/index.html doc/pdf/index.pdf
+	wkhtmltopdf doc/html/index.html doc/pdf/index.pdf
