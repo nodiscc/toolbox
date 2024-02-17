@@ -1,0 +1,25 @@
+# @tag bitmagnet - setup bitmagnet BitTorrent DHT crawler
+
+galaxy_info:
+  role_name: bitmagnet
+  author: "nodiscc <nodiscc@gmail.com>"
+  description: "BitTorrent DHT crawler"
+  license: GPL-3.0
+  min_ansible_version: "2.12"
+  platforms:
+    - name: Debian
+      versions:
+        - "12"
+  galaxy_tags:
+    - torrent
+    - p2p
+    - dht
+    - crawler
+    - search-engine
+dependencies:
+  - nodiscc.xsrv.handlers
+  # - nodiscc.xsrv.common # optional
+  # - nodiscc.xsrv.monitoring # optional
+  # - nodiscc.xsrv.backup # optional
+  # - nodiscc.xsrv.apache # required in the standard configuration
+  # - nodiscc.xsrv.postgresql # required in the standard configuration

@@ -1,0 +1,9 @@
+{% if bitmagnet_enable_service %}
+  - name: bitmagnet
+    timeout: 1
+    tls_skip_verify: true
+    update_every: 10
+    url: https://127.0.0.1
+    headers:
+      Host: "{{ bitmagnet_fqdn }}"
+{% endif %}

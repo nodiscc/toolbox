@@ -1,0 +1,43 @@
+[Unit]
+Description=bitmagnet DHT crawler
+After=syslog.target
+After=network.target
+After=postgresql.service
+StartLimitIntervalSec=10s
+StartLimitBurst=4
+
+[Service]
+User=bitmagnet
+Group=bitmagnet
+Type=simple
+WorkingDirectory=/var/lib/bitmagnet/
+ExecStart=/var/lib/bitmagnet/bin/bitmagnet worker run --keys=queue_server  --keys=http_server
+Restart=always
+RestartSec=2s
+# Hardening directives
+CapabilityBoundingSet=
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+NoNewPrivileges=yes
+PrivateDevices=yes
+PrivateMounts=yes
+PrivateTmp=yes
+PrivateUsers=yes
+ProtectClock=yes
+ProtectControlGroups=yes
+ProtectHome=yes
+ProtectKernelLogs=yes
+ProtectKernelModules=yes
+ProtectKernelTunables=yes
+ProtectProc=invisible
+ProtectSystem=strict
+ReadWritePaths=/var/lib/bitmagnet/
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+SystemCallArchitectures=native
+SystemCallErrorNumber=EPERM
+SystemCallFilter=@system-service
+
+[Install]
+WantedBy=multi-user.target

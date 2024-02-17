@@ -1,0 +1,17 @@
+postgres:
+  host: 127.0.0.1
+  name: bitmagnet
+  password: {{ bitmagnet_db_password }}
+  port: 5432
+  user: bitmagnet
+# tmdb:
+#   api_key:
+dht_crawler:
+  save_files_threshold: 50
+  scaling_factor: 10
+  save_pieces: false
+log:
+  level: info
+http_server:
+  options: ["*"]
+  local_address: ":3333"

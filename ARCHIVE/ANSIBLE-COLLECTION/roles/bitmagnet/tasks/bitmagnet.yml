@@ -1,0 +1,73 @@
+- name: install required packages
+  apt:
+    state: present
+    package: golang
+    default_release: bookworm-backports
+
+- name: create bitmagnet user
+  user:
+    name: bitmagnet
+    shell: /bin/bash
+    comment: "Bitmagnet DHT crawler"
+    password: "*"
+    home: "/var/lib/bitmagnet"
+    create_home: yes
+
+- name: install bitmagnet
+  become_user: bitmagnet
+  command:
+    cmd: "go install -v github.com/bitmagnet-io/bitmagnet@{{ bitmagnet_version }}"
+  environment:
+    GOPATH: /var/lib/bitmagnet
+  register: go_install
+  changed_when: "'downloading' in go_install.stderr"
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: create bitmagnet directories
+  file:
+    state: directory
+    path: "{{ item }}"
+    owner: bitmagnet
+    group: bitmagnet
+    mode: "0750"
+  loop:
+    - /var/lib/bitmagnet/.config/bitmagnet
+    - /var/lib/bitmagnet/.local/share/bitmagnet/logs/
+
+- name: copy bitmagnet configuration
+  template:
+    src: var_lib_bitmagnet_.config_config.yml.j2
+    dest: /var/lib/bitmagnet/.config/bitmagnet/config.yml
+    owner: root
+    group: bitmagnet
+    mode: "0640"
+  ignore_errors: "{{ ansible_check_mode }}"
+  diff: no
+
+##### SERVICE #####
+
+- name: install bitmagnet systemd service/unit file
+  template:
+    src: "etc_systemd_system_bitmagnet.service.j2"
+    dest: "/etc/systemd/system/bitmagnet.service"
+    mode: "0644"
+  notify:
+    - reload systemd unit files
+    - restart bitmagnet
+
+# reload systemd unit files
+- name: apply configuration
+  meta: flush_handlers
+
+- name: start/stop/enable/disable bitmagnet service
+  service:
+    name: bitmagnet
+    state: "{{ 'started' if bitmagnet_enable_service else 'stopped' }}"
+    enabled: "{{ 'yes' if bitmagnet_enable_service else 'no' }}"
+  tags: services
+  ignore_errors: "{{ ansible_check_mode }}"
+
+# re-read systemd service configuration
+- name: apply configuration (flush handlers)
+  meta: flush_handlers
+

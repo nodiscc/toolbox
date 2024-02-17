@@ -1,0 +1,44 @@
+- name: install packages for postgresql support
+  apt:
+    state: present
+    package:
+      - python3-psycopg2
+
+- name: create bitmagnet postgresql user
+  become: yes
+  become_user: postgres
+  postgresql_user:
+    name: "bitmagnet"
+    state: present
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: set bitmagnet postgresql user password
+  become: yes
+  become_user: postgres
+  postgresql_user:
+    name: "bitmagnet"
+    password: "{{ bitmagnet_db_password }}"
+  ignore_errors: "{{ ansible_check_mode }}"
+  no_log: True
+
+- name: create bitmagnet postgresql database
+  become: yes
+  become_user: postgres
+  postgresql_db:
+    name: "bitmagnet"
+    state: present
+    lc_collate: 'en_US.UTF-8'
+    lc_ctype: 'en_US.UTF-8'
+    encoding: 'UTF8'
+    owner: 'bitmagnet'
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: grant privileges on bitmagnet database to bitmagnet postgresql user
+  become: yes
+  become_user: postgres
+  postgresql_privs:
+    db: "bitmagnet"
+    privs: ALL
+    type: database
+    role: "bitmagnet"
+  ignore_errors: "{{ ansible_check_mode }}"

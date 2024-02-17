@@ -1,0 +1,12 @@
+- name: check that mandatory variables are correctly defined
+  assert:
+    quiet: yes
+    that: "{{ item }}"
+    fail_msg: "One or more variables are not correctly defined. Check role documentation: https://gitlab.com/nodiscc/xsrv/-/tree/master/roles/bitmagnet"
+  loop:
+    - bitmagnet_fqdn is not search("CHANGEME")
+    - bitmagnet_db_password is not search("CHANGEME")
+    - bitmagnet_https_mode in ['selfsigned', 'letsencrypt']
+    - bitmagnet_enable_service == bitmagnet_enable_service | bool
+    - bitmagnet_allowed_hosts | type_debug == "list"
+    - bitmagnet_version is string

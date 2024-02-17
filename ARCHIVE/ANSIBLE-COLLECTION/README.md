@@ -4,6 +4,7 @@ Less-maintained, experimental or project-specific ansible [roles](roles/).
 
 <!--BEGIN ROLES LIST-->
 - [awesome_selfhosted_html](roles/awesome_selfhosted_html) - awesome-selfhosted static website
+- [bitmagnet](roles/bitmagnet) - BitTorrent DHT crawler
 - [docker](roles/docker) - application containerization platform
 - [homepage_extra_icons](roles/homepage_extra_icons) - additional icons for the nodiscc.xsrv.homepage role
 - [icecast](roles/icecast) - media streaming server
@@ -61,6 +62,7 @@ ansible-galaxy collection install -r requirements.yml
    - nodiscc.toolbox.planarally
    - nodiscc.toolbox.k8s
    - nodiscc.toolbox.vscodium
+   - nodiscc.toolbox.bitmagnet
 ```
 
 See [Using collections](https://docs.ansible.com/ansible/latest/user_guide/collections_using.html) for more details.
