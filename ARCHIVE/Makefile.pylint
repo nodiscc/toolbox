@@ -1,0 +1,7 @@
+.PHONY: test-pylint # lint python scripts with pylint
+test-pylint:
+	python3 -m venv .venv && \
+	source .venv/bin/activate && \
+	pip3 install wheel && \
+	pip3 install pylint && \
+	pylint --disable fixme --fail-under 8 --fail-on E,W *.py
