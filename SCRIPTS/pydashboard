@@ -17,17 +17,17 @@ import os
 import re
 import sys
 import argparse
-import secretstorage
 import email
 import imaplib
-import requests
 import json
 import decimal
 import datetime
-import caldav
-import icalendar
 from contextlib import closing
 from base64 import b64encode
+import secretstorage
+import requests
+import caldav
+import icalendar
 
 def list_unread(args, folders_list):
     """List unread email"""
