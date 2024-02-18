@@ -286,7 +286,6 @@ python get all attributes/variables for an object: `from pprint import pprint; p
 
 rename all .txt to .wiki in a directory (rename extension)  `rename 's/.txt$/.wiki/' *.txt`
 
-
 ```
 #Redhat network configuration: /etc/sysconfig/network-scripts/ifcfg-{device_name}:
 DEVICE={device_name}
@@ -327,8 +326,6 @@ prevent overwriting a file `chattr +a $FILE`
 
 create multiple directories `mkdir -p /home/user/{test,test1,test2}`
 
-
-
 HTML5 details tag `<details> <summary>This is shown by default</summary> <p>Anything else in the element is hidden until you click the summary.</p> </details>`
 
 obiwan traceroute traceroute -m 254 -q1 `obiwan.scrye.net`
@@ -358,7 +355,6 @@ Take a snapshot from your webcam using mplayer. Assumes your webcam is at /dev/v
 output your microphone to a remote computer's speaker `dd if=/dev/dsp | ssh -c arcfour -C username@host dd of=/dev/dsp` @audio @cli
 
 Find largest files in directory and subdirectories  `find . -printf '%s %p\n' | sort -nr | head`
-
 
 CLI connect to WEP wifi network: `iwconfig wlan0; iw dev wlan0 scan, ip link set wlan0 up; iw dev wlan0 connect [network SSID] key 0:[WEP key]`
 
@@ -470,7 +466,6 @@ samba add user to SAM database: `pdbedit -a username`
 
 samba change user password: `smpbasswd username`
 
-
 samba fstab mount entry: `//172.21.24.3/myshare /mnt/mysharemountpoint cifs _netdev,auto,username=xxx,pass=xxx 0 0`
 
 network display routing table `netstat -rn` or `ip r`
@@ -565,7 +560,6 @@ show linux distribution info `cat /etc/issue`
 
 show load average as reported by kernel `cat /proc/loadavg`
 
-
 bash diff 2 strings: `diff  <(echo "$string1" ) <(echo "$string2")`
 
 show default TCP/UDP port number convention `less /etc/services`
@@ -588,7 +582,6 @@ mysql query profiling `SET SESSION profiling = 1;`, run your queries, list gathe
 mysql show global status/peroformance counters `SHOW GLOBAL STATUS;`
 
 mysql global status: `Innodb_buffer_pool_read_requests`: number of readings taken;  `Innodb_buffer_pool_reads` number of readings taken from disk that cannot be satisfied by the pool buffer; `Created_tmp_disk_tables` number of temporary tables created using the disk, `Created_tmp_tables` total number of temporary tables since the server was started; `Select_scan` number of full table scans performed
-
 
 mysql export sql database `mysqldump -u root -p db_name [tables] > dumpfile.sql` (or `--all-databases`)
 
@@ -640,11 +633,7 @@ mysql `GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, INDEX, ALTER, CREATE 
 
 bash -- There are language features you should avoid, they are there for historic reasons; Know the few-ish actual language warts that you need to work around. (pipefail, when subshells are created); Know how field-separation works. Use trap for cleanup. And it's largely because bash is trying to be smart for you: mix that into a language where instructions and data can each become the other, based purely on its position in the command line, and you're just headed for grief.   It's just not a very good design: the things that make it good on the command line make it an unsafe programming language. It is ridiculously easy to make terrible mistakes, things that look perfectly sensible... 
 
-
-
-
 bash filter out file extension: `touch example.list; file=example.list; echo "${file%.*}"`
-
 
 bash single tab to show ambiguous completions `set show-all-if-ambiguous on`  `(~/.inputrc)`
 
@@ -653,11 +642,6 @@ bash completion: ignore case `set completion-ignore-case on` `(~/.inputrc)`
 bash `source` executes the content of the file passed as argument, **in the current shell**.  (whereas `./script` runs the script as an executable file, launching a new shell to run it ") http://superuser.com/questions/46139/what-does-source-do 
 
 bash **options**: `nounset` (do not allow unset variables), errexit (exit on any error), `verbose`, `xtrace` (display commands as they are run), `pipefail` (send any non-zero return code at the end of the pipeline)
-
-
-
-
-
 
 LUKS **encrypted swap** `swapoff -a; cryptsetup luksFormat /dev/hda2; cryptsetup luksOpen /dev/hda2 cryptswap; mkswap /dev/mapper/cryptswap; #add to /etct/crypttab: cryptswap /dev/hda2 none swap,luks,timeout=30; #add to /etc/fstab: /dev/mapper/cryptswap none swap sw 0 0; swapon -a; cat /proc/swaps`
 
@@ -936,7 +920,6 @@ Fix native screen resolution not detected in GRUB (eg. netbook monitor) `echo GR
 
 `acpi_osi=Linux` in GRUB's kernel command line solves some problems related to backlight handling, volume control keys, power management...
 
-
 Writing zeros to a usb drive while displaying elapsed time, and a rate of transfer. Update every 2 seconds. `dd if=/dev/zero | pv -ptr -i 2 | dd of=/dev/sdf`
 
 dump failing, unreadable or unmountable hard drive (data recovery) `sudo aptitude install gddrescue; sudo ddrescue /dev/mondisque /media/pointmontage/monimagesauvée.dd /media/pointmontage/monimagesauvée.log -n`
@@ -964,7 +947,6 @@ rsync OS to another drive `rsync -avH /<src-root> /<dst-root>; mount --bind /dev
 merge several PDF files into one: `pdftk *.pdf cat output all.pdf`
 
 Display a desktop notification over SSH `DISPLAY=:0 notify-send "Hail Satan"`
-
 
 crypto poor man's steganography: hide a filesystem at the end of a jpg image: `dd if=/dev/urandom of=/disk bs=1M count=1; mkfs.vfat disk; mkdir asfd; mount disk asdf; echo "Place any files you want under 1MB inside asdf and press any key..."; read -n 1; umount asdf; DiskSize=$(du -b disk); echo -n "Enter the filename of the image in which you want to hide the filesystem: "; read ImageFile; cat "$ImageFile" disk > disk.jpg; echo "Done. To extract your filesystem again, run head -c $DiskSize disk.jpg > disk".`
 
@@ -1028,17 +1010,11 @@ convert an image to 14 colors `mogrify -colors 14 $@` @images
 
 lock the "login" gnome-keyring `python -c "import gnomekeyring;gnomekeyring.lock_sync('login')"` @desktop @password
 
-
-
-
 exclude directories from find output `# find / \( -name excludethis -o -name andthat \) -prune -o -type f -mmin -1`
-
 
 find multiple file types `$ find . -name "*.png" -o -name "*.jpg" -o -name "*.gif" -type f`
 
-
 grep text and print 2 following lines `# grep -A2 test /etc/fooserver/file`
-
 
 find files by user or group `find / -user carla; find / -group admins`
 
@@ -1063,6 +1039,8 @@ scan local network `nmap -sP 192.168.1.0/24`
 test specific open port `nmap -PNp {port} {host}` `nc -vz {host} {port}`
 
 nmap scan specific port for vulnerability `nmap -p 445 --script smb-vuln-ms17-010 192.168.1.55` (scripts at `/usr/share/nmap/scripts/`)
+
+nmap export results to HTML: `nmap -v -sS -T4 -A -sC -p1-65535 -oX nmap.xml --stylesheet https://raw.githubusercontent.com/honze-net/nmap-bootstrap-xsl/master/nmap-bootstrap.xsl host1 host2 host3 10.0.0.0/8`
 
 detect listening ports (using TCP/UDP sockets from local machine): `lsof -i -n | egrep "COMMAND|LISTEN|UDP"`
 
@@ -1228,12 +1206,9 @@ find sgid files: `find / -perm 2755 2>/dev/null`
 
 check for hardware virtualization support: egrep '(vmx|svm)' /proc/cpuinfo
 
-
 ufw allow outgoing port 80 to IP address: ufw allow out proto udp from any to 37.48.65.153 port 80
 
-
 show disk statistics and serial number: inxi -c0 -xx -D | tail -n +2
-
 
 bash create a directory and cd into it: mkdir -p a/directory/ && cd $_
 bash create backup file: cp file.txt{,.bak}
@@ -1250,8 +1225,6 @@ bash sums: `i=$((2+2))`
 
 do not log commands containing EXAMPLE in bash history `HISTIGNORE="*EXAMPLE*"`
 
-
-
 Display process tree `pstree -p`
 
 Find a process PID by command name `pidof COMMAND`
@@ -1262,37 +1235,25 @@ Return the PWD of any PID you pass to it `pwdx -`
 
 Sends SIGKILL to all processes except itself and init `kill -9 -1`
 
-
 convert image to data: URL (base64): base64 IMAGE.jpg
-
 
 mount qcow2 disk: sudo modprobe nbd max_part=8; sudo qemu-nbd --connect /dev/nbd0 /path/to/disk.qcow2; sudo mount /dev/nbd0p1 /mnt; sudo umount /mnt; sudo qemu-nbd --disconnect /dev/nbd0
 
-
-
 ansible readable output: `stdout_callback = debug` in ansible.cfg
-
 
 Apache trace mod_rewrite rules `LogLevel warn rewrite:trace3`
 
-
 make: check if a file or directory exists: ` $(if $(wildcard $(SRCS)),,$(fatal You have not generated source code...))`
-
 
 Unlock keepass with gnome-keyring password: secret-tool lookup database Nextcloud.kbdx | /usr/bin/keepassxc --pw-stdin /path/to/db.kdbx
 
-
 install rubygem per-user: ` sudo apt install ruby ruby-dev; gem install --user-install gem_name`
-
 
 shrink sparse qcow2 disk image: qemu-convert -p -O qcow2 source.qcow2 dest-shrunk.qocw2
 
-
 set pulseaudio volume: pactl set-sink-volume @DEFAULT_SINK@ +5%
 
-
 openssl show certificate info: `echo | openssl s_client -showcerts -servername google.com -connect gnupg.org:443 2>/dev/null | openssl x509 -inform pem -noout -text`
-
 
 packet capture on remote machine and display in local wireshark: ssh root@remoteserver `tcpdump -c 1000 -nn -w - not port 22" | wireshark -k -i -`
 
@@ -1308,35 +1269,64 @@ tcpdump -i eth0 dst 1.2.3.4 # capture packets to ip address
 
 SSH copy local folder to remote: tar -cvj /datafolder | ssh remoteserver "tar -xj -C /datafolder"
 
-
 ss equivalent to netstat -pltuna: ss -aptu
-
 
 systemd edit unit file: systemctl --edit nginx.service
 
-
 strace filter syscalls: strace -e openat,getdents command
-
 
 strace command: strace command
 
-
 strace attach to process: strace -p PID
-
 
 strace profiling: strace -c command
 
-
 temporarily change debconf frontend: sudo DEBIAN_FRONTEND="gnome" dpkg-reconfigure debconf
-
 
 raspberry pi disable HDMI 25mA power saving: `/usr/bin/tvservice -o`
 
-
 adb tail androind logs: `adb logcat -v color`
-
 
 adb android show ERROR log messages: `adb logcat *:E`
 
 linux Get all extensions and their respective file count in a directory https://serverfault.com/questions/183431/ `find ./ -type f | grep -E ".*\.[a-zA-Z0-9]*$" | sed -e 's/.*\(\.[a-zA-Z0-9]*\)$/\1/' | sort | uniq -c | sort -n`
 
+# nmap cheatsheet
+
+```
+nmap -v server1.cyberciti.biz 192.168.1.1 #scan hosts (verbose)
+nmap 192.168.1.0-20             #scan addresses range
+name 192.168.1.0/24             #scan subnet
+nmap -iL /path/to/addresses/list.txt #get addresses from a text file
+nmap 192.168.1.0/24 --exclude 192.168.1.5,192.168.1.254 # exclude addresses from scanning
+nmap -iL /tmp/scanlist.txt --excludefile /tmp/exclude.txt # exclude addresses in a text file
+nmap -v -A 192.168.1.1          # -A switch: try to detect OS and version
+nmap -sA 192.168.1.254          # -sA: find if host is firewalled
+nmap -PN 192.168.1.1            # scan a firewalled host
+nmap -6 2607:f0d0:1002:51::4    # scan an IPv6 address
+nmap -sP 192.168.1.0/24         # network discovery/ping scan
+nmap -F 192.168.1.1             # fast scan
+nmap --reason 192.168.1.1       # Display the reason a port is in a particular state
+nmap --open 192.168.1.1         #only show open ports
+nmap --packet-trace 192.168.1.1 # show all sent/received packets
+nmap -p 80,443 192.168.1.1      # scan specific ports
+nmap -p 80-200 192.168.1.1      # scan port range
+nmap -p U:53 192.168.1.1        # scan UDP port
+nmap -p U:53,111,137,T:21-25,80,139,8080 192.168.1.1 #combine port scan options
+nmap --top-ports 5 192.168.1.1  #scan most-common ports
+nmap -T5 192.168.1.0/24         # fast open port scan
+nmap -v -O --osscan-guess 192.168.1.1 # identify remote host OS and apps
+nmap -sV 192.168.1.1            #detect remote services versions
+nmap -PS 80,21,443 192.168.1.1  #-PS: TCP SYN ping scan
+nmap -PA 80,21,443 192.168.1.1  #-PA: TCP ACK ping scan
+nmap -PU 2000.2001 192.168.1.1  #-PU: UDP ping scan
+nmap -sS 192.168.1.1            #Stealth scan
+nmap -sT 192.168.1.1            #find most common ports using TCP connect scan
+nmap -sA 192.168.1.1            #Find out the most commonly used TCP ports using TCP ACK scan. -sW: TCP window scan, -sM TCP Maimon scan
+nmap -sU 192.168.1.1            #scan for UDP listeners
+nmap -sO 192.168.1.1            #scan for IP protocols support (ICP,IGMP,TCP...)
+nmap -sN 192.168.1.254          #TCP null scan. -sF: TCP FIN scan, -sX: Sets the FIN, PSH, and URG flags
+nmap -f fw2.nixcraft.net.in     #fragment TCP packets (avoid IDS/DPI), set --mtu 32to set packet size
+nmap -n -Ddecoy-ip1,decoy-ip2,your-own-ip,decoy-ip3,decoy-ip4 remote-host-ip #create decoy scanners from other IP addresses
+
+```
