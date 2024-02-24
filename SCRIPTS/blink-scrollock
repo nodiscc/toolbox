@@ -1,3 +1,14 @@
 #!/bin/bash
 # Description: blink the scroll lock led in a loop
-while true; do xset led 3; sleep 0.2; xset -led 3; sleep 0.2; done
+# USAGE: call the script without arguments to start blinking
+#        call the script with 'stop' argument to stop blinking
+set -o errexit
+set -o nounset
+
+cmd=${1:-blink}
+if [[ "$cmd" == "blink" ]]; then
+    while true; do xset led 3; sleep 0.2; xset -led 3; sleep 0.2; done
+elif [[ "$cmd" == "stop" ]]; then
+	xset -led 3
+    pkill blink-scrollock
+fi
