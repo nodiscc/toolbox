@@ -12,4 +12,4 @@ bitmagnet_enable_service: yes
 # set to empty list [] to allow access from any IP address
 bitmagnet_allowed_hosts: []
 # bitmagnet version to install (https://github.com/bitmagnet-io/bitmagnet/releases.atom)
-bitmagnet_version: "v0.7.5"
+bitmagnet_version: "v0.7.7"
