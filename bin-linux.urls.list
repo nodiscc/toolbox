@@ -33,7 +33,7 @@ https://github.com/ventoy/Ventoy/releases/download/v1.0.96/ventoy-1.0.96-linux.t
 #http://ftp.de.debian.org/debian/pool/main/a/alarm-clock-applet/alarm-clock-applet_0.3.4-1+b1_amd64.deb
 https://github.com/dungeon-revealer/dungeon-revealer/releases/download/v1.17.1/dungeon-revealer-linux-x64-v1.17.1.zip
 https://github.com/derat/soundalike/releases/download/v0.1/soundalike-0.1-linux-amd64.tar.gz
-https://github.com/upscayl/upscayl/releases/download/v2.9.8/upscayl-2.9.8-linux.AppImage
+https://github.com/upscayl/upscayl/releases/download/v2.10.0/upscayl-2.10.0-linux.AppImage
 https://github.com/0x90d/videoduplicatefinder/releases/download/3.0.x/App-linux-x64.tar.gz
 https://github.com/mikf/gallery-dl/releases/download/v1.26.8/gallery-dl.bin
 https://github.com/mikf/gallery-dl/releases/download/v1.26.8/gallery-dl.bin.sig
@@ -53,5 +53,5 @@ https://github.com/qarmin/czkawka/releases/download/6.1.0/linux_czkawka_gui
 https://github.com/qarmin/czkawka/releases/download/6.1.0/linux_czkawka_cli
 https://github.com/nicotine-plus/nicotine-plus/releases/download/3.3.2/debian-package.zip
 https://github.com/nicotine-plus/nicotine-plus/releases/download/3.3.2/debian-package.zip.sha256
-https://github.com/ollama/ollama/releases/download/v0.1.27/ollama-linux-amd64
+https://github.com/ollama/ollama/releases/download/v0.1.28/ollama-linux-amd64
 
