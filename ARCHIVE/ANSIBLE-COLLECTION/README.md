@@ -13,6 +13,7 @@ Less-maintained, experimental or project-specific ansible [roles](roles/).
 - [mariadb](roles/mariadb) - MariaDB database engine
 - [nfs_server](roles/nfs_server) - NFS file server
 - [planarally](roles/planarally) - virtual tabletop (VTT)
+- [prometheus](roles/prometheus) - monitoring service and time-series database
 - [proxmox](roles/proxmox) - Proxmox VE hypervisor configuration
 - [pulseaudio](roles/pulseaudio) - local network sound server
 - [rocketchat](roles/rocketchat) - instant messaging & communication platform

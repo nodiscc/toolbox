@@ -1,0 +1,4 @@
+# scrape metrics from local netdata prometheus endpoint (yes/no)
+prometheus_scrape_local_netdata: yes
+# start/stop the prometheus service, enable/disable it on boot (yes/no) (redirect users to maintenance page if disabled)
+prometheus_enable_service: yes
