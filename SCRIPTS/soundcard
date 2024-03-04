@@ -3,5 +3,5 @@
 
 case "$1" in
 	0404) pactl set-card-profile 0 output:analog-stereo; pactl set-card-profile 1 off ;;
-	hdmi) pactl set-card-profile 0 off; pactl set-card-profile 1 output:hdmi-stereo-extra1;;
+	hdmi) pactl set-card-profile 0 off; pactl set-card-profile 1 output:hdmi-stereo;;
 esac

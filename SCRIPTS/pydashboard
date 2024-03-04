@@ -243,16 +243,22 @@ def list_toggl_week_totals():
     print('◔ TOTAL OVERTIME ON THIS PERIOD: {}H'.format(total_overtime))
 
 def check_mtime(args):
-    """Check last modification time of a file, return warning if older than --max-mtime seconds"""
+    """Check last modification time of a file, return warning if older than --max-mtime seconds,
+       or if the file does not exist
+    """
     file_path = args.mtime_file
-    mtime = datetime.datetime.fromtimestamp(os.path.getmtime(file_path))
-    now = datetime.datetime.now()
-    max_mtime = now - datetime.timedelta(seconds=int(args.max_mtime))
-    if mtime < max_mtime:
-        age = max_mtime - mtime
-        out_line = '%%COLOR_RED%%▧%%COLOR_RESET%% {} {} old'.format(os.path.basename(file_path),
-                                                                    age)
-        print(format_output(out_line, args))
+    try:
+        mtime = datetime.datetime.fromtimestamp(os.path.getmtime(file_path))
+        now = datetime.datetime.now()
+        max_mtime = now - datetime.timedelta(seconds=int(args.max_mtime))
+        if mtime < max_mtime:
+            age = max_mtime - mtime
+            out_line = '%%COLOR_RED%%▧%%COLOR_RESET%% {} {} old'.format(os.path.basename(file_path),
+                                                                        age)
+            print(format_output(out_line, args))
+    except FileNotFoundError:
+            out_line = '%%COLOR_RED%%▧%%COLOR_RESET%% {} does not exist'.format(os.path.basename(file_path))
+            print(format_output(out_line, args))
 
 ##### UTILITIES #####
 
