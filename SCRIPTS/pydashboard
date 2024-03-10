@@ -257,8 +257,8 @@ def check_mtime(args):
                                                                         age)
             print(format_output(out_line, args))
     except FileNotFoundError:
-            out_line = '%%COLOR_RED%%▧%%COLOR_RESET%% {} does not exist'.format(os.path.basename(file_path))
-            print(format_output(out_line, args))
+        out_line = '%%COLOR_RED%%▧%%COLOR_RESET%% {} does not exist'.format(os.path.basename(file_path))
+        print(format_output(out_line, args))
 
 ##### UTILITIES #####
 
