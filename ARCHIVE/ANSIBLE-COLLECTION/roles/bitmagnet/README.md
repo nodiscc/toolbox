@@ -2,7 +2,7 @@
 
 This role will install [bitmagnet](https://bitmagnet.io/en-us/)
 
-[![](https://gitlab.com/nodiscc/toolbox/-/raw/master/DOC/SCREENSHOTS/4NhXqdG.png)](https://gitlab.com/nodiscc/toolbox/-/raw/master/DOC/SCREENSHOTS/d5glB4P.png)
+[![](https://bitmagnet.io/assets/images/webui-1.png)](https://bitmagnet.io/assets/images/webui-1.png)
 
 
 ## Requirements/dependencies/example playbook
