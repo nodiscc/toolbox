@@ -1,6 +1,6 @@
 # xsrv.bitmagnet
 
-This role will install [bitmagnet](https://bitmagnet.io/en-us/)
+This role will install [bitmagnet](https://bitmagnet.io/), A self-hosted BitTorrent indexer, DHT crawler, content classifier and torrent search engine
 
 [![](https://bitmagnet.io/assets/images/webui-1.png)](https://bitmagnet.io/assets/images/webui-1.png)
 
