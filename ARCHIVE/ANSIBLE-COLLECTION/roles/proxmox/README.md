@@ -24,6 +24,7 @@ See [meta/main.yml](meta/main.yml)
 
 See [defaults/main.yml](defaults/main.yml) for all configuration variables
 
+If the `nodiscc.xsrv.common` role is deployed to the same host, you probably want to let proxmox manage the firewall (don't setup firewalld) by setting `setup_firewall: no`.
 
 ## Usage
 
