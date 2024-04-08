@@ -24,7 +24,9 @@ See [meta/main.yml](meta/main.yml)
 
 See [defaults/main.yml](defaults/main.yml) for all configuration variables
 
-If the `nodiscc.xsrv.common` role is deployed to the same host, you probably want to let proxmox manage the firewall (don't setup firewalld) by setting `setup_firewall: no`. Before deploying the `nodiscc.xsrv.common` role, you should also delete `/etc/pve/sources.list.d/pve-enterprise.list` and run `apt update` since this repository requires password authentication, and returns a 401 error which causes initial deployment to fail.
+If the `nodiscc.xsrv.common` role is deployed to the same host:
+- let proxmox manage the firewall (don't setup firewalld) by setting `setup_firewall: no`
+- delete `/etc/pve/sources.list.d/{pve-enterprise,ceph}.list` and run `apt update` since these repositories require password authentication, and return 401 errors which causes initial deployment to fail.
 
 ## Usage
 
