@@ -30,6 +30,20 @@ If the `nodiscc.xsrv.common` role is deployed to the same host:
 
 ## Usage
 
+### Initial setup
+
+**Create a non-root proxmox admin user:**
+- Access `https://{{ inventory_hostname }}:8006` in a web browser
+- Login as `root` with the password provided during proxmox installation
+- Open the `Datacenter > Permissions > Groups` page
+- Add a new group named `proxmoxadm` with description `proxmox administrators`
+- Open the `Datacenter > Permissions > Users` page
+- Create a new user named `myusername`, realm `Proxmox VE authentication server`, member of the `proxmoxadm` group, set a strong password for this user
+- Open the `Datacenter > Permissions` page
+- Click `Add > Group permission`
+- Add a new permission with Path `/`, Group `proxmoxadm`, Role: `Administrator`
+
+
 ### Backups
 
 Backup the `/etc/pve/` directory to backup proxmox configuration including VM definitions. Backup `/var/lib/vz/dump` to backup VM snapshots.
