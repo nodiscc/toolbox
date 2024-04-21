@@ -516,6 +516,8 @@ show how deep we are in subshells `echo $BASH_SUBSHELL`
 
 `wget --mirror --page-requisites --convert-links http://stackexchange.com` (infinite recursion depth) https://softwarerecs.stackexchange.com/questions/7344/how-to-create-an-offline-copy-of-a-website @scraping
 
+wget download with multiple simultaneous connections `cat url.list | parallel -j 8 wget -O {#}.html {}`
+
 associate mimetype with program/.desktop launcher `xdg-mime default magnet-video-player.desktop x-scheme-handler/magnet`
 
 freedesktop register icon for filetype `xdg-icon-resource install --context mimetypes --size 48 myicon-file-type.png x-application-mytype` + create a [xml file for the mime type](http://standards.freedesktop.org/shared-mime-info-spec/shared-mime-info-spec-latest.html) + register it with `xdg-mime install mytype-mime.xml`
@@ -1256,6 +1258,8 @@ shrink sparse qcow2 disk image: qemu-convert -p -O qcow2 source.qcow2 dest-shrun
 set pulseaudio volume: pactl set-sink-volume @DEFAULT_SINK@ +5%
 
 openssl show certificate info: `echo | openssl s_client -showcerts -servername google.com -connect gnupg.org:443 2>/dev/null | openssl x509 -inform pem -noout -text`
+
+generate self-signed certificate `openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout privateKey.key -out certificate.crt`
 
 packet capture on remote machine and display in local wireshark: ssh root@remoteserver `tcpdump -c 1000 -nn -w - not port 22" | wireshark -k -i -`
 
