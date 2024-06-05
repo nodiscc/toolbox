@@ -105,6 +105,8 @@ apache force HTTPS redirect rewriterule: `    RewriteCond %{HTTPS} !=on; Rewrite
 
 Make nvidia optimus work under Debian: `sudo apt-get install bbswitch-dkms intel-microcode firmware-linux-nonfree bumblebee bumblebee-nvidia primus primus-libs primus-libs:i386 linux-headers-$(uname -r)`; Open `/etc/bumblebee/bumblebee.conf` and ser KernelDriver=nvidia-current; adduser your_user bumblebee; in `/etc/default/grub` add kernel option `rcutree.rcu_idle_gp_delay=1`; ` update-grub; reboot`. Test with `primusrun <command>` or `optirun <ommand>` <https://www.unixmen.com/how-to-make-nvidia-optimus-technology-work-properly-on-debian/>
 
+gpg renew expired key `gpg --edit-key 6CA755D0D14254957BA32DEE067FC4266A4B6909` `expire` `1y` `save`
+
 nvidia driver fix screen tearing `options nvidia_drm modeset=1` in `/etc/modprobe.d/nvidia.conf`
 
 Network Allow more ports to be available: `echo 1024 65000 > /proc/sys/net/ipv4/ip_local_port_range`
