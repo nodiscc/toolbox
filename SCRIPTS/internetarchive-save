@@ -1,4 +1,7 @@
 #!/bin/bash
 set -o errexit
 set -o nounset
-curl -s -I "https://web.archive.org/save/$1" | egrep '^location:' | awk '{ print $2 }'; 
+for url in $@; do
+    echo "[INFO] saving $url ..."
+    curl -s -I "https://web.archive.org/save/$url" | egrep '^location:' | awk '{ print $2 }'; 
+done
