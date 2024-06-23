@@ -47,7 +47,13 @@ def magnet2torrent(magnet, output_name=None):
         'save_path': tempdir,
         'storage_mode': lt.storage_mode_t(2),
     }
-    handle = lt.add_magnet_uri(ses, magnet, params)
+    try:
+        handle = lt.add_magnet_uri(ses, magnet, params)
+    except RuntimeError:
+        # add URI scheme to magnet if missing
+        # https://en.wikipedia.org/wiki/Magnet_URI_scheme
+        magnet = 'magnet:?xt=urn:btih:' + magnet
+        handle = lt.add_magnet_uri(ses, magnet, params)
 
     print("Downloading Metadata (this may take a while)")
     while (not handle.has_metadata()):
@@ -89,7 +95,7 @@ def magnet2torrent(magnet, output_name=None):
 def showHelp():
     print("")
     print("USAGE: " + pt.basename(sys.argv[0]) + " MAGNET [OUTPUT]")
-    print("  MAGNET\t- the magnet url")
+    print("  MAGNET\t- the magnet url or infohash")
     print("  OUTPUT\t- the output torrent file name")
     print("")
 
