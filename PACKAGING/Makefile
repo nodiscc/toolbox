@@ -11,12 +11,15 @@ TARTUBE_VERSION=2.5.0
 
 yt_dlp:
 	rm -rf build/
-	mkdir -p build/ dist/ yt-dlp/usr/bin
+	mkdir -p build/ dist/ yt-dlp/usr/bin yt-dlp/usr/share/man/man1/ yt-dlp/usr/share/bash-completion/completions/
 	cd build/ && \
-	wget --continue --no-verbose https://github.com/yt-dlp/yt-dlp/releases/download/$(YT_DLP_VERSION)/yt-dlp && \
+	wget --continue --no-verbose https://github.com/yt-dlp/yt-dlp/releases/download/$(YT_DLP_VERSION)/yt-dlp.tar.gz && \
 	wget --continue --no-verbose https://github.com/yt-dlp/yt-dlp/releases/download/$(YT_DLP_VERSION)/SHA2-512SUMS && \
-	sha512sum --ignore-missing --check SHA2-512SUMS
-	cp -v build/yt-dlp yt-dlp/usr/bin/
+	sha512sum --ignore-missing --check SHA2-512SUMS && \
+	tar -zxvf yt-dlp.tar.gz
+	cp -v build/yt-dlp/yt-dlp yt-dlp/usr/bin/
+	cp -v build/yt-dlp/yt-dlp.1 yt-dlp/usr/share/man/man1/
+	cp -v build/yt-dlp/completions/bash/yt-dlp yt-dlp/usr/share/bash-completion/completions/
 	chmod -v 0755 yt-dlp/usr/bin/yt-dlp
 	sed -i "s/%%YT_DLP_VERSION%%/$(YT_DLP_VERSION)/g" yt-dlp/DEBIAN/control
 	chmod -v 0755 yt-dlp/DEBIAN/
@@ -81,4 +84,4 @@ tartube:
 	wget -O dist/python3-tartube_$(TARTUBE_VERSION).deb https://github.com/axcore/tartube/releases/download/v$(TARTUBE_VERSION)/python3-tartube_$(TARTUBE_VERSION).deb
 
 clean:
-	rm -rf build/ dist/ yt-dlp/usr/local/bin/yt-dlp bleachbit-cleanerml/usr/share/bleachbit/cleaners/*xml user.js/usr/share/
+	rm -rf build/ dist/ yt-dlp/usr/ bleachbit-cleanerml/usr/share/bleachbit/cleaners/*xml user.js/usr/share/
