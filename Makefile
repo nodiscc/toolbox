@@ -37,3 +37,7 @@ test-ansible-lint:
 
 packaging:
 	cd PACKAGING/ && make
+
+clean:
+	cd ARCHIVE/ANSIBLE-COLLECTION/ && make clean
+	rm -rf .venv/

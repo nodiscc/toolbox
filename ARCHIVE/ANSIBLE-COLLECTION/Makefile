@@ -41,3 +41,6 @@ doc_roles_list:
 		p' README.md >> README.tmp.md && \
 		mv README.tmp.md README.md && \
 		rm roles-list.tmp.md
+
+clean:
+	rm -rf .venv/
