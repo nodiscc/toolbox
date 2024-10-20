@@ -8,7 +8,7 @@ planarally_https_mode: selfsigned
 # start/stop the planarally service, enable/disable it on boot (yes/no) (redirect users to maintenance page if disabled)
 planarally_enable_service: yes
 # planarally version (https://github.com/Kruptein/PlanarAlly/releases)
-planarally_version: "2024.2"
+planarally_version: "2024.3.1"
 # allow account creation on the landing page (yes/no)
 # note: if this is set to no, there is no way to create user accounts (https://github.com/Kruptein/PlanarAlly/issues/137)
 planarally_allow_signups: yes
