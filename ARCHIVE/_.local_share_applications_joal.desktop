@@ -3,7 +3,7 @@ Version=1.0
 Type=Application
 Name=JOAL
 Comment=
-Exec=java -jar jack-of-all-trades-2.1.33.jar --spring.main.web-environment=true --server.port=8080  --joal.ui.path.prefix=Mp9NtRWFgR --joal-conf=./ --joal.ui.secret-token=Mp9NtRWFgR
+Exec=java -jar jack-of-all-trades-2.1.33.jar --spring.main.web-environment=true --server.port=8082 --joal.ui.path.prefix=Mp9NtRWFgR --joal-conf=./ --joal.ui.secret-token=Mp9NtRWFgR
 Icon=
 Path=/path/to/joal
 Terminal=true
