@@ -1,0 +1,9 @@
+{
+    "extractor":
+    {
+        "ytdl":
+        {
+            "enabled": true
+        }
+    }
+}
