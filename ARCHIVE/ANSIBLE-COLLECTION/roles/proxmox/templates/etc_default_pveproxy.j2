@@ -1,0 +1,5 @@
+{% if proxmox_web_allow_from %}
+ALLOW_FROM="{{ proxmox_web_allow_from|join(',') }}"
+DENY_FROM="all"
+POLICY="allow"
+{% endif %}

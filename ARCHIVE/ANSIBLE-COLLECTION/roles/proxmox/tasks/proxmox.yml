@@ -18,3 +18,12 @@
     - /etc/apt/sources.list.d/debian-updates-contrib.list
     - /etc/apt/sources.list.d/debian-security-contrib.list
   notify: update apt cache
+
+- name: setup proxmox web interface IP whitelist
+  template:
+    src: etc_default_pveproxy.j2
+    dest: /etc/default/pveproxy
+    owner: root
+    group: root
+    mode: "0644"
+  notify: restart pveproxy

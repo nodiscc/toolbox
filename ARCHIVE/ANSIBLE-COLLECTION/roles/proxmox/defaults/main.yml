@@ -6,3 +6,9 @@ proxmox_web_firewalld_zones:
     state: enabled
   - zone: internal
     state: enabled
+# list of IP addresses/networks (CIDR notation) which should be allowed to access the Proxmox web interface
+# set to an empty list to allow access from any IP address
+proxmox_web_allow_from:
+  - 192.168.0.0/16
+  - 10.0.0.0/8
+  - 172.16.0.0/12
