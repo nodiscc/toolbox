@@ -8,6 +8,11 @@
   become: yes
   tags: proxmox
 
+- name: include proxmox templates configuration tasks
+  import_tasks: templates.yml
+  become: yes
+  tags: proxmox
+
 - name: include firewalld configuration tasks
   import_tasks: firewalld.yml
   become: yes

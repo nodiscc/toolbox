@@ -1,0 +1,11 @@
+- name: download base cloud ISO images/VM templates
+  get_url:
+    url: "{{ item.url }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: "0644"
+  loop:
+    - url: "https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-generic-amd64.qcow2"
+      dest: /var/lib/vz/template/iso/debian-12-generic-amd64.img
+
