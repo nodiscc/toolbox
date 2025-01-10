@@ -2,7 +2,6 @@
 SHELL := '/bin/bash'
 LANG = C
 BIN_LINUX_DIR ?= MIRRORS/BIN-LINUX
-BIN_MAC_DIR ?= MIRRORS/BIN-MAC
 BIN_WINDOWS_DIR ?= MIRRORS/BIN-WINDOWS
 BIN_DATA_DIR ?= MIRRORS/BIN-DATA
 
@@ -14,7 +13,6 @@ define call_aria2c
 endef
 mirrors:
 	$(call call_aria2c,$(BIN_LINUX_DIR)/,bin-linux.urls.list)
-	$(call call_aria2c,$(BIN_LINUX_DIR)/,bin-mac.urls.list)
 	$(call call_aria2c,$(BIN_WINDOWS_DIR)/,bin-windows.urls.list)
 	$(call call_aria2c,$(BIN_DATA_DIR)/,bin-data.urls.list)
 
