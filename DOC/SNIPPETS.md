@@ -737,6 +737,8 @@ resize image (but keep ratio) `convert -resize '1024x600^' image.jpg small-image
 
 display apache2 traffic in logstalgia `tail -f /var/log/apache2/access.log | logstalgia -640x480 -` @logs
 
+get list of user agents from apache access log `awk -F\" '($2 ~ "^GET /"){print $6}' /var/log/apache2/access.log | sort | uniq -c | sort -n`
+
 Get HTTP headers with curl `curl -I http://www.example.com`
 
 speedtest with curl `curl -o /dev/null http://speedtest.wdc01.softlayer.com/downloads/test500.zip`
