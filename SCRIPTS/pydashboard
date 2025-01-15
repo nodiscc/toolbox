@@ -337,7 +337,8 @@ def main():
     """Main loop"""
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('--actions', dest='actions_list', type=str, default='all', help='list of actions to run, e.g. caldav-events,caldav-todos,list-flagged,list-unread,gitea-assigned,ttrss-marked,toggl-timer,check-mtime (default all)')
-    parser.add_argument('--folders-list', dest='folders_list', type=str, default='INBOX', help='list of folders to fetch, e.g. INBOX,somedir/subdir,other (default INBOX)')
+    parser.add_argument('--unread-folders-list', dest='unread_folders_list', type=str, default='INBOX', help='list of folders to fetch and scan for unread messages, e.g. INBOX,somedir/subdir,other (default INBOX)')
+    parser.add_argument('--flagged-folders-list', dest='flagged_folders_list', type=str, default='INBOX', help='list of folders to fetch and scan for flagged messages, e.g. INBOX,somedir/subdir,other (default INBOX)')
     parser.add_argument('--line-length', dest='max_line_length', type=int, default=10000, help='truncate output lines to this number of characters (default 10000)')
     parser.add_argument('--hide-folder-names', dest='hide_folder_names', action='store_true', help='dont output folder names before mail subjects')
     parser.add_argument('--calendar-name', dest='caldav_calendar_name', default='Personnel', help='Name of the CalDAV calendar (default "Personnel")')
@@ -349,14 +350,15 @@ def main():
     parser.add_argument('--max-mtime', dest='max_mtime', default=604800, help='Max time since last modification of file, above which to raise a warning (seconds, default 604800 = 1 week)')
     parser.add_argument('--output-format', dest='output_format', default='shell', choices=['shell', 'conky'], help='Output format (default shell)')
     args = parser.parse_args()
-    folders_list = args.folders_list.split(",")
+    unread_folders_list = args.unread_folders_list.split(",")
+    flagged_folders_list = args.flagged_folders_list.split(",")
     actions_list = args.actions_list.split(",")
     for action in actions_list:
         if action == 'all':
             list_caldav_todos(args)
             list_caldav_events(args)
-            list_unread(args, folders_list)
-            list_flagged(args, folders_list)
+            list_unread(args, unread_folders_list)
+            list_flagged(args, flagged_folders_list)
             list_gitea_assigned(args)
             list_ttrss_marked(args)
         elif action == 'caldav-todos':
@@ -364,9 +366,9 @@ def main():
         elif action == 'caldav-events':
             list_caldav_events(args)
         elif action == 'list-unread':
-            list_unread(args, folders_list)
+            list_unread(args, unread_folders_list)
         elif action == 'list-flagged':
-            list_flagged(args, folders_list)
+            list_flagged(args, flagged_folders_list)
         elif action == 'gitea-assigned':
             list_gitea_assigned(args)
         elif action == 'ttrss-marked':
