@@ -12,7 +12,7 @@ https://s3.amazonaws.com/wikia_xml_dumps/m/mi/minecraft_gamepedia_pages_current.
 https://s3.amazonaws.com/wikia_xml_dumps/w/wi/witcher_pages_current.xml.7z
 https://s3.amazonaws.com/wikia_xml_dumps/s/st/starwars_pages_current.xml.7z
 #https://s3.amazonaws.com/wikia_xml_dumps/r/re/residentevil_pages_current.xml.7z # 404
-https://s3.amazonaws.com/wikia_xml_dumps/d/du/dune_pages_current.xml.7z
+#https://s3.amazonaws.com/wikia_xml_dumps/d/du/dune_pages_current.xml.7z
 #https://s3.amazonaws.com/wikia_xml_dumps/c/cy/cyberpunk_pages_current.xml.7z # 404
 #https://s3.amazonaws.com/wikia_xml_dumps/s/sq/squad_gamepedia_pages_current.xml.7z # 404
 #https://s3.amazonaws.com/wikia_xml_dumps/h/ha/halflife_pages_current.xml.7z # 404
