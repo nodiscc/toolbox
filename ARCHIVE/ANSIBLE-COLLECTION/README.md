@@ -12,6 +12,7 @@ Less-maintained, experimental or project-specific ansible [roles](roles/).
 - [k8s](roles/k8s) - Container management platform/orchestrator
 - [mariadb](roles/mariadb) - MariaDB database engine
 - [nfs_server](roles/nfs_server) - NFS file server
+- [ollama](roles/ollama) - Large Language Model (LLM) server and web interface
 - [planarally](roles/planarally) - virtual tabletop (VTT)
 - [prometheus](roles/prometheus) - monitoring service and time-series database
 - [proxmox](roles/proxmox) - Proxmox VE hypervisor configuration
