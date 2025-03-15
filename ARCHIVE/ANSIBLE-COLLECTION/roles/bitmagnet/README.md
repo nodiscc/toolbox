@@ -51,4 +51,5 @@ bitmagnet - setup bitmagnet BitTorrent DHT crawler
 ## References/Documentation
 
 - https://stdout.root.sx/links/?searchtags=p2p
+- https://bitmagnet.io/guides/classifier.html
 
