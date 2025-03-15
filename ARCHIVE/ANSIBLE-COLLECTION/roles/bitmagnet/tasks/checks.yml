@@ -11,3 +11,4 @@
     - bitmagnet_allowed_hosts | type_debug == "list"
     - bitmagnet_version is string
     - bitmagnet_classifier_delete_xxx == bitmagnet_classifier_delete_xxx | bool
+    - bitmagnet_enable_dht_crawler == bitmagnet_enable_dht_crawler | bool

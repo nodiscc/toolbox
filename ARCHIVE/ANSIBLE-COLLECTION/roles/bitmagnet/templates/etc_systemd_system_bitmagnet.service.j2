@@ -11,7 +11,7 @@ User=bitmagnet
 Group=bitmagnet
 Type=simple
 WorkingDirectory=/var/lib/bitmagnet/
-ExecStart=/var/lib/bitmagnet/bin/bitmagnet worker run --keys=queue_server  -keys=http_server
+ExecStart=/var/lib/bitmagnet/bin/bitmagnet worker run --keys=queue_server --keys=http_server{{ ' --keys=dht_crawler' if bitmagnet_enable_dht_crawler else '' }}
 Environment=CLASSIFIER_DELETE_XXX={{ 'true' if bitmagnet_classifier_delete_xxx else 'false' }}
 Restart=always
 RestartSec=2s

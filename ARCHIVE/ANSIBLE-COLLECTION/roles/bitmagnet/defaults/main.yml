@@ -15,3 +15,6 @@ bitmagnet_allowed_hosts: []
 bitmagnet_version: "v0.10.0"
 # delete xxx-classifier torrents from the index (yes/no)
 bitmagnet_classifier_delete_xxx: yes
+# enable DHT crawling (yes/no)
+# set this to no if you need to temporarily disable crwaling (for maintenance, disk space issues, etc)
+bitmagnet_enable_dht_crawler: yes
