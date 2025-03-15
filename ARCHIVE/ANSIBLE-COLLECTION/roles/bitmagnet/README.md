@@ -31,6 +31,8 @@ See [defaults/main.yml](defaults/main.yml) for all configuration variables.
 
 ## Usage
 
+https://bitmagnet.io/guides/reprocess-reclassify.html
+
 ### Backups
 
 Database backups are handled by the [postgresql](../postgresql) role, if deployed.
@@ -52,4 +54,4 @@ bitmagnet - setup bitmagnet BitTorrent DHT crawler
 
 - https://stdout.root.sx/links/?searchtags=p2p
 - https://bitmagnet.io/guides/classifier.html
-
+- https://bitmagnet.io/guides/reprocess-reclassify.html

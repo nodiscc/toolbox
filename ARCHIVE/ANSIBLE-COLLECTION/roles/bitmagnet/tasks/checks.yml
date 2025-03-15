@@ -10,3 +10,4 @@
     - bitmagnet_enable_service == bitmagnet_enable_service | bool
     - bitmagnet_allowed_hosts | type_debug == "list"
     - bitmagnet_version is string
+    - bitmagnet_classifier_delete_xxx == bitmagnet_classifier_delete_xxx | bool

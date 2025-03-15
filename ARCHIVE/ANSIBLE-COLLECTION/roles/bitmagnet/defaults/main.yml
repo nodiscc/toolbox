@@ -13,3 +13,5 @@ bitmagnet_enable_service: yes
 bitmagnet_allowed_hosts: []
 # bitmagnet version to install (https://github.com/bitmagnet-io/bitmagnet/releases.atom)
 bitmagnet_version: "v0.10.0"
+# delete xxx-classifier torrents from the index (yes/no)
+bitmagnet_classifier_delete_xxx: yes

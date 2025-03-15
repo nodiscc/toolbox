@@ -11,7 +11,8 @@ User=bitmagnet
 Group=bitmagnet
 Type=simple
 WorkingDirectory=/var/lib/bitmagnet/
-ExecStart=/var/lib/bitmagnet/bin/bitmagnet worker run --keys=queue_server  --keys=http_server
+ExecStart=/var/lib/bitmagnet/bin/bitmagnet worker run --keys=queue_server  -keys=http_server
+Environment=CLASSIFIER_DELETE_XXX={{ 'true' if bitmagnet_classifier_delete_xxx else 'false' }}
 Restart=always
 RestartSec=2s
 # Hardening directives
