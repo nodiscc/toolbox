@@ -77,6 +77,7 @@
     mode: "u=rwX,g=rwX,o=rX"
     directory_mode: "u=rwX,g=rwX,o=rX"
   changed_when: yes
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: install planarally dependencies in virtualenv
   become: yes
