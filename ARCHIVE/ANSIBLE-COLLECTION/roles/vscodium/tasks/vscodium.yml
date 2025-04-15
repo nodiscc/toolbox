@@ -15,6 +15,9 @@
     mode: "0644"
   notify: update apt cache
 
+- name: apply configuration (flush handlers)
+  meta: flush_handlers
+
 # TODO set sysctl fs.inotify.max_user_watches=524288
 
 - name: install vscodium
