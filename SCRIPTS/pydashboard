@@ -29,6 +29,106 @@ import requests
 import caldav
 import icalendar
 
+html_section_end = '</p></div></div></div>'
+html_head = '''
+<!doctype html>
+<html>
+    <head>
+        <link rel="shortcut icon" href="res/services.png"/>
+        <link rel="icon" type="image/png" href="res/services.png" sizes="16x16"/>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1" >
+        <title>lan.lambdacore.network</title>
+        <link rel="stylesheet" type="text/css" href="res/simplegrid.css" />
+        <style>
+            body {
+                background: #ffffff;
+                color: rgb(15, 15, 15);
+                font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
+                font-size: 85%;
+                line-height: 1.5;
+            }
+            h1 {
+                text-align: center;
+            }
+            .content {
+                background: #ffffff;
+                margin-top: 1px;
+                margin-bottom: 5px;
+                text-align: center;
+                border-radius: 0px;
+                border: #DFDFDF 1px solid;
+                /* height: 80px; */
+                box-shadow: 3px 6px 30px -14px rgba(0,0,0,.25);
+                display: flex;
+                align-items: stretch;
+            }
+            [class*="col-"] {
+                display: contents;
+            }
+            a {
+                color: rgb(15, 15, 15);
+                text-decoration: none;
+            }
+            input {
+                width: 90%;
+                background-color: #f4f4f4;
+                border: 0px;
+                border-radius: 2px;
+                color:  #474747;
+                font-family: monospace;
+            }
+            .message {
+                text-align: center;
+                color: #AAA;
+                display: block;
+                border-radius: 2px;
+                margin-top: 12px;
+            }
+            .message a:hover {
+                text-decoration: underline;
+            }
+            .customlink :hover{
+                border-color: #FAFAFA;
+            }
+            .customlink-cb {
+                background-color: #FAFAFA;
+            }
+            .colorblock {
+                /* height: 80px; */
+                margin-right: 10px;
+                padding-right: 10px;
+                padding-left: 10px;
+            }
+            .app-icon {
+                margin-top: 6px;
+            }
+            .app-text {
+                margin-top: 30px;
+                flex-direction: column;
+                text-align: left;
+                margin: 0 0 0 0;
+            }
+            .app-name {
+                font-size: 1.2em;
+                margin: 0px;
+            }
+            .app-description {
+                color: #555;
+                margin: 0px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <!-- Grid 1/2 -->
+        <div class="grid grid-pad">
+            <div class="col-1-1 mobile-col-1-1">
+                <h1>lan.lambdacore.network</h1>
+            </div>
+'''
+html_footer = '</div></body></html>'
+
 def list_unread(args, folders_list):
     """List unread email"""
     # TODO support for multiple IMAP accounts
@@ -38,11 +138,13 @@ def list_unread(args, folders_list):
         server_address_question_label="Enter IMAP server address: ",
         username_question_label="Enter IMAP username: ",
         password_question_label="Enter IMAP password: ")
-    print('----------------- □ UNREAD -----------------------')
+    print(format_output('title', '□', 'UNREAD', args))
     conn = imaplib.IMAP4_SSL(imap_credentials['server_address'], 993)
     conn.login(imap_credentials['username'], imap_credentials['password'])
     for folder in folders_list:
         print_imap_subjects(conn, args, folder, '(UNSEEN)', '□')
+    if args.output_format == 'html':
+        print(html_section_end)
 
 def list_flagged(args, folders_list):
     """List email with flagged status set"""
@@ -53,11 +155,13 @@ def list_flagged(args, folders_list):
         server_address_question_label="Enter IMAP server address: ",
         username_question_label="Enter IMAP username: ",
         password_question_label="Enter IMAP password: ")
-    print('----------------- ⇱ FLAGGED ----------------------')
+    print(format_output('title', '⇱', 'FLAGGED', args))
     conn = imaplib.IMAP4_SSL(imap_credentials['server_address'], 993)
     conn.login(imap_credentials['username'], imap_credentials['password'])
     for folder in folders_list:
         print_imap_subjects(conn, args, folder, '(FLAGGED)', '⇱')
+    if args.output_format == 'html':
+        print(html_section_end)
 
 def list_gitea_assigned(args):
     """List gitea issues/PRs assigned to the authenticated user"""
@@ -69,13 +173,15 @@ def list_gitea_assigned(args):
         server_address_question_label="Enter Gitea server URL: ",
         username_question_label=None,
         password_question_label="Enter Gitea Personal Access Token: ")
-    print('----------------- ⊚ ASSIGNED ---------------------')
+    print(format_output('title', '⊚', 'ASSIGNED', args))
     gitea_auth_headers = {'Authorization': 'Bearer ' + gitea_credentials['password']}
     api_url = gitea_credentials['server_address'] + '/api/v1/repos/issues/search?assigned=true&limit=10000&state=open'
     response = requests.get(api_url, verify=args.ssl_verify, headers=gitea_auth_headers, timeout=60)
     for i in response.json():
         out_line = '⊚ ' + i['repository']['name'] + ': ' + i['title']
-        print(format_output(out_line, args))
+        print(format_output('text', '', out_line, args))
+    if args.output_format == 'html':
+        print(html_section_end)
 
 def list_ttrss_marked(args):
     """List TT-RSS starred articles"""
@@ -87,7 +193,7 @@ def list_ttrss_marked(args):
         server_address_question_label="Enter TT-RSS server URL: ",
         username_question_label="Enter TT-RSS username: ",
         password_question_label="Enter TT-RSS password: ")
-    print('----------------- ⊚ TT-RSS MARKED ----------------')
+    print(format_output('title', '⊚', 'TT-RSS MARKED', args))
     ttrss_session = requests.Session()
     ttrss_login_data = json.dumps({
         "op": "login",
@@ -116,7 +222,9 @@ def list_ttrss_marked(args):
     data = json.loads(response.text)
     for article in data['content']:
         out_line = '▽ ' + article['title']
-        print(format_output(out_line, args))
+        print(format_output('text', '', out_line, args))
+    if args.output_format == 'html':
+        print(html_section_end)
 
 def list_caldav_events(args):
     """
@@ -133,7 +241,7 @@ def list_caldav_events(args):
         server_address_question_label='Enter CalDAV address (e.g. https://nexctloud.example.org/remote.php/dav/calendars/user/personal/): ',
         username_question_label='Enter CalDAV username: ',
         password_question_label='Enter CalDAV password: ')
-    print('----------------- ◌ EVENTS -----------------------')
+    print(format_output('title', '◌', 'EVENTS', args))
     caldav_client = caldav.DAVClient(url=caldav_credentials['server_address'],
                             username=caldav_credentials['username'],
                             password=caldav_credentials['password'],
@@ -159,7 +267,9 @@ def list_caldav_events(args):
                 duration_datetime = end_datetime - start_datetime
                 duration = 'h'.join(str(duration_datetime).split(':')[:2])
                 out_line = '◌ {} {} {}'.format(start, duration, summary)
-                print(format_output(out_line, args))
+                print(format_output('text', '', out_line, args))
+    if args.output_format == 'html':
+        print(html_section_end)
 
 def list_caldav_todos(args):
     """
@@ -172,7 +282,7 @@ def list_caldav_todos(args):
         server_address_question_label='Enter CalDAV address (e.g. https://nexctloud.example.org/remote.php/dav/calendars/user/personal/): ',
         username_question_label='Enter CalDAV username: ',
         password_question_label='Enter CalDAV password: ')
-    print('----------------- ▧ TODOS -------------------------')
+    print(format_output('title', '▧', 'TODOS', args))
     caldav_client = caldav.DAVClient(url=caldav_credentials['server_address'],
                             username=caldav_credentials['username'],
                             password=caldav_credentials['password'],
@@ -189,10 +299,12 @@ def list_caldav_todos(args):
         except AttributeError:
             priority = "9"
         out_line = '▧ {} {}'.format(priority, summary)
-        todos.append(format_output(out_line, args))
+        todos.append(format_output('text', '', out_line, args))
     todos.sort()
     result = todos[:args.caldav_todos_limit]
     print('\n'.join(result))
+    if args.output_format == 'html':
+        print(html_section_end)
 
 def list_toggl_week_totals():
     """Compute total hours per week filed on Toggl Track, compute overtime"""
@@ -204,7 +316,7 @@ def list_toggl_week_totals():
         server_address_question_label=None,
         username_question_label=None,
         password_question_label="Enter Toggl Track token: ")
-    print('----------------- ◕ TIMETRACKING ----------------')
+    print(format_output('title', '◕', 'TIMETRACKING', args))
     print('WEEK                      HRS    OVERTIME')
     toggl_api_token = toggltrack_credentials['password']
     toggl_auth = "{}:api_token".format(toggl_api_token).encode('UTF-8')
@@ -241,6 +353,8 @@ def list_toggl_week_totals():
         start_date = start_date + datetime.timedelta(days=7)
         end_date = end_date + datetime.timedelta(days=7)
     print('◔ TOTAL OVERTIME ON THIS PERIOD: {}H'.format(total_overtime))
+    if args.output_format == 'html':
+        print(html_section_end)
 
 def check_mtime(args):
     """Check last modification time of a file, return warning if older than --max-mtime seconds,
@@ -255,10 +369,10 @@ def check_mtime(args):
             age = max_mtime - mtime
             out_line = '%%COLOR_RED%%▧%%COLOR_RESET%% {} {} old'.format(os.path.basename(file_path),
                                                                         age)
-            print(format_output(out_line, args))
+            print(format_output('text', '', out_line, args))
     except FileNotFoundError:
         out_line = '%%COLOR_RED%%▧%%COLOR_RESET%% {} does not exist'.format(os.path.basename(file_path))
-        print(format_output(out_line, args))
+        print(format_output(text, '', out_line, args))
 
 ##### UTILITIES #####
 
@@ -282,7 +396,7 @@ def print_imap_subjects(conn, args, folder, criterion, symbol):
                 else:
                     subject = decoded_header.replace('\r', '').replace('\n', '')
                 out_line = symbol + ' ' + prefix + subject
-                print(format_output(out_line, args))
+                print(format_output('text', '', out_line, args))
 
 def get_credentials(application_name, secret_collection_title,
                     server_address_question_label, username_question_label,
@@ -319,19 +433,37 @@ def get_credentials(application_name, secret_collection_title,
         credentials['password'] = item.get_secret().decode("utf-8")
         return credentials
 
-def format_output(text, args):
-    """Format output based on max_line_length and output_format"""
-    actual_line_length = len(re.sub(r'(%%COLOR_RED%%|%%COLOR_RESET%%)', '', text))
-    diff_to_actual = len(text) - actual_line_length
+def format_output(style, icon, text, args):
+    """Format output based on max_line_length and output_format
+    style -- the text style (title, text)
+    icon -- the icon to prepend to titles when using the conky format
+    str -- the text string
+    args -- main argparse args dict
+    """
+    if args.output_format in ['conky', 'shell']:
+        if style == 'title':
+            text = f'----------------- {icon} {text} -----------------------'
+        actual_line_length = len(re.sub(r'(%%COLOR_RED%%|%%COLOR_RESET%%)', '', text))
+        diff_to_actual = len(text) - actual_line_length
     if args.output_format == 'conky':
         text = text.replace('#', '\#') # pylint: disable=anomalous-backslash-in-string
         text = text.replace('%%COLOR_RED%%', '${color3}')
         text = text.replace('%%COLOR_RESET%%', '${color}')
+        max_line_length = args.max_line_length + diff_to_actual
+        return text[0:max_line_length]
     elif args.output_format == 'shell':
         text = text.replace('%%COLOR_RED%%', '\033[31m')
         text = text.replace('%%COLOR_RESET%%', '\033[0m')
-    max_line_length = args.max_line_length + diff_to_actual
-    return text[0:max_line_length]
+        max_line_length = args.max_line_length + diff_to_actual
+        return text[0:max_line_length]
+    elif args.output_format == 'html':
+        if style == 'title':
+            text = '<div class="col-1-3 mobile-col-1-1 customlink"><div class="content"><div class="colorblock customlink-cb"><img class="app-icon" src="res/todoist.png"></div><div class="app-text"><p class="app-name">{}</p><p class="app-description">'.format(text)
+        text = text.replace('%%COLOR_RED%%', '</span style="color: #FF0000>')
+        text = text.replace('%%COLOR_RESET%%', '</span>')
+        if style == 'text':
+            text = f'{text}<br/>'
+        return text
 
 def main():
     """Main loop"""
@@ -348,11 +480,13 @@ def main():
     parser.add_argument('--insecure', dest='ssl_verify', action='store_false', help='Disable CalDAV/Gitea/TT-RSS SSL/TLS certificate verification')
     parser.add_argument('--mtime-file', dest='mtime_file', help='Path to file to check with check-mtime')
     parser.add_argument('--max-mtime', dest='max_mtime', default=604800, help='Max time since last modification of file, above which to raise a warning (seconds, default 604800 = 1 week)')
-    parser.add_argument('--output-format', dest='output_format', default='shell', choices=['shell', 'conky'], help='Output format (default shell)')
+    parser.add_argument('--output-format', dest='output_format', default='shell', choices=['shell', 'conky', 'html'], help='Output format (shell/conky/html, default shell)')
     args = parser.parse_args()
     unread_folders_list = args.unread_folders_list.split(",")
     flagged_folders_list = args.flagged_folders_list.split(",")
     actions_list = args.actions_list.split(",")
+    if args.output_format == 'html':
+        print(html_head)
     for action in actions_list:
         if action == 'all':
             list_caldav_todos(args)
@@ -380,6 +514,8 @@ def main():
         else:
             print('ERROR: unknown action {}'.format(action))
             sys.exit(1)
+    if args.output_format == 'html':
+        print(html_footer)
 
 if __name__ == "__main__":
     main()
