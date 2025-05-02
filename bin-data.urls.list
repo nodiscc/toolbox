@@ -19,4 +19,5 @@ https://s3.amazonaws.com/wikia_xml_dumps/s/st/starwars_pages_current.xml.7z
 #https://s3.amazonaws.com/wikia_xml_dumps/s/st/stargate_pages_current.xml.7z # 403
 https://s3.amazonaws.com/wikia_xml_dumps/f/fi/finalfantasy_pages_current.xml.7z
 #https://mirror.f4st.host/archlinux/community/os/x86_64/arch-wiki-docs-20230228-1-any.pkg.tar.zst # URL changes often
-#https://dumps.wikimedia.org/wikidatawiki/entities/latest-all.json.bz2 # content changes every day or so, ~90GB
+# wikdiata data, content changes every day or so, ~90GB
+#https://dumps.wikimedia.org/wikidatawiki/entities/latest-all.json.bz2
