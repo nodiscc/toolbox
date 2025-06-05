@@ -18,6 +18,8 @@ ollama_ui_https_mode: selfsigned
 ollama_backup_models: no
 # start/stop the ollama service and web UI, enable/disable it on boot (yes/no) (redirect users to maintenance page if disabled)
 ollama_enable_service: yes
+# enable/disable installation of ollama-ui (yes/no)
+ollama_ui: yes
 # list of IP addresses allowed to access the ollama web interface (IP or IP/netmask format)
 # set to empty list [] to allow access from any IP address
 ollama_ui_allowed_hosts: []

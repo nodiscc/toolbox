@@ -13,3 +13,4 @@
     - ollama_username is not search('CHANGEME')
     - ollama_password is not search('CHANGEME')
     - ollama_version is string
+    - ollama_ui == ollama_ui | bool

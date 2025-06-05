@@ -27,6 +27,7 @@
   tags:
     - ollama
     - ollama-ui
+  when: ollama_ui | bool
 
 - name: include apache configuration tasks
   import_tasks: apache.yml
