@@ -34,10 +34,13 @@ See [defaults/main.yml](defaults/main.yml) for all configuration variables.
 
 Access the web interface at `https://{{ ollama_ui_fqdn }}` and connect the web interface to the ollama server instance, by setting the `Hostname` value to `https://{{ ollama_ui_fqdn }}/api/`. Access to the web interface is protected by the [`ollama_username`/`ollama_password`](defaults/main.yml) credentials.
 
-You can also use the command-line interface by SSHing (`xsrv shell`) to the server and running `ollama run MODEL_NAME`.
+You can also use the command-line interface by SSHing (`xsrv shell`) to the server and running `ollama run MODEL_NAME:VERSION`. Any model name and version from https://ollama.com/search can be used directly.
 
-Models can be downloaded from the [ollama library](https://ollama.com/library). Set the [`ollama_models`](defaults/main.yml) configuration variable and deploy the role to pull models, or run `ollama pull MODEL_NAME` from the command line. The `orca-mini` model is pulled by default and should run with acceptable performance on a medium-sized machine (4GB RAM, 4vCPU). More advanced models require more resources to run with decent performance. See the [ollama README](https://github.com/ollama/ollama?tab=readme-ov-file#model-library) for more information.
+Models can be downloaded from the [ollama library](https://ollama.com/library). Edit (`xsrv edithost/edit-group`) the [`ollama_models`](defaults/main.yml) configuration variable and deploy the role to automaticall pull models during deployment, or run `ollama pull MODEL_NAME` from the command line.
 
+The `orca-mini` model is pulled by default and should run with acceptable performance (but mediocre results) on a medium-sized machine (4GB RAM, 4vCPU) without GPU. More advanced models require more resources to run with decent performance. See the [ollama README](https://github.com/ollama/ollama?tab=readme-ov-file#model-library) for more information.
+
+**Check that ollama is running on GPU:** Larger models require a GPU to provide decent quality results at tolerable speeds (a few tokens/second). For NVidia GPUs, you can check that ollama is running on GPU by running the `nvidia-smi` command, and cheking if the `CUDA Version:` field is present in th output. You should also install `nvidia-cuda-toolkit`. If `no compatible GPUs were discovered` is present in the ollama startup logs (`xsrv logs`), then  your GPU is not being used, and ollama will fall back to using the CPU.
 
 ### Backups
 

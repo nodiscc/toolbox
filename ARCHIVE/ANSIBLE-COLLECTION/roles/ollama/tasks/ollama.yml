@@ -1,20 +1,45 @@
-- name: download ollama binary
+- name: download ollama archive
   get_url:
-    url: "https://github.com/ollama/ollama/releases/download/{{ ollama_version }}/ollama-linux-amd64"
-    dest: /root/ollama-linux-amd64
+    url: "https://github.com/ollama/ollama/releases/download/{{ ollama_version }}/ollama-linux-amd64.tgz"
+    dest: /root/ollama-linux-amd64.tgz
     owner: root
     group: root
     mode: "0755"
 
-- name: copy ollama binary to installation directory
+- name: create ollama zip extraction directory
+  file:
+    path: "/root/ollama-{{ ollama_version }}-unpack"
+    state: directory
+    mode: "0750"
+  check_mode: no # create even in check mode so that following tasks don't fail
+
+- name: extract ollama archive
+  unarchive:
+    src: "/root/ollama-linux-amd64.tgz"
+    dest: "/root/ollama-{{ ollama_version }}-unpack"
+    owner: root
+    group: root
+    remote_src: yes
+    mode: u=rwX,g=rX,o=
+    creates: "/root/ollama-{{ ollama_version }}-unpack/lib"
+  no_log: True
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: copy ollama files to installation directories
   copy:
     remote_src: yes
-    src: /root/ollama-linux-amd64
-    dest: /usr/local/bin/ollama
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
     owner: root
     group: root
     mode: "0755"
   ignore_errors: "{{ ansible_check_mode }}"
+  loop:
+    - src: "/root/ollama-{{ ollama_version }}-unpack/bin/ollama"
+      dest: /usr/local/bin/ollama
+    - src: "/root/ollama-{{ ollama_version }}-unpack/lib/ollama"
+      dest: /usr/local/lib/
+  notify: restart ollama
 
 - name: create ollama user
   user:
