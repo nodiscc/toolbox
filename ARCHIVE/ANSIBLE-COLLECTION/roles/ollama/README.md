@@ -40,6 +40,8 @@ Models can be downloaded from the [ollama library](https://ollama.com/library). 
 
 The `orca-mini` model is pulled by default and should run with acceptable performance (but mediocre results) on a medium-sized machine (4GB RAM, 4vCPU) without GPU. More advanced models require more resources to run with decent performance. See the [ollama README](https://github.com/ollama/ollama?tab=readme-ov-file#model-library) for more information.
 
+Run `ollama help` to show all available CLI commands.
+
 **Check that ollama is running on GPU:** Larger models require a GPU to provide decent quality results at tolerable speeds (a few tokens/second). For NVidia GPUs, you can check that ollama is running on GPU by running the `nvidia-smi` command, and cheking if the `CUDA Version:` field is present in th output. You should also install `nvidia-cuda-toolkit`. If `no compatible GPUs were discovered` is present in the ollama startup logs (`xsrv logs`), then  your GPU is not being used, and ollama will fall back to using the CPU.
 
 ### Backups
