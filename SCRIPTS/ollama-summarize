@@ -1,0 +1,84 @@
+#!.venv/bin/python3
+"""
+Description: extract the main article text from an URL and summarize it with ollama
+Requirements: python3 -m venv ~/.venv && ~/.venv/bin/pip3 install bs4 readability html2text ollama
+              ollama must be running locally
+Usage: usage: llm-summarize [-h] [--sentences SENTENCES_NUMBER] --url URL
+"""
+import sys
+import argparse
+import requests
+from bs4 import BeautifulSoup
+from readability import Document
+import html2text
+from ollama import chat
+
+def get_content(url):
+    """
+    Get a HTML page content from a URL.
+    """
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; rv:128.0) Gecko/20100101 Firefox/128.0'
+    }
+    try:
+        response = requests.get(url, headers=headers, timeout=10)
+        response.raise_for_status()
+        content = response.text
+        return content
+    except requests.exceptions.RequestException as error:
+        print(f"Error querying URL: {error}")
+        return None
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--sentences', dest='sentences_number', type=int, default=0, help='number of sentences for the summary. Set to 0 to disable')
+    parser.add_argument('--url', dest='url', type=str, required=True, help='URL of the article to summarize')
+    parser.add_argument('--model', dest='model', type=str, default='gemma3:4b', help='ollama model to use (default gemma3:4b)')
+    args = parser.parse_args()
+    content_html = get_content(args.url)
+    raw_html = BeautifulSoup(content_html, 'html.parser')
+    try:
+        lang = raw_html.html["lang"]
+    except TypeError:
+        lang = "undefined"
+    # print(lang)
+    # sys.exit(1)
+    try:
+        tags = raw_html.find("meta", {"name": "ad:rubriques"}).attrs['content'].split(',') # lemonde.fr
+    except AttributeError:
+        tags = []
+    if tags:
+        ignored_tags = ['cyclisme', 'sport']
+        if any(tag in ignored_tags for tag in tags):
+            print(f"Article matches ignored tag, ignoring")
+            sys.exit(0)
+    if content_html:
+        content_html = Document(content_html)
+        content_summary = content_html.summary()
+        #print(content_summary)
+        soup = BeautifulSoup(content_summary, 'html.parser')
+        text_maker = html2text.HTML2Text()
+        text_maker.ignore_links = True
+        plain_text = text_maker.handle(str(soup))
+        #print(plain_text)
+        if args.sentences_number == 0:
+            if lang in ['fr', 'fr-FR']:
+                chat_prompt = f'Résume l\'information, en utilisant uniquement les informations suivantes pour fournir une réponse: {plain_text}'
+            else:
+                chat_prompt = f'Summarize the information, use only the information in the following text to provide your answer: {plain_text}'
+        else:
+            if lang in ['fr', 'fr-FR']:
+                chat_prompt = f'Résume l\'information, limite ta réponse à {str(args.sentences_number)} phrases. Utilise uniquement les informations suivantes pour fournir une réponse: {plain_text}'
+            else:
+                chat_prompt = f'Summarize the information, limit your answer to {str(args.sentences_number)} sentences. Use only the information in the following text to provide your answer: {plain_text}'
+        # print(chat_prompt)
+        stream = chat(
+            model=args.model,
+            messages=[{'role': 'user', 'content': chat_prompt }],
+            stream=True,
+        )
+        for chunk in stream:
+            print(chunk['message']['content'], end='', flush=True)
+        print()
+    else:
+        print('error querying URL')
