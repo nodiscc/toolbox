@@ -1,0 +1,12 @@
+#!/bin/bash
+set -o errexit
+
+current_theme=$(xfconf-query --channel xfwm4 --property /general/theme --list -v| awk -F' ' '{print $2}')
+
+if [[ "$current_theme" == "Yaru" ]]; then
+xfconf-query --channel xfwm4 --property /general/theme --set Yaru-dark
+xfconf-query --channel xsettings --property /Net/ThemeName --set Yaru-blue-dark
+else
+xfconf-query --channel xfwm4 --property /general/theme --set Yaru
+xfconf-query --channel xsettings --property /Net/ThemeName --set Yaru-blue
+fi
