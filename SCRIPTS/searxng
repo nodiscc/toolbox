@@ -1,0 +1,41 @@
+#! /usr/bin/python3
+import requests
+import sys
+
+def searxng_search(query, instance_url="https://searx.lambdacore.network"):
+    """
+    Queries the SearxNG search API and returns the results.
+
+    Args:
+        query: The search query string.
+        instance_url: The URL of the SearxNG instance.
+
+    Returns:
+        A dictionary containing the search results, or None if an error occurred.
+    """
+    url = f"{instance_url}/search?q={query}&format=json"
+    try:
+        response = requests.get(url, verify=False)
+        response.raise_for_status()
+        data = response.json()
+        return data
+    except requests.exceptions.RequestException as e:
+        print(f"Error querying SearxNG: {e}")
+        return None
+    except ValueError as e:
+        print(f"Error parsing JSON response: {e}")
+        return None
+
+if __name__ == "__main__":
+    search_term = sys.argv[1]
+    results = searxng_search(search_term)
+    if results:
+        print(f"Search results for '{search_term}':")
+        for result in results.get('results', []):
+            print(f"  - Title: {result.get('title', 'No title')}")
+            print(f"    URL: {result.get('url', 'No URL')}")
+            print(f"    Content: {result.get('content', 'No content')[:100]}...")
+            print("-" * 20)
+    else:
+        print("Search failed.")
+
