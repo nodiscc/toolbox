@@ -39,7 +39,7 @@ if __name__ == "__main__":
     raw_html = BeautifulSoup(content_html, 'html.parser')
     try:
         lang = raw_html.html["lang"]
-    except TypeError:
+    except (TypeError, KeyError):
         lang = "undefined"
     # print(lang)
     # sys.exit(1)
