@@ -1,0 +1,14 @@
+[Desktop Entry]
+Version=1.0
+Name=Switch theme
+Name[fr]=Changer de thème
+Comment=Switch between light and dark theme
+Comment[fr]=Alterner entre thème clair/sombre
+Exec=theme-switch
+TryExec=theme-switch
+Icon=com.github.bluesabre.darkbar
+Terminal=false
+Type=Application
+X-MultipleArgs=false
+Categories=Utility
+StartupNotify=false
