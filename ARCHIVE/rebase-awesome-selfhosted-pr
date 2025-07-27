@@ -1,0 +1,16 @@
+#!/bin/bash
+# Description: 
+set -o nounset
+set -o errexit
+fork_name="kokomo123"
+branch_name="remove-maybe"
+
+fork_url="git@github.com:$fork_name/awesome-selfhosted-data.git"
+git clone git@github.com:awesome-selfhosted/awesome-selfhosted-data.git
+cd awesome-selfhosted-data
+git remote add "$fork_name" "$fork_url"
+git remote update "$fork_name"
+git checkout -b "$branch_name" "$fork_name/$branch_name"
+git rebase master || git mergetool
+git rebase --continue
+git push -f
