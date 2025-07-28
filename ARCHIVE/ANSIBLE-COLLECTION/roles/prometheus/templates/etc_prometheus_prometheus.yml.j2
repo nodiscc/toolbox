@@ -34,11 +34,53 @@ scrape_configs:
     static_configs:
       - targets: ['localhost:9090']
 
-  - job_name: node
-    # If prometheus-node-exporter is installed, grab stats about the local
-    # machine by default.
+  # - job_name: node
+  #   # If prometheus-node-exporter is installed, grab stats about the local
+  #   # machine by default.
+  #   static_configs:
+  #     - targets: ['localhost:9100']
+
+  - job_name: exporter-exporter
+    scrape_interval: 5s
+    scrape_timeout: 5s
     static_configs:
-      - targets: ['localhost:9100']
+      - targets: ['localhost:9999']
+  - job_name: apache
+    scrape_interval: 5s
+    scrape_timeout: 5s
+    static_configs:
+      - targets: ['localhost:9999']
+    metrics_path: /proxy
+    params:
+      module:
+        - apache
+  - job_name: php-fpm
+    scrape_interval: 5s
+    scrape_timeout: 5s
+    static_configs:
+      - targets: ['localhost:9999']
+    metrics_path: /proxy
+    params:
+      module:
+        - php-fpm
+  - job_name: node
+    scrape_interval: 5s
+    scrape_timeout: 5s
+    static_configs:
+      - targets: ['localhost:9999']
+    metrics_path: /proxy
+    params:
+      module:
+        - node
+  - job_name: process
+    scrape_interval: 5s
+    scrape_timeout: 5s
+    static_configs:
+      - targets: ['localhost:9999']
+    metrics_path: /proxy
+    params:
+      module:
+        - process
 
 {% if prometheus_scrape_local_netdata %}
   - job_name: 'netdata-scrape'
