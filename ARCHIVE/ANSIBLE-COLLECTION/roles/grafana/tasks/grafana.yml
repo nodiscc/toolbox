@@ -20,16 +20,49 @@
     deb: /root/grafana_10.3.3_amd64.deb
   ignore_errors: "{{ ansible_check_mode }}"
 
+- name: create provisioning directory
+  file:
+    state: directory
+    path: "{{ item }}"
+    owner: root
+    group: grafana
+    mode: "0750"
+  tags: grafana-config
+  #notify: restart grafana
+  ignore_errors: "{{ ansible_check_mode }}"
+  loop:
+    - /etc/grafana/provisioning
+    - /etc/grafana/provisioning/datasources
+    - /etc/grafana/provisioning/dashboards
+    - /var/lib/grafana/dashboards
+
 - name: configure grafana
   template:
-    src: etc_grafana_grafana.ini.j2
-    dest: /etc/grafana/grafana.ini
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
     owner: root
     group: grafana
     mode: "0640"
   tags: grafana-config
   notify: restart grafana
   ignore_errors: "{{ ansible_check_mode }}"
+  loop:
+    - src: etc_grafana_grafana.ini.j2
+      dest: /etc/grafana/grafana.ini
+    - src: etc_grafana_provisioning_dashboards_default.yaml.j2
+      dest: /etc/grafana/provisioning/dashboards/default.yaml
+
+- name: configure grafana dashboards
+  copy:
+    src: var_lib_grafana_dashboards_cluster.json
+    dest: /var/lib/grafana/dashboards/cluster.json
+    owner: grafana
+    group: grafana
+    mode: "0640"
+  notify: restart grafana
+
+- name: apply configuration (flush handlers)
+  meta: flush_handlers
 
 ##### SERVICE #####
 
