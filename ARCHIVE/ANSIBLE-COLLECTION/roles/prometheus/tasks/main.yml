@@ -8,3 +8,14 @@
   become: yes
   import_tasks: prometheus.yml
   tags: prometheus
+
+- name: import firewalld configuration tasks
+  import_tasks: firewalld.yml
+  become: yes
+  tags:
+    - monitoring
+    - prometheus
+    - firewall
+  when:
+    - ansible_local.firewalld.ansible_managed is defined
+    - ansible_local.firewalld.ansible_managed | bool
