@@ -28,7 +28,6 @@
     group: grafana
     mode: "0750"
   tags: grafana-config
-  #notify: restart grafana
   ignore_errors: "{{ ansible_check_mode }}"
   loop:
     - /etc/grafana/provisioning
