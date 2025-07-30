@@ -52,14 +52,19 @@
     - src: etc_grafana_provisioning_dashboards_default.yaml.j2
       dest: /etc/grafana/provisioning/dashboards/default.yaml
 
-- name: configure grafana dashboards
+- name: provision grafana dashboards
   copy:
-    src: var_lib_grafana_dashboards_cluster.json
-    dest: /var/lib/grafana/dashboards/cluster.json
+    src: var_lib_grafana_dashboards_{{ item }}.json
+    dest: /var/lib/grafana/dashboards/{{ item }}.json
     owner: grafana
     group: grafana
     mode: "0640"
   notify: restart grafana
+  loop:
+    - node
+    - namedprocesses
+    - apache
+    - phpfpm
 
 - name: apply configuration (flush handlers)
   meta: flush_handlers
