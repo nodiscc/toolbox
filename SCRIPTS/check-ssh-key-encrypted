@@ -1,0 +1,7 @@
+#!/bin/bash
+if ssh-keygen -y -P "" -f ~/.ssh/id_rsa >/dev/null 2>&1; then
+  echo "WARNING: ~/.ssh/id_rsa not encrypted"
+else
+  echo "OK: ~/.ssh/id_rsa is encrypted"
+fi
+
