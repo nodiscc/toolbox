@@ -15,6 +15,6 @@ docker_swarm:
 docker_prune_nightly: yes
 # allow docker to configure iptables rules automatically (yes/no)
 docker_iptables: no
-# Expected minimum/maximum number of running docker containers (if the host has the monitoring_netdata role)
+# Expected minimum/maximum number of running docker containers (if the host has the netdata role)
 netdata_min_running_docker_containers: 0
 netdata_max_running_docker_containers: 99999

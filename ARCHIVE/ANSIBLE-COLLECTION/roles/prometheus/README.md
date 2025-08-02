@@ -28,7 +28,7 @@ See [defaults/main.yml](defaults/main.yml) for all configuration variables.
 
 ## Usage
 
-When `prometheus_scrape_local_netdata: yes` (the default), Prometheus will scape data from a netdata instance installed on the same host (for example using the [nodiscc.xsrv.monitoring_netdata](https://gitlab.com/nodiscc/xsrv/-/tree/master/roles/monitoring_netdata) role). Metrics from all netdata instances configured to stream data to this netdata instance, will be made available in Prometheus. Coupled with the [nodiscc.toolbox.grafana](../grafana) role, this provides a very simple yet flexible and powerful visualization solution for metrics across your whole infrastructure.
+When `prometheus_scrape_local_netdata: yes` (the default), Prometheus will scape data from a netdata instance installed on the same host (for example using the [nodiscc.toolbox.netdata](https://gitlab.com/nodiscc/toolbox/-/tree/master/ARCHIVE/ANSIBLE-COLLECTION/roles/netdata) role). Metrics from all netdata instances configured to stream data to this netdata instance, will be made available in Prometheus. Coupled with the [nodiscc.toolbox.grafana](../grafana) role, this provides a very simple yet flexible and powerful visualization solution for metrics across your whole infrastructure.
 
 
 ### Backups
