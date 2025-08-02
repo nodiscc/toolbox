@@ -54,6 +54,7 @@ ansible-galaxy collection install -r requirements.yml
    - nodiscc.toolbox.mariadb
    - nodiscc.toolbox.reverse_ssh_tunnel
    - nodiscc.toolbox.nfs_server
+   - nodiscc.toolbox.netdata
    - nodiscc.toolbox.valheim_server
    - nodiscc.toolbox.icecast
    - nodiscc.toolbox.rss_bridge
