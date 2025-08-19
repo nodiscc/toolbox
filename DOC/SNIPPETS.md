@@ -26,8 +26,6 @@ python 3 http server `python3 -m http.server`
 
 conky view all available characters in Xft font `xfd -fa FONTNAME`
 
-iptables trace packets: `iptables -A ..... -j TRACE; tail -f /var/log/kern.log | grep 'TRACE:'`
-
 send mail from common line `echo "My message" | mail -s subject user@gmail.com`
 
 python pretty-print dicts: `#import pprint; pp = pprint.PrettyPrinter(indent=4); pp.pprint(my_dict)`
@@ -65,6 +63,25 @@ python set environment variable `os.environ['LD_LIBRARY_PATH'] = "my_path"`
 
 get full path of a file `readlink -f file.txt` or `realpath file.txt`
 
+
+iptables make rules permanent: `apt install iptables-permanent; iptables-save > /etc/iptables/rules.v4; cat /etc/iptables/rules.v4 | iptables-restore`
+
+
+iptables: allow inbound connections on 80/tcp from anywhere `iptables -A INPUT -i eth0 -p tcp --dport 80 -m state --state NEW,ESTABLISHED -j ACCEPT`
+
+iptables: allow outbound traffic for already established 80/tcp connections: `iptables -A OUTPUT -o eth0 -p tcp --sport 80 -m state --state ESTABLISHED -j ACCEPT`
+
+iptables: allow 80/tcp only on LAN `iptables -A INPUT -i eth0 -p tcp -s 192.168.1.0/24 --dport 80 -m state --state NEW,ESTABLISHED -j ACCEPT; iptables -A OUTPUT -o eth0 -p tcp --sport 80 -m state --state ESTABLISHED -j ACCEPT`
+
+iptables: delete all rules `Delete all rules`
+
+iptables: Set Default Chain Policies `iptables -P INPUT DROP; iptables -P FORWARD DROP ;iptables -P OUTPUT DROP`
+
+iptables: Block traffic from an IP address `iptables -A INPUT -s $IP -j DROP`
+
+
+iptables trace packets: `iptables -A ..... -j TRACE; tail -f /var/log/kern.log | grep 'TRACE:'`
+
 iptables/netfilter NAT Enable forwarding `echo 1 > /proc/sys/net/ipv4/ip_forward`
 
 iptables forwarding `iptables -A FORWARD -i $wan_iface -o $lan_iface -m state --state RELATED,ESTABLISHED -j ACCEPT && iptables -A FORWARD -i $lan_iface -o $wan_iface -j ACCEPT`
@@ -78,6 +95,8 @@ iptables DNAT all ports `iptables -t nat -A PREROUTING -d $wan_address -j DNAT -
 iptables DNAT single port `iptables -t nat -A PREROUTING -p tcp -d $wan_address --dport 80 -j dnat --to-destination $lan_address`
 
 iptables full DNAT+SNAT `iptables -t nat -A PREROUTING -d $wan_address -j DNAT --to-destination $lan_address && iptables -t NAT -A POSTROUTING -s $lan_address -j SNAT --to-destination $wan_address`
+
+iptables block SYN flood/rate limit SYN packets `iptables -A INPUT -p tcp --syn -m limit --limit 1/s --limit-burst 3 -j RETURN`
 
 monitoring CPU performance metrics: context switch (switch between processes/threads), run queue (num. of active processes in current CPU queue - Sleeping or WAiting for I/O processes are not in the run queue - priority affects selection of process from queue), CPU usage, load average (1 5 15 mins, run queue + uninterruptible). `cat,echo > /sys/block/sd?/queue/scheduler` (not instantaneous). Use realtime kernel? Recompile lightweight kernel?
 
@@ -159,8 +178,6 @@ ansible exclude host from playbook run `ansible-playbook --limit '!hoost1:!host2
 ansible libvirt inventory plugin `echo -e 'plugin: community.libvirt.libvirt\nuri: "qemu:///system"' > kvm.yml; sudo apt install pkg-config libvirt-dev; ansible-inventory --list --inventory kvm.yml`
 
 >DECOMPOSE. THE. PROBLEM.
-
-iptables open OUTGOING port `iptables -A OUTPUT -p TCP --dport 6881:6999 \ -m state --state NEW -j ACCEPT`
 
 pulseaudio change output channels/mode: pacmd set-card-profile INDEX PROFILE
 
@@ -743,23 +760,12 @@ Get HTTP headers with curl `curl -I http://www.example.com`
 
 speedtest with curl `curl -o /dev/null http://speedtest.wdc01.softlayer.com/downloads/test500.zip`
 
-firewall ufw: allow inbound connections on 80/tcp from anywhere `ufw allow 80/tcp`
+ufw: allow inbound connections on 80/tcp from anywhere `ufw allow 80/tcp`
 
-firewall iptables: allow inbound connections on 80/tcp from anywhere `iptables -A INPUT -i eth0 -p tcp --dport 80 -m state --state NEW,ESTABLISHED -j ACCEPT`
+ufw: drop packets on 80/tcp from anywhere `ufw deny 80/tcp`
 
-firewall iptables: allow outbound traffic for already established 80/tcp connections: `iptables -A OUTPUT -o eth0 -p tcp --sport 80 -m state --state ESTABLISHED -j ACCEPT`
+ufw: allow 80/tcp only on LAN `ufw allow from 192.168.1.0/24 to any port 80`
 
-firewall ufw: drop packets on 80/tcp from anywhere `ufw deny 80/tcp`
-
-firewall ufw: allow 80/tcp only on LAN `ufw allow from 192.168.1.0/24 to any port 80`
-
-firewall iptables: allow 80/tcp only on LAN `iptables -A INPUT -i eth0 -p tcp -s 192.168.1.0/24 --dport 80 -m state --state NEW,ESTABLISHED -j ACCEPT; iptables -A OUTPUT -o eth0 -p tcp --sport 80 -m state --state ESTABLISHED -j ACCEPT`
-
-firewall iptables: delete all rules `Delete all rules`
-
-firewall iptables: Set Default Chain Policies `iptables -P INPUT DROP; iptables -P FORWARD DROP ;iptables -P OUTPUT DROP`
-
-firewall iptables: Block traffic from an IP address `iptables -A INPUT -s $IP -j DROP`
 
 git change branch in bare repo: `git symbolic-ref HEAD refs/heads/mybranchname @git`
 
@@ -1136,7 +1142,6 @@ show configured network interfaces IP addresses: `ip -c addr`
 
 setup source NAT (SNAT): `iptables -t nat -A POSTROUTING -o ethpublic0 -j SNAT --to 8.9.10.11`
 
-iptables make rules permanent: `apt install iptables-permanent; iptables-save > /etc/iptables/rules.v4; cat /etc/iptables/rules.v4 | iptables-restore`
 
 build debian APT repo packages index: dpkg-scanpackages . /dev/null | gzip -9c > Packages.gz
 
