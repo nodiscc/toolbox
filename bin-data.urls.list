@@ -8,7 +8,7 @@ https://download.kiwix.org/zim/other/rationalwiki_en_all_maxi_2021-03.zim
 #https://s3.amazonaws.com/wikia_xml_dumps/a/av/avp_pages_current.xml.7z # 404
 #https://s3.amazonaws.com/wikia_xml_dumps/b/bl/bladerunner_pages_current.xml.7z # 404
 #https://s3.amazonaws.com/wikia_xml_dumps/e/el/elitedangerous_pages_current.xml.7z # 404
-https://s3.amazonaws.com/wikia_xml_dumps/m/mi/minecraft_gamepedia_pages_current.xml.7z
+#https://s3.amazonaws.com/wikia_xml_dumps/m/mi/minecraft_gamepedia_pages_current.xml.7z
 https://s3.amazonaws.com/wikia_xml_dumps/w/wi/witcher_pages_current.xml.7z
 https://s3.amazonaws.com/wikia_xml_dumps/s/st/starwars_pages_current.xml.7z
 #https://s3.amazonaws.com/wikia_xml_dumps/r/re/residentevil_pages_current.xml.7z # 404
