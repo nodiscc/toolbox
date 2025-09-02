@@ -4,6 +4,8 @@ java limit/max memory usage `-Xms<memory>[MG] -Xmx<memory>[MG]`
 
 git show number of commits in branch: `git rev-list --count HEAD` https://stackoverflow.com/questions/11657295/count-the-number-of-commits-on-a-git-branch
 
+git show commits that are on one branch but not another one: `git log --no-merges onthisbranch ^notonthisone`
+
 git show hash of last commit: `git rev-parse --short HEAD` https://stackoverflow.com/questions/949314/how-to-retrieve-the-hash-for-the-current-commit-in-git
 
 git store credentials in libsecret/gnome-keyring `sudo apt-get install libsecret-1-0 libsecret-1-dev && cd /usr/share/doc/git/contrib/credential/libsecret &&sudo make && git config --global credential.helper /usr/share/doc/git/contrib/credential/libsecret/git-credential-libsecret`
