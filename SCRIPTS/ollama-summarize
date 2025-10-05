@@ -73,15 +73,18 @@ if __name__ == "__main__":
                     chat_prompt = f'Summarize the information, use only the information in the following text to provide your answer: {plain_text}'
             else:
                 if lang in ['fr', 'fr-FR']:
-                    chat_prompt = f'Résume l\'information, limite ta réponse à {str(args.sentences_number)} phrases. Utilise uniquement les informations suivantes pour fournir une réponse: {plain_text}'
+                    chat_prompt = f'Résume l\'information dans le document suivant, limite ta réponse à {str(args.sentences_number)} phrases. Utilise uniquement les informations dans le document pour fournir une réponse. Voici le document: {plain_text}'
                 else:
-                    chat_prompt = f'Summarize the information, limit your answer to {str(args.sentences_number)} sentences. Use only the information in the following text to provide your answer: {plain_text}'
+                    chat_prompt = f'Summarize the information in the following document, limit your answer to {str(args.sentences_number)} sentences. Use only the information in the document to provide your answer. Here is the document: {plain_text}'
         else:
             chat_prompt = f'{args.prompt}. use only the information in the following text to provide your answer: {plain_text}'
         # print(chat_prompt)
         stream = chat(
             model=args.model,
-            messages=[{'role': 'user', 'content': chat_prompt }],
+            messages=[
+              {'role': 'system', 'content': 'You are a document summarization assistant. When given a document, you reply with a summary of key information in the document' },
+              {'role': 'user', 'content': chat_prompt }
+              ],
             stream=True,
         )
         for chunk in stream:
