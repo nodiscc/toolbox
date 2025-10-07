@@ -5,7 +5,7 @@ Supports Caldav tasks/TODOs, CalDAV events, IMAP unread/flagged messages, Gitea 
 TT-RSS starred articles, Toggl Track time entries, file last modification time.
 Requirements:
   sudo apt install python3-venv python3-pip
-  python3 -m venv ~/.venv && source ~/.venv/bin/activate && pip3 install secretstorage requests caldav icalendar
+  python3 -m venv ~/.venv && source ~/.venv/bin/activate && pip3 install secretstorage requests caldav icalendar vobject
 USAGE: source ~/.venv/bin/activate && ./pydashboard --help
 On first run the program will ask for the required credentials for each service, and store them in
 your desktop environment's secret storage (e.g. gnome-keyring, keepassxc...), so this program
