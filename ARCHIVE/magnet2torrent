@@ -1,5 +1,6 @@
-#!/usr/bin/env python
-#Description: generate a .torrent file from a magnet link
+#!/usr/bin/env python3
+# Description: generate a .torrent file from a magnet link
+# Requirements: ~/.venv/bin/pip3 install libtorrent
 '''
 Created on Apr 19, 2012
 @author: dan, Faless
