@@ -3,7 +3,7 @@
 Description: extract the main article text from an URL and summarize it with ollama
 Requirements: python3 -m venv ~/.venv && ~/.venv/bin/pip3 install bs4 readability html2text ollama
               ollama must be running locally
-Usage: usage: llm-summarize [-h] [--sentences SENTENCES_NUMBER] --url URL
+Usage: usage: llm-summarize [-h] [--sentences SENTENCES_NUMBER] --url URL [--url URL ...]
 """
 import sys
 import argparse
@@ -32,29 +32,39 @@ def get_content(url):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--sentences', dest='sentences_number', type=int, default=0, help='number of sentences for the summary. Set to 0 to disable')
-    parser.add_argument('--url', dest='url', type=str, required=True, help='URL of the article to summarize')
+    parser.add_argument('--url', dest='urls', type=str, required=True, action='append', help='URL of the article to summarize (can be specified multiple times)')
     parser.add_argument('--model', dest='model', type=str, default='gemma3:4b', help='ollama model to use (default gemma3:4b)')
     parser.add_argument('--prompt', dest='prompt', type=str, help='custom prompt, replaces the default summarization prompt (but still asks the LLM to only consider the information from the webpage)')
     parser.add_argument('--print-only', dest='print_only', action='store_true', help='only print the extracted plain text from the HTML, do not perform summarization')
     args = parser.parse_args()
-    content_html = get_content(args.url)
-    raw_html = BeautifulSoup(content_html, 'html.parser')
-    try:
-        lang = raw_html.html["lang"]
-    except (TypeError, KeyError):
-        lang = "undefined"
-    # print(lang)
-    # sys.exit(1)
-    try:
-        tags = raw_html.find("meta", {"name": "ad:rubriques"}).attrs['content'].split(',') # lemonde.fr
-    except AttributeError:
-        tags = []
-    if tags:
-        ignored_tags = ['cyclisme', 'sport']
-        if any(tag in ignored_tags for tag in tags):
-            print(f"Article matches ignored tag, ignoring")
-            sys.exit(0)
-    if content_html:
+    
+    for idx, url in enumerate(args.urls):
+        content_html = get_content(url)
+        if not content_html:
+            print(f'error querying URL: {url}')
+            if idx < len(args.urls) - 1:
+                print("---------------------------------------------")
+            continue
+            
+        raw_html = BeautifulSoup(content_html, 'html.parser')
+        try:
+            lang = raw_html.html["lang"]
+        except (TypeError, KeyError):
+            lang = "undefined"
+        # print(lang)
+        # sys.exit(1)
+        try:
+            tags = raw_html.find("meta", {"name": "ad:rubriques"}).attrs['content'].split(',') # lemonde.fr
+        except AttributeError:
+            tags = []
+        if tags:
+            ignored_tags = ['cyclisme', 'sport']
+            if any(tag in ignored_tags for tag in tags):
+                print(f"Article matches ignored tag, ignoring")
+                if idx < len(args.urls) - 1:
+                    print("---------------------------------------------")
+                continue
+        
         content_html = Document(content_html)
         content_summary = content_html.summary()
         #print(content_summary)
@@ -64,7 +74,9 @@ if __name__ == "__main__":
         plain_text = text_maker.handle(str(soup))
         if args.print_only:
             print(plain_text)
-            sys.exit(0)
+            if idx < len(args.urls) - 1:
+                print("---------------------------------------------")
+            continue
         if not args.prompt:
             if args.sentences_number == 0:
                 if lang in ['fr', 'fr-FR']:
@@ -90,5 +102,7 @@ if __name__ == "__main__":
         for chunk in stream:
             print(chunk['message']['content'], end='', flush=True)
         print()
-    else:
-        print('error querying URL')
+        
+        # Print separator between URLs (but not after the last one)
+        if idx < len(args.urls) - 1:
+            print("---------------------------------------------")
