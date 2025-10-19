@@ -42,11 +42,13 @@ if __name__ == "__main__":
         content_html = get_content(url)
         if not content_html:
             print(f'error querying URL: {url}')
-            if idx < len(args.urls) - 1:
-                print("---------------------------------------------")
             continue
             
         raw_html = BeautifulSoup(content_html, 'html.parser')
+        title_string = raw_html.find("title").text
+        print("---------------------------------------------")
+        print("\033[0;36m# " + title_string + "\033[0m")
+        print("\033[0;36m" + url + "\033[0m")
         try:
             lang = raw_html.html["lang"]
         except (TypeError, KeyError):
@@ -61,8 +63,6 @@ if __name__ == "__main__":
             ignored_tags = ['cyclisme', 'sport']
             if any(tag in ignored_tags for tag in tags):
                 print(f"Article matches ignored tag, ignoring")
-                if idx < len(args.urls) - 1:
-                    print("---------------------------------------------")
                 continue
         
         content_html = Document(content_html)
@@ -74,8 +74,6 @@ if __name__ == "__main__":
         plain_text = text_maker.handle(str(soup))
         if args.print_only:
             print(plain_text)
-            if idx < len(args.urls) - 1:
-                print("---------------------------------------------")
             continue
         if not args.prompt:
             if args.sentences_number == 0:
@@ -102,7 +100,3 @@ if __name__ == "__main__":
         for chunk in stream:
             print(chunk['message']['content'], end='', flush=True)
         print()
-        
-        # Print separator between URLs (but not after the last one)
-        if idx < len(args.urls) - 1:
-            print("---------------------------------------------")
