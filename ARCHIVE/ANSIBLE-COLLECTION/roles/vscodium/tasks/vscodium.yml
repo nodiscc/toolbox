@@ -24,3 +24,4 @@
   apt:
     package: codium
     state: present
+  ignore_errors: "{{ ansible_check_mode }}"
