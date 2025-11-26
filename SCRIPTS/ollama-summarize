@@ -1,7 +1,7 @@
 #!.venv/bin/python3
 """
 Description: extract the main article text from an URL and summarize it with ollama
-Requirements: python3 -m venv ~/.venv && ~/.venv/bin/pip3 install bs4 readability html2text ollama
+Requirements: python3 -m venv ~/.venv && ~/.venv/bin/pip3 install bs4 git+https://github.com/buriy/python-readability@v0.8.1 html2text lxml[html_clean] ollama
               ollama must be running locally
 Usage: usage: llm-summarize [-h] [--sentences SENTENCES_NUMBER] --url URL [--url URL ...]
 """
