@@ -1,9 +1,9 @@
 #!.venv/bin/python3
 """
-Description: extract the main article text from an URL and summarize it with ollama
+Description: extract the main article text from an URL or file and summarize it with ollama
 Requirements: python3 -m venv ~/.venv && ~/.venv/bin/pip3 install bs4 git+https://github.com/buriy/python-readability@v0.8.1 html2text lxml[html_clean] ollama
               ollama must be running locally
-Usage: usage: llm-summarize [-h] [--sentences SENTENCES_NUMBER] --url URL [--url URL ...]
+Usage: usage: llm-summarize [-h] [--sentences SENTENCES_NUMBER] (--url URL | --file FILE)
 """
 import sys
 import argparse
@@ -12,6 +12,7 @@ from bs4 import BeautifulSoup
 from readability import Document
 import html2text
 from ollama import chat
+from pathlib import Path
 
 def get_content(url):
     """
@@ -29,32 +30,66 @@ def get_content(url):
         print(f"Error querying URL: {error}")
         return None
 
+def get_content_from_file(filepath):
+    """
+    Get HTML content from a local file.
+    """
+    try:
+        with open(filepath, 'r', encoding='utf-8') as f:
+            content = f.read()
+        return content
+    except FileNotFoundError:
+        print(f"Error: File not found: {filepath}")
+        return None
+    except Exception as error:
+        print(f"Error reading file: {error}")
+        return None
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--sentences', dest='sentences_number', type=int, default=8, help='number of sentences for the summary. Set to 0 to disable')
-    parser.add_argument('--url', dest='urls', type=str, required=True, action='append', help='URL of the article to summarize (can be specified multiple times)')
+    
+    # Create mutually exclusive group for URL and file inputs
+    input_group = parser.add_mutually_exclusive_group(required=True)
+    input_group.add_argument('--url', dest='urls', type=str, action='append', help='URL of the article to summarize (can be specified multiple times)')
+    input_group.add_argument('--file', dest='files', type=str, action='append', help='path to HTML file to summarize (can be specified multiple times)')
+    
     parser.add_argument('--model', dest='model', type=str, default='gemma3:4b', help='ollama model to use (default gemma3:4b)')
     parser.add_argument('--prompt', dest='prompt', type=str, help='custom prompt, replaces the default summarization prompt (but still asks the LLM to only consider the information from the webpage)')
     parser.add_argument('--print-only', dest='print_only', action='store_true', help='only print the extracted plain text from the HTML, do not perform summarization')
     args = parser.parse_args()
     
-    for idx, url in enumerate(args.urls):
-        content_html = get_content(url)
+    # Determine which input type to process
+    sources = []
+    if args.urls:
+        sources = [('url', url) for url in args.urls]
+    elif args.files:
+        sources = [('file', filepath) for filepath in args.files]
+    
+    for source_type, source in sources:
+        # Get content based on source type
+        if source_type == 'url':
+            content_html = get_content(source)
+            source_display = source
+        else:  # file
+            content_html = get_content_from_file(source)
+            source_display = str(Path(source).resolve())
+        
         if not content_html:
-            print(f'error querying URL: {url}')
+            print(f'error processing source: {source}')
             continue
             
         raw_html = BeautifulSoup(content_html, 'html.parser')
-        title_string = raw_html.find("title").text
+        title_tag = raw_html.find("title")
+        title_string = title_tag.text if title_tag else "Untitled"
         print("---------------------------------------------")
         print("\033[0;36m# " + title_string + "\033[0m")
-        print("\033[0;36m" + url + "\033[0m")
+        print("\033[0;36m" + source_display + "\033[0m")
         try:
             lang = raw_html.html["lang"]
         except (TypeError, KeyError):
             lang = "undefined"
-        # print(lang)
-        # sys.exit(1)
+        
         try:
             tags = raw_html.find("meta", {"name": "ad:rubriques"}).attrs['content'].split(',') # lemonde.fr
         except AttributeError:
@@ -67,7 +102,6 @@ if __name__ == "__main__":
         
         content_html = Document(content_html)
         content_summary = content_html.summary()
-        #print(content_summary)
         soup = BeautifulSoup(content_summary, 'html.parser')
         text_maker = html2text.HTML2Text()
         text_maker.ignore_links = True
@@ -88,7 +122,7 @@ if __name__ == "__main__":
                     chat_prompt = f'Summarize the information in the following document, limit your answer to {str(args.sentences_number)} sentences. Use only the information in the document to provide your answer. Here is the document: {plain_text}'
         else:
             chat_prompt = f'{args.prompt}. use only the information in the following text to provide your answer: {plain_text}'
-        # print(chat_prompt)
+        
         stream = chat(
             model=args.model,
             messages=[
