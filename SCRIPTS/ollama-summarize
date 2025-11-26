@@ -31,7 +31,7 @@ def get_content(url):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--sentences', dest='sentences_number', type=int, default=0, help='number of sentences for the summary. Set to 0 to disable')
+    parser.add_argument('--sentences', dest='sentences_number', type=int, default=8, help='number of sentences for the summary. Set to 0 to disable')
     parser.add_argument('--url', dest='urls', type=str, required=True, action='append', help='URL of the article to summarize (can be specified multiple times)')
     parser.add_argument('--model', dest='model', type=str, default='gemma3:4b', help='ollama model to use (default gemma3:4b)')
     parser.add_argument('--prompt', dest='prompt', type=str, help='custom prompt, replaces the default summarization prompt (but still asks the LLM to only consider the information from the webpage)')
