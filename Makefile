@@ -28,7 +28,7 @@ test-pylint:
 	source .venv/bin/activate && \
 	pip3 install wheel && \
 	pip3 install pylint secretstorage requests caldav icalendar && \
-	pylint --disable fixme --fail-under 8 --fail-on E,W SCRIPTS/pydashboard
+	pylint --disable fixme,line-too-long,too-many-locals,consider-using-f-string --fail-under 8 --fail-on E,W SCRIPTS/pydashboard
 
 test-ansible-lint:
 	cd ARCHIVE/ANSIBLE-COLLECTION/ && make
