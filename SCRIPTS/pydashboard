@@ -140,7 +140,7 @@ def list_caldav_events(args):
                             ssl_verify_cert=args.ssl_verify)
     caldav_principal = caldav_client.principal()
     caldav_calendar = caldav_principal.calendar(name=args.caldav_calendar_name)
-    assert(caldav_calendar)
+    assert caldav_calendar
     now = datetime.datetime.now()
     caldav_events = caldav_calendar.search(
         start=now,
@@ -179,7 +179,7 @@ def list_caldav_todos(args):
                             ssl_verify_cert=args.ssl_verify)
     caldav_principal = caldav_client.principal()
     caldav_calendar = caldav_principal.calendar(name=args.caldav_calendar_name)
-    assert(caldav_calendar)
+    assert caldav_calendar
     caldav_todos = caldav_calendar.todos(include_completed=False)
     todos = []
     for todo in caldav_todos:
