@@ -1,0 +1,320 @@
+#!/usr/bin/env python3
+"""Experimental, TUI coding assistant for ollama"""
+import os
+import json
+import readline
+import subprocess
+from pathlib import Path
+import requests
+
+# Try to import rich if available
+try:
+    from rich.console import Console
+    from rich.markdown import Markdown
+    RICH_AVAILABLE = True
+except ImportError:
+    RICH_AVAILABLE = False
+
+OLLAMA_API = "http://localhost:11434/api/chat"
+#MODEL = "gpt-oss:20b"
+#MODEL = "granite4:3b"
+MODEL = "qwen3:14b"
+#MODEL = "qwen2.5-coder:14b" #Error: 400 Client Error: Bad Request for url: http://localhost:11434/api/chat
+THINKING = True  # Set to False to disable model thinking
+SHOW_THINKING = True  # Set to True to display model's thinking process
+RICH = True  # Set to True to enable rich markdown rendering
+
+# ANSI color codes
+DARK_GRAY = "\033[90m"
+ORANGE = "\033[38;5;208m"
+RESET = "\033[0m"
+
+def read_file(filepath):
+    """Read a file or list directory contents from current directory or subdirectories"""
+    try:
+        path = Path(filepath)
+        # Security: ensure path is within current directory
+        resolved = path.resolve()
+        cwd = Path.cwd().resolve()
+        if not str(resolved).startswith(str(cwd)):
+            return "Error: Access denied - path must be in current directory or subdirectories"
+
+        if not resolved.exists():
+            return f"Error: Path not found - {filepath}"
+
+        # Handle directories
+        if resolved.is_dir():
+            entries = []
+            try:
+                for item in sorted(resolved.iterdir()):
+                    if item.is_dir():
+                        entries.append(f"{item.name}/")
+                    else:
+                        size = item.stat().st_size
+                        entries.append(f"{item.name} ({size} bytes)")
+            except PermissionError:
+                return f"Error: Permission denied - {filepath}"
+
+            result = f"Directory listing for {filepath}:\n"
+            result += "\n".join(entries) if entries else "(empty directory)"
+            return result
+
+        # Handle files
+        if not resolved.is_file():
+            return f"Error: Not a file or directory - {filepath}"
+
+        with open(resolved, 'r', encoding='utf-8') as f:
+            content = f.read()
+        return content
+    except Exception as e: # pylint: disable=W0718
+        return f"Error reading path: {str(e)}"
+
+TOOLS = [
+    {
+        "type": "function",
+        "function": {
+            "name": "read_file",
+            "description": "Read the contents of a file or list the contents of a directory from the current directory or its subdirectories",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "filepath": {
+                        "type": "string",
+                        "description": "Path to the file or directory relative to current directory"
+                    }
+                },
+                "required": ["filepath"]
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "run_command",
+            "description": "Execute a command on the local machine (the tool asks the user for confirmation).",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "command": {
+                        "type": "string",
+                        "description": "The shell command to run"
+                    }
+                },
+                "required": ["command"]
+            },
+        },
+    }
+]
+
+def execute_tool(tool_name, arguments):
+    """Execute a tool function"""
+    if tool_name == "read_file":
+        return read_file(arguments.get("filepath", ""))
+    if tool_name == "run_command":
+        return run_command(arguments.get("command", ""))
+    return f"Error: Unknown tool {tool_name}"
+
+def run_command(command: str) -> str:
+    """
+    Prompt the user for confirmation before running the command.
+    Returns the command’s stdout or an error message.
+    """
+    try:
+        confirm = input(f"### Run command '{command}'? (y/N): ").strip().lower()
+        if confirm != "y":
+            return "ERROR: Command execution aborted by user. Ask the user what you should do instead."
+
+        # Run the command and capture output
+        result = subprocess.run(
+            command,
+            shell=True,
+            check=False,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True
+        )
+        output = result.stdout.strip()
+        if result.returncode != 0:
+            return f"ERROR: Command failed with exit code {result.returncode}:\n{output}"
+        return output or "(no output)"
+    except Exception as e: # pylint: disable=W0718
+        return f"Error executing command: {e}"
+
+def chat_with_ollama(messages, stream_callback=None):
+    """Send messages to Ollama and get response"""
+    payload = {
+        "model": MODEL,
+        "messages": messages,
+        "tools": TOOLS,
+        "stream": True
+    }
+
+    # Add thinking parameter if enabled
+    if THINKING:
+        payload["think"] = True
+
+    try:
+        response = requests.post(OLLAMA_API, json=payload, stream=True, timeout=600)
+        response.raise_for_status()
+
+        full_message = {"role": "assistant", "content": ""}
+        tool_calls = []
+
+        for line in response.iter_lines():
+            if line:
+                chunk = json.loads(line)
+                message = chunk.get("message", {})
+
+                # Check for thinking content (some models may use this)
+                if "thinking" in message and message["thinking"]:
+                    if stream_callback:
+                        stream_callback(message["thinking"], is_thinking=True)
+
+                # Handle regular content streaming
+                if "content" in message:
+                    full_message["content"] += message["content"]
+                    if stream_callback:
+                        stream_callback(message["content"], is_thinking=False)
+
+                # Handle tool calls
+                if "tool_calls" in message:
+                    tool_calls = message["tool_calls"]
+
+                # Check if done
+                if chunk.get("done"):
+                    if tool_calls:
+                        full_message["tool_calls"] = tool_calls
+                    return full_message
+
+        return full_message
+    except Exception as e: # pylint: disable=W0718
+        return {"error": str(e)}
+
+def main():
+    # Configure readline for better input editing
+    # History file for persistent command history
+    history_file = os.path.expanduser("~/.ollama_cli_history")
+    try:
+        readline.read_history_file(history_file)
+    except FileNotFoundError:
+        pass
+
+    # Set history length
+    readline.set_history_length(1000)
+
+    # Initialize rich console if enabled
+    rich_console = None
+    if RICH and RICH_AVAILABLE:
+        rich_console = Console()
+    elif RICH and not RICH_AVAILABLE:
+        print(f"{ORANGE}### Warning: RICH=True but 'rich' library not installed. Install with: pip install rich{RESET}")
+
+    print(f"{ORANGE}### Ollama Interactive CLI (Model: {MODEL}){RESET}")
+    print("Type 'exit' or 'quit' to end the session\n")
+
+    conversation = []
+
+    # Get terminal width for horizontal line
+    try:
+        terminal_width = os.get_terminal_size().columns
+    except:
+        terminal_width = 80
+
+    while True:
+        try:
+            user_input = input(f"{ORANGE}You:{RESET} ").strip()
+
+            if user_input.lower() in ['exit', 'quit']:
+                print("Goodbye!")
+                break
+
+            if not user_input:
+                continue
+
+            # Add user message
+            conversation.append({
+                "role": "user",
+                "content": user_input
+            })
+
+            # Print horizontal line separator
+            print("─" * terminal_width)
+
+            # Get response from Ollama
+            while True:
+                print("", end="", flush=True)
+
+                # Buffer for accumulating response content
+                response_buffer = ""
+                thinking_buffer = ""
+
+                def stream_callback(text, is_thinking=False):
+                    """Callback for streaming text"""
+                    nonlocal response_buffer, thinking_buffer
+
+                    if is_thinking:
+                        thinking_buffer += text
+                        if SHOW_THINKING:
+                            print(f"{DARK_GRAY}{text}{RESET}", end="", flush=True)
+                    else:
+                        response_buffer += text
+                        if not RICH or not rich_console:
+                            # Plain text streaming
+                            print(text, end="", flush=True)
+
+                response = chat_with_ollama(conversation, stream_callback)
+
+                # If using rich, render the complete markdown now
+                if RICH and rich_console and response_buffer:
+                    print()  # New line before rich output
+                    md = Markdown(response_buffer)
+                    rich_console.print(md)
+
+                if "error" in response:
+                    print(f"Error: {response['error']}")
+                    break
+
+                # Check if model wants to use tools
+                if response.get("tool_calls"):
+                    print()  # New line after streaming
+                    conversation.append(response)
+
+                    # Execute each tool call
+                    for tool_call in response["tool_calls"]:
+                        function = tool_call.get("function", {})
+                        tool_name = function.get("name")
+                        arguments = function.get("arguments", {})
+
+                        print(f"{ORANGE}### Using tool: {tool_name}({arguments}){RESET}")
+
+                        # Execute tool
+                        result = execute_tool(tool_name, arguments)
+
+                        # Add tool result to conversation
+                        conversation.append({
+                            "role": "tool",
+                            "content": result
+                        })
+
+                    # Continue loop to get final response
+                    continue
+
+                # Add response to conversation and finish
+                print("\n")  # New line after streaming
+                conversation.append(response)
+                break
+
+        except KeyboardInterrupt:
+            print("\n\nGoodbye!")
+            break
+        except Exception as e: # pylint: disable=W0718
+            print(f"Error: {str(e)}")
+
+    # Save history on exit
+    try:
+        readline.write_history_file(history_file)
+    except Exception: # pylint: disable=W0718
+        pass
+
+if __name__ == "__main__":
+    main()
