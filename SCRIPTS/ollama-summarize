@@ -48,24 +48,24 @@ def get_content_from_file(filepath):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--sentences', dest='sentences_number', type=int, default=8, help='number of sentences for the summary. Set to 0 to disable')
-    
+
     # Create mutually exclusive group for URL and file inputs
     input_group = parser.add_mutually_exclusive_group(required=True)
     input_group.add_argument('--url', dest='urls', type=str, action='append', help='URL of the article to summarize (can be specified multiple times)')
     input_group.add_argument('--file', dest='files', type=str, action='append', help='path to HTML file to summarize (can be specified multiple times)')
-    
+
     parser.add_argument('--model', dest='model', type=str, default='gemma3:4b', help='ollama model to use (default gemma3:4b)')
     parser.add_argument('--prompt', dest='prompt', type=str, help='custom prompt, replaces the default summarization prompt (but still asks the LLM to only consider the information from the webpage)')
     parser.add_argument('--print-only', dest='print_only', action='store_true', help='only print the extracted plain text from the HTML, do not perform summarization')
     args = parser.parse_args()
-    
+
     # Determine which input type to process
     sources = []
     if args.urls:
         sources = [('url', url) for url in args.urls]
     elif args.files:
         sources = [('file', filepath) for filepath in args.files]
-    
+
     for source_type, source in sources:
         # Get content based on source type
         if source_type == 'url':
@@ -74,22 +74,22 @@ if __name__ == "__main__":
         else:  # file
             content_html = get_content_from_file(source)
             source_display = str(Path(source).resolve())
-        
+
         if not content_html:
             print(f'error processing source: {source}')
             continue
-            
+
         raw_html = BeautifulSoup(content_html, 'html.parser')
         title_tag = raw_html.find("title")
         title_string = title_tag.text if title_tag else "Untitled"
         print("---------------------------------------------")
-        print("\033[0;36m# " + title_string + "\033[0m")
-        print("\033[0;36m" + source_display + "\033[0m")
+        print("\033[0;36m# " + title_string + "\033[0m\n")
+        print("\033[0;36m" + source_display + "\033[0m\n")
         try:
             lang = raw_html.html["lang"]
         except (TypeError, KeyError):
             lang = "undefined"
-        
+
         try:
             tags = raw_html.find("meta", {"name": "ad:rubriques"}).attrs['content'].split(',') # lemonde.fr
         except AttributeError:
@@ -99,7 +99,7 @@ if __name__ == "__main__":
             if any(tag in ignored_tags for tag in tags):
                 print(f"Article matches ignored tag, ignoring")
                 continue
-        
+
         content_html = Document(content_html)
         content_summary = content_html.summary()
         soup = BeautifulSoup(content_summary, 'html.parser')
@@ -122,7 +122,7 @@ if __name__ == "__main__":
                     chat_prompt = f'Summarize the information in the following document, limit your answer to {str(args.sentences_number)} sentences. Use only the information in the document to provide your answer. Here is the document: {plain_text}'
         else:
             chat_prompt = f'{args.prompt}. use only the information in the following text to provide your answer: {plain_text}'
-        
+
         stream = chat(
             model=args.model,
             messages=[
