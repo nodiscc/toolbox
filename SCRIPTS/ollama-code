@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Experimental, TUI coding assistant for ollama"""
+"""TUI coding assistant for ollama - Experimental, insecure"""
 import os
 import json
 import readline
@@ -18,9 +18,15 @@ except ImportError:
 OLLAMA_API = "http://localhost:11434/api/chat"
 #MODEL = "gpt-oss:20b"
 #MODEL = "granite4:3b"
-MODEL = "qwen3:14b"
+#MODEL = "qwen3:14b"
+MODEL = "devstral:24b" # Needs THINKING = False
+#MODEL = "gemma3:4b" # Error: 400 Client Error: Bad Request for url: http://localhost:11434/api/chat
+# MODEL = "magistral:24b"
+#MODEL = "deepseek-r1:14b" # bad request
+#MODEL = "smallthinker:3b" # bad request
+#MODEL = "ministral-3:14b" # Error: 400 Client Error: Bad Request for url: http://localhost:11434/api/chat
 #MODEL = "qwen2.5-coder:14b" #Error: 400 Client Error: Bad Request for url: http://localhost:11434/api/chat
-THINKING = True  # Set to False to disable model thinking
+THINKING = False  # Set to False to disable model thinking
 SHOW_THINKING = True  # Set to True to display model's thinking process
 RICH = True  # Set to True to enable rich markdown rendering
 
@@ -103,8 +109,36 @@ TOOLS = [
                 "required": ["command"]
             },
         },
-    }
+    },
+    {
+     "type": "function",
+     "function": {
+         "name": "clone_git_repo",
+         "description": "Clone a Git repository to a specified destination",
+         "parameters": {
+             "type": "object",
+             "properties": {
+                 "repo_url": {
+                     "type": "string",
+                     "description": "URL of the Git repository to clone"
+                 },
+                 "destination": {
+                     "type": "string",
+                     "description": "Local path where the repository should be cloned"
+                 }
+             },
+             "required": ["repo_url", "destination"]
+         },
+     },
+ }
 ]
+
+def clone_git_repo(repo_url: str, destination: str) -> str:
+    """
+    Clone a Git repository to the specified destination.
+    """
+    command = f"git clone {repo_url} {destination}"
+    return run_command(command)
 
 def execute_tool(tool_name, arguments):
     """Execute a tool function"""
@@ -112,6 +146,8 @@ def execute_tool(tool_name, arguments):
         return read_file(arguments.get("filepath", ""))
     if tool_name == "run_command":
         return run_command(arguments.get("command", ""))
+    if tool_name == "clone_git_repo":
+        return clone_git_repo(arguments.get("repo_url", ""), arguments.get("destination", ""))
     return f"Error: Unknown tool {tool_name}"
 
 def run_command(command: str) -> str:
@@ -222,7 +258,8 @@ def main():
 
     while True:
         try:
-            user_input = input(f"{ORANGE}You:{RESET} ").strip()
+            print(f"{ORANGE}You:{RESET} ")
+            user_input = input().strip()
 
             if user_input.lower() in ['exit', 'quit']:
                 print("Goodbye!")
