@@ -1,17 +1,17 @@
 #!.venv/bin/python3
 """
-Description: extract the main article text from an URL or file and summarize it with ollama
-Requirements: python3 -m venv ~/.venv && ~/.venv/bin/pip3 install bs4 git+https://github.com/buriy/python-readability@v0.8.1 html2text lxml[html_clean] ollama
-              ollama must be running locally
+Description: extract the main article text from an URL or file and summarize it with llama.cpp
+Requirements: python3 -m venv ~/.venv && ~/.venv/bin/pip3 install bs4 git+https://github.com/buriy/python-readability@v0.8.1 html2text lxml[html_clean] requests
+              llama.cpp server must be running locally at http://127.0.0.1:8033/v1
 Usage: usage: llm-summarize [-h] [--sentences SENTENCES_NUMBER] (--url URL | --file FILE)
 """
 import sys
 import argparse
+import json
 import requests
 from bs4 import BeautifulSoup
 from readability import Document
 import html2text
-from ollama import chat
 from pathlib import Path
 
 def get_content(url):
@@ -54,7 +54,8 @@ if __name__ == "__main__":
     input_group.add_argument('--url', dest='urls', type=str, action='append', help='URL of the article to summarize (can be specified multiple times)')
     input_group.add_argument('--file', dest='files', type=str, action='append', help='path to HTML file to summarize (can be specified multiple times)')
 
-    parser.add_argument('--model', dest='model', type=str, default='gemma3:4b', help='ollama model to use (default gemma3:4b)')
+    parser.add_argument('--model', dest='model', type=str, default='llama3.2:3b', help='llama.cpp model to use (default llama3.2:3b)')
+    parser.add_argument('--server', dest='server', type=str, default='http://127.0.0.1:8033/v1', help='llama.cpp server URL (default http://127.0.0.1:8033/v1)')
     parser.add_argument('--prompt', dest='prompt', type=str, help='custom prompt, replaces the default summarization prompt (but still asks the LLM to only consider the information from the webpage)')
     parser.add_argument('--print-only', dest='print_only', action='store_true', help='only print the extracted plain text from the HTML, do not perform summarization')
     args = parser.parse_args()
@@ -123,14 +124,38 @@ if __name__ == "__main__":
         else:
             chat_prompt = f'{args.prompt}. use only the information in the following text to provide your answer: {plain_text}'
 
-        stream = chat(
-            model=args.model,
-            messages=[
-              {'role': 'system', 'content': 'You are a document summarization assistant. When given a document, you reply with a summary of key information in the document' },
-              {'role': 'user', 'content': chat_prompt }
-              ],
-            stream=True,
-        )
-        for chunk in stream:
-            print(chunk['message']['content'], end='', flush=True)
-        print()
+        # Make request to llama.cpp server
+        try:
+            payload = {
+                'model': args.model,
+                'messages': [
+                    {'role': 'system', 'content': 'You are a document summarization assistant. When given a document, you reply with a summary of key information in the document'},
+                    {'role': 'user', 'content': chat_prompt}
+                ],
+                'stream': True
+            }
+            
+            response = requests.post(f"{args.server}/chat/completions", json=payload, stream=True)
+            response.raise_for_status()
+            
+            for line in response.iter_lines():
+                if line:
+                    line_str = line.decode('utf-8')
+                    if line_str.startswith('data: '):
+                        data_str = line_str[6:]
+                        if data_str.strip() == '[DONE]':
+                            break
+                        try:
+                            data = json.loads(data_str)
+                            if 'choices' in data and len(data['choices']) > 0:
+                                delta = data['choices'][0].get('delta', {})
+                                content = delta.get('content', '')
+                                if content:
+                                    print(content, end='', flush=True)
+                        except json.JSONDecodeError:
+                            continue
+            print()
+            
+        except requests.exceptions.RequestException as error:
+            print(f"Error communicating with llama.cpp server: {error}")
+            continue
