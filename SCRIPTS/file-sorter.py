@@ -38,15 +38,15 @@ def ask_user_action(filename):
     while True:
         print(f"File: {filename} | Size: {size} | Modified: {mtime} | Type: {ext}")
         choice = input("Action: \033[32m[k]\033[0m keep (not important), \033[32m[a]\033[0m archive (important), \033[32m[d]\033[0m delete, \033[32m[t]\033[0m add to TODO, \033[32m[o]\033[0m open file, \033[32m[n]\033[0m do nothing, \033[32m[q]\033[0m quit batch mode: ").lower().strip()
-        
+
         if choice not in ['k', 'a', 'd', 't', 'o', 'n', 'q']:
             print("Invalid choice. Please choose from k, a, d, t, o, n, q")
             continue
-        
+
         if choice == 'o':
             subprocess.run(['xdg-open', filename])
             continue
-        
+
         return choice
 
 def ensure_directory_exists(directory):
@@ -78,12 +78,12 @@ def move_with_unique(src: str, dst_dir: str):
 
 def process_file(filename):
     action = ask_user_action(filename)
-    
+
     print(f"Selected action: {action} for file: {filename}")
-    
+
     if action == 'q':
         return False
-    
+
     if action == 'k':
         move_with_unique(filename, KEEP_DIRECTORY)
         print(f"Moved {filename} to {KEEP_DIRECTORY}")
@@ -98,31 +98,31 @@ def process_file(filename):
         print(f"Moved {filename} to {TODO_DIRECTORY}")
     elif action == 'n':
         print(f"Doing nothing with {filename}")
-    
+
     return True
 
 def main():
     ensure_directory_exists(KEEP_DIRECTORY)
     ensure_directory_exists(ARCHIVE_DIRECTORY)
     ensure_directory_exists(TODO_DIRECTORY)
-    
+
     files = [f for f in os.listdir('.') if os.path.isfile(f)]
     if not files:
         print("No files found in current directory")
         return
-    
+
     print(f"Starting batch file sorter mode. Found {len(files)} files to process. Press [q] to quit.")
-    
+
     with tqdm(total=len(files), ncols=80, desc="Processing files", unit="file") as pbar:
         while files:
             filename = random.choice(files)
             files.remove(filename)
-            
+
             if not os.path.exists(filename):
                 continue
-            
+
             print(f"\n--- Processing file #{len(files)} remaining ---")
-            
+
             if not process_file(filename):
                 print("Exiting batch mode.")
                 break
