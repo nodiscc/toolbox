@@ -6,6 +6,7 @@ import random
 import subprocess
 import shutil
 import datetime
+import uuid
 from send2trash import send2trash
 
 KEEP_DIRECTORY = './KEEP'
@@ -52,6 +53,29 @@ def ensure_directory_exists(directory):
     if not os.path.exists(directory):
         os.makedirs(directory)
 
+def move_with_unique(src: str, dst_dir: str):
+    """Move *src* into *dst_dir*, adding a UUID suffix if a file with the same name already exists.
+
+    Parameters
+    ----------
+    src: str
+        Path to the source file.
+    dst_dir: str
+        Destination directory.
+
+    The function creates the destination directory if it does not exist.
+    """
+    dst_dir_path = os.path.abspath(dst_dir)
+    if not os.path.isdir(dst_dir_path):
+        os.makedirs(dst_dir_path, exist_ok=True)
+    base_name = os.path.basename(src)
+    dst_path = os.path.join(dst_dir_path, base_name)
+    if os.path.exists(dst_path):
+        name, ext = os.path.splitext(base_name)
+        unique_suffix = uuid.uuid4().hex[:8]
+        dst_path = os.path.join(dst_dir_path, f"{name}_{unique_suffix}{ext}")
+    shutil.move(src, dst_path)
+
 def process_file(filename):
     action = ask_user_action(filename)
     
@@ -61,16 +85,16 @@ def process_file(filename):
         return False
     
     if action == 'k':
-        shutil.move(filename, os.path.join(KEEP_DIRECTORY, filename))
+        move_with_unique(filename, KEEP_DIRECTORY)
         print(f"Moved {filename} to {KEEP_DIRECTORY}")
     elif action == 'a':
-        shutil.move(filename, os.path.join(ARCHIVE_DIRECTORY, filename))
+        move_with_unique(filename, ARCHIVE_DIRECTORY)
         print(f"Moved {filename} to {ARCHIVE_DIRECTORY}")
     elif action == 'd':
         send2trash(filename)
         print(f"Deleted {filename}")
     elif action == 't':
-        shutil.move(filename, os.path.join(TODO_DIRECTORY, filename))
+        move_with_unique(filename, TODO_DIRECTORY)
         print(f"Moved {filename} to {TODO_DIRECTORY}")
     elif action == 'n':
         print(f"Doing nothing with {filename}")
