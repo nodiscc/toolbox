@@ -13,6 +13,7 @@ from typing import Optional, Dict, Any, List, Tuple
 import difflib
 import fnmatch
 import re
+import readline
 
 try:
     from openai import OpenAI
@@ -21,11 +22,9 @@ except ImportError:
     print("Install with: pip install openai")
     sys.exit(1)
 
-try:
-    import readline
-    READLINE_AVAILABLE = True
-except ImportError:
-    READLINE_AVAILABLE = False
+SYSTEM_PROMPT = """You are a helpful coding assistant. You can read, write, and edit files, as well as run shell commands.
+When the user asks you to perform operations, use the available tools to help them.
+Be concise and clear in your responses."""
 
 # ============================================================================
 # UI Formatter - Handles all display and color logic
@@ -43,7 +42,6 @@ class Colors:
     DIFF_ADD = '\033[92m'  # Green for additions
     DIFF_DEL = '\033[91m'  # Red for deletions
     DIFF_INFO = '\033[96m' # Cyan for diff info
-
 
 class UIFormatter:
     """Handles all UI formatting and display logic"""
@@ -90,7 +88,6 @@ class UIFormatter:
     @staticmethod
     def print_welcome(show_thinking: bool, stream_output: bool):
         """Print welcome message with available commands"""
-        readline_status = "ENABLED" if READLINE_AVAILABLE else "DISABLED"
         print(f"{Colors.SYSTEM}╔══════════════════════════════════════════════════════╗")
         print(f"║  Coding Assistant with llama.cpp                     ║")
         print(f"║  Commands:                                          ║")
@@ -102,12 +99,10 @@ class UIFormatter:
         print(f"║                                                      ║")
         print(f"║  SHOW_THINKING: {'ON ' if show_thinking else 'OFF'}                              ║")
         print(f"║  STREAM_OUTPUT: {'ON ' if stream_output else 'OFF'}                              ║")
-        print(f"║  READLINE:      {readline_status:<7}                         ║")
-        if READLINE_AVAILABLE:
-            print(f"║    ↑/↓        - Navigate input history              ║")
-            print(f"║    ←/→        - Move cursor                          ║")
-            print(f"║    Home/End   - Jump to start/end of line           ║")
-            print(f"║    Ctrl+←/→   - Jump by word                        ║")
+        print(f"║    ↑/↓        - Navigate input history              ║")
+        print(f"║    ←/→        - Move cursor                          ║")
+        print(f"║    Home/End   - Jump to start/end of line           ║")
+        print(f"║    Ctrl+←/→   - Jump by word                        ║")
         print(f"╚══════════════════════════════════════════════════════╝{Colors.RESET}\n")
     
     @staticmethod
@@ -693,9 +688,7 @@ class ConversationManager:
     
     def __init__(self):
         self.conversation: List[Dict[str, Any]] = []
-        self.system_prompt = """You are a helpful coding assistant. You can read, write, and edit files, as well as run shell commands.
-When the user asks you to perform operations, use the available tools to help them.
-Be concise and clear in your responses."""
+        self.system_prompt = SYSTEM_PROMPT
     
     def add_user_message(self, content: str):
         """Add a user message to the conversation"""
@@ -739,9 +732,6 @@ class InputHandler:
     
     def _setup_readline(self):
         """Configure readline for enhanced input editing"""
-        if not READLINE_AVAILABLE:
-            return
-        
         readline.parse_and_bind('tab: complete')
         readline.parse_and_bind(r'"\e[A": previous-history')
         readline.parse_and_bind(r'"\e[B": next-history')
@@ -769,11 +759,7 @@ class InputHandler:
     
     def save_to_history(self, user_input: str):
         """Save user input to readline history"""
-        if not READLINE_AVAILABLE or not user_input.strip():
-            return
-        
         readline.add_history(user_input)
-        
         try:
             readline.write_history_file(self.history_file)
         except Exception:
