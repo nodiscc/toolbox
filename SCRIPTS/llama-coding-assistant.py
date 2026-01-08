@@ -98,6 +98,7 @@ class UIFormatter:
         print(f"║    clear      - Clear conversation history          ║")
         print(f"║    history    - Show command history                ║")
         print(f"║    !<number>  - Rerun command (e.g., !1, !2)        ║")
+        print(f"║    stats      - Show API usage statistics           ║")
         print(f"║                                                      ║")
         print(f"║  SHOW_THINKING: {'ON ' if show_thinking else 'OFF'}                              ║")
         print(f"║  STREAM_OUTPUT: {'ON ' if stream_output else 'OFF'}                              ║")
@@ -168,6 +169,19 @@ class UIFormatter:
             print(f"{Colors.SYSTEM}[{idx}]{Colors.RESET} {status} {entry['timestamp']}")
             print(f"    Command: {Colors.TOOL}{entry['command']}{Colors.RESET}")
             print(f"    Return code: {entry['return_code']}\n")
+    
+    @staticmethod
+    def print_stats(stats: Dict[str, Any]):
+        """Display API usage statistics"""
+        print(f"\n{Colors.SYSTEM}╔═══════════════════════════════════════╗")
+        print(f"║  API Usage Statistics                 ║")
+        print(f"╚═══════════════════════════════════════╝{Colors.RESET}")
+        print(f"{Colors.SYSTEM}Total API Calls:      {stats['total_calls']}{Colors.RESET}")
+        print(f"{Colors.SYSTEM}Total Tokens:         {stats['total_tokens']:,}{Colors.RESET}")
+        print(f"{Colors.SYSTEM}Prompt Tokens:        {stats['prompt_tokens']:,}{Colors.RESET}")
+        print(f"{Colors.SYSTEM}Completion Tokens:    {stats['completion_tokens']:,}{Colors.RESET}")
+        print(f"{Colors.SYSTEM}Avg Tokens per Call:  {stats['avg_tokens_per_call']:,}{Colors.RESET}")
+        print()
     
     @staticmethod
     def print_error(message: str):
@@ -783,6 +797,12 @@ class APIClient:
         self.show_thinking = show_thinking
         self.stream_output = stream_output
         
+        # Token usage tracking
+        self.total_tokens = 0
+        self.prompt_tokens = 0
+        self.completion_tokens = 0
+        self.total_calls = 0
+        
         try:
             self.client = OpenAI(
                 base_url=f"{server_url}/v1",
@@ -800,13 +820,53 @@ class APIClient:
             tools_formatted = [{"type": "function", "function": tool["function"]} for tool in tools]
             
             if self.stream_output:
-                return self._call_streaming(messages, tools_formatted)
+                response = self._call_streaming(messages, tools_formatted)
             else:
-                return self._call_non_streaming(messages, tools_formatted)
+                response = self._call_non_streaming(messages, tools_formatted)
+            
+            # Track usage if available
+            if response:
+                self._update_usage_stats(response)
+            
+            return response
         
         except Exception as e:
             self.ui.print_error(f"API Error: {e}")
             return None
+    
+    def _update_usage_stats(self, response: Dict[str, Any]):
+        """Update token usage statistics from API response"""
+        self.total_calls += 1
+        
+        # Check if usage info is present in response
+        usage = response.get('usage')
+        if usage:
+            self.total_tokens += usage.get('total_tokens', 0)
+            self.prompt_tokens += usage.get('prompt_tokens', 0)
+            self.completion_tokens += usage.get('completion_tokens', 0)
+    
+    def get_stats(self) -> Dict[str, Any]:
+        """Get API usage statistics"""
+        stats = {
+            'total_calls': self.total_calls,
+            'total_tokens': self.total_tokens,
+            'prompt_tokens': self.prompt_tokens,
+            'completion_tokens': self.completion_tokens,
+        }
+        
+        if self.total_calls > 0:
+            stats['avg_tokens_per_call'] = self.total_tokens // self.total_calls
+        else:
+            stats['avg_tokens_per_call'] = 0
+        
+        return stats
+    
+    def reset_stats(self):
+        """Reset usage statistics"""
+        self.total_tokens = 0
+        self.prompt_tokens = 0
+        self.completion_tokens = 0
+        self.total_calls = 0
     
     def _call_streaming(self, messages: List[Dict[str, Any]], tools: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
         """Call API with streaming enabled"""
@@ -816,12 +876,14 @@ class APIClient:
             tools=tools,
             temperature=0.7,
             max_tokens=2000,
-            stream=True
+            stream=True,
+            stream_options={"include_usage": True}  # Request usage info in stream
         )
         
         full_content = ""
         tool_calls_dict = {}
         role = "assistant"
+        usage_info = None
         
         if self.show_thinking:
             print(f"{Colors.THINKING}", end="", flush=True)
@@ -830,6 +892,13 @@ class APIClient:
         
         for chunk in stream:
             if not chunk.choices:
+                # Check for usage information in chunks without choices
+                if hasattr(chunk, 'usage') and chunk.usage:
+                    usage_info = {
+                        'total_tokens': chunk.usage.total_tokens,
+                        'prompt_tokens': chunk.usage.prompt_tokens,
+                        'completion_tokens': chunk.usage.completion_tokens
+                    }
                 continue
             
             delta = chunk.choices[0].delta
@@ -871,7 +940,13 @@ class APIClient:
         if tool_calls_dict:
             message_dict["tool_calls"] = [tool_calls_dict[i] for i in sorted(tool_calls_dict.keys())]
         
-        return {"choices": [{"message": message_dict}]}
+        response = {"choices": [{"message": message_dict}]}
+        
+        # Add usage info if available
+        if usage_info:
+            response['usage'] = usage_info
+        
+        return response
     
     def _call_non_streaming(self, messages: List[Dict[str, Any]], tools: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
         """Call API without streaming"""
@@ -901,7 +976,17 @@ class APIClient:
                     }
                 })
         
-        return {"choices": [{"message": message_dict}]}
+        result = {"choices": [{"message": message_dict}]}
+        
+        # Add usage info if available
+        if hasattr(response, 'usage') and response.usage:
+            result['usage'] = {
+                'total_tokens': response.usage.total_tokens,
+                'prompt_tokens': response.usage.prompt_tokens,
+                'completion_tokens': response.usage.completion_tokens
+            }
+        
+        return result
 
 
 # ============================================================================
@@ -1170,6 +1255,16 @@ class CodingAssistant:
         
         if cmd == 'history':
             self.ui.print_command_history(self.tool_executor.command_history)
+            return True, False
+        
+        if cmd == 'stats':
+            stats = self.api_client.get_stats()
+            self.ui.print_stats(stats)
+            return True, False
+        
+        if cmd == 'resetstats':
+            self.api_client.reset_stats()
+            self.ui.print_system("API usage statistics reset")
             return True, False
         
         if cmd.startswith('!') and len(cmd) > 1:
