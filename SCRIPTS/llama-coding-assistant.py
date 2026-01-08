@@ -110,6 +110,26 @@ class UIFormatter:
         print(f"╚══════════════════════════════════════════════════════╝{Colors.RESET}\n")
     
     @staticmethod
+    def print_tool_header(tool_name: str, arguments: Dict[str, Any], preview_diff: Optional[str] = None):
+        """Display tool call header with arguments"""
+        print(f"\n{Colors.TOOL}╔═══════════════════════════════════════╗")
+        print(f"║  Tool Call                            ║")
+        print(f"╚═══════════════════════════════════════╝{Colors.RESET}")
+        print(f"{Colors.TOOL}Tool: {tool_name}{Colors.RESET}")
+        print(f"{Colors.TOOL}Arguments:{Colors.RESET}")
+        
+        for key, value in arguments.items():
+            display_value = str(value)
+            if len(display_value) > 200:
+                display_value = display_value[:200] + "..."
+            print(f"  {key}: {display_value}")
+        
+        if preview_diff:
+            print(f"\n{Colors.DIFF_INFO}═══ Diff Preview ═══{Colors.RESET}")
+            print(preview_diff)
+            print(f"{Colors.DIFF_INFO}═══ End of Diff ═══{Colors.RESET}")
+    
+    @staticmethod
     def print_tool_confirmation(tool_name: str, arguments: Dict[str, Any], preview_diff: Optional[str] = None) -> bool:
         """Display tool confirmation prompt and get user response"""
         print(f"\n{Colors.TOOL}╔═══════════════════════════════════════╗")
@@ -1252,6 +1272,9 @@ class CodingAssistant:
                             self.ui.print_system(result)
                         self.conversation.add_tool_response(tool_id, result)
                         continue
+                else:
+                    # Tool doesn't require confirmation, but still show what's being executed
+                    self.ui.print_tool_header(tool_name, arguments)
                 
                 # Execute the tool
                 if self.show_thinking:
