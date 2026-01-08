@@ -1202,9 +1202,16 @@ class CodingAssistant:
                             print(f"{Colors.THINKING}{content}{Colors.RESET}")
                         else:
                             print(f"{Colors.ASSISTANT}{content}{Colors.RESET}")
+                    # In streaming mode, content was already displayed
                     
                     self.conversation.add_assistant_message({"role": "assistant", "content": content})
                 break
+            
+            # When there are tool calls, display any thinking content if present
+            if content and not self.stream_output:
+                if self.show_thinking:
+                    print(f"{Colors.THINKING}{content}{Colors.RESET}")
+            # In streaming mode, thinking was already displayed
             
             self.conversation.add_assistant_message(message)
             
