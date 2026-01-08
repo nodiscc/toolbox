@@ -176,6 +176,25 @@ class ToolExecutor:
         self.ui = ui_formatter
         self.command_history: List[Dict[str, Any]] = []
     
+    def requires_confirmation(self, tool_name: str, arguments: Dict[str, Any]) -> bool:
+        """Determine if a tool call requires user confirmation"""
+        # list_directory doesn't require confirmation if path is under current directory
+        if tool_name == "list_directory":
+            path = arguments.get("path", ".")
+            try:
+                abs_path = os.path.abspath(path)
+                cwd = os.path.abspath(os.getcwd())
+                # Allow if path is under current directory
+                if abs_path.startswith(cwd):
+                    return False
+            except Exception:
+                pass
+            # Require confirmation if path is outside cwd or if there's an error
+            return True
+        
+        # All other tools require confirmation
+        return True
+    
     def execute(self, tool_name: str, arguments: Dict[str, Any]) -> str:
         """Execute a tool function and return the result"""
         try:
@@ -1221,17 +1240,24 @@ class CodingAssistant:
                 arguments = json.loads(func.get("arguments", "{}"))
                 tool_id = tool_call.get("id")
                 
-                preview_diff = self.tool_executor.get_preview_diff(tool_name, arguments)
+                # Check if this tool requires confirmation
+                needs_confirmation = self.tool_executor.requires_confirmation(tool_name, arguments)
                 
-                if self.ui.print_tool_confirmation(tool_name, arguments, preview_diff):
-                    if self.show_thinking:
-                        self.ui.print_system("[Executing...]")
-                    result = self.tool_executor.execute(tool_name, arguments)
-                    self.ui.print_tool_result(result)
-                else:
-                    result = "User declined to execute this tool"
-                    if self.show_thinking:
-                        self.ui.print_system(result)
+                if needs_confirmation:
+                    preview_diff = self.tool_executor.get_preview_diff(tool_name, arguments)
+                    
+                    if not self.ui.print_tool_confirmation(tool_name, arguments, preview_diff):
+                        result = "User declined to execute this tool"
+                        if self.show_thinking:
+                            self.ui.print_system(result)
+                        self.conversation.add_tool_response(tool_id, result)
+                        continue
+                
+                # Execute the tool
+                if self.show_thinking:
+                    self.ui.print_system("[Executing...]")
+                result = self.tool_executor.execute(tool_name, arguments)
+                self.ui.print_tool_result(result)
                 
                 self.conversation.add_tool_response(tool_id, result)
             
