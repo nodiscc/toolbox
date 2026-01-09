@@ -13,7 +13,6 @@ from typing import Optional, Dict, Any, List, Tuple
 import difflib
 import fnmatch
 import re
-import readline
 
 try:
     from openai import OpenAI
@@ -22,12 +21,44 @@ except ImportError:
     print("Install with: pip install openai")
     sys.exit(1)
 
-SYSTEM_PROMPT = """You are a helpful coding assistant. You can read, write, and edit files, as well as run shell commands.
-When the user asks you to perform operations, use the available tools to help them.
-Be concise and clear in your responses."""
+try:
+    import readline
+    READLINE_AVAILABLE = True
+except ImportError:
+    READLINE_AVAILABLE = False
 
 # ============================================================================
-# UI Formatter - Handles all display and color logic
+# Constants and Configuration
+# ============================================================================
+
+# Display Constants
+MAX_DISPLAY_VALUE_LENGTH = 200
+DIFF_CONTEXT_LINES = 3
+BOX_WIDTH = 40
+
+# API Configuration
+DEFAULT_SERVER_URL = "http://127.0.0.1:8033"
+DEFAULT_MODEL = "openai_gpt-oss-20b-MXFP4"
+DEFAULT_TEMPERATURE = 0.7
+DEFAULT_MAX_TOKENS = 2000
+API_TIMEOUT = 30
+
+# Application Configuration
+MAX_ITERATIONS = 10
+MAX_HISTORY_SIZE = 1000
+SHOW_THINKING = True
+STREAM_OUTPUT = True
+
+# Search Configuration
+DEFAULT_MAX_SEARCH_RESULTS = 100
+DEFAULT_CONTEXT_LINES = 0
+
+# File Size Units
+FILE_SIZE_UNITS = ['B', 'KB', 'MB', 'GB', 'TB']
+FILE_SIZE_DIVISOR = 1024.0
+
+# ============================================================================
+# ANSI Color Codes
 # ============================================================================
 
 class Colors:
@@ -43,16 +74,59 @@ class Colors:
     DIFF_DEL = '\033[91m'  # Red for deletions
     DIFF_INFO = '\033[96m' # Cyan for diff info
 
+
+# ============================================================================
+# Utility Functions
+# ============================================================================
+
+def colored(text: str, color: str) -> str:
+    """Wrap text with color codes"""
+    return f"{color}{text}{Colors.RESET}"
+
+
+# ============================================================================
+# Box Drawing Helper
+# ============================================================================
+
+class BoxDrawer:
+    """Helper class for drawing formatted boxes"""
+    
+    @staticmethod
+    def draw_box(title: str, width: int = BOX_WIDTH, color: str = Colors.SYSTEM) -> str:
+        """Draw a box header with title"""
+        # Calculate padding for centered title
+        title_with_spaces = f"  {title}  "
+        padding = width - len(title_with_spaces) - 2
+        left_pad = padding // 2
+        right_pad = padding - left_pad
+        
+        lines = [
+            f"{color}╔{'═' * width}╗",
+            f"║{' ' * left_pad}{title_with_spaces}{' ' * right_pad}║",
+            f"╚{'═' * width}╝{Colors.RESET}"
+        ]
+        return "\n".join(lines)
+    
+    @staticmethod
+    def draw_separator(width: int = BOX_WIDTH, color: str = Colors.SYSTEM) -> str:
+        """Draw a horizontal separator"""
+        return f"{color}{'═' * width}{Colors.RESET}"
+
+
+# ============================================================================
+# UI Formatter - Handles all display and color logic
+# ============================================================================
+
 class UIFormatter:
     """Handles all UI formatting and display logic"""
     
     @staticmethod
     def format_size(size: int) -> str:
         """Format file size in human-readable format"""
-        for unit in ['B', 'KB', 'MB', 'GB']:
-            if size < 1024.0:
+        for unit in FILE_SIZE_UNITS:
+            if size < FILE_SIZE_DIVISOR:
                 return f"{size:.1f}{unit}"
-            size /= 1024.0
+            size /= FILE_SIZE_DIVISOR
         return f"{size:.1f}TB"
     
     @staticmethod
@@ -73,13 +147,13 @@ class UIFormatter:
         for line in diff:
             line = line.rstrip()
             if line.startswith('---') or line.startswith('+++'):
-                colored_diff.append(f"{Colors.DIFF_INFO}{line}{Colors.RESET}")
+                colored_diff.append(colored(line, Colors.DIFF_INFO))
             elif line.startswith('@@'):
-                colored_diff.append(f"{Colors.DIFF_INFO}{line}{Colors.RESET}")
+                colored_diff.append(colored(line, Colors.DIFF_INFO))
             elif line.startswith('+'):
-                colored_diff.append(f"{Colors.DIFF_ADD}{line}{Colors.RESET}")
+                colored_diff.append(colored(line, Colors.DIFF_ADD))
             elif line.startswith('-'):
-                colored_diff.append(f"{Colors.DIFF_DEL}{line}{Colors.RESET}")
+                colored_diff.append(colored(line, Colors.DIFF_DEL))
             else:
                 colored_diff.append(line)
         
@@ -88,110 +162,107 @@ class UIFormatter:
     @staticmethod
     def print_welcome(show_thinking: bool, stream_output: bool):
         """Print welcome message with available commands"""
-        print(f"{Colors.SYSTEM}╔══════════════════════════════════════════════════════╗")
-        print(f"║  Coding Assistant with llama.cpp                     ║")
-        print(f"║  Commands:                                          ║")
-        print(f"║    exit/quit  - End the session                     ║")
-        print(f"║    clear      - Clear conversation history          ║")
-        print(f"║    history    - Show command history                ║")
-        print(f"║    !<number>  - Rerun command (e.g., !1, !2)        ║")
-        print(f"║    stats      - Show API usage statistics           ║")
-        print(f"║                                                      ║")
-        print(f"║  SHOW_THINKING: {'ON ' if show_thinking else 'OFF'}                              ║")
-        print(f"║  STREAM_OUTPUT: {'ON ' if stream_output else 'OFF'}                              ║")
-        print(f"║    ↑/↓        - Navigate input history              ║")
-        print(f"║    ←/→        - Move cursor                          ║")
-        print(f"║    Home/End   - Jump to start/end of line           ║")
-        print(f"║    Ctrl+←/→   - Jump by word                        ║")
-        print(f"╚══════════════════════════════════════════════════════╝{Colors.RESET}\n")
+        readline_status = "ENABLED" if READLINE_AVAILABLE else "DISABLED"
+        print(colored("╔══════════════════════════════════════════════════════╗", Colors.SYSTEM))
+        print(colored("║  Coding Assistant with llama.cpp                     ║", Colors.SYSTEM))
+        print(colored("║  Commands:                                          ║", Colors.SYSTEM))
+        print(colored("║    exit/quit  - End the session                     ║", Colors.SYSTEM))
+        print(colored("║    clear      - Clear conversation history          ║", Colors.SYSTEM))
+        print(colored("║    history    - Show command history                ║", Colors.SYSTEM))
+        print(colored("║    !<number>  - Rerun command (e.g., !1, !2)        ║", Colors.SYSTEM))
+        print(colored("║    stats      - Show API usage statistics           ║", Colors.SYSTEM))
+        print(colored("║                                                      ║", Colors.SYSTEM))
+        print(colored(f"║  SHOW_THINKING: {'ON ' if show_thinking else 'OFF'}                              ║", Colors.SYSTEM))
+        print(colored(f"║  STREAM_OUTPUT: {'ON ' if stream_output else 'OFF'}                              ║", Colors.SYSTEM))
+        print(colored(f"║  READLINE:      {readline_status:<7}                         ║", Colors.SYSTEM))
+        if READLINE_AVAILABLE:
+            print(colored("║    ↑/↓        - Navigate input history              ║", Colors.SYSTEM))
+            print(colored("║    ←/→        - Move cursor                          ║", Colors.SYSTEM))
+            print(colored("║    Home/End   - Jump to start/end of line           ║", Colors.SYSTEM))
+            print(colored("║    Ctrl+←/→   - Jump by word                        ║", Colors.SYSTEM))
+        print(colored("╚══════════════════════════════════════════════════════╝", Colors.SYSTEM))
+        print()
     
     @staticmethod
     def print_tool_header(tool_name: str, arguments: Dict[str, Any], preview_diff: Optional[str] = None):
         """Display tool call header with arguments"""
-        print(f"\n{Colors.TOOL}╔═══════════════════════════════════════╗")
-        print(f"║  Tool Call                            ║")
-        print(f"╚═══════════════════════════════════════╝{Colors.RESET}")
-        print(f"{Colors.TOOL}Tool: {tool_name}{Colors.RESET}")
-        print(f"{Colors.TOOL}Arguments:{Colors.RESET}")
+        print("\n" + BoxDrawer.draw_box("Tool Call", color=Colors.TOOL))
+        print(colored(f"Tool: {tool_name}", Colors.TOOL))
+        print(colored("Arguments:", Colors.TOOL))
         
         for key, value in arguments.items():
             display_value = str(value)
-            if len(display_value) > 200:
-                display_value = display_value[:200] + "..."
+            if len(display_value) > MAX_DISPLAY_VALUE_LENGTH:
+                display_value = display_value[:MAX_DISPLAY_VALUE_LENGTH] + "..."
             print(f"  {key}: {display_value}")
         
         if preview_diff:
-            print(f"\n{Colors.DIFF_INFO}═══ Diff Preview ═══{Colors.RESET}")
+            print(colored("\n═══ Diff Preview ═══", Colors.DIFF_INFO))
             print(preview_diff)
-            print(f"{Colors.DIFF_INFO}═══ End of Diff ═══{Colors.RESET}")
+            print(colored("═══ End of Diff ═══", Colors.DIFF_INFO))
     
     @staticmethod
     def print_tool_confirmation(tool_name: str, arguments: Dict[str, Any], preview_diff: Optional[str] = None) -> bool:
         """Display tool confirmation prompt and get user response"""
-        print(f"\n{Colors.TOOL}╔═══════════════════════════════════════╗")
-        print(f"║  Tool Call Confirmation Required     ║")
-        print(f"╚═══════════════════════════════════════╝{Colors.RESET}")
-        print(f"{Colors.TOOL}Tool: {tool_name}{Colors.RESET}")
-        print(f"{Colors.TOOL}Arguments:{Colors.RESET}")
+        print("\n" + BoxDrawer.draw_box("Tool Call Confirmation Required", width=45, color=Colors.TOOL))
+        print(colored(f"Tool: {tool_name}", Colors.TOOL))
+        print(colored("Arguments:", Colors.TOOL))
         
         for key, value in arguments.items():
             display_value = str(value)
-            if len(display_value) > 200:
-                display_value = display_value[:200] + "..."
+            if len(display_value) > MAX_DISPLAY_VALUE_LENGTH:
+                display_value = display_value[:MAX_DISPLAY_VALUE_LENGTH] + "..."
             print(f"  {key}: {display_value}")
         
         if preview_diff:
-            print(f"\n{Colors.DIFF_INFO}═══ Diff Preview ═══{Colors.RESET}")
+            print(colored("\n═══ Diff Preview ═══", Colors.DIFF_INFO))
             print(preview_diff)
-            print(f"{Colors.DIFF_INFO}═══ End of Diff ═══{Colors.RESET}")
+            print(colored("═══ End of Diff ═══", Colors.DIFF_INFO))
         
-        response = input(f"\n{Colors.SYSTEM}Execute this tool? (y/N): {Colors.RESET}").strip().lower()
+        response = input(colored("\nExecute this tool? (y/N): ", Colors.SYSTEM)).strip().lower()
         return response == 'y'
     
     @staticmethod
     def print_command_history(command_history: List[Dict[str, Any]]):
         """Display the command history"""
         if not command_history:
-            print(f"{Colors.SYSTEM}No commands have been executed yet.{Colors.RESET}")
+            UIFormatter.print_system("No commands have been executed yet.")
             return
         
-        print(f"\n{Colors.SYSTEM}╔═══════════════════════════════════════════════════════╗")
-        print(f"║  Command History                                     ║")
-        print(f"╚═══════════════════════════════════════════════════════╝{Colors.RESET}\n")
+        print("\n" + BoxDrawer.draw_box("Command History", width=55))
+        print()
         
         for idx, entry in enumerate(command_history, 1):
-            status = f"{Colors.DIFF_ADD}✓{Colors.RESET}" if entry["return_code"] == 0 else f"{Colors.DIFF_DEL}✗{Colors.RESET}"
-            print(f"{Colors.SYSTEM}[{idx}]{Colors.RESET} {status} {entry['timestamp']}")
-            print(f"    Command: {Colors.TOOL}{entry['command']}{Colors.RESET}")
+            status = colored("✓", Colors.DIFF_ADD) if entry["return_code"] == 0 else colored("✗", Colors.DIFF_DEL)
+            print(colored(f"[{idx}]", Colors.SYSTEM) + f" {status} {entry['timestamp']}")
+            print(f"    Command: {colored(entry['command'], Colors.TOOL)}")
             print(f"    Return code: {entry['return_code']}\n")
     
     @staticmethod
     def print_stats(stats: Dict[str, Any]):
         """Display API usage statistics"""
-        print(f"\n{Colors.SYSTEM}╔═══════════════════════════════════════╗")
-        print(f"║  API Usage Statistics                 ║")
-        print(f"╚═══════════════════════════════════════╝{Colors.RESET}")
-        print(f"{Colors.SYSTEM}Total API Calls:      {stats['total_calls']}{Colors.RESET}")
-        print(f"{Colors.SYSTEM}Total Tokens:         {stats['total_tokens']:,}{Colors.RESET}")
-        print(f"{Colors.SYSTEM}Prompt Tokens:        {stats['prompt_tokens']:,}{Colors.RESET}")
-        print(f"{Colors.SYSTEM}Completion Tokens:    {stats['completion_tokens']:,}{Colors.RESET}")
-        print(f"{Colors.SYSTEM}Avg Tokens per Call:  {stats['avg_tokens_per_call']:,}{Colors.RESET}")
+        print("\n" + BoxDrawer.draw_box("API Usage Statistics"))
+        print(colored(f"Total API Calls:      {stats['total_calls']}", Colors.SYSTEM))
+        print(colored(f"Total Tokens:         {stats['total_tokens']:,}", Colors.SYSTEM))
+        print(colored(f"Prompt Tokens:        {stats['prompt_tokens']:,}", Colors.SYSTEM))
+        print(colored(f"Completion Tokens:    {stats['completion_tokens']:,}", Colors.SYSTEM))
+        print(colored(f"Avg Tokens per Call:  {stats['avg_tokens_per_call']:,}", Colors.SYSTEM))
         print()
     
     @staticmethod
     def print_error(message: str):
         """Print error message"""
-        print(f"{Colors.ERROR}{message}{Colors.RESET}")
+        print(colored(message, Colors.ERROR))
     
     @staticmethod
     def print_system(message: str):
         """Print system message"""
-        print(f"{Colors.SYSTEM}{message}{Colors.RESET}")
+        print(colored(message, Colors.SYSTEM))
     
     @staticmethod
     def print_tool_result(message: str):
         """Print tool execution result"""
-        print(f"{Colors.TOOL}Result: {message}{Colors.RESET}")
+        print(colored(f"Result: {message}", Colors.TOOL))
 
 
 # ============================================================================
@@ -210,19 +281,52 @@ class ToolExecutor:
         # list_directory doesn't require confirmation if path is under current directory
         if tool_name == "list_directory":
             path = arguments.get("path", ".")
-            try:
-                abs_path = os.path.abspath(path)
-                cwd = os.path.abspath(os.getcwd())
-                # Allow if path is under current directory
-                if abs_path.startswith(cwd):
-                    return False
-            except Exception:
-                pass
-            # Require confirmation if path is outside cwd or if there's an error
+            if self._is_safe_path(path):
+                return False
             return True
         
         # All other tools require confirmation
         return True
+    
+    def _is_safe_path(self, path: str) -> bool:
+        """Check if path is within current working directory"""
+        try:
+            abs_path = os.path.abspath(path)
+            cwd = os.path.abspath(os.getcwd())
+            return abs_path.startswith(cwd)
+        except Exception:
+            return False
+    
+    def _should_skip_hidden(self, name: str, include_hidden: bool) -> bool:
+        """Check if file/directory should be skipped due to hidden status"""
+        return not include_hidden and name.startswith('.')
+    
+    def _get_depth(self, path: str, base: str) -> int:
+        """Calculate directory depth relative to base"""
+        rel_path = os.path.relpath(path, base)
+        if rel_path == '.':
+            return 0
+        return rel_path.count(os.sep) + 1
+    
+    def _format_file_entry(self, path: str, name: str) -> Dict[str, str]:
+        """Format file information for display"""
+        try:
+            stat = os.stat(path)
+            is_dir = os.path.isdir(path)
+            
+            return {
+                'type': "DIR" if is_dir else "FILE",
+                'size': "-" if is_dir else self.ui.format_size(stat.st_size),
+                'modified': datetime.fromtimestamp(stat.st_mtime).strftime("%Y-%m-%d %H:%M:%S"),
+                'name': name
+            }
+        except (OSError, PermissionError):
+            return {
+                'type': '???',
+                'size': '???',
+                'modified': '???',
+                'name': f"{name} (access denied)"
+            }
     
     def execute(self, tool_name: str, arguments: Dict[str, Any]) -> str:
         """Execute a tool function and return the result"""
@@ -310,7 +414,7 @@ class ToolExecutor:
             return f"Error: Permission denied to access '{path}'"
         
         if not show_hidden:
-            items = [item for item in items if not item.startswith('.')]
+            items = [item for item in items if not self._should_skip_hidden(item, show_hidden)]
         
         items.sort(key=lambda x: (not os.path.isdir(os.path.join(path, x)), x.lower()))
         
@@ -320,17 +424,8 @@ class ToolExecutor:
         
         for item in items:
             full_path = os.path.join(path, item)
-            try:
-                stat = os.stat(full_path)
-                is_dir = os.path.isdir(full_path)
-                
-                type_str = "DIR" if is_dir else "FILE"
-                size_str = "-" if is_dir else self.ui.format_size(stat.st_size)
-                mtime = datetime.fromtimestamp(stat.st_mtime).strftime("%Y-%m-%d %H:%M:%S")
-                
-                output.append(f"{type_str:<6} {size_str:<10} {mtime:<20} {item}")
-            except (OSError, PermissionError):
-                output.append(f"{'???':<6} {'???':<10} {'???':<20} {item} (access denied)")
+            entry = self._format_file_entry(full_path, item)
+            output.append(f"{entry['type']:<6} {entry['size']:<10} {entry['modified']:<20} {entry['name']}")
         
         if len(items) == 0:
             output.append("(empty directory)")
@@ -347,9 +442,9 @@ class ToolExecutor:
         file_pattern = args.get("file_pattern", "*")
         use_regex = args.get("regex", False)
         case_sensitive = args.get("case_sensitive", True)
-        max_results = args.get("max_results", 100)
+        max_results = args.get("max_results", DEFAULT_MAX_SEARCH_RESULTS)
         include_hidden = args.get("include_hidden", False)
-        context_lines = args.get("context_lines", 0)
+        context_lines = args.get("context_lines", DEFAULT_CONTEXT_LINES)
         
         matches = []
         total_matches = 0
@@ -364,9 +459,6 @@ class ToolExecutor:
         else:
             compiled_pattern = None
         
-        def should_skip(name):
-            return not include_hidden and name.startswith('.')
-        
         def match_line(line):
             if use_regex:
                 return compiled_pattern.search(line)
@@ -378,10 +470,10 @@ class ToolExecutor:
         
         for root, dirs, files in os.walk(start_path):
             if not include_hidden:
-                dirs[:] = [d for d in dirs if not d.startswith('.')]
+                dirs[:] = [d for d in dirs if not self._should_skip_hidden(d, include_hidden)]
             
             for filename in files:
-                if should_skip(filename):
+                if self._should_skip_hidden(filename, include_hidden):
                     continue
                 
                 if not fnmatch.fnmatch(filename, file_pattern):
@@ -440,18 +532,18 @@ class ToolExecutor:
             if match['file'] != current_file:
                 if current_file is not None:
                     output.append("")
-                output.append(f"{Colors.DIFF_INFO}{match['file']}{Colors.RESET}")
+                output.append(colored(match['file'], Colors.DIFF_INFO))
                 current_file = match['file']
             
             if match['context_before']:
                 for ctx_line in match['context_before']:
-                    output.append(f"  {Colors.SYSTEM}{ctx_line}{Colors.RESET}")
+                    output.append(colored(f"  {ctx_line}", Colors.SYSTEM))
             
-            output.append(f"{Colors.DIFF_ADD}{match['line_num']:>4}: {match['line']}{Colors.RESET}")
+            output.append(colored(f"{match['line_num']:>4}: {match['line']}", Colors.DIFF_ADD))
             
             if match['context_after']:
                 for ctx_line in match['context_after']:
-                    output.append(f"  {Colors.SYSTEM}{ctx_line}{Colors.RESET}")
+                    output.append(colored(f"  {ctx_line}", Colors.SYSTEM))
         
         return "\n".join(output)
     
@@ -464,25 +556,16 @@ class ToolExecutor:
         matches = []
         start_path = os.getcwd()
         
-        def should_skip(name):
-            return not include_hidden and name.startswith('.')
-        
-        def get_depth(path, base):
-            rel_path = os.path.relpath(path, base)
-            if rel_path == '.':
-                return 0
-            return rel_path.count(os.sep) + 1
-        
         for root, dirs, files in os.walk(start_path):
             if not include_hidden:
-                dirs[:] = [d for d in dirs if not d.startswith('.')]
+                dirs[:] = [d for d in dirs if not self._should_skip_hidden(d, include_hidden)]
             
-            current_depth = get_depth(root, start_path)
+            current_depth = self._get_depth(root, start_path)
             if max_depth is not None and current_depth >= max_depth:
                 dirs[:] = []
             
             for filename in files:
-                if should_skip(filename):
+                if self._should_skip_hidden(filename, include_hidden):
                     continue
                 
                 if fnmatch.fnmatch(filename, pattern):
@@ -606,16 +689,17 @@ class ToolExecutor:
                 f.write(append_content)
             
             lines_added = content.count('\n') + (1 if content and not content.endswith('\n') else 0)
-            result = f"Successfully appended to '{path}' ({lines_added} line(s) added)\n\nAppended content:\n{Colors.DIFF_ADD}"
+            result = f"Successfully appended to '{path}' ({lines_added} line(s) added)\n\nAppended content:\n"
+            result += colored("", Colors.DIFF_ADD)
             
             for line in content.splitlines():
                 result += f"+{line}\n"
             result += Colors.RESET
             
             old_lines = old_content.splitlines()
-            if len(old_lines) > 3:
-                result += f"\n{Colors.DIFF_INFO}Context (last 3 lines of original file):{Colors.RESET}\n"
-                for line in old_lines[-3:]:
+            if len(old_lines) > DIFF_CONTEXT_LINES:
+                result += colored(f"\nContext (last {DIFF_CONTEXT_LINES} lines of original file):", Colors.DIFF_INFO) + "\n"
+                for line in old_lines[-DIFF_CONTEXT_LINES:]:
                     result += f" {line}\n"
         else:
             with open(path, 'w', encoding='utf-8') as f:
@@ -660,7 +744,7 @@ class ToolExecutor:
             shell=True,
             capture_output=True,
             text=True,
-            timeout=30
+            timeout=API_TIMEOUT
         )
         
         output = []
@@ -688,7 +772,9 @@ class ConversationManager:
     
     def __init__(self):
         self.conversation: List[Dict[str, Any]] = []
-        self.system_prompt = SYSTEM_PROMPT
+        self.system_prompt = """You are a helpful coding assistant. You can read, write, and edit files, as well as run shell commands.
+When the user asks you to perform operations, use the available tools to help them.
+Be concise and clear in your responses."""
     
     def add_user_message(self, content: str):
         """Add a user message to the conversation"""
@@ -723,6 +809,27 @@ class ConversationManager:
 # Input Handler - Manages readline and input history
 # ============================================================================
 
+# ============================================================================
+# Input Handler - Manages readline and input history
+# ============================================================================
+
+# Readline key bindings configuration
+READLINE_BINDINGS = {
+    'tab': 'complete',
+    r'"\e[A"': 'previous-history',
+    r'"\e[B"': 'next-history',
+    r'"\e[C"': 'forward-char',
+    r'"\e[D"': 'backward-char',
+    r'"\e[H"': 'beginning-of-line',
+    r'"\e[F"': 'end-of-line',
+    r'"\e[1~"': 'beginning-of-line',
+    r'"\e[4~"': 'end-of-line',
+    'Control-a': 'beginning-of-line',
+    'Control-e': 'end-of-line',
+    r'"\e[1;5C"': 'forward-word',
+    r'"\e[1;5D"': 'backward-word',
+}
+
 class InputHandler:
     """Manages user input with readline support"""
     
@@ -732,19 +839,12 @@ class InputHandler:
     
     def _setup_readline(self):
         """Configure readline for enhanced input editing"""
-        readline.parse_and_bind('tab: complete')
-        readline.parse_and_bind(r'"\e[A": previous-history')
-        readline.parse_and_bind(r'"\e[B": next-history')
-        readline.parse_and_bind(r'"\e[C": forward-char')
-        readline.parse_and_bind(r'"\e[D": backward-char')
-        readline.parse_and_bind(r'"\e[H": beginning-of-line')
-        readline.parse_and_bind(r'"\e[F": end-of-line')
-        readline.parse_and_bind(r'"\e[1~": beginning-of-line')
-        readline.parse_and_bind(r'"\e[4~": end-of-line')
-        readline.parse_and_bind('Control-a: beginning-of-line')
-        readline.parse_and_bind('Control-e: end-of-line')
-        readline.parse_and_bind(r'"\e[1;5C": forward-word')
-        readline.parse_and_bind(r'"\e[1;5D": backward-word')
+        if not READLINE_AVAILABLE:
+            return
+        
+        # Apply all key bindings
+        for key, action in READLINE_BINDINGS.items():
+            readline.parse_and_bind(f'{key}: {action}')
         
         history_file = os.path.expanduser('~/.coding_assistant_history')
         self.history_file = history_file
@@ -755,11 +855,15 @@ class InputHandler:
             except Exception:
                 pass
         
-        readline.set_history_length(1000)
+        readline.set_history_length(MAX_HISTORY_SIZE)
     
     def save_to_history(self, user_input: str):
         """Save user input to readline history"""
+        if not READLINE_AVAILABLE or not user_input.strip():
+            return
+        
         readline.add_history(user_input)
+        
         try:
             readline.write_history_file(self.history_file)
         except Exception:
@@ -857,11 +961,11 @@ class APIClient:
     def _call_streaming(self, messages: List[Dict[str, Any]], tools: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
         """Call API with streaming enabled"""
         stream = self.client.chat.completions.create(
-            model="openai_gpt-oss-20b-MXFP4",
+            model=DEFAULT_MODEL,
             messages=messages,
             tools=tools,
-            temperature=0.7,
-            max_tokens=2000,
+            temperature=DEFAULT_TEMPERATURE,
+            max_tokens=DEFAULT_MAX_TOKENS,
             stream=True,
             stream_options={"include_usage": True}  # Request usage info in stream
         )
@@ -937,11 +1041,11 @@ class APIClient:
     def _call_non_streaming(self, messages: List[Dict[str, Any]], tools: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
         """Call API without streaming"""
         response = self.client.chat.completions.create(
-            model="openai_gpt-oss-20b-MXFP4",
+            model=DEFAULT_MODEL,
             messages=messages,
             tools=tools,
-            temperature=0.7,
-            max_tokens=2000
+            temperature=DEFAULT_TEMPERATURE,
+            max_tokens=DEFAULT_MAX_TOKENS
         )
         
         choice = response.choices[0]
@@ -1403,17 +1507,15 @@ class CodingAssistant:
 # ============================================================================
 
 def main():
-    # Configuration
-    SHOW_THINKING = True
-    STREAM_OUTPUT = True
-    
-    server_url = "http://127.0.0.1:8033"
+    # Use global configuration constants
+    server_url = DEFAULT_SERVER_URL
     
     if len(sys.argv) > 1:
         server_url = sys.argv[1]
     
-    print(f"{Colors.SYSTEM}Starting Coding Assistant...{Colors.RESET}")
-    print(f"{Colors.SYSTEM}Connecting to llama.cpp server at: {server_url}{Colors.RESET}\n")
+    print(colored("Starting Coding Assistant...", Colors.SYSTEM))
+    print(colored(f"Connecting to llama.cpp server at: {server_url}", Colors.SYSTEM))
+    print()
     
     assistant = CodingAssistant(server_url, SHOW_THINKING, STREAM_OUTPUT)
     assistant.run()
