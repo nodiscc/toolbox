@@ -1477,7 +1477,8 @@ class CodingAssistant:
         
         while True:
             try:
-                user_input = self.input_handler.get_input(f"{Colors.USER}You: {Colors.RESET}")
+                print('───────────────────────────────────────────────────')
+                user_input = self.input_handler.get_input(f"› ")
                 
                 if not user_input:
                     continue
