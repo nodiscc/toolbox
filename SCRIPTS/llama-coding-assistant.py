@@ -184,41 +184,34 @@ class UIFormatter:
         print()
     
     @staticmethod
-    def print_tool_header(tool_name: str, arguments: Dict[str, Any], preview_diff: Optional[str] = None):
-        """Display tool call header with arguments"""
-        print("\n" + BoxDrawer.draw_box("Tool Call", color=Colors.TOOL))
+    def _display_tool_info(title: str, tool_name: str, arguments: Dict[str, Any],
+                           preview_diff: Optional[str] = None, width: int = BOX_WIDTH):
+        """Display tool information with arguments and optional diff preview"""
+        print("\n" + BoxDrawer.draw_box(title, width=width, color=Colors.TOOL))
         print(colored(f"Tool: {tool_name}", Colors.TOOL))
         print(colored("Arguments:", Colors.TOOL))
-        
+
         for key, value in arguments.items():
             display_value = str(value)
             if len(display_value) > MAX_DISPLAY_VALUE_LENGTH:
                 display_value = display_value[:MAX_DISPLAY_VALUE_LENGTH] + "..."
             print(f"  {key}: {display_value}")
-        
+
         if preview_diff:
             print(colored("\n═══ Diff Preview ═══", Colors.DIFF_INFO))
             print(preview_diff)
             print(colored("═══ End of Diff ═══", Colors.DIFF_INFO))
-    
+
+    @staticmethod
+    def print_tool_header(tool_name: str, arguments: Dict[str, Any], preview_diff: Optional[str] = None):
+        """Display tool call header with arguments"""
+        UIFormatter._display_tool_info("Tool Call", tool_name, arguments, preview_diff)
+
     @staticmethod
     def print_tool_confirmation(tool_name: str, arguments: Dict[str, Any], preview_diff: Optional[str] = None) -> bool:
         """Display tool confirmation prompt and get user response"""
-        print("\n" + BoxDrawer.draw_box("Tool Call Confirmation Required", width=45, color=Colors.TOOL))
-        print(colored(f"Tool: {tool_name}", Colors.TOOL))
-        print(colored("Arguments:", Colors.TOOL))
-        
-        for key, value in arguments.items():
-            display_value = str(value)
-            if len(display_value) > MAX_DISPLAY_VALUE_LENGTH:
-                display_value = display_value[:MAX_DISPLAY_VALUE_LENGTH] + "..."
-            print(f"  {key}: {display_value}")
-        
-        if preview_diff:
-            print(colored("\n═══ Diff Preview ═══", Colors.DIFF_INFO))
-            print(preview_diff)
-            print(colored("═══ End of Diff ═══", Colors.DIFF_INFO))
-        
+        UIFormatter._display_tool_info("Tool Call Confirmation Required", tool_name, arguments, preview_diff, width=45)
+
         response = input(colored("\nExecute this tool? (y/N): ", Colors.SYSTEM)).strip().lower()
         return response == 'y'
     
