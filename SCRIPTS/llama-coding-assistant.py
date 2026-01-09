@@ -980,12 +980,8 @@ class APIClient:
         tool_calls_dict = {}
         role = "assistant"
         usage_info = None
-        
-        if self.show_thinking:
-            print(f"{Colors.THINKING}", end="", flush=True)
-        else:
-            print(f"{Colors.ASSISTANT}", end="", flush=True)
-        
+        chunk_type = ""
+
         for chunk in stream:
             if not chunk.choices:
                 # Check for usage information in chunks without choices
@@ -994,10 +990,17 @@ class APIClient:
                 continue
             
             delta = chunk.choices[0].delta
+
+            if self.show_thinking and hasattr(delta, 'reasoning_content'):
+                print(f"{Colors.THINKING}" + getattr(delta, "reasoning_content", ""), end="", flush=True)
+                chunk_type = "reasoning"
             
             if delta.content:
-                print(delta.content, end="", flush=True)
+                if chunk_type == "reasoning":
+                    print("\n\n", flush=True)
+                print(f"{Colors.ASSISTANT}" + delta.content, end="", flush=True)
                 full_content += delta.content
+                chunk_type = "content"
             
             if delta.role:
                 role = delta.role
