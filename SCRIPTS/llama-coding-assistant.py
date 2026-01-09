@@ -995,13 +995,12 @@ class APIClient:
                     # print("\n\nUsage: " + str(usage_info))
                 continue
             
-
             delta = chunk.choices[0].delta
 
             if self.show_thinking and hasattr(delta, 'reasoning_content'):
                 # if transitioning from another chunk type, print line jump and switch color
                 if chunk_type != "reasoning":
-                    print(f"\n\n{Colors.THINKING}", flush=True)
+                    print(f"\n\n{Colors.THINKING}[THINKING...] ", flush=True)
                 print(getattr(delta, "reasoning_content", ""), end="", flush=True)
                 chunk_type = "reasoning"
             
