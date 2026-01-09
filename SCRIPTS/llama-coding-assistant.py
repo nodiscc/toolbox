@@ -208,12 +208,15 @@ class UIFormatter:
         UIFormatter._display_tool_info("Tool Call", tool_name, arguments, preview_diff)
 
     @staticmethod
-    def print_tool_confirmation(tool_name: str, arguments: Dict[str, Any], preview_diff: Optional[str] = None) -> bool:
-        """Display tool confirmation prompt and get user response"""
+    def print_tool_confirmation(tool_name: str, arguments: Dict[str, Any], preview_diff: Optional[str] = None):
+        """Display tool confirmation prompt and get user response.
+        Returns a tuple (confirmed: bool, raw_input: str).
+        """
         UIFormatter._display_tool_info("Tool Call Confirmation Required", tool_name, arguments, preview_diff, width=45)
 
-        response = input(colored("\nExecute this tool? (y/N): ", Colors.SYSTEM)).strip().lower()
-        return response == 'y'
+        raw_input = input(colored("\nExecute this tool? (y/Tell the model whet to do differently): ", Colors.SYSTEM)).strip()
+        confirmed = raw_input.lower() == 'y'
+        return confirmed, raw_input
     
     @staticmethod
     def print_command_history(command_history: List[Dict[str, Any]]):
@@ -657,8 +660,9 @@ class ToolExecutor:
 
         if old_content is not None:
             try:
-                result = f"Successfully overwrote '{path}'\n\nChanges made:\n"
-                result += self.ui.show_diff(old_content, content, os.path.basename(path))
+                result = f"Successfully overwrote '{path}'"
+                # result += "\n\nChanges made:\n"
+                # result += self.ui.show_diff(old_content, content, os.path.basename(path))
             except Exception as e:
                 result = f"Successfully overwrote '{path}' (could not show diff: {e})"
         else:
@@ -723,7 +727,7 @@ class ToolExecutor:
             f.write(new_content)
         
         occurrences = content.count(old_text)
-        return f"Successfully edited '{path}' ({occurrences} occurrence(s) replaced)\n\nChanges made:\n{diff_output}"
+        return f"Successfully edited '{path}' ({occurrences} occurrence(s) replaced)" #\n\nChanges made:\n{diff_output}"
     
     def _run_command(self, args: Dict[str, Any]) -> str:
         """Execute a shell command"""
@@ -984,21 +988,28 @@ class APIClient:
 
         for chunk in stream:
             if not chunk.choices:
+                # print(chunk)
                 # Check for usage information in chunks without choices
                 if hasattr(chunk, 'usage'):
                     usage_info = self._extract_usage_info(chunk.usage)
+                    # print("\n\nUsage: " + str(usage_info))
                 continue
             
+
             delta = chunk.choices[0].delta
 
             if self.show_thinking and hasattr(delta, 'reasoning_content'):
-                print(f"{Colors.THINKING}" + getattr(delta, "reasoning_content", ""), end="", flush=True)
+                # if transitioning from another chunk type, print line jump and switch color
+                if chunk_type != "reasoning":
+                    print(f"\n\n{Colors.THINKING}", flush=True)
+                print(getattr(delta, "reasoning_content", ""), end="", flush=True)
                 chunk_type = "reasoning"
             
             if delta.content:
-                if chunk_type == "reasoning":
-                    print("\n\n", flush=True)
-                print(f"{Colors.ASSISTANT}" + delta.content, end="", flush=True)
+                # if transitioning from another chunk type, print line jump and switch color
+                if chunk_type != "content":
+                    print(f"\n\n{Colors.ASSISTANT}", flush=True)
+                print(delta.content, end="", flush=True)
                 full_content += delta.content
                 chunk_type = "content"
             
@@ -1454,8 +1465,9 @@ class CodingAssistant:
                 if needs_confirmation:
                     preview_diff = self.tool_executor.get_preview_diff(tool_name, arguments)
                     
-                    if not self.ui.print_tool_confirmation(tool_name, arguments, preview_diff):
-                        result = "User declined to execute this tool"
+                    confirmed, raw = self.ui.print_tool_confirmation(tool_name, arguments, preview_diff)
+                    if not confirmed:
+                        result = f"User declined to execute this tool. Do this instead: {raw}"
                         if self.show_thinking:
                             self.ui.print_system(result)
                         self.conversation.add_tool_response(tool_id, result)
