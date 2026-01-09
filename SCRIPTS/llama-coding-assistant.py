@@ -404,7 +404,9 @@ class ToolExecutor:
     
     def _list_directory(self, args: Dict[str, Any]) -> str:
         """List files and directories"""
-        path = args.get("path", ".")
+        path = args.get("path")
+        if not path:
+            path = "."
         show_hidden = args.get("show_hidden", False)
         
         if not os.path.exists(path):
