@@ -952,6 +952,17 @@ class APIClient:
         self.prompt_tokens = 0
         self.completion_tokens = 0
         self.total_calls = 0
+
+    @staticmethod
+    def _extract_usage_info(usage_obj) -> Optional[Dict[str, int]]:
+        """Extract usage information from API response usage object"""
+        if usage_obj:
+            return {
+                'total_tokens': usage_obj.total_tokens,
+                'prompt_tokens': usage_obj.prompt_tokens,
+                'completion_tokens': usage_obj.completion_tokens
+            }
+        return None
     
     def _call_streaming(self, messages: List[Dict[str, Any]], tools: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
         """Call API with streaming enabled"""
@@ -978,12 +989,8 @@ class APIClient:
         for chunk in stream:
             if not chunk.choices:
                 # Check for usage information in chunks without choices
-                if hasattr(chunk, 'usage') and chunk.usage:
-                    usage_info = {
-                        'total_tokens': chunk.usage.total_tokens,
-                        'prompt_tokens': chunk.usage.prompt_tokens,
-                        'completion_tokens': chunk.usage.completion_tokens
-                    }
+                if hasattr(chunk, 'usage'):
+                    usage_info = self._extract_usage_info(chunk.usage)
                 continue
             
             delta = chunk.choices[0].delta
@@ -1062,15 +1069,13 @@ class APIClient:
                 })
         
         result = {"choices": [{"message": message_dict}]}
-        
+
         # Add usage info if available
-        if hasattr(response, 'usage') and response.usage:
-            result['usage'] = {
-                'total_tokens': response.usage.total_tokens,
-                'prompt_tokens': response.usage.prompt_tokens,
-                'completion_tokens': response.usage.completion_tokens
-            }
-        
+        if hasattr(response, 'usage'):
+            usage_info = self._extract_usage_info(response.usage)
+            if usage_info:
+                result['usage'] = usage_info
+
         return result
 
 
