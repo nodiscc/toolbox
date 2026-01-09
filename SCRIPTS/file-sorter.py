@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 # requirements: python3-tqdm python3-send2trash
-import os
-from tqdm import tqdm
-import random
-import subprocess
-import shutil
 import datetime
+import os
+import random
+import shutil
+import subprocess
 import uuid
+
 from send2trash import send2trash
+from tqdm import tqdm
 
 KEEP_DIRECTORY = './KEEP'
 ARCHIVE_DIRECTORY = './ARCHIVE'

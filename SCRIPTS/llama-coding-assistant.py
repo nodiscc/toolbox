@@ -272,7 +272,7 @@ class ToolExecutor:
     def requires_confirmation(self, tool_name: str, arguments: Dict[str, Any]) -> bool:
         """Determine if a tool call requires user confirmation"""
         # list_directory doesn't require confirmation if path is under current directory
-        if tool_name == "list_directory":
+        if tool_name in ["list_directory", "read_file"]:
             path = arguments.get("path", ".")
             if self._is_safe_path(path):
                 return False
