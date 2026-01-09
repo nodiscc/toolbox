@@ -296,6 +296,22 @@ class ToolExecutor:
             return abs_path.startswith(cwd)
         except Exception:
             return False
+
+    def _read_file_safe(self, path: str) -> Optional[str]:
+        """Safely read file content, return None if file doesn't exist or can't be read"""
+        try:
+            if os.path.exists(path):
+                with open(path, 'r', encoding='utf-8') as f:
+                    return f.read()
+        except Exception:
+            pass
+        return None
+
+    def _calculate_append_content(self, old_content: str, new_content: str, newline_before: bool) -> str:
+        """Calculate content to append with proper newline handling"""
+        if newline_before and old_content and not old_content.endswith("\n"):
+            return "\n" + new_content
+        return new_content
     
     def _should_skip_hidden(self, name: str, include_hidden: bool) -> bool:
         """Check if file/directory should be skipped due to hidden status"""
@@ -357,44 +373,37 @@ class ToolExecutor:
     def get_preview_diff(self, tool_name: str, arguments: Dict[str, Any]) -> Optional[str]:
         """Generate a diff preview for file modification operations"""
         try:
+            path = arguments.get("path")
+            if not path:
+                return None
+
+            old_content = self._read_file_safe(path)
+            if old_content is None:
+                return None
+
             if tool_name == "edit_file":
-                path = arguments.get("path")
                 old_text = arguments.get("old_text")
                 new_text = arguments.get("new_text")
-                
-                if path and os.path.exists(path):
-                    with open(path, 'r', encoding='utf-8') as f:
-                        content = f.read()
-                    
-                    if old_text in content:
-                        new_content = content.replace(old_text, new_text)
-                        return self.ui.show_diff(content, new_content, os.path.basename(path))
-            
-            elif tool_name == "write_file":
-                path = arguments.get("path")
-                new_content = arguments.get("content", "")
-                
-                if path and os.path.exists(path):
-                    with open(path, 'r', encoding='utf-8') as f:
-                        old_content = f.read()
+
+                if old_text in old_content:
+                    new_content = old_content.replace(old_text, new_text)
                     return self.ui.show_diff(old_content, new_content, os.path.basename(path))
-            
+
+            elif tool_name == "write_file":
+                new_content = arguments.get("content", "")
+                return self.ui.show_diff(old_content, new_content, os.path.basename(path))
+
             elif tool_name == "append_file":
-                path = arguments.get("path")
                 content = arguments.get("content", "")
                 newline_before = arguments.get("newline_before", True)
-                
-                if path and os.path.exists(path):
-                    with open(path, 'r', encoding='utf-8') as f:
-                        old_content = f.read()
-                    
-                    append_content = ("\n" if newline_before and old_content and not old_content.endswith("\n") else "") + content
-                    new_content = old_content + append_content
-                    return self.ui.show_diff(old_content, new_content, os.path.basename(path))
-        
+
+                append_content = self._calculate_append_content(old_content, content, newline_before)
+                new_content = old_content + append_content
+                return self.ui.show_diff(old_content, new_content, os.path.basename(path))
+
         except Exception:
             pass
-        
+
         return None
     
     def _list_directory(self, args: Dict[str, Any]) -> str:
@@ -650,22 +659,21 @@ class ToolExecutor:
         """Write content to file"""
         path = args["path"]
         content = args["content"]
-        
-        file_exists = os.path.exists(path)
-        if file_exists:
+
+        old_content = self._read_file_safe(path)
+
+        if old_content is not None:
             try:
-                with open(path, 'r', encoding='utf-8') as f:
-                    old_content = f.read()
                 result = f"Successfully overwrote '{path}'\n\nChanges made:\n"
                 result += self.ui.show_diff(old_content, content, os.path.basename(path))
             except Exception as e:
                 result = f"Successfully overwrote '{path}' (could not show diff: {e})"
         else:
             result = f"Successfully created new file '{path}' ({len(content)} characters)"
-        
+
         with open(path, 'w', encoding='utf-8') as f:
             f.write(content)
-        
+
         return result
     
     def _append_file(self, args: Dict[str, Any]) -> str:
@@ -673,18 +681,12 @@ class ToolExecutor:
         path = args["path"]
         content = args["content"]
         newline_before = args.get("newline_before", True)
-        
-        file_exists = os.path.exists(path)
-        
-        if file_exists:
-            try:
-                with open(path, 'r', encoding='utf-8') as f:
-                    old_content = f.read()
-            except Exception as e:
-                return f"Error reading file for preview: {e}"
-            
-            append_content = ("\n" if newline_before and old_content and not old_content.endswith("\n") else "") + content
-            
+
+        old_content = self._read_file_safe(path)
+
+        if old_content is not None:
+            append_content = self._calculate_append_content(old_content, content, newline_before)
+
             with open(path, 'a', encoding='utf-8') as f:
                 f.write(append_content)
             
