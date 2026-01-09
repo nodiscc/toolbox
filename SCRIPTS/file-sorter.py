@@ -15,10 +15,7 @@ ARCHIVE_DIRECTORY = './ARCHIVE'
 TODO_DIRECTORY = './TODO'
 
 def format_size(size_bytes: int) -> str:
-    """Return a human‑readable file size.
-
-    Uses powers of 1024 and rounds to one decimal place. Handles 0‑byte
-    files gracefully (``0.0B``)."""
+    """Human‑readable file size."""
     for unit in ['B', 'KB', 'MB', 'GB', 'TB']:
         if size_bytes < 1024:
             return f"{size_bytes:.1f}{unit}"
@@ -26,6 +23,7 @@ def format_size(size_bytes: int) -> str:
     return f"{size_bytes:.1f}PB"
 
 def get_file_info(filename):
+    """Return size, modification time, and extension."""
     stat = os.stat(filename)
     size = format_size(stat.st_size)
     mtime = datetime.datetime.fromtimestamp(stat.st_mtime).strftime('%Y-%m-%d %H:%M')
@@ -33,8 +31,8 @@ def get_file_info(filename):
     return size, mtime, ext
 
 
-
 def ask_user_action(filename):
+    """Prompt user for action on a file."""
     size, mtime, ext = get_file_info(filename)
     while True:
         print(f"File: {filename} | Size: {size} | Modified: {mtime} | Type: {ext}")
@@ -51,21 +49,12 @@ def ask_user_action(filename):
         return choice
 
 def ensure_directory_exists(directory):
+    """Create directory if it does not exist."""
     if not os.path.exists(directory):
         os.makedirs(directory)
 
 def move_with_unique(src: str, dst_dir: str):
-    """Move *src* into *dst_dir*, adding a UUID suffix if a file with the same name already exists.
-
-    Parameters
-    ----------
-    src: str
-        Path to the source file.
-    dst_dir: str
-        Destination directory.
-
-    The function creates the destination directory if it does not exist.
-    """
+    """Move file to dst_dir, ensuring unique name."""
     dst_dir_path = os.path.abspath(dst_dir)
     if not os.path.isdir(dst_dir_path):
         os.makedirs(dst_dir_path, exist_ok=True)
@@ -76,8 +65,10 @@ def move_with_unique(src: str, dst_dir: str):
         unique_suffix = uuid.uuid4().hex[:8]
         dst_path = os.path.join(dst_dir_path, f"{name}_{unique_suffix}{ext}")
     shutil.move(src, dst_path)
+    return dst_path
 
 def process_file(filename):
+    """Process a single file based on user action."""
     action = ask_user_action(filename)
 
     print(f"Selected action: {action} for file: {filename}")
@@ -103,6 +94,7 @@ def process_file(filename):
     return True
 
 def main():
+    """Run the file sorter."""
     ensure_directory_exists(KEEP_DIRECTORY)
     ensure_directory_exists(ARCHIVE_DIRECTORY)
     ensure_directory_exists(TODO_DIRECTORY)
