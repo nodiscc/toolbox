@@ -1465,7 +1465,13 @@ class CodingAssistant:
                 if self.show_thinking:
                     self.ui.print_system("[Executing...]")
                 result = self.tool_executor.execute(tool_name, arguments)
-                self.ui.print_tool_result(result)
+
+                # Only show result for certain tools
+                if tool_name != "read_file":
+                    self.ui.print_tool_result(result)
+                else:
+                    # For read_file, just show a summary
+                    self.ui.print_system(f"[Read file: {arguments.get('path')}]")
                 
                 self.conversation.add_tool_response(tool_id, result)
             
