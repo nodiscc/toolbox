@@ -1,0 +1,17 @@
+#!/bin/bash
+# display todo list in conky with formatting
+# first line (current task) in white and large font, other tasks in gray smaller font
+# usage: conky-todo PATH_TO_TODO.TXT
+set -o errexit
+set -o nounset
+todo_file="$1"
+
+today_tasks=$(cat "$todo_file")
+doing=$(echo "$today_tasks" | grep -v '#' | head -n1)
+echo "\${alignr}\${font Fertigo pro:pixelsize=30}$doing\${font}"
+next=$(echo "$today_tasks" | grep -v '#' | tail -n +2)
+echo "\${font Fertigo pro:pixelsize=16}\${color1}"
+echo "$next" | while read line; do
+    echo "\${alignr}$line"
+done
+echo "\${font}"
