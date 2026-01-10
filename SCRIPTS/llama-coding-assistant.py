@@ -214,7 +214,7 @@ class UIFormatter:
         """
         UIFormatter._display_tool_info("Tool Call Confirmation Required", tool_name, arguments, preview_diff, width=45)
 
-        raw_input = input(colored("\nExecute this tool? (y/Tell the model whet to do differently): ", Colors.SYSTEM)).strip()
+        raw_input = input(colored("\nExecute this tool? (y/Tell the model what to do differently): ", Colors.SYSTEM)).strip()
         confirmed = raw_input.lower() == 'y'
         return confirmed, raw_input
     
