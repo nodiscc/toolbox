@@ -1404,7 +1404,7 @@ class CodingAssistant:
             self.ui.print_system("Command execution cancelled.")
             return
         
-        self.ui.print_system("[Executing...]")
+        self.ui.print_system("[Executing tool...]")
         result_str = self.tool_executor.execute("run_command", {"command": command})
         self.ui.print_tool_result(result_str)
     
@@ -1484,11 +1484,11 @@ class CodingAssistant:
                 result = self.tool_executor.execute(tool_name, arguments)
 
                 # Only show result for certain tools
-                if tool_name != "read_file":
+                if tool_name not in ["read_file", "list_directory"]:
                     self.ui.print_tool_result(result)
                 else:
                     # For read_file, just show a summary
-                    self.ui.print_system(f"[Read file: {arguments.get('path')}]")
+                    self.ui.print_system(f"[Reading file/directory: {arguments.get('path')}]")
                 
                 self.conversation.add_tool_response(tool_id, result)
             
