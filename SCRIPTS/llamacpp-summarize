@@ -50,7 +50,7 @@ if __name__ == "__main__":
     parser.add_argument('--sentences', dest='sentences_number', type=int, default=8, help='number of sentences for the summary. Set to 0 to disable')
 
     # Create mutually exclusive group for URL and file inputs
-    input_group = parser.add_mutually_exclusive_group(required=True)
+    input_group = parser.add_mutually_exclusive_group()
     input_group.add_argument('--url', dest='urls', type=str, action='append', help='URL of the article to summarize (can be specified multiple times)')
     input_group.add_argument('--file', dest='files', type=str, action='append', help='path to HTML file to summarize (can be specified multiple times)')
 
@@ -58,7 +58,23 @@ if __name__ == "__main__":
     parser.add_argument('--server', dest='server', type=str, default='http://127.0.0.1:8033/v1', help='llama.cpp server URL (default http://127.0.0.1:8033/v1)')
     parser.add_argument('--prompt', dest='prompt', type=str, help='custom prompt, replaces the default summarization prompt (but still asks the LLM to only consider the information from the webpage)')
     parser.add_argument('--print-only', dest='print_only', action='store_true', help='only print the extracted plain text from the HTML, do not perform summarization')
+    parser.add_argument('--list-models', dest='list_models', action='store_true', help='list available models from the server and exit')
     args = parser.parse_args()
+
+    if not args.list_models and not (args.urls or args.files):
+        parser.error('one of --url or --file is required unless --list-models is used')
+
+    if args.list_models:
+        try:
+            response = requests.get(f"{args.server}/models")
+            response.raise_for_status()
+            models = response.json()
+            print('Available models:')
+            for m in models.get('data', []):
+                print(f"- {m.get('id', 'unknown')}")
+        except requests.exceptions.RequestException as e:
+            print(f"Error retrieving models: {e}")
+        sys.exit(0)
 
     # Determine which input type to process
     sources = []
