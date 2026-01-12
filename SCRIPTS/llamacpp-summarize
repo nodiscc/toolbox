@@ -145,7 +145,7 @@ if __name__ == "__main__":
             payload = {
                 'model': args.model,
                 'messages': [
-                    {'role': 'system', 'content': 'You are a document summarization assistant. When given a document, you reply with a summary of key information in the document'},
+                    {'role': 'system', 'content': 'You are a helpful assistant that summarizes articles concisely. You reply with a short summary of key information provided in the document, in the form of a bullet point list. At the end of a summary, you provide a one-sentence recommendation (actionable items).'},
                     {'role': 'user', 'content': chat_prompt}
                 ],
                 'stream': True
