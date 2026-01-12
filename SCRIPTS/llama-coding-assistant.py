@@ -425,7 +425,7 @@ class ToolExecutor:
         
         items.sort(key=lambda x: (not os.path.isdir(os.path.join(path, x)), x.lower()))
         
-        output = [f"Contents of '{os.path.abspath(path)}':\n"]
+        output = [f"Contents of '{path}':\n"]
         output.append(f"{'Type':<6} {'Size':<10} {'Modified':<20} {'Name'}")
         output.append("-" * 70)
         
