@@ -43,7 +43,7 @@ def ask_user_action(filename):
             continue
 
         if choice == 'o':
-            subprocess.run(['xdg-open', filename])
+            subprocess.run(['xdg-open', filename], check=True)
             continue
 
         return choice
