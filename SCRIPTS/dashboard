@@ -125,7 +125,7 @@ def get_gitlab_issues(gitlab_token, assigned=False, created=False, repos=False):
         response.raise_for_status()
         issues = response.json()
         for issue in issues:
-            gitlab_issues.append(f'{issue['web_url']} - {issue['title']}')
+            gitlab_issues.append(f'{issue["web_url"]} - {issue["title"]}')
 
     if created:
         print_title("gitlab issues created by you")
@@ -135,7 +135,7 @@ def get_gitlab_issues(gitlab_token, assigned=False, created=False, repos=False):
         response.raise_for_status()
         issues = response.json()
         for issue in issues:
-            gitlab_issues.append(f'{issue['web_url']} - {issue['title']}')
+            gitlab_issues.append(f'{issue["web_url"]} - {issue["title"]}')
 
     if repos:
         print_title("gitlab issues in your repos")
@@ -155,7 +155,7 @@ def get_gitlab_issues(gitlab_token, assigned=False, created=False, repos=False):
 
             if issues:
                 for issue in issues:
-                    gitlab_issues.append(f'{issue['web_url']} - {issue['title']}')
+                    gitlab_issues.append(f'{issue["web_url"]} - {issue["title"]}')
 
     return gitlab_issues
 
