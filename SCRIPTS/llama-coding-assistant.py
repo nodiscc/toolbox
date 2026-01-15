@@ -38,8 +38,8 @@ BOX_WIDTH = 40
 
 # API Configuration
 DEFAULT_SERVER_URL = "http://127.0.0.1:8033"
-DEFAULT_MODEL = "Qwen3-Coder-30B-A3B-Instruct-UD-Q5_K_XL"
-# DEFAULT_MODEL = "openai_gpt-oss-20b-MXFP4"
+#DEFAULT_MODEL = "Qwen3-Coder-30B-A3B-Instruct-UD-Q5_K_XL"
+DEFAULT_MODEL = "openai_gpt-oss-20b-MXFP4"
 DEFAULT_TEMPERATURE = 0.7
 DEFAULT_MAX_TOKENS = 2000
 API_TIMEOUT = 30
@@ -188,15 +188,15 @@ class UIFormatter:
     def _display_tool_info(title: str, tool_name: str, arguments: Dict[str, Any],
                            preview_diff: Optional[str] = None, width: int = BOX_WIDTH):
         """Display tool information with arguments and optional diff preview"""
-        print("\n" + BoxDrawer.draw_box(title, width=width, color=Colors.TOOL))
-        print(colored(f"Tool: {tool_name}", Colors.TOOL))
-        print(colored("Arguments:", Colors.TOOL))
+        #print("\n" + BoxDrawer.draw_box(title, width=width, color=Colors.TOOL)) # TODO remove boxdrawer
+        print(colored(f"n║ Tool call: {tool_name}", Colors.TOOL))
+        print(colored("║ Arguments:", Colors.TOOL))
 
         for key, value in arguments.items():
             display_value = str(value)
             if len(display_value) > MAX_DISPLAY_VALUE_LENGTH:
                 display_value = display_value[:MAX_DISPLAY_VALUE_LENGTH] + "..."
-            print(f"  {key}: {display_value}")
+            print(colored(f"║ {key}: {display_value}", Colors.TOOL))
 
         if preview_diff:
             print(colored("\n═══ Diff Preview ═══", Colors.DIFF_INFO))
