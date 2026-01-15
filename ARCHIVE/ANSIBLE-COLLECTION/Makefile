@@ -3,12 +3,11 @@ SHELL := '/bin/bash'
 LANG = C
 
 test-ansible-lint:
-	python3 -m venv .venv && \
-	source .venv/bin/activate && \
-	pip3 install wheel && \
-	pip3 install isort ansible-lint==24.10.0 yamllint ansible==9.3.0 && \
-	ansible-galaxy collection install git+https://gitlab.com/nodiscc/xsrv.git && \
-	ansible-lint -v -x fqcn[action-core],fqcn[action],name[casing],yaml[truthy],schema[meta],yaml[line-length],var-naming[no-role-prefix] roles/*
+	python3 -m venv .venv
+	.venv/bin/pip3 install wheel
+	.venv/bin/pip3 install isort ansible-lint==24.10.0 yamllint ansible==9.3.0
+	.venv/bin/ansible-galaxy collection install git+https://gitlab.com/nodiscc/xsrv.git
+	.venv/bin/ansible-lint -v -x fqcn[action-core],fqcn[action],name[casing],yaml[truthy],schema[meta],yaml[line-length],var-naming[no-role-prefix] roles/*
 
 # manual: udpate auto-generated documentation
 doc: doc_tags doc_roles_list
