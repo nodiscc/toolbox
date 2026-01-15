@@ -29,7 +29,6 @@ import email
 import imaplib
 import json
 import os
-import sys
 import time
 
 import caldav
@@ -37,31 +36,36 @@ import colorama
 import icalendar
 import requests
 import urllib3
-import vobject
 
 # Disable SSL warnings
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+# load config from environment
+OS_ENVIRON=os.environ
+REQUESTS_TIMEOUT=int(OS_ENVIRON['REQUESTS_TIMEOUT']) # global
 
 def print_title(text):
     """Print section title to screen"""
     print(f'{colorama.Fore.GREEN}####### {text}{colorama.Style.RESET_ALL}')
 
 def format_bullet_point(symbol, color, text):
-    formatted = f'{color}▧ {colorama.Style.RESET_ALL}{text}'
+    formatted = f'{color}{symbol} {colorama.Style.RESET_ALL}{text}'
     return formatted
 
-def format_list(list, max_lines):
+def format_list(items, max_lines):
     """"return the first items of a list as text on multiple lines"""
-    first_items = list[:max_lines]
+    first_items = items[:max_lines]
     return "\n".join(first_items)
 
 def get_imap_subjects(conn, folder, criterion):
     """get subjects of messages matching the search criterion in a folder"""
     prefix = folder.replace('INBOX/', '') + ': '
     #prefix = '' # hide folder names
-    status, _ = conn.select(folder, readonly=True)
-    if status != 'OK':
-        raise Exception(f"Failed to select folder '{folder}': {status}")
+
+    # debug errors such as non-existing folder
+    # status, _ = conn.select(folder, readonly=True)
+    # if status != 'OK':
+    #     raise Exception(f"Failed to select folder '{folder}': {status}")
 
     _, imap_response = conn.search(None, criterion)
     message_uids = imap_response[0].split()
@@ -132,7 +136,7 @@ def get_gitlab_issues(gitlab_token, assigned=False, created=False, repos=False):
         issues = response.json()
         for issue in issues:
             gitlab_issues.append(f'{issue['web_url']} - {issue['title']}')
-    
+
     if repos:
         print_title("gitlab issues in your repos")
         projects_url = f"{BASE_URL}/projects"
@@ -140,7 +144,7 @@ def get_gitlab_issues(gitlab_token, assigned=False, created=False, repos=False):
         response = requests.get(projects_url, headers=headers, params=params, timeout=REQUESTS_TIMEOUT)
         response.raise_for_status()
         projects = response.json()
-        
+
         for project in projects:
             project_id = project['id']
             issues_url = f"{BASE_URL}/projects/{project_id}/issues"
@@ -148,7 +152,7 @@ def get_gitlab_issues(gitlab_token, assigned=False, created=False, repos=False):
             response = requests.get(issues_url, headers=headers, params=params, timeout=REQUESTS_TIMEOUT)
             response.raise_for_status()
             issues = response.json()
-            
+
             if issues:
                 for issue in issues:
                     gitlab_issues.append(f'{issue['web_url']} - {issue['title']}')
@@ -160,7 +164,7 @@ def get_gitea_issues(gitea_instance_url, gitea_token):
     """show a list of open gitea issues assigned to the specified user
     parameters: gitea_instance_url, gitea_token
     returns: list of issues URLs"""
-    
+
     url = f"{gitea_instance_url}/api/v1/repos/issues/search"
     params = {
         'state': 'open',
@@ -169,7 +173,7 @@ def get_gitea_issues(gitea_instance_url, gitea_token):
         'sort': 'updated'
     }
     headers = {'Authorization': f'token {gitea_token}'}
-    
+
     try:
         response = requests.get(url, params=params, headers=headers, verify=False, timeout=REQUESTS_TIMEOUT)
         response.raise_for_status()
@@ -177,7 +181,7 @@ def get_gitea_issues(gitea_instance_url, gitea_token):
         gitea_issues = []
         for issue in issues:
             gitea_issues.append(f'{issue["html_url"]} - {issue["title"]}')
-    
+
     except requests.exceptions.RequestException as e:
         print(f"Error fetching issues: {e}")
         return []
@@ -188,14 +192,14 @@ def get_gitea_issues(gitea_instance_url, gitea_token):
 def get_ttrss_marked(ttrss_url, ttrss_username, ttrss_password, ttrss_limit):
     """List TT-RSS starred articles"""
     # https://tt-rss.org/wiki/ApiReference
-    
+
     ttrss_session = requests.Session()
     ttrss_login_data = json.dumps({
         "op": "login",
         "user": ttrss_username,
         "password": ttrss_password})
     ttrss_headers = {"Content-Type": "application/json"}
-    
+
     response = ttrss_session.post(
         ttrss_url + '/api/',
         verify=False,
@@ -203,10 +207,10 @@ def get_ttrss_marked(ttrss_url, ttrss_username, ttrss_password, ttrss_limit):
         data=ttrss_login_data)
     auth = json.loads(response.text)
     session_id = auth['content']['session_id']
-    
+
     # Get limit from environment variable or default to 20
     limit = int(ttrss_limit)
-    
+
     ttrss_query_data = json.dumps({
         "sid": session_id,
         "op": "getHeadlines",
@@ -214,18 +218,18 @@ def get_ttrss_marked(ttrss_url, ttrss_username, ttrss_password, ttrss_limit):
         "view_mode": "all_articles",
         "feed_dates": "date_reverse",
         "limit": limit})
-    
+
     response = ttrss_session.post(
         ttrss_url + '/api/',
         verify=False,
         headers=ttrss_headers,
         data=ttrss_query_data)
-    
+
     data = json.loads(response.text)
     ttrss_marked_articles = []
     for article in data['content']:
         ttrss_marked_articles.append(article['title'])
-    
+
     return ttrss_marked_articles
 
 
@@ -233,7 +237,7 @@ def get_todo_list(todo_txt_path):
     """return the contents of todo_txt_path as list items, one per line, removing
        lines starting with #
     """
-    with open(todo_txt_path, 'r') as file:
+    with open(todo_txt_path, 'r', encoding="utf-8") as file:
         lines = [line.strip() for line in file.readlines()]
         return [line for line in lines if not line.startswith('#')]
 
@@ -329,10 +333,6 @@ def check_mtime(file_path, warn_if_older_than_seconds):
 
 
 def main():
-    OS_ENVIRON=os.environ
-    global REQUESTS_TIMEOUT
-    REQUESTS_TIMEOUT=int(OS_ENVIRON['REQUESTS_TIMEOUT'])
-
     ##### GITLAB ISSUES
     print_title("gitlab issues assigned to you")
     # this function takes either assigned=True, created=True, repos=True
