@@ -106,7 +106,7 @@ def main():
 
     print(f"Starting batch file sorter mode. Found {len(files)} files to process. Press [q] to quit.")
 
-    with tqdm(total=len(files), ncols=80, desc="Processing files", unit="file") as pbar:
+    with tqdm(total=len(files), ncols=80, desc="\nProcessing files", unit="file") as pbar:
         while files:
             filename = random.choice(files)
             files.remove(filename)
