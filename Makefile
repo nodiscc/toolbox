@@ -26,8 +26,8 @@ test-shellcheck:
 test-pylint:
 	python3 -m venv .venv && \
 	.venv/bin/pip3 install wheel && \
-	.venv/bin/pip3 install pylint secretstorage requests caldav icalendar tqdm send2trash && \
-	.venv/bin/pylint --disable fixme,line-too-long,too-many-locals,consider-using-f-string,invalid-name --fail-under 8 --fail-on E,W SCRIPTS/pydashboard SCRIPTS/file-sorter.py
+	.venv/bin/pip3 install pylint secretstorage requests caldav icalendar tqdm send2trash colorama && \
+	.venv/bin/pylint --disable fixme,line-too-long,too-many-locals,consider-using-f-string,invalid-name --fail-under 8 --fail-on E,W SCRIPTS/dashboard SCRIPTS/file-sorter.py
 
 test-ansible-lint:
 	cd ARCHIVE/ANSIBLE-COLLECTION/ && make

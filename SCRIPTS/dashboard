@@ -1,0 +1,442 @@
+#!/bin/env python3
+# Requirements: python3 -m venv ~/.venv && ~/.venv/bin/pip3 install caldav vobject colorama
+# Usage: ~/.venv/bin/python3 ./dashboard
+# Environment variables:
+# CALDAV_URL
+# CALDAV_USERNAME
+# CALDAV_PASSWORD
+# CALDAV_MAX_PRIORITY
+# CALDAV_EVENTS_MAX_DAYS_IN_FUTURE
+# GITLAB_TOKEN
+# MAX_LINES
+# GITEA_URL
+# GITEA_TOKEN
+# TODO_TXT_PATH
+# TTRSS_URL
+# TTRSS_USERNAME
+# TTRSS_PASSWORD
+# TTRSS_LIMIT
+# BACKUP_STATE_FILE
+# IMAP_FLAGGED_FOLDERS_LIST # comma-separated list
+# IMAP_UNREAD_FOLDERS_LIST # comma-separated list
+# IMAP_USERNAME
+# IMAP_PASSWORD
+# IMAP_SERVER
+# REQUESTS_TIMEOUT
+
+import datetime
+import email
+import imaplib
+import json
+import os
+import sys
+import time
+
+import caldav
+import colorama
+import icalendar
+import requests
+import urllib3
+import vobject
+
+# Disable SSL warnings
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+def print_title(text):
+    """Print section title to screen"""
+    print(f'{colorama.Fore.GREEN}####### {text}{colorama.Style.RESET_ALL}')
+
+def format_bullet_point(symbol, color, text):
+    formatted = f'{color}▧ {colorama.Style.RESET_ALL}{text}'
+    return formatted
+
+def format_list(list, max_lines):
+    """"return the first items of a list as text on multiple lines"""
+    first_items = list[:max_lines]
+    return "\n".join(first_items)
+
+def get_imap_subjects(conn, folder, criterion):
+    """get subjects of messages matching the search criterion in a folder"""
+    prefix = folder.replace('INBOX/', '') + ': '
+    #prefix = '' # hide folder names
+    status, _ = conn.select(folder, readonly=True)
+    if status != 'OK':
+        raise Exception(f"Failed to select folder '{folder}': {status}")
+
+    _, imap_response = conn.search(None, criterion)
+    message_uids = imap_response[0].split()
+    messages = []
+    for message_uid in message_uids:
+        _, message_data = conn.fetch(message_uid, '(BODY.PEEK[HEADER])')
+        for response_part in message_data:
+            if isinstance(response_part, tuple):
+                msg = email.message_from_bytes(response_part[1])
+                decoded_header, encoding = email.header.decode_header(msg['Subject'])[0]
+                if isinstance(decoded_header, bytes):
+                    subject = decoded_header.decode(encoding).replace('\r', '').replace('\n', '')
+                else:
+                    subject = decoded_header.replace('\r', '').replace('\n', '')
+                message = prefix + subject
+                messages.append(message)
+    return messages
+
+
+def get_unread_mail(imap_server, imap_port,
+                     imap_username, imap_password, imap_folders_list):
+    """show a list of unread mail in an IMAP mailbox"""
+    all_messages = []
+    conn = imaplib.IMAP4_SSL(imap_server, imap_port)
+    conn.login(imap_username, imap_password)
+    for folder in imap_folders_list.split(','):
+        all_messages.extend(get_imap_subjects(conn, folder, '(UNSEEN)'))
+    conn.close()
+    conn.logout()
+    return all_messages
+
+
+def get_flagged_mail(imap_server, imap_port,
+                     imap_username, imap_password, imap_folders_list):
+    """show a list of flagged mail in an IMAP mailbox"""
+    all_messages = []
+    conn = imaplib.IMAP4_SSL(imap_server, imap_port)
+    conn.login(imap_username, imap_password)
+    for folder in imap_folders_list.split(','):
+        all_messages.extend(get_imap_subjects(conn, folder, '(FLAGGED)'))
+    conn.close()
+    conn.logout()
+    return all_messages
+
+
+def get_gitlab_issues(gitlab_token, assigned=False, created=False, repos=False):
+    """TODO show a list of open github issues assigned to me
+    parameters: github_username, github_token"""
+    headers = {"PRIVATE-TOKEN": gitlab_token}
+    BASE_URL = "https://gitlab.com/api/v4"
+    gitlab_issues = []
+
+    if assigned:
+        params = {"state": "opened", "scope": "assigned_to_me"}
+        url = f"{BASE_URL}/issues"
+        response = requests.get(url, headers=headers, params=params, timeout=REQUESTS_TIMEOUT)
+        response.raise_for_status()
+        issues = response.json()
+        for issue in issues:
+            gitlab_issues.append(f'{issue['web_url']} - {issue['title']}')
+
+    if created:
+        print_title("gitlab issues created by you")
+        params = {"state": "opened", "scope": "created_by_me"}
+        url = f"{BASE_URL}/issues"
+        response = requests.get(url, headers=headers, params=params, timeout=REQUESTS_TIMEOUT)
+        response.raise_for_status()
+        issues = response.json()
+        for issue in issues:
+            gitlab_issues.append(f'{issue['web_url']} - {issue['title']}')
+    
+    if repos:
+        print_title("gitlab issues in your repos")
+        projects_url = f"{BASE_URL}/projects"
+        params = {"owned": "true", "per_page": "50", "with_issues_enabled": "true"}
+        response = requests.get(projects_url, headers=headers, params=params, timeout=REQUESTS_TIMEOUT)
+        response.raise_for_status()
+        projects = response.json()
+        
+        for project in projects:
+            project_id = project['id']
+            issues_url = f"{BASE_URL}/projects/{project_id}/issues"
+            params = {"state": "opened"}
+            response = requests.get(issues_url, headers=headers, params=params, timeout=REQUESTS_TIMEOUT)
+            response.raise_for_status()
+            issues = response.json()
+            
+            if issues:
+                for issue in issues:
+                    gitlab_issues.append(f'{issue['web_url']} - {issue['title']}')
+
+    return gitlab_issues
+
+
+def get_gitea_issues(gitea_instance_url, gitea_token):
+    """show a list of open gitea issues assigned to the specified user
+    parameters: gitea_instance_url, gitea_token
+    returns: list of issues URLs"""
+    
+    url = f"{gitea_instance_url}/api/v1/repos/issues/search"
+    params = {
+        'state': 'open',
+        'assigned': "true",
+        'direction': 'desc',
+        'sort': 'updated'
+    }
+    headers = {'Authorization': f'token {gitea_token}'}
+    
+    try:
+        response = requests.get(url, params=params, headers=headers, verify=False, timeout=REQUESTS_TIMEOUT)
+        response.raise_for_status()
+        issues = response.json()
+        gitea_issues = []
+        for issue in issues:
+            gitea_issues.append(f'{issue["html_url"]} - {issue["title"]}')
+    
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching issues: {e}")
+        return []
+
+    return gitea_issues
+
+
+def get_ttrss_marked(ttrss_url, ttrss_username, ttrss_password, ttrss_limit):
+    """List TT-RSS starred articles"""
+    # https://tt-rss.org/wiki/ApiReference
+    
+    ttrss_session = requests.Session()
+    ttrss_login_data = json.dumps({
+        "op": "login",
+        "user": ttrss_username,
+        "password": ttrss_password})
+    ttrss_headers = {"Content-Type": "application/json"}
+    
+    response = ttrss_session.post(
+        ttrss_url + '/api/',
+        verify=False,
+        headers=ttrss_headers,
+        data=ttrss_login_data)
+    auth = json.loads(response.text)
+    session_id = auth['content']['session_id']
+    
+    # Get limit from environment variable or default to 20
+    limit = int(ttrss_limit)
+    
+    ttrss_query_data = json.dumps({
+        "sid": session_id,
+        "op": "getHeadlines",
+        "feed_id": -1, # starred articles
+        "view_mode": "all_articles",
+        "feed_dates": "date_reverse",
+        "limit": limit})
+    
+    response = ttrss_session.post(
+        ttrss_url + '/api/',
+        verify=False,
+        headers=ttrss_headers,
+        data=ttrss_query_data)
+    
+    data = json.loads(response.text)
+    ttrss_marked_articles = []
+    for article in data['content']:
+        ttrss_marked_articles.append(article['title'])
+    
+    return ttrss_marked_articles
+
+
+def get_todo_list(todo_txt_path):
+    """return the contents of todo_txt_path as list items, one per line, removing
+       lines starting with #
+    """
+    with open(todo_txt_path, 'r') as file:
+        lines = [line.strip() for line in file.readlines()]
+        return [line for line in lines if not line.startswith('#')]
+
+def get_caldav_events(caldav_url, caldav_username, caldav_password, max_days_in_future):
+    events = []
+    caldav_client = caldav.DAVClient(
+        url=caldav_url,
+        username=caldav_username,
+        password=caldav_password,
+        ssl_verify_cert=False)
+    caldav_principal = caldav_client.principal()
+    caldav_calendar = caldav_principal.calendar(name='Personnel')
+    assert caldav_calendar
+    now = datetime.datetime.now(datetime.timezone.utc)
+    caldav_events = caldav_calendar.search(
+        start=now,
+        end=now + datetime.timedelta(days=max_days_in_future),
+        event=True,
+        expand=True,
+        sort_keys=('dtstart',))
+    for event in caldav_events:
+        ical_event = icalendar.Calendar.from_ical(event.data)
+        for component in ical_event.walk():
+            if component.name == "VEVENT":
+                summary = component.get('summary')
+                start_datetime = component.get('dtstart').dt
+                start = start_datetime.strftime('%a %d/%m %H:%M')
+                end_datetime = component.get('dtend').dt
+                duration_datetime = end_datetime - start_datetime
+                duration = 'h'.join(str(duration_datetime).split(':')[:2])
+                out_line = f'{start} {duration} {summary}'
+                events.append(out_line)
+    return events
+
+
+def get_caldav_tasks(caldav_url, caldav_username, caldav_password, max_priority=9):
+    """Show a list of caldav tasks"""
+    todos = []
+    caldav_client = caldav.DAVClient(
+        url=caldav_url,
+        username=caldav_username,
+        password=caldav_password,
+        ssl_verify_cert=False)
+    caldav_principal = caldav_client.principal()
+    caldav_calendar = caldav_principal.calendar(name='Personnel')
+    assert caldav_calendar
+    caldav_todos = caldav_calendar.todos(include_completed=False)
+    now = datetime.datetime.now(datetime.timezone.utc)
+    for todo in caldav_todos:
+        summary = todo.vobject_instance.vtodo.summary.value
+        try:
+            priority = todo.vobject_instance.vtodo.priority.value
+        except AttributeError:
+            priority = "9"
+        priority_int = int(priority)
+        if priority_int > max_priority:
+            continue
+        # Check if start date exists and is in the past
+        try:
+            dtstart = todo.vobject_instance.vtodo.dtstart.value
+            # Convert to datetime if it's a date object
+            if isinstance(dtstart, datetime.date) and not isinstance(dtstart, datetime.datetime):
+                dtstart = datetime.datetime.combine(dtstart, datetime.time.min)
+            # Make timezone-aware if naive
+            if dtstart.tzinfo is None:
+                dtstart = dtstart.replace(tzinfo=datetime.timezone.utc)
+            if dtstart > now:
+                continue
+        except AttributeError:
+            # If no start date, include the task
+            pass
+
+        todos.append(f'{priority} {summary}')
+    todos.sort()
+    return todos
+
+
+def check_mtime(file_path, warn_if_older_than_seconds):
+    """check if a file last modification time is older than specified number of seconds"""
+    if not os.path.exists(file_path):
+        out = format_bullet_point('▧', colorama.Fore.RED, f'ERROR: {file_path} does not exist')
+        print(out)
+        return
+    mod_time = os.path.getmtime(file_path)
+    current_time = time.time()
+    time_diff = current_time - mod_time
+    mod_time_readable = datetime.datetime.fromtimestamp(mod_time).strftime('%Y-%m-%d %H:%M:%S')
+    if time_diff > warn_if_older_than_seconds:
+        out = format_bullet_point('▧', colorama.Fore.RED, f"ERROR: {file_path} last modified: {mod_time_readable})")
+    else:
+        out = format_bullet_point('▧', colorama.Fore.GREEN, f"{file_path} last modified: {mod_time_readable}")
+    print(out)
+
+
+def main():
+    OS_ENVIRON=os.environ
+    global REQUESTS_TIMEOUT
+    REQUESTS_TIMEOUT=int(OS_ENVIRON['REQUESTS_TIMEOUT'])
+
+    ##### GITLAB ISSUES
+    print_title("gitlab issues assigned to you")
+    # this function takes either assigned=True, created=True, repos=True
+    gitlab_issues = get_gitlab_issues(os.getenv("GITLAB_TOKEN"),
+                                                assigned=True)
+    gitlab_out_lines = [
+        format_bullet_point('▧', colorama.Fore.YELLOW, f'{issue}')
+        for issue in gitlab_issues
+    ]
+    out = format_list(gitlab_out_lines, int(OS_ENVIRON['MAX_LINES']))
+    print(out)
+
+    ##### GITEA ISSUES
+    print_title('gitea issues')
+    gitea_issues = get_gitea_issues(OS_ENVIRON['GITEA_URL'],
+                                  OS_ENVIRON['GITEA_TOKEN'])
+    gitea_out_lines = [
+        format_bullet_point('▧', colorama.Fore.GREEN, f'{issue}')
+        for issue in gitea_issues
+    ]
+    out = format_list(gitea_out_lines, int(OS_ENVIRON['MAX_LINES']))
+    print(out)
+
+    ##### NEXTCLOUD CALDAV TASKS
+    print_title('nextcloud tasks')
+    caldav_tasks = get_caldav_tasks(OS_ENVIRON['CALDAV_URL'],
+                                   OS_ENVIRON['CALDAV_USERNAME'],
+                                   OS_ENVIRON['CALDAV_PASSWORD'],
+                                   int(OS_ENVIRON['CALDAV_MAX_PRIORITY']))
+    caldav_tasks_out_lines = [
+        format_bullet_point('▧', colorama.Fore.BLUE, f'{task}')
+        for task in caldav_tasks
+    ]
+    out = format_list(caldav_tasks_out_lines, int(OS_ENVIRON['MAX_LINES']))
+    print(out)
+
+    ##### NEXTCLOUD CALDAV EVENTS
+    print_title('nextcloud events')
+    caldav_events = get_caldav_events(OS_ENVIRON['CALDAV_URL'],
+                                   OS_ENVIRON['CALDAV_USERNAME'],
+                                   OS_ENVIRON['CALDAV_PASSWORD'],
+                                   int(OS_ENVIRON['CALDAV_EVENTS_MAX_DAYS_IN_FUTURE']))
+    caldav_events_out_lines = [
+        format_bullet_point('▧', colorama.Fore.BLUE, f'{task}')
+        for task in caldav_events
+    ]
+    out = format_list(caldav_events_out_lines, int(OS_ENVIRON['MAX_LINES']))
+    print(out)
+
+
+    ##### TODOTXT TODOS
+    print_title('todos')
+    todotxt_todos = get_todo_list(OS_ENVIRON['TODO_TXT_PATH'])
+    todotxt_out_lines = [
+        format_bullet_point('▧', colorama.Fore.CYAN, f'{todo}')
+        for todo in todotxt_todos
+    ]
+    out = format_list(todotxt_out_lines, int(OS_ENVIRON['MAX_LINES']))
+    print(out)
+
+    ##### TTRSS MARKED ARTICLES
+    print_title('tt-rss marked')
+    ttrss_marked_articles = get_ttrss_marked(OS_ENVIRON['TTRSS_URL'],
+                                             OS_ENVIRON['TTRSS_USERNAME'],
+                                             OS_ENVIRON['TTRSS_PASSWORD'],
+                                             OS_ENVIRON['TTRSS_LIMIT'])
+    ttrss_marked_out_lines = [
+        format_bullet_point('▧', colorama.Fore.MAGENTA, f'{article}')
+        for article in ttrss_marked_articles
+    ]
+    out = format_list(ttrss_marked_out_lines, int(OS_ENVIRON['MAX_LINES']))
+    print(out)
+
+    ##### FILE MODIFICATION TIME
+    print_title('modification time check')
+    check_mtime(OS_ENVIRON['BACKUP_STATE_FILE'], 86400)
+
+    ##### UNREAD MAIL
+    print_title('unread mail')
+    unread_mail = get_unread_mail(OS_ENVIRON['IMAP_SERVER'],
+                                  993,
+                                  OS_ENVIRON['IMAP_USERNAME'],
+                                  OS_ENVIRON['IMAP_PASSWORD'],
+                                  OS_ENVIRON['IMAP_UNREAD_FOLDERS_LIST']) # comma-separated list
+    unread_mail_lines = [
+        format_bullet_point('▧', colorama.Fore.YELLOW, f'{article}')
+        for article in unread_mail
+    ]
+    out = format_list(unread_mail_lines, int(OS_ENVIRON['MAX_LINES']))
+    print(out)
+
+    ##### FLAGGED MAIL
+    print_title('flagged mail')
+    flagged_mail = get_flagged_mail(OS_ENVIRON['IMAP_SERVER'],
+                                  993,
+                                  OS_ENVIRON['IMAP_USERNAME'],
+                                  OS_ENVIRON['IMAP_PASSWORD'],
+                                  OS_ENVIRON['IMAP_FLAGGED_FOLDERS_LIST']) # comma-separated list
+    flagged_mail_lines = [
+        format_bullet_point('▧', colorama.Fore.YELLOW, f'{article}')
+        for article in flagged_mail
+    ]
+    out = format_list(flagged_mail_lines, int(OS_ENVIRON['MAX_LINES']))
+    print(out)
+
+if __name__ == "__main__":
+    main()
