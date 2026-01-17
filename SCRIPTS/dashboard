@@ -62,11 +62,7 @@ def get_imap_subjects(conn, folder, criterion):
     prefix = folder.replace('INBOX/', '') + ': '
     #prefix = '' # hide folder names
 
-    # debug errors such as non-existing folder
-    # status, _ = conn.select(folder, readonly=True)
-    # if status != 'OK':
-    #     raise Exception(f"Failed to select folder '{folder}': {status}")
-
+    conn.select(folder, readonly=True)
     _, imap_response = conn.search(None, criterion)
     message_uids = imap_response[0].split()
     messages = []
