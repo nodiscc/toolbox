@@ -6,7 +6,6 @@ Less-maintained, experimental or project-specific ansible [roles](roles/).
 - [awesome_selfhosted_html](roles/awesome_selfhosted_html) - awesome-selfhosted static website
 - [bitmagnet](roles/bitmagnet) - BitTorrent DHT crawler
 - [docker](roles/docker) - application containerization platform
-- [grafana](roles/grafana) - Analytics and interactive visualization web application
 - [homepage_extra_icons](roles/homepage_extra_icons) - additional icons for the nodiscc.xsrv.homepage role
 - [icecast](roles/icecast) - media streaming server
 - [k8s](roles/k8s) - Container management platform/orchestrator
@@ -15,7 +14,6 @@ Less-maintained, experimental or project-specific ansible [roles](roles/).
 - [netdata](roles/netdata) - lightweight, real-time monitoring and alerting system
 - [ollama](roles/ollama) - Large Language Model (LLM) server and web interface
 - [planarally](roles/planarally) - virtual tabletop (VTT)
-- [prometheus](roles/prometheus) - monitoring service and time-series database
 - [proxmox](roles/proxmox) - Proxmox VE hypervisor configuration
 - [pulseaudio](roles/pulseaudio) - local network sound server
 - [rocketchat](roles/rocketchat) - instant messaging & communication platform
