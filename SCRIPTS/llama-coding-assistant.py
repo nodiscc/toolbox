@@ -189,7 +189,7 @@ class UIFormatter:
                            preview_diff: Optional[str] = None, width: int = BOX_WIDTH):
         """Display tool information with arguments and optional diff preview"""
         #print("\n" + BoxDrawer.draw_box(title, width=width, color=Colors.TOOL)) # TODO remove boxdrawer
-        print(colored(f"n║ Tool call: {tool_name}", Colors.TOOL))
+        print(colored(f"\n║ Tool call: {tool_name}", Colors.TOOL))
         print(colored("║ Arguments:", Colors.TOOL))
 
         for key, value in arguments.items():

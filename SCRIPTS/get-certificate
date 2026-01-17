@@ -9,14 +9,14 @@ sitecert() {
         if [ -n "$2" ]; then
                 p=$2;
         fi
-        leafcert $1 $p | openssl x509 -text -noout
+        leafcert "$1" "$p" | openssl x509 -text -noout
 }
 
 leafcert() {
         local p=443
         local chain=""
 
-        if [ x"${1}" = x"full" ]; then
+        if [ "${1}" = "full" ]; then
                 chain="-showcerts"
                 shift
         fi
@@ -24,7 +24,7 @@ leafcert() {
         if [ -n "$2" ]; then
                 p=$2;
         fi
-        </dev/null openssl s_client ${chain} -connect $1:$p 2>/dev/null | \
+        </dev/null openssl s_client "${chain}" -connect "$1:$p" 2>/dev/null | \
                 awk '/-----BEGIN/,/-----END/ { print }'
 }
 
@@ -34,7 +34,7 @@ fullchain() {
         if [ -n "$2" ]; then
                 p=$2;
         fi
-        leafcert full $1 $p
+        leafcert full "$1" "$p"
 }
 
 sitecert "$@"

@@ -11,7 +11,7 @@ doing=$(echo "$today_tasks" | grep -v '#' | head -n1)
 echo "\${alignr}\${font Fertigo pro:pixelsize=30}$doing\${font}"
 next=$(echo "$today_tasks" | grep -v '#' | tail -n +2)
 echo "\${font Fertigo pro:pixelsize=16}\${color1}"
-echo "$next" | while read line; do
+echo "$next" | while read -r line; do
     echo "\${alignr}$line"
 done
 echo "\${font}"
