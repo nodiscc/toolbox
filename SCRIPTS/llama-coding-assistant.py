@@ -91,7 +91,7 @@ def colored(text: str, color: str) -> str:
 
 class BoxDrawer:
     """Helper class for drawing formatted boxes"""
-    
+
     @staticmethod
     def draw_box(title: str, width: int = BOX_WIDTH, color: str = Colors.SYSTEM) -> str:
         """Draw a box header with title"""
@@ -100,14 +100,14 @@ class BoxDrawer:
         padding = width - len(title_with_spaces) - 2
         left_pad = padding // 2
         right_pad = padding - left_pad
-        
+
         lines = [
             f"{color}╔{'═' * width}╗",
             f"║{' ' * left_pad}{title_with_spaces}{' ' * right_pad}║",
             f"╚{'═' * width}╝{Colors.RESET}"
         ]
         return "\n".join(lines)
-    
+
     @staticmethod
     def draw_separator(width: int = BOX_WIDTH, color: str = Colors.SYSTEM) -> str:
         """Draw a horizontal separator"""
@@ -120,7 +120,7 @@ class BoxDrawer:
 
 class UIFormatter:
     """Handles all UI formatting and display logic"""
-    
+
     @staticmethod
     def format_size(size: int) -> str:
         """Format file size in human-readable format"""
@@ -129,13 +129,13 @@ class UIFormatter:
                 return f"{size:.1f}{unit}"
             size /= FILE_SIZE_DIVISOR
         return f"{size:.1f}TB"
-    
+
     @staticmethod
     def show_diff(old_content: str, new_content: str, filename: str) -> str:
         """Generate and format a unified diff between old and new content"""
         old_lines = old_content.splitlines(keepends=True)
         new_lines = new_content.splitlines(keepends=True)
-        
+
         diff = difflib.unified_diff(
             old_lines,
             new_lines,
@@ -143,7 +143,7 @@ class UIFormatter:
             tofile=f"b/{filename}",
             lineterm=''
         )
-        
+
         colored_diff = []
         for line in diff:
             line = line.rstrip()
@@ -157,9 +157,9 @@ class UIFormatter:
                 colored_diff.append(colored(line, Colors.DIFF_DEL))
             else:
                 colored_diff.append(line)
-        
+
         return '\n'.join(colored_diff)
-    
+
     @staticmethod
     def print_welcome(show_thinking: bool, stream_output: bool):
         """Print welcome message with available commands"""
@@ -183,7 +183,7 @@ class UIFormatter:
             print(colored("║    Ctrl+←/→   - Jump by word                        ║", Colors.SYSTEM))
         print(colored("╚══════════════════════════════════════════════════════╝", Colors.SYSTEM))
         print()
-    
+
     @staticmethod
     def _display_tool_info(title: str, tool_name: str, arguments: Dict[str, Any],
                            preview_diff: Optional[str] = None, width: int = BOX_WIDTH):
@@ -218,23 +218,23 @@ class UIFormatter:
         raw_input = input(colored("\nExecute this tool? (y/Tell the model what to do differently): ", Colors.SYSTEM)).strip()
         confirmed = raw_input.lower() == 'y'
         return confirmed, raw_input
-    
+
     @staticmethod
     def print_command_history(command_history: List[Dict[str, Any]]):
         """Display the command history"""
         if not command_history:
             UIFormatter.print_system("No commands have been executed yet.")
             return
-        
+
         print("\n" + BoxDrawer.draw_box("Command History", width=55))
         print()
-        
+
         for idx, entry in enumerate(command_history, 1):
             status = colored("✓", Colors.DIFF_ADD) if entry["return_code"] == 0 else colored("✗", Colors.DIFF_DEL)
             print(colored(f"[{idx}]", Colors.SYSTEM) + f" {status} {entry['timestamp']}")
             print(f"    Command: {colored(entry['command'], Colors.TOOL)}")
             print(f"    Return code: {entry['return_code']}\n")
-    
+
     @staticmethod
     def print_stats(stats: Dict[str, Any]):
         """Display API usage statistics"""
@@ -245,17 +245,17 @@ class UIFormatter:
         print(colored(f"Completion Tokens:    {stats['completion_tokens']:,}", Colors.SYSTEM))
         print(colored(f"Avg Tokens per Call:  {stats['avg_tokens_per_call']:,}", Colors.SYSTEM))
         print()
-    
+
     @staticmethod
     def print_error(message: str):
         """Print error message"""
         print(colored(message, Colors.ERROR))
-    
+
     @staticmethod
     def print_system(message: str):
         """Print system message"""
         print(colored(message, Colors.SYSTEM))
-    
+
     @staticmethod
     def print_tool_result(message: str):
         """Print tool execution result"""
@@ -268,11 +268,11 @@ class UIFormatter:
 
 class ToolExecutor:
     """Handles execution of all tool functions"""
-    
+
     def __init__(self, ui_formatter: UIFormatter):
         self.ui = ui_formatter
         self.command_history: List[Dict[str, Any]] = []
-    
+
     def requires_confirmation(self, tool_name: str, arguments: Dict[str, Any]) -> bool:
         """Determine if a tool call requires user confirmation"""
         # list_directory doesn't require confirmation if path is under current directory
@@ -281,10 +281,10 @@ class ToolExecutor:
             if self._is_safe_path(path):
                 return False
             return True
-        
+
         # All other tools require confirmation
         return True
-    
+
     def _is_safe_path(self, path: str) -> bool:
         """Check if path is within current working directory"""
         try:
@@ -309,24 +309,24 @@ class ToolExecutor:
         if newline_before and old_content and not old_content.endswith("\n"):
             return "\n" + new_content
         return new_content
-    
+
     def _should_skip_hidden(self, name: str, include_hidden: bool) -> bool:
         """Check if file/directory should be skipped due to hidden status"""
         return not include_hidden and name.startswith('.')
-    
+
     def _get_depth(self, path: str, base: str) -> int:
         """Calculate directory depth relative to base"""
         rel_path = os.path.relpath(path, base)
         if rel_path == '.':
             return 0
         return rel_path.count(os.sep) + 1
-    
+
     def _format_file_entry(self, path: str, name: str) -> Dict[str, str]:
         """Format file information for display"""
         try:
             stat = os.stat(path)
             is_dir = os.path.isdir(path)
-            
+
             return {
                 'type': "DIR" if is_dir else "FILE",
                 'size': "-" if is_dir else self.ui.format_size(stat.st_size),
@@ -340,7 +340,7 @@ class ToolExecutor:
                 'modified': '???',
                 'name': f"{name} (access denied)"
             }
-    
+
     def execute(self, tool_name: str, arguments: Dict[str, Any]) -> str:
         """Execute a tool function and return the result"""
         try:
@@ -366,7 +366,7 @@ class ToolExecutor:
                 return f"Error: Unknown tool '{tool_name}'"
         except Exception as e:
             return f"Error executing tool: {str(e)}"
-    
+
     def get_preview_diff(self, tool_name: str, arguments: Dict[str, Any]) -> Optional[str]:
         """Generate a diff preview for file modification operations"""
         try:
@@ -402,48 +402,48 @@ class ToolExecutor:
             pass
 
         return None
-    
+
     def _list_directory(self, args: Dict[str, Any]) -> str:
         """List files and directories"""
         path = args.get("path")
         if not path:
             path = "."
         show_hidden = args.get("show_hidden", False)
-        
+
         if not os.path.exists(path):
             return f"Error: Path '{path}' does not exist"
-        
+
         if not os.path.isdir(path):
             return f"Error: '{path}' is not a directory"
-        
+
         try:
             items = os.listdir(path)
         except PermissionError:
             return f"Error: Permission denied to access '{path}'"
-        
+
         if not show_hidden:
             items = [item for item in items if not self._should_skip_hidden(item, show_hidden)]
-        
+
         items.sort(key=lambda x: (not os.path.isdir(os.path.join(path, x)), x.lower()))
-        
+
         output = [f"Contents of '{path}':\n"]
         output.append(f"{'Type':<6} {'Size':<10} {'Modified':<20} {'Name'}")
         output.append("-" * 70)
-        
+
         for item in items:
             full_path = os.path.join(path, item)
             entry = self._format_file_entry(full_path, item)
             output.append(f"{entry['type']:<6} {entry['size']:<10} {entry['modified']:<20} {entry['name']}")
-        
+
         if len(items) == 0:
             output.append("(empty directory)")
         else:
             dir_count = sum(1 for item in items if os.path.isdir(os.path.join(path, item)))
             file_count = len(items) - dir_count
             output.append(f"\nTotal: {dir_count} directories, {file_count} files")
-        
+
         return "\n".join(output)
-    
+
     def _search_files(self, args: Dict[str, Any]) -> str:
         """Search for text patterns across files"""
         search_pattern = args["pattern"]
@@ -453,11 +453,11 @@ class ToolExecutor:
         max_results = args.get("max_results", DEFAULT_MAX_SEARCH_RESULTS)
         include_hidden = args.get("include_hidden", False)
         context_lines = args.get("context_lines", DEFAULT_CONTEXT_LINES)
-        
+
         matches = []
         total_matches = 0
         start_path = os.getcwd()
-        
+
         if use_regex:
             try:
                 flags = 0 if case_sensitive else re.IGNORECASE
@@ -466,7 +466,7 @@ class ToolExecutor:
                 return f"Invalid regex pattern: {e}"
         else:
             compiled_pattern = None
-        
+
         def match_line(line):
             if use_regex:
                 return compiled_pattern.search(line)
@@ -475,40 +475,42 @@ class ToolExecutor:
                     return search_pattern in line
                 else:
                     return search_pattern.lower() in line.lower()
-        
+
         for root, dirs, files in os.walk(start_path):
             if not include_hidden:
                 dirs[:] = [d for d in dirs if not self._should_skip_hidden(d, include_hidden)]
-            
+
             for filename in files:
                 if self._should_skip_hidden(filename, include_hidden):
                     continue
-                
-                if not fnmatch.fnmatch(filename, file_pattern):
-                    continue
-                
                 full_path = os.path.join(root, filename)
                 rel_path = os.path.relpath(full_path, start_path)
-                
+                # Match against both filename and relative path to support both patterns
+                if not (fnmatch.fnmatch(filename, file_pattern) or fnmatch.fnmatch(rel_path, file_pattern)):
+                    continue
+
+                full_path = os.path.join(root, filename)
+                rel_path = os.path.relpath(full_path, start_path)
+
                 try:
                     with open(full_path, 'r', encoding='utf-8', errors='ignore') as f:
                         lines = f.readlines()
-                    
+
                     for line_num, line in enumerate(lines, 1):
                         if total_matches >= max_results:
                             break
-                        
+
                         if match_line(line):
                             context_before = []
                             context_after = []
-                            
+
                             if context_lines > 0:
                                 start_idx = max(0, line_num - 1 - context_lines)
                                 end_idx = min(len(lines), line_num + context_lines)
-                                
+
                                 context_before = lines[start_idx:line_num - 1]
                                 context_after = lines[line_num:end_idx]
-                            
+
                             matches.append({
                                 'file': rel_path,
                                 'line_num': line_num,
@@ -517,24 +519,24 @@ class ToolExecutor:
                                 'context_after': [l.rstrip('\n') for l in context_after]
                             })
                             total_matches += 1
-                
+
                 except (OSError, PermissionError, UnicodeDecodeError):
                     continue
-                
+
                 if total_matches >= max_results:
                     break
-            
+
             if total_matches >= max_results:
                 break
-        
+
         if not matches:
             return f"No matches found for pattern '{search_pattern}'"
-        
+
         output = [f"Found {len(matches)} match(es) for '{search_pattern}'"]
         if len(matches) >= max_results:
             output[0] += f" (limited to {max_results} results)"
         output.append("")
-        
+
         current_file = None
         for match in matches:
             if match['file'] != current_file:
@@ -542,44 +544,44 @@ class ToolExecutor:
                     output.append("")
                 output.append(colored(match['file'], Colors.DIFF_INFO))
                 current_file = match['file']
-            
+
             if match['context_before']:
                 for ctx_line in match['context_before']:
                     output.append(colored(f"  {ctx_line}", Colors.SYSTEM))
-            
+
             output.append(colored(f"{match['line_num']:>4}: {match['line']}", Colors.DIFF_ADD))
-            
+
             if match['context_after']:
                 for ctx_line in match['context_after']:
                     output.append(colored(f"  {ctx_line}", Colors.SYSTEM))
-        
+
         return "\n".join(output)
-    
+
     def _find_files(self, args: Dict[str, Any]) -> str:
         """Find files by name pattern"""
         pattern = args["pattern"]
         max_depth = args.get("max_depth", None)
         include_hidden = args.get("include_hidden", False)
-        
+
         matches = []
         start_path = os.getcwd()
-        
+
         for root, dirs, files in os.walk(start_path):
             if not include_hidden:
                 dirs[:] = [d for d in dirs if not self._should_skip_hidden(d, include_hidden)]
-            
+
             current_depth = self._get_depth(root, start_path)
             if max_depth is not None and current_depth >= max_depth:
                 dirs[:] = []
-            
+
             for filename in files:
                 if self._should_skip_hidden(filename, include_hidden):
                     continue
-                
+
                 if fnmatch.fnmatch(filename, pattern):
                     full_path = os.path.join(root, filename)
                     rel_path = os.path.relpath(full_path, start_path)
-                    
+
                     try:
                         stat = os.stat(full_path)
                         size = self.ui.format_size(stat.st_size)
@@ -595,30 +597,30 @@ class ToolExecutor:
                             'size': '???',
                             'modified': '???'
                         })
-        
+
         if not matches:
             return f"No files found matching pattern '{pattern}'"
-        
+
         output = [f"Found {len(matches)} file(s) matching '{pattern}':\n"]
         output.append(f"{'Size':<10} {'Modified':<20} {'Path'}")
         output.append("-" * 70)
-        
+
         for match in matches:
             output.append(f"{match['size']:<10} {match['modified']:<20} {match['path']}")
-        
+
         return "\n".join(output)
-    
+
     def _create_directory(self, args: Dict[str, Any]) -> str:
         """Create a new directory"""
         path = args["path"]
         parents = args.get("parents", True)
-        
+
         if os.path.exists(path):
             if os.path.isdir(path):
                 return f"Directory '{path}' already exists"
             else:
                 return f"Error: '{path}' exists but is not a directory"
-        
+
         try:
             if parents:
                 os.makedirs(path, exist_ok=True)
@@ -628,7 +630,7 @@ class ToolExecutor:
                     if not os.path.exists(os.path.dirname(current)):
                         parts.insert(0, current)
                     current = os.path.dirname(current)
-                
+
                 if parts:
                     created_msg = "Created directories:\n  " + "\n  ".join(parts)
                 else:
@@ -636,24 +638,24 @@ class ToolExecutor:
             else:
                 os.mkdir(path)
                 created_msg = f"Created directory: {path}"
-            
+
             abs_path = os.path.abspath(path)
             return f"{created_msg}\n\nFull path: {abs_path}"
-        
+
         except PermissionError:
             return f"Error: Permission denied to create '{path}'"
         except FileNotFoundError:
             return f"Error: Parent directory does not exist. Use 'parents: true' to create parent directories."
         except Exception as e:
             return f"Error creating directory: {str(e)}"
-    
+
     def _read_file(self, args: Dict[str, Any]) -> str:
         """Read file contents"""
         path = args["path"]
         with open(path, 'r', encoding='utf-8') as f:
             content = f.read()
         return f"File contents of '{path}':\n{content}"
-    
+
     def _write_file(self, args: Dict[str, Any]) -> str:
         """Write content to file"""
         path = args["path"]
@@ -675,7 +677,7 @@ class ToolExecutor:
             f.write(content)
 
         return result
-    
+
     def _append_file(self, args: Dict[str, Any]) -> str:
         """Append content to file"""
         path = args["path"]
@@ -689,15 +691,15 @@ class ToolExecutor:
 
             with open(path, 'a', encoding='utf-8') as f:
                 f.write(append_content)
-            
+
             lines_added = content.count('\n') + (1 if content and not content.endswith('\n') else 0)
             result = f"Successfully appended to '{path}' ({lines_added} line(s) added)\n\nAppended content:\n"
             result += colored("", Colors.DIFF_ADD)
-            
+
             for line in content.splitlines():
                 result += f"+{line}\n"
             result += Colors.RESET
-            
+
             old_lines = old_content.splitlines()
             if len(old_lines) > DIFF_CONTEXT_LINES:
                 result += colored(f"\nContext (last {DIFF_CONTEXT_LINES} lines of original file):", Colors.DIFF_INFO) + "\n"
@@ -707,40 +709,40 @@ class ToolExecutor:
             with open(path, 'w', encoding='utf-8') as f:
                 f.write(content)
             result = f"Created new file '{path}' with appended content ({len(content)} characters)"
-        
+
         return result
-    
+
     def _edit_file(self, args: Dict[str, Any]) -> str:
         """Edit file by replacing text"""
         path = args["path"]
         old_text = args["old_text"]
         new_text = args["new_text"]
-        
+
         with open(path, 'r', encoding='utf-8') as f:
             content = f.read()
-        
+
         if old_text not in content:
             return f"Error: Text to replace not found in '{path}'"
-        
+
         new_content = content.replace(old_text, new_text)
-        
+
         diff_output = self.ui.show_diff(content, new_content, os.path.basename(path))
-        
+
         with open(path, 'w', encoding='utf-8') as f:
             f.write(new_content)
-        
+
         occurrences = content.count(old_text)
         return f"Successfully edited '{path}' ({occurrences} occurrence(s) replaced)" #\n\nChanges made:\n{diff_output}"
-    
+
     def _run_command(self, args: Dict[str, Any]) -> str:
         """Execute a shell command"""
         command = args["command"]
-        
+
         history_entry = {
             "command": command,
             "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
-        
+
         result = subprocess.run(
             command,
             shell=True,
@@ -748,20 +750,20 @@ class ToolExecutor:
             text=True,
             timeout=API_TIMEOUT
         )
-        
+
         output = []
         if result.stdout:
             output.append(f"STDOUT:\n{result.stdout}")
         if result.stderr:
             output.append(f"STDERR:\n{result.stderr}")
         output.append(f"Return code: {result.returncode}")
-        
+
         result_str = "\n".join(output)
-        
+
         history_entry["result"] = result_str
         history_entry["return_code"] = result.returncode
         self.command_history.append(history_entry)
-        
+
         return result_str
 
 
@@ -771,21 +773,21 @@ class ToolExecutor:
 
 class ConversationManager:
     """Manages conversation state and history"""
-    
+
     def __init__(self):
         self.conversation: List[Dict[str, Any]] = []
         self.system_prompt = """You are a helpful coding assistant. You can read, write, and edit files, as well as run shell commands.
 When the user asks you to perform operations, use the available tools to help them.
 Be concise and clear in your responses."""
-    
+
     def add_user_message(self, content: str):
         """Add a user message to the conversation"""
         self.conversation.append({"role": "user", "content": content})
-    
+
     def add_assistant_message(self, message: Dict[str, Any]):
         """Add an assistant message to the conversation"""
         self.conversation.append(message)
-    
+
     def add_tool_response(self, tool_call_id: str, content: str):
         """Add a tool response to the conversation"""
         self.conversation.append({
@@ -793,15 +795,15 @@ Be concise and clear in your responses."""
             "tool_call_id": tool_call_id,
             "content": content
         })
-    
+
     def get_messages_with_system(self) -> List[Dict[str, Any]]:
         """Get conversation with system prompt prepended"""
         return [{"role": "system", "content": self.system_prompt}] + self.conversation
-    
+
     def clear(self):
         """Clear the conversation history"""
         self.conversation = []
-    
+
     def get_history(self) -> List[Dict[str, Any]]:
         """Get the conversation history"""
         return self.conversation.copy()
@@ -834,43 +836,43 @@ READLINE_BINDINGS = {
 
 class InputHandler:
     """Manages user input with readline support"""
-    
+
     def __init__(self):
         self.history_file = None
         self._setup_readline()
-    
+
     def _setup_readline(self):
         """Configure readline for enhanced input editing"""
         if not READLINE_AVAILABLE:
             return
-        
+
         # Apply all key bindings
         for key, action in READLINE_BINDINGS.items():
             readline.parse_and_bind(f'{key}: {action}')
-        
+
         history_file = os.path.expanduser('~/.coding_assistant_history')
         self.history_file = history_file
-        
+
         if os.path.exists(history_file):
             try:
                 readline.read_history_file(history_file)
             except Exception:
                 pass
-        
+
         readline.set_history_length(MAX_HISTORY_SIZE)
-    
+
     def save_to_history(self, user_input: str):
         """Save user input to readline history"""
         if not READLINE_AVAILABLE or not user_input.strip():
             return
-        
+
         readline.add_history(user_input)
-        
+
         try:
             readline.write_history_file(self.history_file)
         except Exception:
             pass
-    
+
     def get_input(self, prompt: str) -> str:
         """Get user input with the given prompt"""
         return input(prompt).strip()
@@ -882,19 +884,19 @@ class InputHandler:
 
 class APIClient:
     """Handles API communication with llama.cpp server"""
-    
+
     def __init__(self, server_url: str, ui_formatter: UIFormatter, show_thinking: bool, stream_output: bool):
         self.server_url = server_url
         self.ui = ui_formatter
         self.show_thinking = show_thinking
         self.stream_output = stream_output
-        
+
         # Token usage tracking
         self.total_tokens = 0
         self.prompt_tokens = 0
         self.completion_tokens = 0
         self.total_calls = 0
-        
+
         try:
             self.client = OpenAI(
                 base_url=f"{server_url}/v1",
@@ -905,38 +907,38 @@ class APIClient:
             self.ui.print_error("Error: openai library not found.")
             print("Install with: pip install openai")
             sys.exit(1)
-    
+
     def call(self, messages: List[Dict[str, Any]], tools: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
         """Call the llama.cpp server API"""
         try:
             tools_formatted = [{"type": "function", "function": tool["function"]} for tool in tools]
-            
+
             if self.stream_output:
                 response = self._call_streaming(messages, tools_formatted)
             else:
                 response = self._call_non_streaming(messages, tools_formatted)
-            
+
             # Track usage if available
             if response:
                 self._update_usage_stats(response)
-            
+
             return response
-        
+
         except Exception as e:
             self.ui.print_error(f"API Error: {e}")
             return None
-    
+
     def _update_usage_stats(self, response: Dict[str, Any]):
         """Update token usage statistics from API response"""
         self.total_calls += 1
-        
+
         # Check if usage info is present in response
         usage = response.get('usage')
         if usage:
             self.total_tokens += usage.get('total_tokens', 0)
             self.prompt_tokens += usage.get('prompt_tokens', 0)
             self.completion_tokens += usage.get('completion_tokens', 0)
-    
+
     def get_stats(self) -> Dict[str, Any]:
         """Get API usage statistics"""
         stats = {
@@ -945,14 +947,14 @@ class APIClient:
             'prompt_tokens': self.prompt_tokens,
             'completion_tokens': self.completion_tokens,
         }
-        
+
         if self.total_calls > 0:
             stats['avg_tokens_per_call'] = self.total_tokens // self.total_calls
         else:
             stats['avg_tokens_per_call'] = 0
-        
+
         return stats
-    
+
     def reset_stats(self):
         """Reset usage statistics"""
         self.total_tokens = 0
@@ -970,7 +972,7 @@ class APIClient:
                 'completion_tokens': usage_obj.completion_tokens
             }
         return None
-    
+
     def _call_streaming(self, messages: List[Dict[str, Any]], tools: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
         """Call API with streaming enabled"""
         stream = self.client.chat.completions.create(
@@ -982,7 +984,7 @@ class APIClient:
             stream=True,
             stream_options={"include_usage": True}  # Request usage info in stream
         )
-        
+
         full_content = ""
         tool_calls_dict = {}
         role = "assistant"
@@ -997,7 +999,7 @@ class APIClient:
                     usage_info = self._extract_usage_info(chunk.usage)
                     # print("\n\nUsage: " + str(usage_info))
                 continue
-            
+
             delta = chunk.choices[0].delta
 
             if self.show_thinking and hasattr(delta, 'reasoning_content'):
@@ -1006,7 +1008,7 @@ class APIClient:
                     print(f"\n\n{Colors.THINKING}[THINKING...] ", flush=True)
                 print(getattr(delta, "reasoning_content", ""), end="", flush=True)
                 chunk_type = "reasoning"
-            
+
             if delta.content:
                 # if transitioning from another chunk type, print line jump and switch color
                 if chunk_type != "content":
@@ -1014,10 +1016,10 @@ class APIClient:
                 print(delta.content, end="", flush=True)
                 full_content += delta.content
                 chunk_type = "content"
-            
+
             if delta.role:
                 role = delta.role
-            
+
             if delta.tool_calls:
                 for tool_call in delta.tool_calls:
                     idx = tool_call.index
@@ -1027,35 +1029,35 @@ class APIClient:
                             "type": "function",
                             "function": {"name": "", "arguments": ""}
                         }
-                    
+
                     if tool_call.id:
                         tool_calls_dict[idx]["id"] = tool_call.id
-                    
+
                     if tool_call.function:
                         if tool_call.function.name:
                             tool_calls_dict[idx]["function"]["name"] = tool_call.function.name
                         if tool_call.function.arguments:
                             tool_calls_dict[idx]["function"]["arguments"] += tool_call.function.arguments
-        
+
         if full_content:
             print(f"{Colors.RESET}")
-        
+
         message_dict = {
             "role": role,
             "content": full_content if full_content else None
         }
-        
+
         if tool_calls_dict:
             message_dict["tool_calls"] = [tool_calls_dict[i] for i in sorted(tool_calls_dict.keys())]
-        
+
         response = {"choices": [{"message": message_dict}]}
-        
+
         # Add usage info if available
         if usage_info:
             response['usage'] = usage_info
-        
+
         return response
-    
+
     def _call_non_streaming(self, messages: List[Dict[str, Any]], tools: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
         """Call API without streaming"""
         response = self.client.chat.completions.create(
@@ -1065,13 +1067,13 @@ class APIClient:
             temperature=DEFAULT_TEMPERATURE,
             max_tokens=DEFAULT_MAX_TOKENS
         )
-        
+
         choice = response.choices[0]
         message_dict = {
             "role": choice.message.role,
             "content": choice.message.content
         }
-        
+
         if choice.message.tool_calls:
             message_dict["tool_calls"] = []
             for tool_call in choice.message.tool_calls:
@@ -1083,7 +1085,7 @@ class APIClient:
                         "arguments": tool_call.function.arguments
                     }
                 })
-        
+
         result = {"choices": [{"message": message_dict}]}
 
         # Add usage info if available
@@ -1333,46 +1335,46 @@ TOOLS = [
 
 class CodingAssistant:
     """Main coding assistant that orchestrates all components"""
-    
-    def __init__(self, server_url: str = "http://127.0.0.1:8033", 
+
+    def __init__(self, server_url: str = "http://127.0.0.1:8033",
                  show_thinking: bool = True, stream_output: bool = True):
         self.show_thinking = show_thinking
         self.stream_output = stream_output
-        
+
         # Initialize components
         self.ui = UIFormatter()
         self.conversation = ConversationManager()
         self.tool_executor = ToolExecutor(self.ui)
         self.input_handler = InputHandler()
         self.api_client = APIClient(server_url, self.ui, show_thinking, stream_output)
-    
+
     def handle_special_commands(self, user_input: str) -> Tuple[bool, bool]:
         """Handle special built-in commands. Returns (handled, should_exit)"""
         cmd = user_input.lower().strip()
-        
+
         if cmd in ['exit', 'quit']:
             self.ui.print_system("Goodbye!")
             return True, True
-        
+
         if cmd == 'clear':
             self.conversation.clear()
             self.ui.print_system("Conversation history cleared")
             return True, False
-        
+
         if cmd == 'history':
             self.ui.print_command_history(self.tool_executor.command_history)
             return True, False
-        
+
         if cmd == 'stats':
             stats = self.api_client.get_stats()
             self.ui.print_stats(stats)
             return True, False
-        
+
         if cmd == 'resetstats':
             self.api_client.reset_stats()
             self.ui.print_system("API usage statistics reset")
             return True, False
-        
+
         if cmd.startswith('!') and len(cmd) > 1:
             try:
                 index = int(cmd[1:])
@@ -1380,61 +1382,61 @@ class CodingAssistant:
             except ValueError:
                 self.ui.print_error("Invalid command format. Use !<number> (e.g., !1, !2)")
             return True, False
-        
+
         return False, False
-    
+
     def rerun_command(self, index: int):
         """Rerun a command from history"""
         if not self.tool_executor.command_history:
             self.ui.print_error("No commands in history.")
             return
-        
+
         if index < 1 or index > len(self.tool_executor.command_history):
             self.ui.print_error("Invalid command index. Use 'history' to see available commands.")
             return
-        
+
         entry = self.tool_executor.command_history[index - 1]
         command = entry["command"]
-        
+
         self.ui.print_system("Rerunning command from history:")
         print(f"{Colors.TOOL}{command}{Colors.RESET}\n")
-        
+
         response = input(f"{Colors.SYSTEM}Execute this command? (y/N): {Colors.RESET}").strip().lower()
         if response != 'y':
             self.ui.print_system("Command execution cancelled.")
             return
-        
+
         self.ui.print_system("[Executing tool...]")
         result_str = self.tool_executor.execute("run_command", {"command": command})
         self.ui.print_tool_result(result_str)
-    
+
     def process_message(self, user_input: str):
         """Process a user message and handle tool calls"""
         self.conversation.add_user_message(user_input)
-        
+
         messages = self.conversation.get_messages_with_system()
-        
+
         max_iterations = 10
         iteration = 0
-        
+
         while iteration < max_iterations:
             iteration += 1
-            
+
             if self.show_thinking and not self.stream_output:
                 self.ui.print_system("[Thinking...]")
-            
+
             response = self.api_client.call(messages, TOOLS)
-            
+
             if not response:
                 self.ui.print_error("Failed to get response from API")
                 return
-            
+
             choice = response.get("choices", [{}])[0]
             message = choice.get("message", {})
-            
+
             tool_calls = message.get("tool_calls", [])
             content = message.get("content", "")
-            
+
             if not tool_calls:
                 if content:
                     if not self.stream_output:
@@ -1443,30 +1445,30 @@ class CodingAssistant:
                         else:
                             print(f"{Colors.ASSISTANT}{content}{Colors.RESET}")
                     # In streaming mode, content was already displayed
-                    
+
                     self.conversation.add_assistant_message({"role": "assistant", "content": content})
                 break
-            
+
             # When there are tool calls, display any thinking content if present
             if content and not self.stream_output:
                 if self.show_thinking:
                     print(f"{Colors.THINKING}{content}{Colors.RESET}")
             # In streaming mode, thinking was already displayed
-            
+
             self.conversation.add_assistant_message(message)
-            
+
             for tool_call in tool_calls:
                 func = tool_call.get("function", {})
                 tool_name = func.get("name")
                 arguments = json.loads(func.get("arguments", "{}"))
                 tool_id = tool_call.get("id")
-                
+
                 # Check if this tool requires confirmation
                 needs_confirmation = self.tool_executor.requires_confirmation(tool_name, arguments)
-                
+
                 if needs_confirmation:
                     preview_diff = self.tool_executor.get_preview_diff(tool_name, arguments)
-                    
+
                     confirmed, raw = self.ui.print_tool_confirmation(tool_name, arguments, preview_diff)
                     if not confirmed:
                         result = f"User declined to execute this tool. Do this instead: {raw}"
@@ -1477,7 +1479,7 @@ class CodingAssistant:
                 else:
                     # Tool doesn't require confirmation, but still show what's being executed
                     self.ui.print_tool_header(tool_name, arguments)
-                
+
                 # Execute the tool
                 if self.show_thinking:
                     self.ui.print_system("[Executing...]")
@@ -1489,34 +1491,34 @@ class CodingAssistant:
                 else:
                     # For read_file, just show a summary
                     self.ui.print_system(f"[Reading file/directory: {arguments.get('path')}]")
-                
+
                 self.conversation.add_tool_response(tool_id, result)
-            
+
             messages = self.conversation.get_messages_with_system()
-    
+
     def run(self):
         """Main interaction loop"""
         self.ui.print_welcome(self.show_thinking, self.stream_output)
-        
+
         while True:
             try:
                 print('───────────────────────────────────────────────────')
                 user_input = self.input_handler.get_input(f"› ")
-                
+
                 if not user_input:
                     continue
-                
+
                 self.input_handler.save_to_history(user_input)
-                
+
                 handled, should_exit = self.handle_special_commands(user_input)
                 if should_exit:
                     break
                 if handled:
                     continue
-                
+
                 self.process_message(user_input)
                 print()
-                
+
             except KeyboardInterrupt:
                 self.ui.print_system("\nInterrupted. Type 'exit' to quit.")
             except EOFError:
@@ -1533,14 +1535,14 @@ class CodingAssistant:
 def main():
     # Use global configuration constants
     server_url = DEFAULT_SERVER_URL
-    
+
     if len(sys.argv) > 1:
         server_url = sys.argv[1]
-    
+
     print(colored("Starting Coding Assistant...", Colors.SYSTEM))
     print(colored(f"Connecting to llama.cpp server at: {server_url}", Colors.SYSTEM))
     print()
-    
+
     assistant = CodingAssistant(server_url, SHOW_THINKING, STREAM_OUTPUT)
     assistant.run()
 
