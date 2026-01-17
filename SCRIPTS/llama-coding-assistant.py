@@ -38,8 +38,8 @@ BOX_WIDTH = 40
 
 # API Configuration
 DEFAULT_SERVER_URL = "http://127.0.0.1:8033"
-#DEFAULT_MODEL = "Qwen3-Coder-30B-A3B-Instruct-UD-Q5_K_XL"
-DEFAULT_MODEL = "openai_gpt-oss-20b-MXFP4"
+DEFAULT_MODEL = "Qwen3-Coder-30B-A3B-Instruct-UD-Q5_K_XL"
+#DEFAULT_MODEL = "openai_gpt-oss-20b-MXFP4"
 DEFAULT_TEMPERATURE = 0.7
 DEFAULT_MAX_TOKENS = 2000
 API_TIMEOUT = 30
@@ -281,9 +281,20 @@ class ToolExecutor:
             if self._is_safe_path(path):
                 return False
             return True
-
-        # All other tools require confirmation
-        return True
+        # run_command - allow specific safe commands without confirmation
+        if tool_name == "run_command":
+            command = arguments.get("command", "").strip()
+            # List of safe read-only commands that don't require confirmation
+            safe_commands = [
+                "git status",
+                "git diff",
+                "git diff --cached",
+                "git log --oneline"
+            ]
+            if command in safe_commands:
+                return False
+            # All other tools require confirmation
+            return True
 
     def _is_safe_path(self, path: str) -> bool:
         """Check if path is within current working directory"""

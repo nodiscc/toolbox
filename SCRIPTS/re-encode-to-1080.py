@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""Scan a directory for video files, for videos >1080px wide ask to re-encode to 1080p"""
 import os
 import subprocess
 import sys
