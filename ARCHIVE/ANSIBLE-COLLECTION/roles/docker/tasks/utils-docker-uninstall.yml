@@ -22,12 +22,10 @@
     - /etc/cron.d/docker-system-prune-all
     - /var/lib/docker
     - /etc/ansible/facts.d/docker.fact
-    - /etc/netdata/health.d/dockerd.conf
     - /root/.docker
   notify:
     - update apt cache
     - update ansible facts
-    - assemble netdata configuration
   diff: no
 
 - name: remove docker group

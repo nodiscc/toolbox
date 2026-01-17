@@ -9,11 +9,9 @@
     - /etc/ansible/facts.d/rss_bridge.fact
     - /etc/fail2ban/jail.d/rss-bridge.conf
     - /etc/fail2ban/filter.d/rss-bridge-auth.conf
-    - /etc/netdata/go.d/httpcheck.conf.d/rss-bridge.conf
     - "/var/www/{{ rss_bridge_fqdn }}"
   notify:
     - restart php-fpm (rss_bridge)
     - reload apache
     - update ansible facts
     - reload fail2ban
-    - assemble netdata configuration

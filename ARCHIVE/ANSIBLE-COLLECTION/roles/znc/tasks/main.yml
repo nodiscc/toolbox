@@ -60,21 +60,6 @@
     - ansible_local.rsyslog.ansible_managed | bool
 
 
-# - name: include netdata configuration tasks
-#   import_tasks: netdata.yml
-#   become: yes
-#   tags:
-#     - znc
-#     - monitoring
-#     - netdata
-#   when:
-#     - ansible_local.netdata.ansible_managed is defined
-#     - ansible_local.netdata.ansible_managed | bool
-# TODO ignore failed service state when the list of znc_users is empty
-# │Nov 21 18:49:29 shaarli-test znc[172088]: You must define at least one user in your config.                                                                                                                                                                                   │
-# │Nov 21 18:49:29 shaarli-test znc[172088]: Unrecoverable config error.                                                                                                                                                                                                         │
-
-
 # - name: include ansible facts configuration tasks
 #   import_tasks: fact.yml
 #   become: yes

@@ -10,17 +10,6 @@
   tags:
     - mariadb
 
-- name: include netdata configuration tasks
-  import_tasks: netdata.yml
-  become: yes
-  tags:
-    - mariadb
-    - monitoring
-    - netdata
-  when:
-    - ansible_local.netdata.ansible_managed is defined
-    - ansible_local.netdata.ansible_managed|bool
-
 - name: include rsyslog configuration tasks
   import_tasks: rsyslog.yml
   become: yes

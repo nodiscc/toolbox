@@ -1,9 +1,0 @@
-- name: install netdata checks for awesome-selfhosted-html
-  template:
-    src: etc_netdata_go.d_httpcheck.conf.d_awesome-selfhosted-html.conf.j2
-    dest: /etc/netdata/go.d/httpcheck.conf.d/awesome-selfhosted-html.conf
-    owner: root
-    group: netdata
-    mode: "0640"
-  notify: assemble netdata configuration
-  ignore_errors: "{{ ansible_check_mode }}"

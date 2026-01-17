@@ -13,12 +13,10 @@
     - /var/lib/planarally
     - /etc/systemd/system/planarally.service
     - /etc/rsnapshot.d/planarally.conf
-    - /etc/netdata/go.d/httpcheck.conf.d/planarally.conf
   notify:
     - reload systemd unit files
     - restart apache
     - check rsnapshot configuration
-    - assemble netdata configuration
 
 - name: remove planarally user
   user:
