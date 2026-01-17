@@ -21,7 +21,7 @@ tests: test-shellcheck test-ansible-lint test-pylint
 test-shellcheck:
 	for i in $$(find SCRIPTS/ -maxdepth 1 -type f); do \
 		if grep '^#!/bin/bash' "$$i" >/dev/null; then \
-		shellcheck "$$i" || exit 0 ; fi; done
+		shellcheck "$$i"; fi; done
 
 test-pylint:
 	python3 -m venv .venv
