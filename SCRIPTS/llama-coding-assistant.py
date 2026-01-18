@@ -294,7 +294,7 @@ class ToolExecutor:
             if command in safe_commands:
                 return False
             # All other tools require confirmation
-            return True
+        return True
 
     def _is_safe_path(self, path: str) -> bool:
         """Check if path is within current working directory"""
@@ -1479,7 +1479,6 @@ class CodingAssistant:
 
                 if needs_confirmation:
                     preview_diff = self.tool_executor.get_preview_diff(tool_name, arguments)
-
                     confirmed, raw = self.ui.print_tool_confirmation(tool_name, arguments, preview_diff)
                     if not confirmed:
                         result = f"User declined to execute this tool. Do this instead: {raw}"
