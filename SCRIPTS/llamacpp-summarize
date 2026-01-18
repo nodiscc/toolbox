@@ -9,6 +9,7 @@ import sys
 import argparse
 import json
 import requests
+import subprocess
 from bs4 import BeautifulSoup
 from readability import Document
 import html2text
@@ -44,6 +45,50 @@ def get_content_from_file(filepath):
     except Exception as error:
         print(f"Error reading file: {error}")
         return None
+
+def get_youtube_transcript(url):
+    """
+    Download YouTube video transcript using yt-dlp and return it as plain text.
+    """
+    try:
+        # Get video title first
+        title_result = subprocess.run([
+            'yt-dlp',
+            '--get-title',
+            url
+        ], capture_output=True, text=True, check=True)
+        title = title_result.stdout.strip()
+        # Download transcript (auto-subs in SRT format)
+        subprocess.run([
+            'yt-dlp',
+            '--write-auto-subs',
+            '--sub-langs', 'en',
+            '--sub-format', 'srt',
+            '--skip-download',
+            '--output', 'transcript',
+            url
+        ], capture_output=True, check=True)
+        # Read and process the SRT file
+        try:
+            with open('transcript.en.srt', 'r', encoding='utf-8') as f:
+                srt_content = f.read()
+            # Extract just the text lines (skip timestamps and numbers)
+            lines = []
+            for line in srt_content.split('\n'):
+                if line.strip() and not line.strip().isdigit() and '-->' not in line:
+                    lines.append(line.strip())
+            # Join all text lines
+            transcript_text = ' '.join(lines)
+            # Clean up the temporary file
+            import os
+            os.remove('transcript.en.srt')
+            return transcript_text, title
+        except FileNotFoundError:
+            print("Error: Could not find transcript file")
+            return None, title
+    except subprocess.CalledProcessError as e:
+        print(f"Error downloading YouTube transcript: {e}")
+        return None, None
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -86,9 +131,15 @@ if __name__ == "__main__":
     for source_type, source in sources:
         # Get content based on source type
         if source_type == 'url':
-            content_html = get_content(source)
-            source_display = source
-        else:  # file
+            if 'youtube.com' in source or 'youtu.be' in source: # youtube URLs
+                print("Detected YouTube URL, downloading transcript...")
+                transcript_text, title = get_youtube_transcript(source)
+                source_display = source
+                content_html = transcript_text
+            else: # other URls
+                content_html = get_content(source)
+                source_display = source
+        else: # file
             content_html = get_content_from_file(source)
             source_display = str(Path(source).resolve())
 
@@ -96,33 +147,40 @@ if __name__ == "__main__":
             print(f'error processing source: {source}')
             continue
 
-        raw_html = BeautifulSoup(content_html, 'html.parser')
-        title_tag = raw_html.find("title")
-        title_string = title_tag.text if title_tag else "Untitled"
-        print("---------------------------------------------")
-        print("\033[0;36m# " + title_string + "\033[0m\n")
-        print("\033[0;36m" + source_display + "\033[0m\n")
-        try:
-            lang = raw_html.html["lang"]
-        except (TypeError, KeyError):
-            lang = "undefined"
-
-        try:
-            tags = raw_html.find("meta", {"name": "ad:rubriques"}).attrs['content'].split(',') # lemonde.fr
-        except AttributeError:
-            tags = []
-        if tags:
-            ignored_tags = ['cyclisme', 'sport']
-            if any(tag in ignored_tags for tag in tags):
-                print(f"Article matches ignored tag, ignoring")
-                continue
-
-        content_html = Document(content_html)
-        content_summary = content_html.summary()
-        soup = BeautifulSoup(content_summary, 'html.parser')
-        text_maker = html2text.HTML2Text()
-        text_maker.ignore_links = True
-        plain_text = text_maker.handle(str(soup))
+        # For YouTube transcripts, we skip HTML parsing since it's already text
+        if 'youtube.com' in source or 'youtu.be' in source:
+            plain_text = content_html
+            title_string = source_display
+            lang = "unknown"
+            print("---------------------------------------------")
+            print("\033[0;36m# " + title_string + "\033[0m\n")
+            print("\033[0;36m" + source_display + "\033[0m\n")
+        else:
+            raw_html = BeautifulSoup(content_html, 'html.parser')
+            title_tag = raw_html.find("title")
+            title_string = title_tag.text if title_tag else "Untitled"
+            print("---------------------------------------------")
+            print("\033[0;36m# " + title_string + "\033[0m\n")
+            print("\033[0;36m" + source_display + "\033[0m\n")
+            try:
+                lang = raw_html.html["lang"]
+            except (TypeError, KeyError):
+                lang = "undefined"
+            try:
+                tags = raw_html.find("meta", {"name": "ad:rubriques"}).attrs['content'].split(',') # lemonde.fr
+            except AttributeError:
+                tags = []
+            if tags:
+                ignored_tags = ['cyclisme', 'sport']
+                if any(tag in ignored_tags for tag in tags):
+                    print(f"Article matches ignored tag, ignoring")
+                    continue
+            content_html = Document(content_html)
+            content_summary = content_html.summary()
+            soup = BeautifulSoup(content_summary, 'html.parser')
+            text_maker = html2text.HTML2Text()
+            text_maker.ignore_links = True
+            plain_text = text_maker.handle(str(soup))
         if args.print_only:
             print(plain_text)
             continue
@@ -150,10 +208,10 @@ if __name__ == "__main__":
                 ],
                 'stream': True
             }
-            
+
             response = requests.post(f"{args.server}/chat/completions", json=payload, stream=True)
             response.raise_for_status()
-            
+
             for line in response.iter_lines():
                 if line:
                     line_str = line.decode('utf-8')
@@ -171,7 +229,7 @@ if __name__ == "__main__":
                         except json.JSONDecodeError:
                             continue
             print()
-            
+
         except requests.exceptions.RequestException as error:
             print(f"Error communicating with llama.cpp server: {error}")
             continue
