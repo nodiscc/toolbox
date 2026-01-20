@@ -24,6 +24,7 @@
 # IMAP_SERVER
 # REQUESTS_TIMEOUT
 
+import sys
 import argparse
 import datetime
 import email
@@ -50,6 +51,7 @@ def print_title(text):
     print(f'{colorama.Fore.GREEN}####### {text}{colorama.Style.RESET_ALL}')
 
 def format_bullet_point(symbol, color, text):
+    """Format a string as a bullet point"""
     formatted = f'{color}{symbol} {colorama.Style.RESET_ALL}{text}'
     return formatted
 
@@ -329,7 +331,89 @@ def check_mtime(file_path, warn_if_older_than_seconds):
     print(out)
 
 
+def print_progress_bar(current, total, bar_length, output_format):
+    """Print a progress bar"""
+    if output_format == 'cli':
+        green = colorama.Fore.GREEN
+        white = colorama.Fore.WHITE
+        reset = colorama.Style.RESET_ALL
+    else: # conky
+        green = '${color green}'
+        white = '${color white}'
+        reset = '${color2}'
+    percent = float(current) / total
+    blocks = '▅' * int(round(percent * bar_length))
+    spaces = '▅' * (bar_length - len(blocks))
+    print(f'{green}{blocks}{reset}{spaces}{white} ', end='', flush=True)
+
+def calculate_progress(date_str, total_days):
+    """Calculate progress for a date-based period"""
+    try:
+        start_date = datetime.datetime.strptime(date_str, "%Y-%m-%d")
+        today = datetime.datetime.now().date()
+        total_days = int(total_days)
+        # If start date is in the future, return 100% progress
+        if start_date.date() > today:
+            return 100
+        days_elapsed = (today - start_date.date()).days
+        # If we've passed the total period, return 100%
+        if days_elapsed >= total_days:
+            return 100
+        # Calculate progress percentage
+        progress = (days_elapsed / total_days) * 100
+        return days_elapsed, progress
+
+    except ValueError:
+        print("Error: Invalid date format. Please use YYYY-MM-DD.")
+        return 0
+
+
+def calculate_file_progress(file_path):
+    """Calculate progress based on file modification time"""
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            hash_lines = 0
+            other_lines = 0
+            for line in f:
+                # Stop at a marker line such as '#--------'
+                if line.lstrip().startswith("#-"):
+                    break
+                stripped = line.rstrip("\n")
+                if stripped.startswith("#"):
+                    hash_lines += 1
+                elif stripped.strip():
+                    other_lines += 1
+        total_lines = hash_lines + other_lines
+        if total_lines == 0:
+            print("Error: No non‑empty lines found in file")
+            sys.exit(0)
+        progress = (hash_lines / total_lines) * 100
+    except FileNotFoundError:
+        print(f"Error: File '{file_path}' not found.")
+        sys.exit(1)
+    return progress, hash_lines, total_lines
+
 def main(args):
+    """Main loop"""
+    # PROGRESS BAR
+    if args.progress_bar:
+        # print_title('Progress Bar')
+        if args.date and args.total_days:
+            # progress based on date (number of days since date vs total days)
+            # for example --progress-bar --date 2025-02-02 --total-days 365
+            days_elapsed, progress = calculate_progress(args.date, args.total_days)
+            print_progress_bar(progress, 100, 60, args.format)
+            print(f'{days_elapsed} / {args.total_days}')
+        elif args.file:
+            # progress based on file (#-commented out lines vs total lines)
+            # for example --progress-bar --file /path/to/todo.txt
+            progress, hash_lines, total_lines = calculate_file_progress(args.file)
+            print_progress_bar(progress, 100, 60, args.format)
+            print(f'{hash_lines} / {total_lines}')
+        else:
+            print("Progress bar requires either --date and --total-days, or --file")
+            return
+
     # GITLAB ISSUES
     if args.gitlab_issues:
         print_title("gitlab issues assigned to you")
@@ -454,13 +538,29 @@ if __name__ == "__main__":
     parser.add_argument('--modtime', action='store_true', help='Check file modification times')
     parser.add_argument('--unread-mail', action='store_true', help='Show unread mail')
     parser.add_argument('--flagged-mail', action='store_true', help='Show flagged mail')
+    parser.add_argument('--progress-bar', action='store_true', help='Show progress bar')
+    parser.add_argument('--date', help='Start date for progress bar (YYYY-MM-DD)')
+    parser.add_argument('--total-days', type=int, help='Total days for progress bar calculation with --date')
+    parser.add_argument('--file', help='File path for progress bar calculation')
+    parser.add_argument('--format', dest='format', default='cli', choices=['cli', 'conky'], help='Output format')
 
     args = parser.parse_args()
+
+    # Validate progress bar arguments
+    if args.progress_bar:
+        if args.date and args.total_days:
+            if not args.date or not args.total_days:
+                parser.error("--progress-bar requires --date and --total-days when using date-based calculation")
+        elif args.file:
+            if not args.file:
+                parser.error("--progress-bar requires --file when using file-based calculation")
+        elif not args.date and not args.file:
+            parser.error("--progress-bar requires either --date and --total-days or --file")
 
     # If no arguments provided, run all sections
     if not any([args.gitlab_issues, args.gitea_issues, args.caldav_tasks,
                 args.caldav_events, args.todotxt, args.ttrss_marked,
-                args.modtime, args.unread_mail, args.flagged_mail]):
+                args.modtime, args.unread_mail, args.flagged_mail, args.progress_bar]):
         # Run all sections by default
         args.gitlab_issues = True
         args.gitea_issues = True
@@ -471,5 +571,6 @@ if __name__ == "__main__":
         args.modtime = True
         args.unread_mail = True
         args.flagged_mail = True
+        args.progress_bar = True
 
     main(args)
