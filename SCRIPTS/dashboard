@@ -393,8 +393,51 @@ def calculate_file_progress(file_path):
         sys.exit(1)
     return progress, hash_lines, total_lines
 
-def main(args):
+def main():
     """Main loop"""
+    parser = argparse.ArgumentParser(description='Dashboard script for monitoring various services')
+    parser.add_argument('--gitlab-issues', action='store_true', help='Show GitLab issues')
+    parser.add_argument('--gitea-issues', action='store_true', help='Show Gitea issues')
+    parser.add_argument('--caldav-tasks', action='store_true', help='Show CalDAV tasks')
+    parser.add_argument('--caldav-events', action='store_true', help='Show CalDAV events')
+    parser.add_argument('--todotxt', action='store_true', help='Show todo.txt tasks')
+    parser.add_argument('--ttrss-marked', action='store_true', help='Show TT-RSS marked articles')
+    parser.add_argument('--modtime', action='store_true', help='Check file modification times')
+    parser.add_argument('--unread-mail', action='store_true', help='Show unread mail')
+    parser.add_argument('--flagged-mail', action='store_true', help='Show flagged mail')
+    parser.add_argument('--progress-bar', action='store_true', help='Show progress bar')
+    parser.add_argument('--date', help='Start date for progress bar (YYYY-MM-DD)')
+    parser.add_argument('--total-days', type=int, help='Total days for progress bar calculation with --date')
+    parser.add_argument('--file', help='File path for progress bar calculation')
+    parser.add_argument('--format', dest='format', default='cli', choices=['cli', 'conky'], help='Output format')
+    args = parser.parse_args()
+
+    # Validate progress bar arguments
+    if args.progress_bar:
+        if args.date and args.total_days:
+            if not args.date or not args.total_days:
+                parser.error("--progress-bar requires --date and --total-days when using date-based calculation")
+        elif args.file:
+            if not args.file:
+                parser.error("--progress-bar requires --file when using file-based calculation")
+        elif not args.date and not args.file:
+            parser.error("--progress-bar requires either --date and --total-days or --file")
+
+    # If no arguments provided, run all sections
+    if not any([args.gitlab_issues, args.gitea_issues, args.caldav_tasks,
+                args.caldav_events, args.todotxt, args.ttrss_marked,
+                args.modtime, args.unread_mail, args.flagged_mail, args.progress_bar]):
+        # Run all sections by default
+        args.gitlab_issues = True
+        args.gitea_issues = True
+        args.caldav_tasks = True
+        args.caldav_events = True
+        args.todotxt = True
+        args.ttrss_marked = True
+        args.modtime = True
+        args.unread_mail = True
+        args.flagged_mail = True
+
     # PROGRESS BAR
     if args.progress_bar:
         # print_title('Progress Bar')
@@ -528,49 +571,4 @@ def main(args):
         print(out)
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Dashboard script for monitoring various services')
-    parser.add_argument('--gitlab-issues', action='store_true', help='Show GitLab issues')
-    parser.add_argument('--gitea-issues', action='store_true', help='Show Gitea issues')
-    parser.add_argument('--caldav-tasks', action='store_true', help='Show CalDAV tasks')
-    parser.add_argument('--caldav-events', action='store_true', help='Show CalDAV events')
-    parser.add_argument('--todotxt', action='store_true', help='Show todo.txt tasks')
-    parser.add_argument('--ttrss-marked', action='store_true', help='Show TT-RSS marked articles')
-    parser.add_argument('--modtime', action='store_true', help='Check file modification times')
-    parser.add_argument('--unread-mail', action='store_true', help='Show unread mail')
-    parser.add_argument('--flagged-mail', action='store_true', help='Show flagged mail')
-    parser.add_argument('--progress-bar', action='store_true', help='Show progress bar')
-    parser.add_argument('--date', help='Start date for progress bar (YYYY-MM-DD)')
-    parser.add_argument('--total-days', type=int, help='Total days for progress bar calculation with --date')
-    parser.add_argument('--file', help='File path for progress bar calculation')
-    parser.add_argument('--format', dest='format', default='cli', choices=['cli', 'conky'], help='Output format')
-
-    args = parser.parse_args()
-
-    # Validate progress bar arguments
-    if args.progress_bar:
-        if args.date and args.total_days:
-            if not args.date or not args.total_days:
-                parser.error("--progress-bar requires --date and --total-days when using date-based calculation")
-        elif args.file:
-            if not args.file:
-                parser.error("--progress-bar requires --file when using file-based calculation")
-        elif not args.date and not args.file:
-            parser.error("--progress-bar requires either --date and --total-days or --file")
-
-    # If no arguments provided, run all sections
-    if not any([args.gitlab_issues, args.gitea_issues, args.caldav_tasks,
-                args.caldav_events, args.todotxt, args.ttrss_marked,
-                args.modtime, args.unread_mail, args.flagged_mail, args.progress_bar]):
-        # Run all sections by default
-        args.gitlab_issues = True
-        args.gitea_issues = True
-        args.caldav_tasks = True
-        args.caldav_events = True
-        args.todotxt = True
-        args.ttrss_marked = True
-        args.modtime = True
-        args.unread_mail = True
-        args.flagged_mail = True
-        args.progress_bar = True
-
-    main(args)
+    main()
