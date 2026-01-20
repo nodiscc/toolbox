@@ -24,6 +24,7 @@
 # IMAP_SERVER
 # REQUESTS_TIMEOUT
 
+import argparse
 import datetime
 import email
 import imaplib
@@ -328,111 +329,147 @@ def check_mtime(file_path, warn_if_older_than_seconds):
     print(out)
 
 
-def main():
-    ##### GITLAB ISSUES
-    print_title("gitlab issues assigned to you")
-    # this function takes either assigned=True, created=True, repos=True
-    gitlab_issues = get_gitlab_issues(os.getenv("GITLAB_TOKEN"),
-                                                assigned=True)
-    gitlab_out_lines = [
-        format_bullet_point('▧', colorama.Fore.YELLOW, f'{issue}')
-        for issue in gitlab_issues
-    ]
-    out = format_list(gitlab_out_lines, int(OS_ENVIRON['MAX_LINES']))
-    print(out)
+def main(args):
+    # GITLAB ISSUES
+    if args.gitlab_issues:
+        print_title("gitlab issues assigned to you")
+        # this function takes either assigned=True, created=True, repos=True
+        gitlab_issues = get_gitlab_issues(os.getenv("GITLAB_TOKEN"),
+                                    assigned=True)
+        gitlab_out_lines = [
+            format_bullet_point('▧', colorama.Fore.YELLOW, f'{issue}')
+            for issue in gitlab_issues
+        ]
+        out = format_list(gitlab_out_lines, int(OS_ENVIRON['MAX_LINES']))
+        print(out)
 
-    ##### GITEA ISSUES
-    print_title('gitea issues')
-    gitea_issues = get_gitea_issues(OS_ENVIRON['GITEA_URL'],
-                                  OS_ENVIRON['GITEA_TOKEN'])
-    gitea_out_lines = [
-        format_bullet_point('▧', colorama.Fore.GREEN, f'{issue}')
-        for issue in gitea_issues
-    ]
-    out = format_list(gitea_out_lines, int(OS_ENVIRON['MAX_LINES']))
-    print(out)
+    # GITEA ISSUES
+    if args.gitea_issues:
+        print_title('gitea issues')
+        gitea_issues = get_gitea_issues(OS_ENVIRON['GITEA_URL'],
+                                      OS_ENVIRON['GITEA_TOKEN'])
+        gitea_out_lines = [
+            format_bullet_point('▧', colorama.Fore.GREEN, f'{issue}')
+            for issue in gitea_issues
+        ]
+        out = format_list(gitea_out_lines, int(OS_ENVIRON['MAX_LINES']))
+        print(out)
 
-    ##### NEXTCLOUD CALDAV TASKS
-    print_title('nextcloud tasks')
-    caldav_tasks = get_caldav_tasks(OS_ENVIRON['CALDAV_URL'],
-                                   OS_ENVIRON['CALDAV_USERNAME'],
-                                   OS_ENVIRON['CALDAV_PASSWORD'],
-                                   int(OS_ENVIRON['CALDAV_MAX_PRIORITY']))
-    caldav_tasks_out_lines = [
-        format_bullet_point('▧', colorama.Fore.BLUE, f'{task}')
-        for task in caldav_tasks
-    ]
-    out = format_list(caldav_tasks_out_lines, int(OS_ENVIRON['MAX_LINES']))
-    print(out)
+    # NEXTCLOUD CALDAV TASKS
+    if args.caldav_tasks:
+        print_title('nextcloud tasks')
+        caldav_tasks = get_caldav_tasks(OS_ENVIRON['CALDAV_URL'],
+                                       OS_ENVIRON['CALDAV_USERNAME'],
+                                       OS_ENVIRON['CALDAV_PASSWORD'],
+                                       int(OS_ENVIRON['CALDAV_MAX_PRIORITY']))
+        caldav_tasks_out_lines = [
+            format_bullet_point('▧', colorama.Fore.BLUE, f'{task}')
+            for task in caldav_tasks
+        ]
+        out = format_list(caldav_tasks_out_lines, int(OS_ENVIRON['MAX_LINES']))
+        print(out)
 
-    ##### NEXTCLOUD CALDAV EVENTS
-    print_title('nextcloud events')
-    caldav_events = get_caldav_events(OS_ENVIRON['CALDAV_URL'],
-                                   OS_ENVIRON['CALDAV_USERNAME'],
-                                   OS_ENVIRON['CALDAV_PASSWORD'],
-                                   int(OS_ENVIRON['CALDAV_EVENTS_MAX_DAYS_IN_FUTURE']))
-    caldav_events_out_lines = [
-        format_bullet_point('▧', colorama.Fore.BLUE, f'{task}')
-        for task in caldav_events
-    ]
-    out = format_list(caldav_events_out_lines, int(OS_ENVIRON['MAX_LINES']))
-    print(out)
+    # NEXTCLOUD CALDAV EVENTS
+    if args.caldav_events:
+        print_title('nextcloud events')
+        caldav_events = get_caldav_events(OS_ENVIRON['CALDAV_URL'],
+                                       OS_ENVIRON['CALDAV_USERNAME'],
+                                       OS_ENVIRON['CALDAV_PASSWORD'],
+                                       int(OS_ENVIRON['CALDAV_EVENTS_MAX_DAYS_IN_FUTURE']))
+        caldav_events_out_lines = [
+            format_bullet_point('▧', colorama.Fore.BLUE, f'{task}')
+            for task in caldav_events
+        ]
+        out = format_list(caldav_events_out_lines, int(OS_ENVIRON['MAX_LINES']))
+        print(out)
 
+    # TODOTXT TODOS
+    if args.todotxt:
+        print_title('todos')
+        todotxt_todos = get_todo_list(OS_ENVIRON['TODO_TXT_PATH'])
+        todotxt_out_lines = [
+            format_bullet_point('▧', colorama.Fore.CYAN, f'{todo}')
+            for todo in todotxt_todos
+        ]
+        out = format_list(todotxt_out_lines, int(OS_ENVIRON['MAX_LINES']))
+        print(out)
 
-    ##### TODOTXT TODOS
-    print_title('todos')
-    todotxt_todos = get_todo_list(OS_ENVIRON['TODO_TXT_PATH'])
-    todotxt_out_lines = [
-        format_bullet_point('▧', colorama.Fore.CYAN, f'{todo}')
-        for todo in todotxt_todos
-    ]
-    out = format_list(todotxt_out_lines, int(OS_ENVIRON['MAX_LINES']))
-    print(out)
+    # TTRSS MARKED ARTICLES
+    if args.ttrss_marked:
+        print_title('tt-rss marked')
+        ttrss_marked_articles = get_ttrss_marked(OS_ENVIRON['TTRSS_URL'],
+                                                 OS_ENVIRON['TTRSS_USERNAME'],
+                                                 OS_ENVIRON['TTRSS_PASSWORD'],
+                                                 OS_ENVIRON['TTRSS_LIMIT'])
+        ttrss_marked_out_lines = [
+            format_bullet_point('▧', colorama.Fore.MAGENTA, f'{article}')
+            for article in ttrss_marked_articles
+        ]
+        out = format_list(ttrss_marked_out_lines, int(OS_ENVIRON['MAX_LINES']))
+        print(out)
 
-    ##### TTRSS MARKED ARTICLES
-    print_title('tt-rss marked')
-    ttrss_marked_articles = get_ttrss_marked(OS_ENVIRON['TTRSS_URL'],
-                                             OS_ENVIRON['TTRSS_USERNAME'],
-                                             OS_ENVIRON['TTRSS_PASSWORD'],
-                                             OS_ENVIRON['TTRSS_LIMIT'])
-    ttrss_marked_out_lines = [
-        format_bullet_point('▧', colorama.Fore.MAGENTA, f'{article}')
-        for article in ttrss_marked_articles
-    ]
-    out = format_list(ttrss_marked_out_lines, int(OS_ENVIRON['MAX_LINES']))
-    print(out)
+    # FILE MODIFICATION TIME
+    if args.modtime:
+        print_title('modification time check')
+        check_mtime(OS_ENVIRON['BACKUP_STATE_FILE'], 86400)
 
-    ##### FILE MODIFICATION TIME
-    print_title('modification time check')
-    check_mtime(OS_ENVIRON['BACKUP_STATE_FILE'], 86400)
+    # UNREAD MAIL
+    if args.unread_mail:
+        print_title('unread mail')
+        unread_mail = get_unread_mail(OS_ENVIRON['IMAP_SERVER'],
+                                      993,
+                                      OS_ENVIRON['IMAP_USERNAME'],
+                                      OS_ENVIRON['IMAP_PASSWORD'],
+                                      OS_ENVIRON['IMAP_UNREAD_FOLDERS_LIST']) # comma-separated list
+        unread_mail_lines = [
+            format_bullet_point('▧', colorama.Fore.YELLOW, f'{article}')
+            for article in unread_mail
+        ]
+        out = format_list(unread_mail_lines, int(OS_ENVIRON['MAX_LINES']))
+        print(out)
 
-    ##### UNREAD MAIL
-    print_title('unread mail')
-    unread_mail = get_unread_mail(OS_ENVIRON['IMAP_SERVER'],
-                                  993,
-                                  OS_ENVIRON['IMAP_USERNAME'],
-                                  OS_ENVIRON['IMAP_PASSWORD'],
-                                  OS_ENVIRON['IMAP_UNREAD_FOLDERS_LIST']) # comma-separated list
-    unread_mail_lines = [
-        format_bullet_point('▧', colorama.Fore.YELLOW, f'{article}')
-        for article in unread_mail
-    ]
-    out = format_list(unread_mail_lines, int(OS_ENVIRON['MAX_LINES']))
-    print(out)
-
-    ##### FLAGGED MAIL
-    print_title('flagged mail')
-    flagged_mail = get_flagged_mail(OS_ENVIRON['IMAP_SERVER'],
-                                  993,
-                                  OS_ENVIRON['IMAP_USERNAME'],
-                                  OS_ENVIRON['IMAP_PASSWORD'],
-                                  OS_ENVIRON['IMAP_FLAGGED_FOLDERS_LIST']) # comma-separated list
-    flagged_mail_lines = [
-        format_bullet_point('▧', colorama.Fore.YELLOW, f'{article}')
-        for article in flagged_mail
-    ]
-    out = format_list(flagged_mail_lines, int(OS_ENVIRON['MAX_LINES']))
-    print(out)
+    # FLAGGED MAIL
+    if args.flagged_mail:
+        print_title('flagged mail')
+        flagged_mail = get_flagged_mail(OS_ENVIRON['IMAP_SERVER'],
+                                      993,
+                                      OS_ENVIRON['IMAP_USERNAME'],
+                                      OS_ENVIRON['IMAP_PASSWORD'],
+                                      OS_ENVIRON['IMAP_FLAGGED_FOLDERS_LIST']) # comma-separated list
+        flagged_mail_lines = [
+            format_bullet_point('▧', colorama.Fore.YELLOW, f'{article}')
+            for article in flagged_mail
+        ]
+        out = format_list(flagged_mail_lines, int(OS_ENVIRON['MAX_LINES']))
+        print(out)
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description='Dashboard script for monitoring various services')
+    parser.add_argument('--gitlab-issues', action='store_true', help='Show GitLab issues')
+    parser.add_argument('--gitea-issues', action='store_true', help='Show Gitea issues')
+    parser.add_argument('--caldav-tasks', action='store_true', help='Show CalDAV tasks')
+    parser.add_argument('--caldav-events', action='store_true', help='Show CalDAV events')
+    parser.add_argument('--todotxt', action='store_true', help='Show todo.txt tasks')
+    parser.add_argument('--ttrss-marked', action='store_true', help='Show TT-RSS marked articles')
+    parser.add_argument('--modtime', action='store_true', help='Check file modification times')
+    parser.add_argument('--unread-mail', action='store_true', help='Show unread mail')
+    parser.add_argument('--flagged-mail', action='store_true', help='Show flagged mail')
+
+    args = parser.parse_args()
+
+    # If no arguments provided, run all sections
+    if not any([args.gitlab_issues, args.gitea_issues, args.caldav_tasks,
+                args.caldav_events, args.todotxt, args.ttrss_marked,
+                args.modtime, args.unread_mail, args.flagged_mail]):
+        # Run all sections by default
+        args.gitlab_issues = True
+        args.gitea_issues = True
+        args.caldav_tasks = True
+        args.caldav_events = True
+        args.todotxt = True
+        args.ttrss_marked = True
+        args.modtime = True
+        args.unread_mail = True
+        args.flagged_mail = True
+
+    main(args)
