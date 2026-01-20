@@ -4,7 +4,7 @@
     state: restarted
     enabled: yes
   become: yes
-  when: mariadb_enable_service|bool
+  when: mariadb_enable_service | bool
 
 - name: update ansible facts
   setup:
