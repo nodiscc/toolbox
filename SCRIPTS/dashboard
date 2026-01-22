@@ -1,7 +1,7 @@
 #!/bin/env python3
-# Requirements: python3 -m venv ~/.venv && ~/.venv/bin/pip3 install caldav vobject colorama
+# Requirements: python3 -m venv ~/.venv && ~/.venv/bin/pip3 install caldav vobject colorama pyyaml
 # Usage: ~/.venv/bin/python3 ./dashboard
-# Environment variables:
+# Configuration file: ~/.config/dashboard.yml
 # CALDAV_URL
 # CALDAV_USERNAME
 # CALDAV_PASSWORD
@@ -32,19 +32,24 @@ import imaplib
 import json
 import os
 import time
+import random
 
 import caldav
 import colorama
 import icalendar
 import requests
 import urllib3
+import yaml
 
 # Disable SSL warnings
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-# load config from environment
-OS_ENVIRON=os.environ
-REQUESTS_TIMEOUT=int(OS_ENVIRON['REQUESTS_TIMEOUT']) # global
+# load config from YAML file
+config_path = os.path.expanduser('~/.config/dashboard.yml')
+with open(config_path, 'r', encoding='utf-8') as config_file:
+    CONFIG = yaml.safe_load(config_file)
+
+REQUESTS_TIMEOUT = int(CONFIG['REQUESTS_TIMEOUT'])  # global
 
 def print_title(text):
     """Print section title to screen"""
@@ -406,6 +411,7 @@ def main():
     parser.add_argument('--unread-mail', action='store_true', help='Show unread mail')
     parser.add_argument('--flagged-mail', action='store_true', help='Show flagged mail')
     parser.add_argument('--progress-bar', action='store_true', help='Show progress bar')
+    parser.add_argument('--random', action='store_true', help='Pick a random action and show a single random item')
     parser.add_argument('--date', help='Start date for progress bar (YYYY-MM-DD)')
     parser.add_argument('--total-days', type=int, help='Total days for progress bar calculation with --date')
     parser.add_argument('--file', help='File path for progress bar calculation')
@@ -422,6 +428,30 @@ def main():
                 parser.error("--progress-bar requires --file when using file-based calculation")
         elif not args.date and not args.file:
             parser.error("--progress-bar requires either --date and --total-days or --file")
+
+    # Handle random mode
+    if args.random:
+        random_actions = ['gitlab-issues', 'gitea-issues', 'caldav-tasks', 'caldav-events',
+                         'todotxt', 'ttrss-marked', 'unread-mail', 'flagged-mail']
+        chosen_action = random.choice(random_actions)
+
+        # Set the chosen action to True
+        if chosen_action == 'gitlab-issues':
+            args.gitlab_issues = True
+        elif chosen_action == 'gitea-issues':
+            args.gitea_issues = True
+        elif chosen_action == 'caldav-tasks':
+            args.caldav_tasks = True
+        elif chosen_action == 'caldav-events':
+            args.caldav_events = True
+        elif chosen_action == 'todotxt':
+            args.todotxt = True
+        elif chosen_action == 'ttrss-marked':
+            args.ttrss_marked = True
+        elif chosen_action == 'unread-mail':
+            args.unread_mail = True
+        elif chosen_action == 'flagged-mail':
+            args.flagged_mail = True
 
     # If no arguments provided, run all sections
     if not any([args.gitlab_issues, args.gitea_issues, args.caldav_tasks,
@@ -461,113 +491,129 @@ def main():
     if args.gitlab_issues:
         print_title("gitlab issues assigned to you")
         # this function takes either assigned=True, created=True, repos=True
-        gitlab_issues = get_gitlab_issues(os.getenv("GITLAB_TOKEN"),
+        gitlab_issues = get_gitlab_issues(CONFIG["GITLAB_TOKEN"],
                                     assigned=True)
+        if args.random and gitlab_issues:
+            gitlab_issues = [random.choice(gitlab_issues)]
         gitlab_out_lines = [
             format_bullet_point('▧', colorama.Fore.YELLOW, f'{issue}')
             for issue in gitlab_issues
         ]
-        out = format_list(gitlab_out_lines, int(OS_ENVIRON['MAX_LINES']))
+        out = format_list(gitlab_out_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
         print(out)
 
     # GITEA ISSUES
     if args.gitea_issues:
         print_title('gitea issues')
-        gitea_issues = get_gitea_issues(OS_ENVIRON['GITEA_URL'],
-                                      OS_ENVIRON['GITEA_TOKEN'])
+        gitea_issues = get_gitea_issues(CONFIG['GITEA_URL'],
+                                      CONFIG['GITEA_TOKEN'])
+        if args.random and gitea_issues:
+            gitea_issues = [random.choice(gitea_issues)]
         gitea_out_lines = [
             format_bullet_point('▧', colorama.Fore.GREEN, f'{issue}')
             for issue in gitea_issues
         ]
-        out = format_list(gitea_out_lines, int(OS_ENVIRON['MAX_LINES']))
+        out = format_list(gitea_out_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
         print(out)
 
     # NEXTCLOUD CALDAV TASKS
     if args.caldav_tasks:
         print_title('nextcloud tasks')
-        caldav_tasks = get_caldav_tasks(OS_ENVIRON['CALDAV_URL'],
-                                       OS_ENVIRON['CALDAV_USERNAME'],
-                                       OS_ENVIRON['CALDAV_PASSWORD'],
-                                       int(OS_ENVIRON['CALDAV_MAX_PRIORITY']))
+        caldav_tasks = get_caldav_tasks(CONFIG['CALDAV_URL'],
+                                       CONFIG['CALDAV_USERNAME'],
+                                       CONFIG['CALDAV_PASSWORD'],
+                                       int(CONFIG['CALDAV_MAX_PRIORITY']))
+        if args.random and caldav_tasks:
+            caldav_tasks = [random.choice(caldav_tasks)]
         caldav_tasks_out_lines = [
             format_bullet_point('▧', colorama.Fore.BLUE, f'{task}')
             for task in caldav_tasks
         ]
-        out = format_list(caldav_tasks_out_lines, int(OS_ENVIRON['MAX_LINES']))
+        out = format_list(caldav_tasks_out_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
         print(out)
 
     # NEXTCLOUD CALDAV EVENTS
     if args.caldav_events:
         print_title('nextcloud events')
-        caldav_events = get_caldav_events(OS_ENVIRON['CALDAV_URL'],
-                                       OS_ENVIRON['CALDAV_USERNAME'],
-                                       OS_ENVIRON['CALDAV_PASSWORD'],
-                                       int(OS_ENVIRON['CALDAV_EVENTS_MAX_DAYS_IN_FUTURE']))
+        caldav_events = get_caldav_events(CONFIG['CALDAV_URL'],
+                                       CONFIG['CALDAV_USERNAME'],
+                                       CONFIG['CALDAV_PASSWORD'],
+                                       int(CONFIG['CALDAV_EVENTS_MAX_DAYS_IN_FUTURE']))
+        if args.random and caldav_events:
+            caldav_events = [random.choice(caldav_events)]
         caldav_events_out_lines = [
             format_bullet_point('▧', colorama.Fore.BLUE, f'{task}')
             for task in caldav_events
         ]
-        out = format_list(caldav_events_out_lines, int(OS_ENVIRON['MAX_LINES']))
+        out = format_list(caldav_events_out_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
         print(out)
 
     # TODOTXT TODOS
     if args.todotxt:
         print_title('todos')
-        todotxt_todos = get_todo_list(OS_ENVIRON['TODO_TXT_PATH'])
+        todotxt_todos = get_todo_list(CONFIG['TODO_TXT_PATH'])
+        if args.random and todotxt_todos:
+            todotxt_todos = [random.choice(todotxt_todos)]
         todotxt_out_lines = [
             format_bullet_point('▧', colorama.Fore.CYAN, f'{todo}')
             for todo in todotxt_todos
         ]
-        out = format_list(todotxt_out_lines, int(OS_ENVIRON['MAX_LINES']))
+        out = format_list(todotxt_out_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
         print(out)
 
     # TTRSS MARKED ARTICLES
     if args.ttrss_marked:
         print_title('tt-rss marked')
-        ttrss_marked_articles = get_ttrss_marked(OS_ENVIRON['TTRSS_URL'],
-                                                 OS_ENVIRON['TTRSS_USERNAME'],
-                                                 OS_ENVIRON['TTRSS_PASSWORD'],
-                                                 OS_ENVIRON['TTRSS_LIMIT'])
+        ttrss_marked_articles = get_ttrss_marked(CONFIG['TTRSS_URL'],
+                                                 CONFIG['TTRSS_USERNAME'],
+                                                 CONFIG['TTRSS_PASSWORD'],
+                                                 CONFIG['TTRSS_LIMIT'])
+        if args.random and ttrss_marked_articles:
+            ttrss_marked_articles = [random.choice(ttrss_marked_articles)]
         ttrss_marked_out_lines = [
             format_bullet_point('▧', colorama.Fore.MAGENTA, f'{article}')
             for article in ttrss_marked_articles
         ]
-        out = format_list(ttrss_marked_out_lines, int(OS_ENVIRON['MAX_LINES']))
+        out = format_list(ttrss_marked_out_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
         print(out)
 
     # FILE MODIFICATION TIME
     if args.modtime:
         print_title('modification time check')
-        check_mtime(OS_ENVIRON['BACKUP_STATE_FILE'], 86400)
+        check_mtime(CONFIG['BACKUP_STATE_FILE'], 86400)
 
     # UNREAD MAIL
     if args.unread_mail:
         print_title('unread mail')
-        unread_mail = get_unread_mail(OS_ENVIRON['IMAP_SERVER'],
+        unread_mail = get_unread_mail(CONFIG['IMAP_SERVER'],
                                       993,
-                                      OS_ENVIRON['IMAP_USERNAME'],
-                                      OS_ENVIRON['IMAP_PASSWORD'],
-                                      OS_ENVIRON['IMAP_UNREAD_FOLDERS_LIST']) # comma-separated list
+                                      CONFIG['IMAP_USERNAME'],
+                                      CONFIG['IMAP_PASSWORD'],
+                                      CONFIG['IMAP_UNREAD_FOLDERS_LIST']) # comma-separated list
+        if args.random and unread_mail:
+            unread_mail = [random.choice(unread_mail)]
         unread_mail_lines = [
             format_bullet_point('▧', colorama.Fore.YELLOW, f'{article}')
             for article in unread_mail
         ]
-        out = format_list(unread_mail_lines, int(OS_ENVIRON['MAX_LINES']))
+        out = format_list(unread_mail_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
         print(out)
 
     # FLAGGED MAIL
     if args.flagged_mail:
         print_title('flagged mail')
-        flagged_mail = get_flagged_mail(OS_ENVIRON['IMAP_SERVER'],
+        flagged_mail = get_flagged_mail(CONFIG['IMAP_SERVER'],
                                       993,
-                                      OS_ENVIRON['IMAP_USERNAME'],
-                                      OS_ENVIRON['IMAP_PASSWORD'],
-                                      OS_ENVIRON['IMAP_FLAGGED_FOLDERS_LIST']) # comma-separated list
+                                      CONFIG['IMAP_USERNAME'],
+                                      CONFIG['IMAP_PASSWORD'],
+                                      CONFIG['IMAP_FLAGGED_FOLDERS_LIST']) # comma-separated list
+        if args.random and flagged_mail:
+            flagged_mail = [random.choice(flagged_mail)]
         flagged_mail_lines = [
             format_bullet_point('▧', colorama.Fore.YELLOW, f'{article}')
             for article in flagged_mail
         ]
-        out = format_list(flagged_mail_lines, int(OS_ENVIRON['MAX_LINES']))
+        out = format_list(flagged_mail_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
         print(out)
 
 if __name__ == "__main__":
