@@ -81,7 +81,9 @@ def get_imap_subjects(conn, folder, criterion):
                 msg = email.message_from_bytes(response_part[1])
                 decoded_header, encoding = email.header.decode_header(msg['Subject'])[0]
                 if isinstance(decoded_header, bytes):
-                    subject = decoded_header.decode(encoding).replace('\r', '').replace('\n', '')
+                    # Use 'utf-8' as default encoding if None is returned
+                    effective_encoding = encoding if encoding is not None else 'utf-8'
+                    subject = decoded_header.decode(effective_encoding).replace('\r', '').replace('\n', '')
                 else:
                     subject = decoded_header.replace('\r', '').replace('\n', '')
                 message = prefix + subject
