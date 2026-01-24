@@ -9,6 +9,7 @@ import os
 import subprocess
 import sys
 import argparse
+import tempfile
 from datetime import datetime
 from typing import Optional, Dict, Any, List, Tuple
 import difflib
@@ -209,6 +210,7 @@ class UIFormatter:
         print(colored("║    /history   - Show command history                ║", Colors.SYSTEM))
         print(colored("║    /!<number> - Rerun command (e.g., /!1, /!2)      ║", Colors.SYSTEM))
         print(colored("║    /stats     - Show API usage statistics           ║", Colors.SYSTEM))
+        print(colored("║    /edit      - Open editor for multiline input     ║", Colors.SYSTEM))
         print(colored("║                                                      ║", Colors.SYSTEM))
         print(colored(f"║  MODEL:         {model_name[:36]:<36} ║", Colors.SYSTEM))
         print(colored(f"║  SHOW_THINKING: {'ON ' if show_thinking else 'OFF'}                              ║", Colors.SYSTEM))
@@ -904,6 +906,9 @@ READLINE_BINDINGS = {
     r'"\e[1;5D"': 'backward-word',
 }
 
+# Editor configuration
+DEFAULT_EDITOR = 'nano'
+
 class InputHandler:
     """Manages user input with readline support"""
 
@@ -943,9 +948,39 @@ class InputHandler:
         except Exception:
             pass
 
+    def _open_editor(self, initial_content=""):
+        """Open an external editor for multiline input"""
+        editor = os.environ.get('EDITOR', DEFAULT_EDITOR)
+
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.txt', delete=False) as f:
+            f.write(initial_content)
+            temp_path = f.name
+
+        try:
+            subprocess.run([editor, temp_path], check=True)
+            with open(temp_path, 'r') as f:
+                content = f.read()
+            return content.strip()
+        except subprocess.CalledProcessError:
+            return initial_content
+        except FileNotFoundError:
+            print(f"Editor '{editor}' not found. Set $EDITOR environment variable.")
+            return initial_content
+        finally:
+            try:
+                os.unlink(temp_path)
+            except OSError:
+                pass
+
     def get_input(self, prompt):
-        """Get user input with the given prompt"""
-        return input(prompt).strip()
+        """Get user input with the given prompt. Type /edit for multiline editor."""
+        user_input = input(prompt)
+
+        # Check for /edit command
+        if user_input.strip().lower() == '/edit':
+            return self._open_editor("")
+
+        return user_input.strip()
 
 
 # ============================================================================
