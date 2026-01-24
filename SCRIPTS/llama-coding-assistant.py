@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Interactive Coding Assistant using llama.cpp server via llama-cpp-python
-Refactored with separated concerns for better maintainability
+Interactive Assistant using llama.cpp server via llama-cpp-python
+Supports multiple assistant types with different models and tools.
 """
 
 import json
@@ -194,7 +194,7 @@ class UIFormatter:
         """Print welcome message with available commands"""
         readline_status = "ENABLED" if READLINE_AVAILABLE else "DISABLED"
         print(colored("╔══════════════════════════════════════════════════════╗", Colors.SYSTEM))
-        print(colored("║  Coding Assistant with llama.cpp                     ║", Colors.SYSTEM))
+        print(colored("║  Assistant with llama.cpp                            ║", Colors.SYSTEM))
         print(colored("║  Commands:                                          ║", Colors.SYSTEM))
         print(colored("║    /exit      - End the session                     ║", Colors.SYSTEM))
         print(colored("║    /clear     - Clear conversation history          ║", Colors.SYSTEM))
@@ -1373,11 +1373,11 @@ def get_tools_for_assistant(assistant_name: str) -> List[Dict[str, Any]]:
 
 
 # ============================================================================
-# Main Coding Assistant - Orchestrates all components
+# Main Assistant - Orchestrates all components
 # ============================================================================
 
-class CodingAssistant:
-    """Main coding assistant that orchestrates all components"""
+class Assistant:
+    """Main assistant class that orchestrates all components"""
 
     def __init__(self, server_url, model_name, system_prompt, tools, show_thinking=True, stream_output=True):
         self.show_thinking = show_thinking
@@ -1577,7 +1577,7 @@ class CodingAssistant:
 def parse_arguments():
     """Parse command-line arguments"""
     parser = argparse.ArgumentParser(
-        description='Interactive Coding Assistant using llama.cpp server',
+        description='Interactive Assistant using llama.cpp server',
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
     parser.add_argument(
@@ -1648,7 +1648,7 @@ def main():
     print(colored(f"Tools: {', '.join(config['tools'])}", Colors.SYSTEM))
     print()
 
-    assistant = CodingAssistant(
+    assistant = Assistant(
         args.server_url,
         model,
         system_prompt,
