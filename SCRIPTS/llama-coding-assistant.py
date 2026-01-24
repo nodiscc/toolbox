@@ -8,6 +8,7 @@ import json
 import os
 import subprocess
 import sys
+import argparse
 from datetime import datetime
 from typing import Optional, Dict, Any, List, Tuple
 import difflib
@@ -39,7 +40,6 @@ BOX_WIDTH = 40
 # API Configuration
 DEFAULT_SERVER_URL = "http://127.0.0.1:8033"
 DEFAULT_MODEL = "Qwen3-Coder-30B-A3B-Instruct-UD-Q5_K_XL"
-#DEFAULT_MODEL = "openai_gpt-oss-20b-MXFP4"
 DEFAULT_TEMPERATURE = 0.7
 DEFAULT_MAX_TOKENS = 2000
 API_TIMEOUT = 30
@@ -161,7 +161,7 @@ class UIFormatter:
         return '\n'.join(colored_diff)
 
     @staticmethod
-    def print_welcome(show_thinking: bool, stream_output: bool):
+    def print_welcome(show_thinking: bool, stream_output: bool, model_name: str):
         """Print welcome message with available commands"""
         readline_status = "ENABLED" if READLINE_AVAILABLE else "DISABLED"
         print(colored("╔══════════════════════════════════════════════════════╗", Colors.SYSTEM))
@@ -173,6 +173,7 @@ class UIFormatter:
         print(colored("║    !<number>  - Rerun command (e.g., !1, !2)        ║", Colors.SYSTEM))
         print(colored("║    stats      - Show API usage statistics           ║", Colors.SYSTEM))
         print(colored("║                                                      ║", Colors.SYSTEM))
+        print(colored(f"║  MODEL:         {model_name[:36]:<36} ║", Colors.SYSTEM))
         print(colored(f"║  SHOW_THINKING: {'ON ' if show_thinking else 'OFF'}                              ║", Colors.SYSTEM))
         print(colored(f"║  STREAM_OUTPUT: {'ON ' if stream_output else 'OFF'}                              ║", Colors.SYSTEM))
         print(colored(f"║  READLINE:      {readline_status:<7}                         ║", Colors.SYSTEM))
@@ -824,10 +825,6 @@ Be concise and clear in your responses."""
 # Input Handler - Manages readline and input history
 # ============================================================================
 
-# ============================================================================
-# Input Handler - Manages readline and input history
-# ============================================================================
-
 # Readline key bindings configuration
 READLINE_BINDINGS = {
     'tab': 'complete',
@@ -896,8 +893,9 @@ class InputHandler:
 class APIClient:
     """Handles API communication with llama.cpp server"""
 
-    def __init__(self, server_url: str, ui_formatter: UIFormatter, show_thinking: bool, stream_output: bool):
+    def __init__(self, server_url: str, model_name: str, ui_formatter: UIFormatter, show_thinking: bool, stream_output: bool):
         self.server_url = server_url
+        self.model_name = model_name
         self.ui = ui_formatter
         self.show_thinking = show_thinking
         self.stream_output = stream_output
@@ -914,6 +912,7 @@ class APIClient:
                 api_key="dummy"
             )
             self.ui.print_system(f"Connected to llama.cpp server at {server_url}")
+            self.ui.print_system(f"Using model: {model_name}")
         except ImportError:
             self.ui.print_error("Error: openai library not found.")
             print("Install with: pip install openai")
@@ -987,7 +986,7 @@ class APIClient:
     def _call_streaming(self, messages: List[Dict[str, Any]], tools: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
         """Call API with streaming enabled"""
         stream = self.client.chat.completions.create(
-            model=DEFAULT_MODEL,
+            model=self.model_name,
             messages=messages,
             tools=tools,
             temperature=DEFAULT_TEMPERATURE,
@@ -1004,11 +1003,9 @@ class APIClient:
 
         for chunk in stream:
             if not chunk.choices:
-                # print(chunk)
                 # Check for usage information in chunks without choices
                 if hasattr(chunk, 'usage'):
                     usage_info = self._extract_usage_info(chunk.usage)
-                    # print("\n\nUsage: " + str(usage_info))
                 continue
 
             delta = chunk.choices[0].delta
@@ -1072,7 +1069,7 @@ class APIClient:
     def _call_non_streaming(self, messages: List[Dict[str, Any]], tools: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
         """Call API without streaming"""
         response = self.client.chat.completions.create(
-            model=DEFAULT_MODEL,
+            model=self.model_name,
             messages=messages,
             tools=tools,
             temperature=DEFAULT_TEMPERATURE,
@@ -1347,8 +1344,7 @@ TOOLS = [
 class CodingAssistant:
     """Main coding assistant that orchestrates all components"""
 
-    def __init__(self, server_url: str = "http://127.0.0.1:8033",
-                 show_thinking: bool = True, stream_output: bool = True):
+    def __init__(self, server_url: str, model_name: str, show_thinking: bool = True, stream_output: bool = True):
         self.show_thinking = show_thinking
         self.stream_output = stream_output
 
@@ -1357,7 +1353,7 @@ class CodingAssistant:
         self.conversation = ConversationManager()
         self.tool_executor = ToolExecutor(self.ui)
         self.input_handler = InputHandler()
-        self.api_client = APIClient(server_url, self.ui, show_thinking, stream_output)
+        self.api_client = APIClient(server_url, model_name, self.ui, show_thinking, stream_output)
 
     def handle_special_commands(self, user_input: str) -> Tuple[bool, bool]:
         """Handle special built-in commands. Returns (handled, should_exit)"""
@@ -1508,7 +1504,7 @@ class CodingAssistant:
 
     def run(self):
         """Main interaction loop"""
-        self.ui.print_welcome(self.show_thinking, self.stream_output)
+        self.ui.print_welcome(self.show_thinking, self.stream_output, self.api_client.model_name)
 
         while True:
             try:
@@ -1542,18 +1538,39 @@ class CodingAssistant:
 # Main Entry Point
 # ============================================================================
 
-def main():
-    # Use global configuration constants
-    server_url = DEFAULT_SERVER_URL
+def parse_arguments():
+    """Parse command-line arguments"""
+    parser = argparse.ArgumentParser(
+        description='Interactive Coding Assistant using llama.cpp server',
+        formatter_class=argparse.RawDescriptionHelpFormatter
+    )
 
-    if len(sys.argv) > 1:
-        server_url = sys.argv[1]
+    parser.add_argument(
+        '--server-url',
+        type=str,
+        default=DEFAULT_SERVER_URL,
+        help=f'llama.cpp server URL (default: {DEFAULT_SERVER_URL})'
+    )
+
+    parser.add_argument(
+        '--model',
+        type=str,
+        default=DEFAULT_MODEL,
+        help=f'Model name to use (default: {DEFAULT_MODEL})'
+    )
+
+    return parser.parse_args()
+
+
+def main():
+    args = parse_arguments()
 
     print(colored("Starting Coding Assistant...", Colors.SYSTEM))
-    print(colored(f"Connecting to llama.cpp server at: {server_url}", Colors.SYSTEM))
+    print(colored(f"Connecting to llama.cpp server at: {args.server_url}", Colors.SYSTEM))
+    print(colored(f"Model: {args.model}", Colors.SYSTEM))
     print()
 
-    assistant = CodingAssistant(server_url, SHOW_THINKING, STREAM_OUTPUT)
+    assistant = CodingAssistant(args.server_url, args.model, SHOW_THINKING, STREAM_OUTPUT)
     assistant.run()
 
 
