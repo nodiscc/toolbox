@@ -196,11 +196,11 @@ class UIFormatter:
         print(colored("╔══════════════════════════════════════════════════════╗", Colors.SYSTEM))
         print(colored("║  Coding Assistant with llama.cpp                     ║", Colors.SYSTEM))
         print(colored("║  Commands:                                          ║", Colors.SYSTEM))
-        print(colored("║    exit/quit  - End the session                     ║", Colors.SYSTEM))
-        print(colored("║    clear      - Clear conversation history          ║", Colors.SYSTEM))
-        print(colored("║    history    - Show command history                ║", Colors.SYSTEM))
-        print(colored("║    !<number>  - Rerun command (e.g., !1, !2)        ║", Colors.SYSTEM))
-        print(colored("║    stats      - Show API usage statistics           ║", Colors.SYSTEM))
+        print(colored("║    /exit      - End the session                     ║", Colors.SYSTEM))
+        print(colored("║    /clear     - Clear conversation history          ║", Colors.SYSTEM))
+        print(colored("║    /history   - Show command history                ║", Colors.SYSTEM))
+        print(colored("║    /!<number> - Rerun command (e.g., /!1, /!2)      ║", Colors.SYSTEM))
+        print(colored("║    /stats     - Show API usage statistics           ║", Colors.SYSTEM))
         print(colored("║                                                      ║", Colors.SYSTEM))
         print(colored(f"║  MODEL:         {model_name[:36]:<36} ║", Colors.SYSTEM))
         print(colored(f"║  SHOW_THINKING: {'ON ' if show_thinking else 'OFF'}                              ║", Colors.SYSTEM))
@@ -1395,35 +1395,35 @@ class CodingAssistant:
         """Handle special built-in commands. Returns (handled, should_exit)"""
         cmd = user_input.lower().strip()
 
-        if cmd in ['exit', 'quit']:
+        if cmd in ['/exit', '/quit']:
             self.ui.print_system("Goodbye!")
             return True, True
 
-        if cmd == 'clear':
+        if cmd == '/clear':
             self.conversation.clear()
             self.ui.print_system("Conversation history cleared")
             return True, False
 
-        if cmd == 'history':
+        if cmd == '/history':
             self.ui.print_command_history(self.tool_executor.command_history)
             return True, False
 
-        if cmd == 'stats':
+        if cmd == '/stats':
             stats = self.api_client.get_stats()
             self.ui.print_stats(stats)
             return True, False
 
-        if cmd == 'resetstats':
+        if cmd == '/resetstats':
             self.api_client.reset_stats()
             self.ui.print_system("API usage statistics reset")
             return True, False
 
-        if cmd.startswith('!') and len(cmd) > 1:
+        if cmd.startswith('/!') and len(cmd) > 2:
             try:
-                index = int(cmd[1:])
+                index = int(cmd[2:])
                 self.rerun_command(index)
             except ValueError:
-                self.ui.print_error("Invalid command format. Use !<number> (e.g., !1, !2)")
+                self.ui.print_error("Invalid command format. Use /!<number> (e.g., /!1, /!2)")
             return True, False
 
         return False, False
@@ -1435,7 +1435,7 @@ class CodingAssistant:
             return
 
         if index < 1 or index > len(self.tool_executor.command_history):
-            self.ui.print_error("Invalid command index. Use 'history' to see available commands.")
+            self.ui.print_error("Invalid command index. Use '/history' to see available commands.")
             return
 
         entry = self.tool_executor.command_history[index - 1]
@@ -1562,7 +1562,7 @@ class CodingAssistant:
                 print()
 
             except KeyboardInterrupt:
-                self.ui.print_system("\nInterrupted. Type 'exit' to quit.")
+                self.ui.print_system("\nInterrupted. Type '/exit' to quit.")
             except EOFError:
                 self.ui.print_system("\nGoodbye!")
                 break
