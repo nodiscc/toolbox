@@ -82,8 +82,16 @@ Be concise and clear in your responses.""",
 - Personal productivity
 
 You can read and write files to help manage notes, tasks, and schedules.
-Be friendly, organized, and proactive in helping the user stay productive.""",
-        "tools": ["list_directory", "read_file", "write_file", "append_file", "find_files"]
+Be friendly, organized, and proactive in helping the user stay productive.
+
+When the user asks what to work on or needs task suggestions:
+1. Use the get_dashboard tool to fetch their current tasks, unread mail, and assigned issues
+2. Ask clarifying questions if needed:
+   - How much time do they have available?
+   - Where are they (home, office, commuting)?
+3. Analyze the tasks and infer priority from titles and context
+4. Suggest the most appropriate task based on their situation""",
+        "tools": ["list_directory", "read_file", "write_file", "append_file", "find_files", "get_dashboard"]
     }
 }
 
@@ -304,6 +312,9 @@ class ToolExecutor:
 
     def requires_confirmation(self, tool_name, arguments):
         """Determine if a tool call requires user confirmation"""
+        # get_dashboard is always safe (read-only)
+        if tool_name == "get_dashboard":
+            return False
         # list_directory doesn't require confirmation if path is under current directory
         if tool_name in ["list_directory", "read_file"]:
             path = arguments.get("path", ".")
@@ -402,6 +413,8 @@ class ToolExecutor:
                 return self._edit_file(arguments)
             elif tool_name == "run_command":
                 return self._run_command(arguments)
+            elif tool_name == "get_dashboard":
+                return self._get_dashboard(arguments)
             else:
                 return f"Error: Unknown tool '{tool_name}'"
         except Exception as e:
@@ -805,6 +818,29 @@ class ToolExecutor:
         self.command_history.append(history_entry)
 
         return result_str
+
+    def _get_dashboard(self, args):
+        """Get the user's personal dashboard with tasks, mail, and issues"""
+        dashboard_cmd = os.path.expanduser("~/GIT/toolbox.git/SCRIPTS/dashboard")
+
+        result = subprocess.run(
+            dashboard_cmd,
+            shell=True,
+            capture_output=True,
+            text=True,
+            timeout=API_TIMEOUT
+        )
+
+        output = []
+        if result.stdout:
+            output.append(result.stdout)
+        if result.stderr:
+            output.append(f"STDERR:\n{result.stderr}")
+
+        if result.returncode != 0:
+            output.append(f"Return code: {result.returncode}")
+
+        return "\n".join(output) if output else "No dashboard data available"
 
 
 # ============================================================================
@@ -1357,6 +1393,18 @@ TOOLS_REGISTRY = {
                     }
                 },
                 "required": ["command"]
+            }
+        }
+    },
+    "get_dashboard": {
+        "type": "function",
+        "function": {
+            "name": "get_dashboard",
+            "description": "Get the user's personal dashboard showing tasks, unread mail, and assigned issues. Use this to help suggest what the user should work on next.",
+            "parameters": {
+                "type": "object",
+                "properties": {},
+                "required": []
             }
         }
     }
