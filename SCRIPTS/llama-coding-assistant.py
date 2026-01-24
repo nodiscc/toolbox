@@ -40,7 +40,6 @@ BOX_WIDTH = 40
 
 # API Configuration
 DEFAULT_SERVER_URL = "http://127.0.0.1:8033"
-DEFAULT_MODEL = "Qwen3-Coder-30B-A3B-Instruct-UD-Q5_K_XL"
 DEFAULT_TEMPERATURE = 0.7
 DEFAULT_MAX_TOKENS = 2000
 API_TIMEOUT = 30
@@ -58,6 +57,35 @@ DEFAULT_CONTEXT_LINES = 0
 # File Size Units
 FILE_SIZE_UNITS = ['B', 'KB', 'MB', 'GB', 'TB']
 FILE_SIZE_DIVISOR = 1024.0
+
+# ============================================================================
+# Assistant Configurations
+# ============================================================================
+
+DEFAULT_ASSISTANT = "coding"
+
+ASSISTANT_CONFIGS = {
+    "coding": {
+        "model": "Qwen3-Coder-30B-A3B-Instruct-UD-Q5_K_XL",
+        "system_prompt": """You are a helpful coding assistant. You can read, write, and edit files, as well as run shell commands.
+When the user asks you to perform operations, use the available tools to help them.
+Be concise and clear in your responses.""",
+        "tools": ["list_directory", "search_files", "find_files", "create_directory",
+                  "read_file", "write_file", "append_file", "edit_file", "run_command"]
+    },
+    "personal": {
+        "model": "google_gemma-3-4b-it-Q6_K_L",
+        "system_prompt": """You are a helpful personal management assistant. You help with:
+- Task and schedule management
+- Note-taking and organization
+- Reminders and planning
+- Personal productivity
+
+You can read and write files to help manage notes, tasks, and schedules.
+Be friendly, organized, and proactive in helping the user stay productive.""",
+        "tools": ["list_directory", "read_file", "write_file", "append_file", "find_files"]
+    }
+}
 
 # ============================================================================
 # ANSI Color Codes
@@ -786,11 +814,9 @@ class ToolExecutor:
 class ConversationManager:
     """Manages conversation state and history"""
 
-    def __init__(self):
+    def __init__(self, system_prompt):
         self.conversation: List[Dict[str, Any]] = []
-        self.system_prompt = """You are a helpful coding assistant. You can read, write, and edit files, as well as run shell commands.
-When the user asks you to perform operations, use the available tools to help them.
-Be concise and clear in your responses."""
+        self.system_prompt = system_prompt
 
     def add_user_message(self, content):
         """Add a user message to the conversation"""
@@ -893,7 +919,7 @@ class InputHandler:
 class APIClient:
     """Handles API communication with llama.cpp server"""
 
-    def __init__(self, server_url: str, model_name: str, ui_formatter: UIFormatter, show_thinking: bool, stream_output: bool):
+    def __init__(self, server_url, model_name, ui_formatter: UIFormatter, show_thinking, stream_output):
         self.server_url = server_url
         self.model_name = model_name
         self.ui = ui_formatter
@@ -1106,11 +1132,11 @@ class APIClient:
 
 
 # ============================================================================
-# Tool Definitions
+# Tool Definitions Registry
 # ============================================================================
 
-TOOLS = [
-    {
+TOOLS_REGISTRY = {
+    "list_directory": {
         "type": "function",
         "function": {
             "name": "list_directory",
@@ -1132,7 +1158,7 @@ TOOLS = [
             }
         }
     },
-    {
+    "search_files": {
         "type": "function",
         "function": {
             "name": "search_files",
@@ -1179,7 +1205,7 @@ TOOLS = [
             }
         }
     },
-    {
+    "find_files": {
         "type": "function",
         "function": {
             "name": "find_files",
@@ -1206,7 +1232,7 @@ TOOLS = [
             }
         }
     },
-    {
+    "create_directory": {
         "type": "function",
         "function": {
             "name": "create_directory",
@@ -1228,7 +1254,7 @@ TOOLS = [
             }
         }
     },
-    {
+    "read_file": {
         "type": "function",
         "function": {
             "name": "read_file",
@@ -1245,7 +1271,7 @@ TOOLS = [
             }
         }
     },
-    {
+    "write_file": {
         "type": "function",
         "function": {
             "name": "write_file",
@@ -1266,7 +1292,7 @@ TOOLS = [
             }
         }
     },
-    {
+    "append_file": {
         "type": "function",
         "function": {
             "name": "append_file",
@@ -1292,7 +1318,7 @@ TOOLS = [
             }
         }
     },
-    {
+    "edit_file": {
         "type": "function",
         "function": {
             "name": "edit_file",
@@ -1317,7 +1343,7 @@ TOOLS = [
             }
         }
     },
-    {
+    "run_command": {
         "type": "function",
         "function": {
             "name": "run_command",
@@ -1334,7 +1360,16 @@ TOOLS = [
             }
         }
     }
-]
+}
+
+
+def get_tools_for_assistant(assistant_name: str) -> List[Dict[str, Any]]:
+    """Return the tool definitions for a given assistant type"""
+    config = ASSISTANT_CONFIGS.get(assistant_name)
+    if not config:
+        raise ValueError(f"Unknown assistant: {assistant_name}")
+
+    return [TOOLS_REGISTRY[tool_name] for tool_name in config["tools"]]
 
 
 # ============================================================================
@@ -1344,13 +1379,14 @@ TOOLS = [
 class CodingAssistant:
     """Main coding assistant that orchestrates all components"""
 
-    def __init__(self, server_url, model_name, show_thinking=True, stream_output=True):
+    def __init__(self, server_url, model_name, system_prompt, tools, show_thinking=True, stream_output=True):
         self.show_thinking = show_thinking
         self.stream_output = stream_output
+        self.tools = tools
 
         # Initialize components
         self.ui = UIFormatter()
-        self.conversation = ConversationManager()
+        self.conversation = ConversationManager(system_prompt)
         self.tool_executor = ToolExecutor(self.ui)
         self.input_handler = InputHandler()
         self.api_client = APIClient(server_url, model_name, self.ui, show_thinking, stream_output)
@@ -1432,7 +1468,7 @@ class CodingAssistant:
             if self.show_thinking and not self.stream_output:
                 self.ui.print_system("[Thinking...]")
 
-            response = self.api_client.call(messages, TOOLS)
+            response = self.api_client.call(messages, self.tools)
 
             if not response:
                 self.ui.print_error("Failed to get response from API")
@@ -1540,28 +1576,86 @@ class CodingAssistant:
 
 def parse_arguments():
     """Parse command-line arguments"""
-    parser = argparse.ArgumentParser( description='Interactive Coding Assistant using llama.cpp server', formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('--server-url', type=str, default=DEFAULT_SERVER_URL, help=f'llama.cpp server URL (default: {DEFAULT_SERVER_URL})')
-    parser.add_argument('--model', type=str, default=DEFAULT_MODEL, help=f'Model name to use (default: {DEFAULT_MODEL})')
-    parser.add_argument('--list-models', action='store_true', help=f'List available models')
+    parser = argparse.ArgumentParser(
+        description='Interactive Coding Assistant using llama.cpp server',
+        formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    parser.add_argument(
+        '--server-url',
+        type=str,
+        default=DEFAULT_SERVER_URL,
+        help=f'llama.cpp server URL (default: {DEFAULT_SERVER_URL})'
+    )
+    parser.add_argument(
+        '--model',
+        type=str,
+        default=None,
+        help='Override the model (default: use assistant preset)'
+    )
+    parser.add_argument(
+        '--assistant',
+        type=str,
+        default=DEFAULT_ASSISTANT,
+        choices=list(ASSISTANT_CONFIGS.keys()),
+        help=f'Assistant type to use (default: {DEFAULT_ASSISTANT})'
+    )
+    parser.add_argument(
+        '--list-models',
+        action='store_true',
+        help='List available models from server'
+    )
+    parser.add_argument(
+        '--list-assistants',
+        action='store_true',
+        help='List available assistant types'
+    )
     return parser.parse_args()
 
 
 def main():
     args = parse_arguments()
+
+    # Handle --list-models
     if args.list_models:
-        response = requests.get(args.server_url + '/v1/models' , timeout=10)
+        response = requests.get(args.server_url + '/v1/models', timeout=10)
         models_json = json.loads(response.text)
-        #print(json.dumps(models_json))
         for model in models_json['data']:
             print(model['id'])
-        sys.exit(1)
-    print(colored("Starting Coding Assistant...", Colors.SYSTEM))
+        sys.exit(0)
+
+    # Handle --list-assistants
+    if args.list_assistants:
+        print("Available assistant types:\n")
+        for name, config in ASSISTANT_CONFIGS.items():
+            print(f"  {name}")
+            print(f"    Model: {config['model']}")
+            print(f"    Tools: {', '.join(config['tools'])}")
+            print()
+        sys.exit(0)
+
+    # Get assistant configuration
+    config = ASSISTANT_CONFIGS[args.assistant]
+
+    # Use provided model or assistant's default
+    model = args.model if args.model else config["model"]
+    system_prompt = config["system_prompt"]
+    tools = get_tools_for_assistant(args.assistant)
+
+    print(colored("Starting Assistant...", Colors.SYSTEM))
     print(colored(f"Connecting to llama.cpp server at: {args.server_url}", Colors.SYSTEM))
-    print(colored(f"Model: {args.model}", Colors.SYSTEM))
+    print(colored(f"Assistant type: {args.assistant}", Colors.SYSTEM))
+    print(colored(f"Model: {model}", Colors.SYSTEM))
+    print(colored(f"Tools: {', '.join(config['tools'])}", Colors.SYSTEM))
     print()
 
-    assistant = CodingAssistant(args.server_url, args.model, SHOW_THINKING, STREAM_OUTPUT)
+    assistant = CodingAssistant(
+        args.server_url,
+        model,
+        system_prompt,
+        tools,
+        SHOW_THINKING,
+        STREAM_OUTPUT
+    )
     assistant.run()
 
 
