@@ -14,6 +14,7 @@ from typing import Optional, Dict, Any, List, Tuple
 import difflib
 import fnmatch
 import re
+import requests
 
 try:
     from openai import OpenAI
@@ -1539,31 +1540,22 @@ class CodingAssistant:
 
 def parse_arguments():
     """Parse command-line arguments"""
-    parser = argparse.ArgumentParser(
-        description='Interactive Coding Assistant using llama.cpp server',
-        formatter_class=argparse.RawDescriptionHelpFormatter
-    )
-
-    parser.add_argument(
-        '--server-url',
-        type=str,
-        default=DEFAULT_SERVER_URL,
-        help=f'llama.cpp server URL (default: {DEFAULT_SERVER_URL})'
-    )
-
-    parser.add_argument(
-        '--model',
-        type=str,
-        default=DEFAULT_MODEL,
-        help=f'Model name to use (default: {DEFAULT_MODEL})'
-    )
-
+    parser = argparse.ArgumentParser( description='Interactive Coding Assistant using llama.cpp server', formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument('--server-url', type=str, default=DEFAULT_SERVER_URL, help=f'llama.cpp server URL (default: {DEFAULT_SERVER_URL})')
+    parser.add_argument('--model', type=str, default=DEFAULT_MODEL, help=f'Model name to use (default: {DEFAULT_MODEL})')
+    parser.add_argument('--list-models', action='store_true', help=f'List available models')
     return parser.parse_args()
 
 
 def main():
     args = parse_arguments()
-
+    if args.list_models:
+        response = requests.get(args.server_url + '/v1/models' , timeout=10)
+        models_json = json.loads(response.text)
+        #print(json.dumps(models_json))
+        for model in models_json['data']:
+            print(model['id'])
+        sys.exit(1)
     print(colored("Starting Coding Assistant...", Colors.SYSTEM))
     print(colored(f"Connecting to llama.cpp server at: {args.server_url}", Colors.SYSTEM))
     print(colored(f"Model: {args.model}", Colors.SYSTEM))
