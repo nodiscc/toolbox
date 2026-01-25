@@ -1596,7 +1596,7 @@ class Assistant:
                     preview_diff = self.tool_executor.get_preview_diff(tool_name, arguments)
                     confirmed, raw = self.ui.print_tool_confirmation(tool_name, arguments, preview_diff)
                     if not confirmed:
-                        result = f"User declined to execute this tool. Do this instead: {raw}"
+                        result = f"Tool use rejected with user message: {raw}"
                         if self.show_thinking:
                             self.ui.print_system(result)
                         self.conversation.add_tool_response(tool_id, result)
