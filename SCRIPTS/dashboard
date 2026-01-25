@@ -287,38 +287,43 @@ def get_caldav_tasks(caldav_url, caldav_username, caldav_password, max_priority=
         username=caldav_username,
         password=caldav_password,
         ssl_verify_cert=False)
-    caldav_principal = caldav_client.principal()
-    caldav_calendar = caldav_principal.calendar(name='Personnel')
-    assert caldav_calendar
-    caldav_todos = caldav_calendar.todos(include_completed=False)
-    now = datetime.datetime.now(datetime.timezone.utc)
-    for todo in caldav_todos:
-        summary = todo.vobject_instance.vtodo.summary.value
-        try:
-            priority = todo.vobject_instance.vtodo.priority.value
-        except AttributeError:
-            priority = "9"
-        priority_int = int(priority)
-        if priority_int > max_priority:
-            continue
-        # Check if start date exists and is in the past
-        try:
-            dtstart = todo.vobject_instance.vtodo.dtstart.value
-            # Convert to datetime if it's a date object
-            if isinstance(dtstart, datetime.date) and not isinstance(dtstart, datetime.datetime):
-                dtstart = datetime.datetime.combine(dtstart, datetime.time.min)
-            # Make timezone-aware if naive
-            if dtstart.tzinfo is None:
-                dtstart = dtstart.replace(tzinfo=datetime.timezone.utc)
-            if dtstart > now:
+    try:
+        caldav_principal = caldav_client.principal()
+        caldav_calendar = caldav_principal.calendar(name='Personnel')
+        assert caldav_calendar
+        caldav_todos = caldav_calendar.todos(include_completed=False)
+        now = datetime.datetime.now(datetime.timezone.utc)
+        for todo in caldav_todos:
+            summary = todo.vobject_instance.vtodo.summary.value
+            try:
+                priority = todo.vobject_instance.vtodo.priority.value
+            except AttributeError:
+                priority = "9"
+            priority_int = int(priority)
+            if priority_int > max_priority:
                 continue
-        except AttributeError:
-            # If no start date, include the task
-            pass
+            # Check if start date exists and is in the past
+            try:
+                dtstart = todo.vobject_instance.vtodo.dtstart.value
+                # Convert to datetime if it's a date object
+                if isinstance(dtstart, datetime.date) and not isinstance(dtstart, datetime.datetime):
+                    dtstart = datetime.datetime.combine(dtstart, datetime.time.min)
+                # Make timezone-aware if naive
+                if dtstart.tzinfo is None:
+                    dtstart = dtstart.replace(tzinfo=datetime.timezone.utc)
+                if dtstart > now:
+                    continue
+            except AttributeError:
+                # If no start date, include the task
+                pass
 
-        todos.append(f'{priority} {summary}')
-    todos.sort()
-    return todos
+            todos.append(f'{priority} {summary}')
+        todos.sort()
+        return todos
+
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching caldav tasks: {e}")
+        return []
 
 
 def check_mtime(file_path, warn_if_older_than_seconds):
