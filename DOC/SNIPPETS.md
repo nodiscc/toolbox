@@ -653,7 +653,9 @@ NFS mounts: always use `_netdev`
 
 mysql `GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, INDEX, ALTER, CREATE TEMPORARY TABLES ON 'wiki'.* TO 'wiki'@'localhost'; `
 
-bash -- There are language features you should avoid, they are there for historic reasons; Know the few-ish actual language warts that you need to work around. (pipefail, when subshells are created); Know how field-separation works. Use trap for cleanup. And it's largely because bash is trying to be smart for you: mix that into a language where instructions and data can each become the other, based purely on its position in the command line, and you're just headed for grief.   It's just not a very good design: the things that make it good on the command line make it an unsafe programming language. It is ridiculously easy to make terrible mistakes, things that look perfectly sensible... 
+snippets: firefox: fix tt-rss font `layout.css.system-ui.enabled false`
+
+bash -- There are language features you should avoid, they are there for historic reasons; Know the few-ish actual language warts that you need to work around. (pipefail, when subshells are created); Know how field-separation works. Use trap for cleanup. And it's largely because bash is trying to be smart for you: mix that into a language where instructions and data can each become the other, based purely on its position in the command line, and you're just headed for grief. It's just not a very good design: the things that make it good on the command line make it an unsafe programming language. It is ridiculously easy to make terrible mistakes, things that look perfectly sensible... 
 
 bash filter out file extension: `touch example.list; file=example.list; echo "${file%.*}"`
 
@@ -826,12 +828,13 @@ KVM/QEMU enable nesetd virtualization (eg proxmox in libvirt: `options kvm-intel
 
 KVM/QEMU convert VMDK disk image to raw `qemu-img convert source.vmdk -O raw destination.bin`
 
-Change Android device MAC address `su; busybox ifconfig eth0 hw ether 00:11:22:33:44:55`
-Android recovery mode: Power + Vol UP (+Home)
-
-Android download mode: Power + Volume down (+Home)
-
-Android wifi keys storage `/data/misc/wifi/wpa_supplicant.conf`
+* adb tail android logs: `adb logcat -v color`
+* adb android show ERROR log messages: `adb logcat *:E`
+* Change Android device MAC address `su; busybox ifconfig eth0 hw ether 00:11:22:33:44:55`
+* Android recovery mode: Power + Vol UP (+Home)
+* Android download mode: Power + Volume down (+Home)
+* Android wifi keys storage `/data/misc/wifi/wpa_supplicant.conf`
+* android modify host file: `sudo apt install adb && adb devices && adb root && adb pull /system/etc/hosts ./hosts`
 
 run VM in headless mode in Virtualbox GUI :`Shift`+ Run
 
@@ -1298,9 +1301,5 @@ strace profiling: strace -c command
 temporarily change debconf frontend: sudo DEBIAN_FRONTEND="gnome" dpkg-reconfigure debconf
 
 raspberry pi disable HDMI 25mA power saving: `/usr/bin/tvservice -o`
-
-adb tail androind logs: `adb logcat -v color`
-
-adb android show ERROR log messages: `adb logcat *:E`
 
 linux Get all extensions and their respective file count in a directory https://serverfault.com/questions/183431/ `find ./ -type f | grep -E ".*\.[a-zA-Z0-9]*$" | sed -e 's/.*\(\.[a-zA-Z0-9]*\)$/\1/' | sort | uniq -c | sort -n`
