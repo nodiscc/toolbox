@@ -254,29 +254,34 @@ def get_caldav_events(caldav_url, caldav_username, caldav_password, max_days_in_
         username=caldav_username,
         password=caldav_password,
         ssl_verify_cert=False)
-    caldav_principal = caldav_client.principal()
-    caldav_calendar = caldav_principal.calendar(name='Personnel')
-    assert caldav_calendar
-    now = datetime.datetime.now(datetime.timezone.utc)
-    caldav_events = caldav_calendar.search(
-        start=now,
-        end=now + datetime.timedelta(days=max_days_in_future),
-        event=True,
-        expand=True,
-        sort_keys=('dtstart',))
-    for event in caldav_events:
-        ical_event = icalendar.Calendar.from_ical(event.data)
-        for component in ical_event.walk():
-            if component.name == "VEVENT":
-                summary = component.get('summary')
-                start_datetime = component.get('dtstart').dt
-                start = start_datetime.strftime('%a %d/%m %H:%M')
-                end_datetime = component.get('dtend').dt
-                duration_datetime = end_datetime - start_datetime
-                duration = 'h'.join(str(duration_datetime).split(':')[:2])
-                out_line = f'{start} {duration} {summary}'
-                events.append(out_line)
-    return events
+    try:
+        caldav_principal = caldav_client.principal()
+        caldav_calendar = caldav_principal.calendar(name='Personnel')
+        assert caldav_calendar
+        now = datetime.datetime.now(datetime.timezone.utc)
+        caldav_events = caldav_calendar.search(
+            start=now,
+            end=now + datetime.timedelta(days=max_days_in_future),
+            event=True,
+            expand=True,
+            sort_keys=('dtstart',))
+        for event in caldav_events:
+            ical_event = icalendar.Calendar.from_ical(event.data)
+            for component in ical_event.walk():
+                if component.name == "VEVENT":
+                    summary = component.get('summary')
+                    start_datetime = component.get('dtstart').dt
+                    start = start_datetime.strftime('%a %d/%m %H:%M')
+                    end_datetime = component.get('dtend').dt
+                    duration_datetime = end_datetime - start_datetime
+                    duration = 'h'.join(str(duration_datetime).split(':')[:2])
+                    out_line = f'{start} {duration} {summary}'
+                    events.append(out_line)
+        return events
+
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching caldav tasks: {e}")
+        return []
 
 
 def get_caldav_tasks(caldav_url, caldav_username, caldav_password, max_priority=9):
