@@ -205,38 +205,43 @@ def get_ttrss_marked(ttrss_url, ttrss_username, ttrss_password, ttrss_limit):
         "user": ttrss_username,
         "password": ttrss_password})
     ttrss_headers = {"Content-Type": "application/json"}
+    try:
+        response = ttrss_session.post(
+            ttrss_url + '/api/',
+            verify=False,
+            headers=ttrss_headers,
+            data=ttrss_login_data)
+        auth = json.loads(response.text)
+        session_id = auth['content']['session_id']
 
-    response = ttrss_session.post(
-        ttrss_url + '/api/',
-        verify=False,
-        headers=ttrss_headers,
-        data=ttrss_login_data)
-    auth = json.loads(response.text)
-    session_id = auth['content']['session_id']
+        # Get limit from environment variable or default to 20
+        limit = int(ttrss_limit)
 
-    # Get limit from environment variable or default to 20
-    limit = int(ttrss_limit)
+        ttrss_query_data = json.dumps({
+            "sid": session_id,
+            "op": "getHeadlines",
+            "feed_id": -1, # starred articles
+            "view_mode": "all_articles",
+            "feed_dates": "date_reverse",
+            "limit": limit})
 
-    ttrss_query_data = json.dumps({
-        "sid": session_id,
-        "op": "getHeadlines",
-        "feed_id": -1, # starred articles
-        "view_mode": "all_articles",
-        "feed_dates": "date_reverse",
-        "limit": limit})
+        response = ttrss_session.post(
+            ttrss_url + '/api/',
+            verify=False,
+            headers=ttrss_headers,
+            data=ttrss_query_data)
 
-    response = ttrss_session.post(
-        ttrss_url + '/api/',
-        verify=False,
-        headers=ttrss_headers,
-        data=ttrss_query_data)
+        data = json.loads(response.text)
+        ttrss_marked_articles = []
+        for article in data['content']:
+            ttrss_marked_articles.append(article['title'])
 
-    data = json.loads(response.text)
-    ttrss_marked_articles = []
-    for article in data['content']:
-        ttrss_marked_articles.append(article['title'])
+        return ttrss_marked_articles
 
-    return ttrss_marked_articles
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching tt-rss marked articles: {e}")
+        return []
+
 
 
 def get_todo_list(todo_txt_path):
