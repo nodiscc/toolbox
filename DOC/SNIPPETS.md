@@ -159,15 +159,12 @@ libvirt sendkeys to VM `/bin/sh -c 'sleep 6; for key in KEY_ESC KEY_A KEY_U KEY_
 
 open .mozlz4: `apt-get install liblz4-dev; git clone https://github.com/andikleen/lz4json.git; cd lz4json; make; ./lz4jsoncat ~/.mozilla/firefox/*/bookmarkbackups/*.jsonlz4`
 
-bash increment variable `var=$((var+1))` OR `((var=var+1))` OR `((var+=1))` OR `((var++))`
-
-bash docs: Use error-if-unset `${placeholders?}` and join commands with `&&` to make it easier and safer to copy-paste shell commands from technical documentation.
-
-bash test if string contains substring: `[[ $string == *"substring"* ]]` (wilcards) or `[[ $string =~ "substring" ]]` (regex)
-
-bash test if string begins with substring `[[ $string == substring* ]]`
-
-bash if OR conditions `if [[ foo || bar || baz ]] ; then`
+* bash increment variable `var=$((var+1))` OR `((var=var+1))` OR `((var+=1))` OR `((var++))`
+* bash: loop on all files named output.txt in the current directory and all its subdirectories `for i in **/output.txt; do echo "$i"; done`
+* bash docs: Use error-if-unset `${placeholders?}` and join commands with `&&` to make it easier and safer to copy-paste shell * commands from technical documentation.
+* bash test if string contains substring: `[[ $string == *"substring"* ]]` (wilcards) or `[[ $string =~ "substring" ]]` (regex)
+* bash test if string begins with substring `[[ $string == substring* ]]`
+* bash if OR conditions `if [[ foo || bar || baz ]] ; then`
 
 python md5 hash string `import hashlib; hashlib.md5('chaine à hasher').hexdigest()`
 
