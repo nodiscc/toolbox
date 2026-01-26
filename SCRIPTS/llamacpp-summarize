@@ -160,7 +160,7 @@ if __name__ == "__main__":
             title_tag = raw_html.find("title")
             title_string = title_tag.text if title_tag else "Untitled"
             print("\n---------------------------------------------\n")
-            print("\033[0;36m# " + title_string + "\033[0m\n")
+            print("\033[0;36m### " + title_string + "\033[0m\n")
             print("\033[0;36m" + source_display + "\033[0m\n")
             try:
                 lang = raw_html.html["lang"]
