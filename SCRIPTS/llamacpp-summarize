@@ -152,14 +152,14 @@ if __name__ == "__main__":
             plain_text = content_html
             title_string = source_display
             lang = "unknown"
-            print("---------------------------------------------")
+            print("\n---------------------------------------------\n")
             print("\033[0;36m# " + title_string + "\033[0m\n")
             print("\033[0;36m" + source_display + "\033[0m\n")
         else:
             raw_html = BeautifulSoup(content_html, 'html.parser')
             title_tag = raw_html.find("title")
             title_string = title_tag.text if title_tag else "Untitled"
-            print("---------------------------------------------")
+            print("\n---------------------------------------------\n")
             print("\033[0;36m# " + title_string + "\033[0m\n")
             print("\033[0;36m" + source_display + "\033[0m\n")
             try:
