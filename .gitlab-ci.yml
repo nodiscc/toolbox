@@ -24,6 +24,8 @@ build-packages:
   rules:
     - changes:
         - PACKAGING/**/*
+      when: on_success
+    - when: manual
   script:
     - apt-get update
     - apt-get install -qy --no-install-recommends make wget # common
@@ -44,6 +46,8 @@ test-packages:
   rules:
     - changes:
         - PACKAGING/**/*
+      when: on_success
+    - when: manual
   script:
     - apt-get update && apt-get install -qy --no-install-recommends lintian
     - mkdir -p /etc/firefox-esr/ && touch /etc/firefox-esr/firefox-esr.js
@@ -63,6 +67,9 @@ pages:
     - if: '$CI_COMMIT_BRANCH == "master"'
       changes:
         - PACKAGING/**/*
+      when: on_success
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      when: manual
   before_script:
     - apt-get update -qy > /dev/null && apt-get -qy install aptly
     - gpg --import --no-tty --batch --yes ${APTLY_GPG_PRIVATE_KEY}
