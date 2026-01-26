@@ -1,7 +1,50 @@
-#!/bin/bash
-set -o errexit
-set -o nounset
-for url in "$@"; do
-    echo "[INFO] saving $url ..."
-    curl -s -I "https://web.archive.org/save/$url" | grep -E '^location:' | awk '{ print $2 }';
-done
+#!/usr/bin/env python3
+
+import sys
+import time
+import requests
+
+def save_url(url, max_retries=3):
+    """Save a URL to the Wayback Machine with retry logic."""
+    archive_url = f"https://web.archive.org/save/{url}"
+
+    for attempt in range(max_retries):
+        try:
+            print(f"[INFO] Saving {url} ..." + (f" (attempt {attempt + 1}/{max_retries})" if attempt > 0 else ""))
+            response = requests.get(archive_url, timeout=60)
+
+            if response.status_code in range(200, 300):
+                print(f"[INFO] Status {response.status_code} - Successfully saved {url}")
+                return True
+            elif response.status_code == 520:
+                print(f"[WARNING] Status 520 - Web server returned an unknown error for {url}, skipping...", file=sys.stderr)
+                return False
+            else:
+                print(f"[ERROR] Status {response.status_code} - Failed to save {url}", file=sys.stderr)
+
+                if attempt < max_retries - 1:
+                    print(f"[INFO] Retrying in 10 seconds...", file=sys.stderr)
+                    time.sleep(10)
+
+        except requests.exceptions.RequestException as e:
+            print(f"[ERROR] Request failed for {url}: {e}", file=sys.stderr)
+
+            if attempt < max_retries - 1:
+                print(f"[INFO] Retrying in 10 seconds...", file=sys.stderr)
+                time.sleep(10)
+
+    print(f"[ERROR] Failed to save {url} after {max_retries} attempts", file=sys.stderr)
+    return False
+
+def main():
+    if len(sys.argv) < 2:
+        print("Usage: ./script.py URL1 [URL2 URL3 ...]", file=sys.stderr)
+        sys.exit(1)
+
+    urls = sys.argv[1:]
+
+    for url in urls:
+        save_url(url)
+
+if __name__ == "__main__":
+    main()
