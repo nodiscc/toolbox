@@ -21,6 +21,9 @@ test:
 build-packages:
   stage: package
   interruptible: true
+  rules:
+    - changes:
+        - PACKAGING/**/*
   script:
     - apt-get update
     - apt-get install -qy --no-install-recommends make wget # common
@@ -38,6 +41,9 @@ test-packages:
   interruptible: true
   needs:
     - build-packages
+  rules:
+    - changes:
+        - PACKAGING/**/*
   script:
     - apt-get update && apt-get install -qy --no-install-recommends lintian
     - mkdir -p /etc/firefox-esr/ && touch /etc/firefox-esr/firefox-esr.js
@@ -53,8 +59,10 @@ pages:
   dependencies:
     - build-packages
     - test-packages
-  only:
-    - master
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+      changes:
+        - PACKAGING/**/*
   before_script:
     - apt-get update -qy > /dev/null && apt-get -qy install aptly
     - gpg --import --no-tty --batch --yes ${APTLY_GPG_PRIVATE_KEY}
