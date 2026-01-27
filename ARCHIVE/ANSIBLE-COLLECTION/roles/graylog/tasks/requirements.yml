@@ -1,0 +1,10 @@
+### GRAYLOG REQUIREMENTS ###
+
+- name: install graylog requirements
+  apt:
+    state: present
+    package:
+      - apt-transport-https
+      - uuid-runtime
+      - dirmngr
+      - gnupg

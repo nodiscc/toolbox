@@ -6,13 +6,14 @@ Less-maintained, experimental or project-specific ansible [roles](roles/).
 - [awesome_selfhosted_html](roles/awesome_selfhosted_html) - awesome-selfhosted static website
 - [bitmagnet](roles/bitmagnet) - BitTorrent DHT crawler
 - [docker](roles/docker) - application containerization platform
+- [graylog](roles/graylog) - log aggregation, storage, real-time search and analysis tool
 - [homepage_extra_icons](roles/homepage_extra_icons) - additional icons for the nodiscc.xsrv.homepage role
 - [icecast](roles/icecast) - media streaming server
 - [k8s](roles/k8s) - Container management platform/orchestrator
 - [mariadb](roles/mariadb) - MariaDB database engine
-- [nfs_server](roles/nfs_server) - NFS file server
 - [netdata](roles/netdata) - lightweight, real-time monitoring and alerting system
-- [ollama](roles/ollama) - Large Language Model (LLM) server and web interface
+- [nfs_server](roles/nfs_server) - NFS file server
+- [ollama](roles/ollama) - Large Language Model (LLM) runner and web interface
 - [planarally](roles/planarally) - virtual tabletop (VTT)
 - [proxmox](roles/proxmox) - Proxmox VE hypervisor configuration
 - [pulseaudio](roles/pulseaudio) - local network sound server
