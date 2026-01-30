@@ -55,6 +55,10 @@ STREAM_OUTPUT = True
 DEFAULT_MAX_SEARCH_RESULTS = 100
 DEFAULT_CONTEXT_LINES = 0
 
+# Web Fetch Configuration
+DEFAULT_MAX_CONTENT_TOKENS = 100000
+WEB_FETCH_TIMEOUT = 30
+
 # File Size Units
 FILE_SIZE_UNITS = ['B', 'KB', 'MB', 'GB', 'TB']
 FILE_SIZE_DIVISOR = 1024.0
@@ -72,7 +76,7 @@ ASSISTANT_CONFIGS = {
 When the user asks you to perform operations, use the available tools to help them.
 Be concise and clear in your responses.""",
         "tools": ["list_directory", "search_files", "find_files", "create_directory",
-                  "read_file", "write_file", "append_file", "edit_file", "run_command"]
+                  "read_file", "write_file", "append_file", "edit_file", "run_command", "web_fetch"]
     },
     "personal": {
         "model": "google_gemma-3-4b-it-Q6_K_L",
@@ -92,7 +96,7 @@ When the user asks what to work on or needs task suggestions:
    - Where are they (home, office, commuting)?
 3. Analyze the tasks and infer priority from titles and context
 4. Suggest the most appropriate task based on their situation""",
-        "tools": ["list_directory", "read_file", "write_file", "append_file", "find_files", "get_dashboard"]
+        "tools": ["list_directory", "read_file", "write_file", "append_file", "find_files", "get_dashboard", "web_fetch"]
     }
 }
 
@@ -121,6 +125,13 @@ class Colors:
 def colored(text, color):
     """Wrap text with color codes"""
     return f"{color}{text}{Colors.RESET}"
+
+
+def extract_urls_from_text(text: str) -> List[str]:
+    """Extract URLs from text using a simple regex pattern"""
+    # Match http:// or https:// URLs
+    url_pattern = r'https?://[^\s<>"{}|\\^`\[\]]+'
+    return re.findall(url_pattern, text)
 
 
 # ============================================================================
@@ -308,8 +319,9 @@ class UIFormatter:
 class ToolExecutor:
     """Handles execution of all tool functions"""
 
-    def __init__(self, ui_formatter):
+    def __init__(self, ui_formatter, url_tracker):
         self.ui = ui_formatter
+        self.url_tracker = url_tracker
         self.command_history: List[Dict[str, Any]] = []
 
     def requires_confirmation(self, tool_name, arguments):
@@ -335,7 +347,8 @@ class ToolExecutor:
             ]
             if command in safe_commands:
                 return False
-            # All other tools require confirmation
+        # web_fetch always requires confirmation
+        # All other tools require confirmation
         return True
 
     def _is_safe_path(self, path):
@@ -417,6 +430,8 @@ class ToolExecutor:
                 return self._run_command(arguments)
             elif tool_name == "get_dashboard":
                 return self._get_dashboard(arguments)
+            elif tool_name == "web_fetch":
+                return self._web_fetch(arguments)
             else:
                 return f"Error: Unknown tool '{tool_name}'"
         except Exception as e:
@@ -844,6 +859,84 @@ class ToolExecutor:
 
         return "\n".join(output) if output else "No dashboard data available"
 
+    def _web_fetch(self, args):
+        """Fetch content from a web page"""
+        url = args["url"]
+        
+        # Validate URL is in the allowed list
+        if not self.url_tracker.is_url_allowed(url):
+            return f"Error: URL '{url}' is not allowed. URLs must be explicitly mentioned in the conversation before they can be fetched."
+        
+        try:
+            # Fetch the URL
+            response = requests.get(url, timeout=WEB_FETCH_TIMEOUT, allow_redirects=True)
+            
+            # Check HTTP status
+            if response.status_code != 200:
+                return f"Error: HTTP {response.status_code} - Failed to fetch '{url}'"
+            
+            # Check content type - only accept text-based content
+            content_type = response.headers.get('Content-Type', '').lower()
+            
+            # Reject PDFs and binary content
+            if 'application/pdf' in content_type:
+                return "Error: PDF content is not supported. Please provide a URL to a text-based web page."
+            
+            # Accept text-based content types
+            text_types = ['text/', 'application/json', 'application/xml', 'application/javascript']
+            if not any(t in content_type for t in text_types):
+                return f"Error: Unsupported content type '{content_type}'. Only text-based content (HTML, JSON, XML, etc.) is supported."
+            
+            # Get the content
+            content = response.text
+            
+            # Estimate token count (rough approximation: 1 token ≈ 4 characters)
+            estimated_tokens = len(content) // 4
+            
+            # Truncate if needed
+            if estimated_tokens > DEFAULT_MAX_CONTENT_TOKENS:
+                char_limit = DEFAULT_MAX_CONTENT_TOKENS * 4
+                content = content[:char_limit]
+                truncated_msg = f"\n\n[Content truncated to ~{DEFAULT_MAX_CONTENT_TOKENS:,} tokens]"
+            else:
+                truncated_msg = ""
+            
+            # Return the content
+            return f"Content from '{url}':\n\n{content}{truncated_msg}"
+            
+        except requests.exceptions.Timeout:
+            return f"Error: Request timed out while fetching '{url}'"
+        except requests.exceptions.TooManyRedirects:
+            return f"Error: Too many redirects while fetching '{url}'"
+        except requests.exceptions.RequestException as e:
+            return f"Error: Failed to fetch '{url}': {str(e)}"
+        except Exception as e:
+            return f"Error: Unexpected error while fetching '{url}': {str(e)}"
+
+
+# ============================================================================
+# URL Tracker - Tracks URLs mentioned in conversation
+# ============================================================================
+
+class URLTracker:
+    """Tracks URLs mentioned in the conversation for security validation"""
+    
+    def __init__(self):
+        self.seen_urls = set()
+    
+    def add_urls_from_text(self, text: str):
+        """Extract and store URLs from text"""
+        urls = extract_urls_from_text(text)
+        self.seen_urls.update(urls)
+    
+    def is_url_allowed(self, url: str) -> bool:
+        """Check if a URL is in the allowed list"""
+        return url in self.seen_urls
+    
+    def clear(self):
+        """Clear all tracked URLs"""
+        self.seen_urls.clear()
+
 
 # ============================================================================
 # Conversation Manager - Manages conversation state and history
@@ -852,12 +945,15 @@ class ToolExecutor:
 class ConversationManager:
     """Manages conversation state and history"""
 
-    def __init__(self, system_prompt):
+    def __init__(self, system_prompt, url_tracker):
         self.conversation: List[Dict[str, Any]] = []
         self.system_prompt = system_prompt
+        self.url_tracker = url_tracker
 
     def add_user_message(self, content):
         """Add a user message to the conversation"""
+        # Track URLs from user messages
+        self.url_tracker.add_urls_from_text(content)
         self.conversation.append({"role": "user", "content": content})
 
     def add_assistant_message(self, message):
@@ -879,6 +975,7 @@ class ConversationManager:
     def clear(self):
         """Clear the conversation history"""
         self.conversation = []
+        self.url_tracker.clear()
 
     def get_history(self):
         """Get the conversation history"""
@@ -1442,6 +1539,23 @@ TOOLS_REGISTRY = {
                 "required": []
             }
         }
+    },
+    "web_fetch": {
+        "type": "function",
+        "function": {
+            "name": "web_fetch",
+            "description": "Fetch and retrieve the full text content from a web page. Only works with URLs that have been explicitly mentioned in the conversation. Does not support PDFs or binary content - only text-based pages (HTML, JSON, XML, etc.).",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "url": {
+                        "type": "string",
+                        "description": "The URL to fetch. Must be a URL that was previously mentioned in the conversation."
+                    }
+                },
+                "required": ["url"]
+            }
+        }
     }
 }
 
@@ -1469,8 +1583,9 @@ class Assistant:
 
         # Initialize components
         self.ui = UIFormatter()
-        self.conversation = ConversationManager(system_prompt)
-        self.tool_executor = ToolExecutor(self.ui)
+        self.url_tracker = URLTracker()
+        self.conversation = ConversationManager(system_prompt, self.url_tracker)
+        self.tool_executor = ToolExecutor(self.ui, self.url_tracker)
         self.input_handler = InputHandler()
         self.api_client = APIClient(server_url, model_name, self.ui, show_thinking, stream_output)
 
