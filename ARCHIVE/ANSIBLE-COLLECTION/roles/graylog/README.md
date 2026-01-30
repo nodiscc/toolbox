@@ -61,6 +61,9 @@ rsyslog_forward_to_hostname: "my.CHANGEME.org"
 rsyslog_forward_to_port: 5140
 ```
 
+Remote hosts must be able to contact the graylog server on port 5140/tcp.
+
+
 ### Basic setup
 
 #### Inputs
