@@ -376,11 +376,11 @@ def calculate_progress(date_str, total_days):
         total_days = int(total_days)
         # If start date is in the future, return 100% progress
         if start_date.date() > today:
-            return 100
+            return 0, 100
         days_elapsed = (today - start_date.date()).days
         # If we've passed the total period, return 100%
         if days_elapsed >= total_days:
-            return 100
+            return days_elapsed, 100
         # Calculate progress percentage
         progress = (days_elapsed / total_days) * 100
         return days_elapsed, progress
