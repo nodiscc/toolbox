@@ -13,8 +13,8 @@
     - graylog_root_timezone is string
     - graylog_https_mode in ['selfsigned', 'letsencrypt']
     - graylog_enable_service == graylog_enable_service | bool
-    - (elasticsearch_heap_size == 'auto') or (elasticsearch_heap_size|regex_search('[mg]$'))
-    - graylog_heap_size|regex_search('[mg]$')
+    - (elasticsearch_heap_size == 'auto') or (elasticsearch_heap_size | regex_search('[mg]$') is truthy)
+    - graylog_heap_size | regex_search('[mg]$') is truthy
     - (elasticsearch_timeout_start_sec == 'auto') or (elasticsearch_timeout_start_sec == elasticsearch_timeout_start_sec|int)
     - graylog_tcp_firewalld_zones|type_debug == "list"
     - graylog_allowed_hosts | type_debug == "list"
