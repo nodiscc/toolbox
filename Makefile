@@ -38,3 +38,7 @@ packaging:
 clean:
 	cd ARCHIVE/ANSIBLE-COLLECTION/ && make clean
 	rm -rf .venv/
+
+update-mirrors:
+	git add bin*.urls.list
+	git commit -m "update mirrors"
