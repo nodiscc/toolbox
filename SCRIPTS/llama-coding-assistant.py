@@ -71,7 +71,7 @@ DEFAULT_ASSISTANT = "coding"
 
 ASSISTANT_CONFIGS = {
     "coding": {
-        "model": "Qwen3-Coder-30B-A3B-Instruct-UD-Q5_K_XL",
+        "model": "qwen2.5-coder:7b",
         "system_prompt": """You are a helpful coding assistant. You can read, write, and edit files, as well as run shell commands.
 When the user asks you to perform operations, use the available tools to help them.
 Be concise and clear in your responses.""",
