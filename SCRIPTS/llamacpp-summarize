@@ -104,6 +104,7 @@ if __name__ == "__main__":
     parser.add_argument('--prompt', dest='prompt', type=str, help='custom prompt, replaces the default summarization prompt (but still asks the LLM to only consider the information from the webpage)')
     parser.add_argument('--print-only', dest='print_only', action='store_true', help='only print the extracted plain text from the HTML, do not perform summarization')
     parser.add_argument('--list-models', dest='list_models', action='store_true', help='list available models from the server and exit')
+    parser.add_argument('--translate', dest='translate', action='store_true', help='provide the summary in French regardless of the original language')
     args = parser.parse_args()
 
     if not args.list_models and not (args.urls or args.files):
@@ -185,13 +186,21 @@ if __name__ == "__main__":
             print(plain_text)
             continue
         if not args.prompt:
+            # Determine target language based on --translate flag
+            if args.translate:
+                target_lang = 'fr'
+            elif lang in ['fr', 'fr-FR']:
+                target_lang = 'fr'
+            else:
+                target_lang = 'en'
+
             if args.sentences_number == 0:
-                if lang in ['fr', 'fr-FR']:
+                if target_lang == 'fr':
                     chat_prompt = f'Résume l\'information, en utilisant uniquement les informations suivantes pour fournir une réponse: {plain_text}'
                 else:
                     chat_prompt = f'Summarize the information, use only the information in the following text to provide your answer: {plain_text}'
             else:
-                if lang in ['fr', 'fr-FR']:
+                if target_lang == 'fr':
                     chat_prompt = f'Résume l\'information dans le document suivant, limite ta réponse à {str(args.sentences_number)} phrases. Utilise uniquement les informations dans le document pour fournir une réponse. Voici le document: {plain_text}'
                 else:
                     chat_prompt = f'Summarize the information in the following document, limit your answer to {str(args.sentences_number)} sentences. Use only the information in the document to provide your answer. Here is the document: {plain_text}'
@@ -200,10 +209,16 @@ if __name__ == "__main__":
 
         # Make request to llama.cpp server
         try:
+            # Update system prompt based on --translate flag
+            if args.translate:
+                system_content = 'You are a helpful assistant that summarizes articles concisely in French. You reply with a short summary of key information provided in the document, in the form of a bullet point list. At the end of a summary, you provide a one-sentence recommendation (actionable items). Always respond in French.'
+            else:
+                system_content = 'You are a helpful assistant that summarizes articles concisely. You reply with a short summary of key information provided in the document, in the form of a bullet point list. At the end of a summary, you provide a one-sentence recommendation (actionable items).'
+
             payload = {
                 'model': args.model,
                 'messages': [
-                    {'role': 'system', 'content': 'You are a helpful assistant that summarizes articles concisely. You reply with a short summary of key information provided in the document, in the form of a bullet point list. At the end of a summary, you provide a one-sentence recommendation (actionable items).'},
+                    {'role': 'system', 'content': system_content},
                     {'role': 'user', 'content': chat_prompt}
                 ],
                 'stream': True
