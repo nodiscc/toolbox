@@ -99,7 +99,7 @@ if __name__ == "__main__":
     input_group.add_argument('--url', dest='urls', type=str, action='append', help='URL of the article to summarize (can be specified multiple times)')
     input_group.add_argument('--file', dest='files', type=str, action='append', help='path to HTML file to summarize (can be specified multiple times)')
 
-    parser.add_argument('--model', dest='model', type=str, default='openai_gpt-oss-20b-MXFP4', help='llama.cpp model to use (default openai_gpt-oss-20b-MXFP4)')
+    parser.add_argument('--model', dest='model', type=str, default='gpt-oss:20b', help='llama.cpp model to use (default pgt-oss:20b)')
     parser.add_argument('--server', dest='server', type=str, default='http://127.0.0.1:8033/v1', help='llama.cpp server URL (default http://127.0.0.1:8033/v1)')
     parser.add_argument('--prompt', dest='prompt', type=str, help='custom prompt, replaces the default summarization prompt (but still asks the LLM to only consider the information from the webpage)')
     parser.add_argument('--print-only', dest='print_only', action='store_true', help='only print the extracted plain text from the HTML, do not perform summarization')
