@@ -1,5 +1,5 @@
 #!/usr/bin/env make
-SHELL := '/bin/bash'
+SHELL := /bin/bash
 LANG = C
 BIN_LINUX_DIR ?= MIRRORS/BIN-LINUX
 BIN_WINDOWS_DIR ?= MIRRORS/BIN-WINDOWS
