@@ -105,6 +105,7 @@ if __name__ == "__main__":
     parser.add_argument('--print-only', dest='print_only', action='store_true', help='only print the extracted plain text from the HTML, do not perform summarization')
     parser.add_argument('--list-models', dest='list_models', action='store_true', help='list available models from the server and exit')
     parser.add_argument('--translate', dest='translate', action='store_true', help='provide the summary in French regardless of the original language')
+    parser.add_argument('--output', dest='output_file', type=str, help='file path to append the summary output')
     args = parser.parse_args()
 
     if not args.list_models and not (args.urls or args.files):
@@ -153,16 +154,16 @@ if __name__ == "__main__":
             plain_text = content_html
             title_string = source_display
             lang = "unknown"
-            print("\n---------------------------------------------\n")
-            print("\033[0;36m# " + title_string + "\033[0m\n")
-            print("\033[0;36m" + source_display + "\033[0m\n")
+            separator = "\n---------------------------------------------\n"
+            header = f"\n{separator}\n\033[0;36m# {title_string}\033[0m\n\n\033[0;36m{source_display}\033[0m\n\n"
+            print(header, end='')
         else:
             raw_html = BeautifulSoup(content_html, 'html.parser')
             title_tag = raw_html.find("title")
             title_string = title_tag.text if title_tag else "Untitled"
-            print("\n---------------------------------------------\n")
-            print("\033[0;36m### " + title_string + "\033[0m\n")
-            print("\033[0;36m" + source_display + "\033[0m\n")
+            separator = "\n---------------------------------------------\n"
+            header = f"\n{separator}\n\033[0;36m### {title_string}\033[0m\n\n\033[0;36m{source_display}\033[0m\n\n"
+            print(header, end='')
             try:
                 lang = raw_html.html["lang"]
             except (TypeError, KeyError):
@@ -227,6 +228,8 @@ if __name__ == "__main__":
             response = requests.post(f"{args.server}/chat/completions", json=payload, stream=True)
             response.raise_for_status()
 
+            # Capture the streamed content
+            streamed_content = []
             for line in response.iter_lines():
                 if line:
                     line_str = line.decode('utf-8')
@@ -241,9 +244,22 @@ if __name__ == "__main__":
                                 content = delta.get('content', '')
                                 if content:
                                     print(content, end='', flush=True)
+                                    streamed_content.append(content)
                         except json.JSONDecodeError:
                             continue
             print()
+
+            # Append to output file if specified
+            if args.output_file:
+                try:
+                    with open(args.output_file, 'a', encoding='utf-8') as f:
+                        # Remove ANSI color codes for file output
+                        header_plain = separator + "\n### " + title_string + "\n\n" + source_display + "\n\n"
+                        f.write(header_plain)
+                        f.write(''.join(streamed_content))
+                        f.write('\n')
+                except Exception as e:
+                    print(f"Error writing to output file: {e}")
 
         except requests.exceptions.RequestException as error:
             print(f"Error communicating with llama.cpp server: {error}")
