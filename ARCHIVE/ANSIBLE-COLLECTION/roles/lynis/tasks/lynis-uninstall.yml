@@ -22,8 +22,3 @@
       - lynis
       - debsums
     state: absent
-
-- name: remove lynis cron job
-  file:
-    path: /etc/cron.d/lynis
-    state: absent
