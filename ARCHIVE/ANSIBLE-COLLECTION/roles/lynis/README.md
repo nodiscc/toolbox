@@ -37,13 +37,9 @@ To view the latest scan results:
 cat /var/log/lynis-report.txt
 ```
 
-### Uninstallation
-
-```bash
-sudo systemctl disable --now lynis
-sudo apt remove lynis debsums
-sudo rm -f /etc/lynis/custom.prf /etc/cron.d/lynis /etc/default/debsums
 ```
+
+
 
 ## Tags
 

@@ -4,9 +4,18 @@
     - monitoring
     - lynis
 
-- name: import lynis configuration tasks
+- name: import lynis setup tasks
   become: true
   import_tasks: lynis.yml
+  when: setup_lynis | bool
+  tags:
+    - monitoring
+    - lynis
+
+- name: import lynis uninstallation tasks
+  become: true
+  import_tasks: lynis-uninstall.yml
+  when: not setup_lynis | bool
   tags:
     - monitoring
     - lynis

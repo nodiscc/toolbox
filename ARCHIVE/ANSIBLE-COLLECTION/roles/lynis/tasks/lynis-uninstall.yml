@@ -1,0 +1,29 @@
+##### LYNIS UNINSTALLATION #####
+
+- name: disable lynis systemd timer
+  systemd:
+    name: lynis.timer
+    state: stopped
+    enabled: no
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: remove lynis files
+  file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /etc/lynis/custom.prf
+    - /etc/cron.d/lynis
+    - /etc/default/debsums
+
+- name: remove lynis/debsums packages
+  apt:
+    package:
+      - lynis
+      - debsums
+    state: absent
+
+- name: remove lynis cron job
+  file:
+    path: /etc/cron.d/lynis
+    state: absent
