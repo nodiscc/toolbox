@@ -2,7 +2,7 @@
   import_tasks: checks.yml
   tags:
     - monitoring
-    - lynis 
+    - lynis
 
 - name: import lynis configuration tasks
   become: true
