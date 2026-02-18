@@ -1,0 +1,12 @@
+- name: import variable check tasks (lynis)
+  import_tasks: checks.yml
+  tags:
+    - monitoring
+    - lynis 
+
+- name: import lynis configuration tasks
+  become: true
+  import_tasks: lynis.yml
+  tags:
+    - monitoring
+    - lynis

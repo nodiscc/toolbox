@@ -1,0 +1,8 @@
+- name: check that mandatory variables are correctly defined
+  assert:
+    quiet: yes
+    that: "{{ item }}"
+    fail_msg: "One or more variables are not correctly defined. role documentation: https://gitlab.com/nodiscc/toolbox/-/tree/master/ARCHIVE/ANSIBLE-COLLECTION/roles/lynis"
+  loop:
+    - lynis_report_regex is string
+    - lynis_skip_tests|type_debug == "list"

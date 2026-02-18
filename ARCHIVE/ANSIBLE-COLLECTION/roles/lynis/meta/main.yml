@@ -1,0 +1,19 @@
+# @tag lynis - setup lynis security audit tool
+
+galaxy_info:
+  role_name: lynis
+  author: "nodiscc <nodiscc@gmail.com>"
+  description: "lynis security audit tool"
+  license: GPL-3.0
+  min_ansible_version: "2.12"
+  platforms:
+    - name: Debian
+      versions:
+        - "12"
+  galaxy_tags:
+    - monitoring
+    - system
+    - audit
+    - security
+dependencies:
+  - nodiscc.xsrv.handlers
