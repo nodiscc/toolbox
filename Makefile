@@ -9,7 +9,7 @@ all: mirrors tests packaging
 
 # requirements: aria2c
 define call_aria2c
-	aria2c --dir=$(1) --input-file=$(2) --continue --allow-overwrite=false --console-log-level=warn --auto-file-renaming=false --max-tries=3 --max-redirect=10 --retry-wait=1 --timeout=3 --user-agent="Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101 Firefox/68.0"
+	aria2c --dir=$(1) --input-file=$(2) --continue --allow-overwrite=false --console-log-level=warn --auto-file-renaming=false --max-tries=3 --retry-wait=1 --timeout=3 --user-agent="Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101 Firefox/68.0"
 endef
 .PHONY: mirrors
 mirrors:
