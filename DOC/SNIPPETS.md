@@ -653,9 +653,20 @@ NFS mounts: always use `_netdev`
 
 mysql `GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, INDEX, ALTER, CREATE TEMPORARY TABLES ON 'wiki'.* TO 'wiki'@'localhost'; `
 
-snippets: firefox: fix tt-rss font `layout.css.system-ui.enabled false`
+firefox: fix tt-rss font `layout.css.system-ui.enabled false`
+
+firefox: fix claude.ai freezes: `privacy.resistFingerprinting.exemptedDomains: claude.ai`
+
+put all mechanical/rotational drives (HDDs) in standby mode: `lsblk --output ROTA,PATH,TYPE | grep disk | grep 1 | while read line;  do device=$(echo "$line" | cut -d ' ' -f 2); sudo hdparm -y "$device"; done` (verify with `hdparm -C`)
+
+
+network manager connect to hidden SSID from CLI: `nmcli device wifi connect "SSID" password "PASSWORD" ifname INTERFACE hidden yes`
+
+AMD RX9070 no image at boot: `/etc/default/grub`: `GRUB_CMDLINE_LINUX_DEFAULT="quiet splash amdgpu.dc=1 amdgpu.dpm=1 video=HDMI-A-1:e"` and `sudo update-grub`
 
 bash -- There are language features you should avoid, they are there for historic reasons; Know the few-ish actual language warts that you need to work around. (pipefail, when subshells are created); Know how field-separation works. Use trap for cleanup. And it's largely because bash is trying to be smart for you: mix that into a language where instructions and data can each become the other, based purely on its position in the command line, and you're just headed for grief. It's just not a very good design: the things that make it good on the command line make it an unsafe programming language. It is ridiculously easy to make terrible mistakes, things that look perfectly sensible... 
+
+reddit: show posts of user with hidden history: `https://old.reddit.com/user/USERNAME/search/?q=*`
 
 bash filter out file extension: `touch example.list; file=example.list; echo "${file%.*}"`
 
