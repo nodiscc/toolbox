@@ -1,7 +1,7 @@
 #https://public-dns.info/nameservers.csv
 https://download.geofabrik.de/europe/france-latest.osm.pbf
-https://download.kiwix.org/zim/wikipedia/wikipedia_en_all_maxi_2024-01.zim
-https://download.kiwix.org/zim/wikipedia/wikipedia_fr_all_maxi_2024-05.zim
+https://download.kiwix.org/zim/wikipedia/wikipedia_en_all_maxi_2026-02.zim
+https://download.kiwix.org/zim/wikipedia/wikipedia_fr_all_maxi_2026-02.zim
 https://download.kiwix.org/zim/other/rationalwiki_en_all_maxi_2021-03.zim
 # go to /wiki/Special:Statistics on any wikia/fandom wiki to find the link to the latest dump
 #https://s3.amazonaws.com/wikia_xml_dumps/e/el/elderscrolls_pages_current.xml.7z # 404
