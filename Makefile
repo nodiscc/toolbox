@@ -11,8 +11,12 @@ all: mirrors tests packaging
 define call_aria2c
 	aria2c --dir=$(1) --input-file=$(2) --continue --allow-overwrite=false --console-log-level=warn --auto-file-renaming=false --max-tries=3 --retry-wait=1 --timeout=3 --user-agent="Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101 Firefox/68.0"
 endef
+.PHONY: cleanup-aria2
+cleanup-aria2:
+	find $(BIN_LINUX_DIR) $(BIN_WINDOWS_DIR) $(BIN_DATA_DIR) -type f \( -name "*.meta4" -o -name "*.aria2" \) -delete
+
 .PHONY: mirrors
-mirrors:
+mirrors: cleanup-aria2
 	$(call call_aria2c,$(BIN_LINUX_DIR)/,bin-linux.urls.list)
 	$(call call_aria2c,$(BIN_WINDOWS_DIR)/,bin-windows.urls.list)
 	$(call call_aria2c,$(BIN_DATA_DIR)/,bin-data.urls.list)
