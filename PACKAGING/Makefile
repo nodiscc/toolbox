@@ -9,6 +9,7 @@ USERJS_VERSION=0.13.0
 USERJS_PACKAGE_VERSION=$(USERJS_VERSION)-1
 TARTUBE_VERSION=2.5.197
 
+.PHONY: yt_dlp
 yt_dlp:
 	rm -rf build/
 	mkdir -p build/ dist/ yt-dlp/usr/bin yt-dlp/usr/share/man/man1/ yt-dlp/usr/share/bash-completion/completions/
@@ -26,6 +27,7 @@ yt_dlp:
 	dpkg-deb --build yt-dlp/
 	mv -v yt-dlp.deb dist/yt-dlp_$(YT_DLP_VERSION)_amd64.deb
 
+.PHONY: bleachbit_cleanerml
 bleachbit_cleanerml:
 	rm -rf build/
 	mkdir -p build/ dist/ bleachbit-cleanerml/usr/share/bleachbit/cleaners/
@@ -38,26 +40,7 @@ bleachbit_cleanerml:
 	dpkg-deb --build bleachbit-cleanerml/
 	mv -v bleachbit-cleanerml.deb dist/bleachbit-cleanerml_$(CLEANERML_PACKAGE_VERSION)+$(CLEANERML_VERSION)_all.deb
 
-# disabled, plugin broken (https://github.com/EionRobb/pidgin-opensteamworks/issues/206)
-# pidgin_opensteamworks:
-# 	rm -rf build/
-# 	mkdir -p build/ dist/
-# 	cd build/ && \
-# 	wget --continue --no-verbose https://github.com/EionRobb/pidgin-opensteamworks/archive/refs/tags/$(PIDGIN_OPENSTEAMWORKS_VERSION).zip && \
-# 	unzip -q $(PIDGIN_OPENSTEAMWORKS_VERSION).zip
-# 	echo "Steam plugin for Pidgin/libpurple" > build/pidgin-opensteamworks-$(PIDGIN_OPENSTEAMWORKS_VERSION)/steam-mobile/description-pak
-# 	cd build/pidgin-opensteamworks-$(PIDGIN_OPENSTEAMWORKS_VERSION)/steam-mobile/ && \
-# 	checkinstall --pkgname=pidgin-opensteamworks --arch=amd64 --pkglicense=GPL-3.0 \
-# 		--pkgsource https://github.com/EionRobb/pidgin-opensteamworks \
-# 		--pkgversion $(PIDGIN_OPENSTEAMWORKS_VERSION) \
-# 		--maintainer='nodiscc <nodiscc@gmail.com>' \
-# 		--nodoc \
-# 		--default \
-# 		--install=no \
-# 		--showinstall \
-# 		--requires="libpurple0,libglib2.0-0,libjson-glib-1.0-0,libnss3"
-# 	mv -v build/pidgin-opensteamworks-$(PIDGIN_OPENSTEAMWORKS_VERSION)/steam-mobile/pidgin-opensteamworks_$(PIDGIN_OPENSTEAMWORKS_VERSION)-1_amd64.deb dist/
-
+.PHONY: lutris
 lutris:
 	mkdir -p dist/
 	wget --continue --no-verbose --directory-prefix=dist/ https://github.com/lutris/lutris/releases/download/v$(LUTRIS_VERSION)/lutris_$(LUTRIS_VERSION)_all.deb
