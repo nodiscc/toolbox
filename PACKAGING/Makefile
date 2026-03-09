@@ -67,4 +67,30 @@ tartube:
 	wget -O dist/python3-tartube_$(TARTUBE_VERSION).deb https://github.com/axcore/tartube/releases/download/v$(TARTUBE_VERSION)/python3-tartube_$(TARTUBE_VERSION).deb
 
 clean:
-	rm -rf build/ dist/ yt-dlp/usr/ bleachbit-cleanerml/usr/share/bleachbit/cleaners/*xml user.js/usr/share/
+	rm -rf build/ dist/ yt-dlp/usr/ bleachbit-cleanerml/usr/share/bleachbit/cleaners/*xml user.js/usr/share/ tipsy/usr/
+
+##### MANUAL BUILD TASKS, NOT RUN BY CI/MAKE ALL #####
+TIPSY_VERSION=863e3dc424b28631c7de24da3d9ff572797a1792
+TIPSY_PACKAGE_VERSION=0.0.1-git$(TIPSY_VERSION)
+.PHONY: tipsy
+tipsy:
+	rm -rf build/
+	mkdir -pv build/ build/tipsy-models/ dist/
+	wget --continue --no-verbose https://github.com/nkanaev/tipsy/archive/$(TIPSY_VERSION).zip -O build/tipsy-$(TIPSY_VERSION).zip
+	unzip build/tipsy-$(TIPSY_VERSION).zip -d build/
+	wget --continue --no-verbose https://models.spriters-resource.com/media/assets/284/287322.zip?updated=1755497211 -O build/tipsy-models/squall.zip
+	unzip build/tipsy-models/squall.zip -d build/tipsy-models/squall
+	wget --continue --no-verbose https://models.spriters-resource.com/media/assets/302/305648.zip?updated=1755501652 -O build/tipsy-models/hex-navy.zip
+	unzip build/tipsy-models/hex-navy.zip -d build/tipsy-models/hex-navy
+	
+	
+	
+	mkdir -pv tipsy/usr/bin/ tipsy/usr/share/tipsy/models
+	cd build/tipsy-$(TIPSY_VERSION)/ && make tipsy
+	cp -v build/tipsy-863e3dc424b28631c7de24da3d9ff572797a1792/tipsy tipsy/usr/bin/tipsy
+	cp -rv build/tipsy-models/squall tipsy/usr/share/tipsy/models/
+	cp -rv build/tipsy-models/hex-navy tipsy/usr/share/tipsy/models/
+	sed -i "s/%%TIPSY_PACKAGE_VERSION%%/$(TIPSY_PACKAGE_VERSION)/g" tipsy/DEBIAN/control
+	chmod -v 0755 tipsy/DEBIAN/
+	dpkg-deb --build tipsy/
+	mv -v tipsy.deb dist/tipsy_$(TIPSY_PACKAGE_VERSION)_all.deb

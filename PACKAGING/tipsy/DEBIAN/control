@@ -1,0 +1,17 @@
+Package: tipsy
+Source: tipsy
+Version: %%TIPSY_PACKAGE_VERSION%%
+Architecture: all
+Maintainer: nodiscc <nodiscc@gmail.com>
+Section: games
+Priority: optional
+Homepage: https://github.com/nkanaev/tipsy
+Description: Tiny playstationy renderer
+ tipsy (tiny playstationy) is a PS1-like software renderer written in ~500 lines of C99.
+ Features all the charm of the original PS1, like:
+    low resolution display (320x240)
+    no texture filtering (pixelated textures)
+    affine texture mapping (warped textures)
+    no anti-aliasing (chunky edges)
+    lack of subpixel rasterization (polygon jittering/wobble)
+    old shading techniques (flat & Gouraud)
