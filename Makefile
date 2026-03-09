@@ -32,7 +32,10 @@ test-pylint:
 	python3 -m venv .venv
 	.venv/bin/pip3 install wheel
 	.venv/bin/pip3 install pylint secretstorage requests caldav icalendar tqdm send2trash colorama pyyaml
-	.venv/bin/pylint --disable fixme,line-too-long,too-many-locals,consider-using-f-string,invalid-name --fail-under 8 --fail-on E,W SCRIPTS/dashboard SCRIPTS/file-sorter.py
+	.venv/bin/pylint --disable fixme,line-too-long,too-many-locals,consider-using-f-string,invalid-name --fail-under 8 --fail-on E,W \
+		SCRIPTS/dashboard \
+		SCRIPTS/file-sorter.py \
+		SCRIPTS/gitea-issues
 
 test-ansible-lint:
 	cd ARCHIVE/ANSIBLE-COLLECTION/ && make

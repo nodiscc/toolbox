@@ -1,4 +1,5 @@
 #!/bin/env python3
+"""Dashboard script for monitoring various services including CalDAV, GitLab, Gitea, IMAP, and TT-RSS."""
 # Requirements: python3 -m venv ~/.venv && ~/.venv/bin/pip3 install caldav vobject colorama pyyaml
 # Usage: ~/.venv/bin/python3 ./dashboard
 # Configuration file: ~/.config/dashboard.yml
@@ -61,7 +62,15 @@ def format_bullet_point(symbol, color, text):
     return formatted
 
 def format_list(items, max_lines):
-    """"return the first items of a list as text on multiple lines"""
+    """Return the first items of a list as text on multiple lines.
+
+    Args:
+        items: List of strings to format
+        max_lines: Maximum number of lines to return
+
+    Returns:
+        String with items joined by newlines
+    """
     first_items = items[:max_lines]
     return "\n".join(first_items)
 
@@ -253,6 +262,17 @@ def get_todo_list(todo_txt_path):
         return [line for line in lines if not line.startswith('#')]
 
 def get_caldav_events(caldav_url, caldav_username, caldav_password, max_days_in_future):
+    """Fetch and format CalDAV events within a specified number of days in the future.
+
+    Args:
+        caldav_url: URL of the CalDAV server
+        caldav_username: Username for authentication
+        caldav_password: Password for authentication
+        max_days_in_future: Maximum number of days to look ahead
+
+    Returns:
+        List of formatted event strings
+    """
     events = []
     caldav_client = caldav.DAVClient(
         url=caldav_url,

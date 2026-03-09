@@ -1,0 +1,212 @@
+#!/bin/env python3
+"""Display open issues from a Gitea repository."""
+# Requirements: python3 -m venv ~/.venv && ~/.venv/bin/pip3 install requests pyyaml colorama
+# Usage: ~/.venv/bin/python3 ./SCRIPTS/gitea-issues
+# Configuration file: ~/.config/gitea-issues.yml
+# GITEA_URL
+# GITEA_TOKEN
+# REPO
+# MAX_LINES
+# REQUESTS_TIMEOUT
+
+import sys
+import argparse
+import os
+from urllib.parse import quote
+
+import colorama
+import requests
+import yaml
+
+# Disable SSL warnings
+import urllib3
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+colorama.init()
+
+# load config from YAML file
+config_path = os.path.expanduser('~/.config/gitea-issues.yml')
+if not os.path.exists(config_path):
+    print(f'{colorama.Fore.RED}ERROR: Config file {config_path} not found{colorama.Style.RESET_ALL}')
+    sys.exit(1)
+
+with open(config_path, 'r', encoding='utf-8') as config_file:
+    CONFIG = yaml.safe_load(config_file)
+
+GITEA_URL = CONFIG.get('GITEA_URL')
+GITEA_TOKEN = CONFIG.get('GITEA_TOKEN')
+REPO = CONFIG.get('REPO')
+MAX_LINES = int(CONFIG.get('MAX_LINES', 20))
+REQUESTS_TIMEOUT = int(CONFIG.get('REQUESTS_TIMEOUT', 30))
+
+if not GITEA_URL:
+    print(f'{colorama.Fore.RED}ERROR: GITEA_URL not configured in {config_path}{colorama.Style.RESET_ALL}')
+    sys.exit(1)
+
+if not GITEA_TOKEN:
+    print(f'{colorama.Fore.RED}ERROR: GITEA_TOKEN not configured in {config_path}{colorama.Style.RESET_ALL}')
+    sys.exit(1)
+
+if not REPO:
+    print(f'{colorama.Fore.RED}ERROR: REPO not configured in {config_path}{colorama.Style.RESET_ALL}')
+    sys.exit(1)
+
+
+def print_title(text):
+    """Print section title to screen"""
+    print(f'{colorama.Fore.GREEN}####### {text}{colorama.Style.RESET_ALL}')
+
+
+def format_bullet_point(symbol, color, text):
+    """Format a string as a bullet point"""
+    formatted = f'{color}{symbol} {colorama.Style.RESET_ALL}{text}'
+    return formatted
+
+
+def format_list(items, max_lines):
+    """Return the first items of a list as text on multiple lines"""
+    if max_lines == 0:
+        return '\n'.join(items)
+    first_items = items[:max_lines]
+    return '\n'.join(first_items)
+
+
+def get_gitea_issues(gitea_instance_url, gitea_token, repo):
+    """Fetch open issues from a Gitea repository
+
+    parameters:
+        gitea_instance_url: Full URL to Gitea instance (e.g., https://gitea.example.com)
+        gitea_token: Personal access token with repo scope
+        repo: Repository in format "username/repo"
+
+    returns:
+        list of "URL - Title" strings
+    """
+    # URL-encode the repo path component (preserve the / between owner and repo name)
+    # quote(..., safe='') encodes everything, then we replace %2F back to /
+    repo_encoded = quote(repo, safe='')
+    repo_encoded = repo_encoded.replace('%2F', '/')
+    url = f"{gitea_instance_url}/api/v1/repos/{repo_encoded}/issues"
+
+    params = {
+        'state': 'open',
+        'direction': 'desc',
+        'sort': 'updated',
+        'page': 1,
+        'limit': 100  # Maximum allowed by Gitea API
+    }
+    headers = {
+        'Authorization': f'token {gitea_token}',
+        'Accept': 'application/json'
+    }
+
+    all_issues = []
+
+    try:
+        while True:
+            response = requests.get(
+                url,
+                params=params,
+                headers=headers,
+                verify=False,
+                timeout=REQUESTS_TIMEOUT
+            )
+            response.raise_for_status()
+            issues = response.json()
+
+            if not issues:
+                break
+
+            all_issues.extend(issues)
+
+            # Check if we got fewer results than requested, meaning we've reached the end
+            if len(issues) < params['limit']:
+                break
+
+            # Move to next page
+            params['page'] += 1
+
+        result = []
+        for issue in all_issues:
+            issue_url = issue.get('html_url', '')
+            title = issue.get('title', '')
+            result.append(f'{issue_url} - {title}')
+
+        return result
+
+    except requests.exceptions.RequestException as e:
+        error_msg = str(e)
+        if hasattr(e, 'response') and e.response is not None:
+            try:
+                error_data = e.response.json()
+                error_msg = f"{error_msg} - {error_data.get('message', '')}"
+            except (ValueError, KeyError):
+                pass
+        print(f'{colorama.Fore.RED}ERROR: Failed to fetch issues: {error_msg}{colorama.Style.RESET_ALL}')
+        return None
+
+
+def main():
+    """Main entry point for the Gitea issues script."""
+    parser = argparse.ArgumentParser(
+        description='Display open issues from a Gitea repository',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog='''
+Examples:
+  %(prog)s                          # Use repo from config (~/.config/gitea-issues.yml)
+  %(prog)s --repo myorg/myproject   # Override repo from command line
+  %(prog)s --limit 10               # Show only first 10 issues
+  %(prog)s --limit 0                # Show all issues (no limit)
+
+Configuration file (~/.config/gitea-issues.yml):
+  GITEA_URL:  https://gitea.example.com
+  GITEA_TOKEN: your-personal-access-token
+  REPO:       username/repo
+  MAX_LINES:  20
+  REQUESTS_TIMEOUT: 30
+        '''
+    )
+    parser.add_argument(
+        '--repo',
+        type=str,
+        help='Repository to query (format: username/repo), overrides config'
+    )
+    parser.add_argument(
+        '--limit',
+        type=int,
+        default=MAX_LINES,
+        help=f'Maximum number of issues to display (default: {MAX_LINES}, use 0 for no limit)'
+    )
+
+    args = parser.parse_args()
+
+    # Use CLI repo if provided, otherwise use config
+    target_repo = args.repo if args.repo else REPO
+
+    # Print title
+    print_title(f"gitea issues: {target_repo}")
+
+    # Fetch issues
+    issues = get_gitea_issues(GITEA_URL, GITEA_TOKEN, target_repo)
+
+    if issues is None:
+        # Error occurred
+        sys.exit(1)
+
+    if not issues:
+        # No issues found - empty output is acceptable
+        return
+
+    # Format and display issues
+    formatted_issues = [
+        format_bullet_point('▧', colorama.Fore.GREEN, issue)
+        for issue in issues
+    ]
+
+    output = format_list(formatted_issues, args.limit)
+    print(output)
+
+
+if __name__ == "__main__":
+    main()
