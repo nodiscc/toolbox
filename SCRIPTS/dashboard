@@ -368,18 +368,14 @@ def get_shaarli_readlater(shaarli_url, shaarli_secret):
         List of formatted readlater link strings (URL - title)
     """
     client = ShaarliV1Client(shaarli_url, shaarli_secret)
-    try:
-        response = client.get_links({'limit': 99999999})
-        links = response.json()
-        readlater_links = [
-            f'{link["url"]} - {link["title"]}'
-            for link in links
-            if 'readlater' in link.get('tags', [])
-        ]
-        return readlater_links
-    except Exception as e:
-        print(f"Error fetching readlater links from Shaarli: {e}")
-        return []
+    response = client.get_links({'limit': 99999999})
+    links = response.json()
+    readlater_links = [
+        f'{link["url"]} - {link["title"]}'
+        for link in links
+        if 'readlater' in link.get('tags', [])
+    ]
+    return readlater_links
 
 
 def check_mtime(file_path, warn_if_older_than_seconds):
