@@ -1,6 +1,6 @@
-#!/bin/env python3
+#!/usr/bin/env python3
 """Dashboard script for monitoring various services including CalDAV, GitLab, Gitea, IMAP, and TT-RSS."""
-# Requirements: python3 -m venv ~/.venv && ~/.venv/bin/pip3 install caldav vobject colorama pyyaml
+# Requirements: python3 -m venv ~/.venv && ~/.venv/bin/pip3 install caldav vobject colorama pyyaml shaarli-client
 # Usage: ~/.venv/bin/python3 ./dashboard
 # Configuration file: ~/.config/dashboard.yml
 # CALDAV_URL
@@ -41,6 +41,7 @@ import icalendar
 import requests
 import urllib3
 import yaml
+from shaarli_client.client import ShaarliV1Client
 
 # Disable SSL warnings
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -356,6 +357,31 @@ def get_caldav_tasks(caldav_url, caldav_username, caldav_password, max_priority=
         return []
 
 
+def get_shaarli_readlater(shaarli_url, shaarli_secret):
+    """Fetch readlater links from Shaarli.
+    
+    Args:
+        shaarli_url: URL of the Shaarli instance
+        shaarli_secret: Shaarli secret key for API access
+    
+    Returns:
+        List of formatted readlater link strings (URL - title)
+    """
+    client = ShaarliV1Client(shaarli_url, shaarli_secret)
+    try:
+        response = client.get_links({'limit': 99999999})
+        links = response.json()
+        readlater_links = [
+            f'{link["url"]} - {link["title"]}'
+            for link in links
+            if 'readlater' in link.get('tags', [])
+        ]
+        return readlater_links
+    except Exception as e:
+        print(f"Error fetching readlater links from Shaarli: {e}")
+        return []
+
+
 def check_mtime(file_path, warn_if_older_than_seconds):
     """check if a file last modification time is older than specified number of seconds"""
     if not os.path.exists(file_path):
@@ -447,6 +473,7 @@ def main():
     parser.add_argument('--modtime', action='store_true', help='Check file modification times')
     parser.add_argument('--unread-mail', action='store_true', help='Show unread mail')
     parser.add_argument('--flagged-mail', action='store_true', help='Show flagged mail')
+    parser.add_argument('--shaarli-readlater', action='store_true', help='Show Shaarli readlater links')
     parser.add_argument('--progress-bar', action='store_true', help='Show progress bar')
     parser.add_argument('--random', action='store_true', help='Pick a random action and show a single random item')
     parser.add_argument('--date', help='Start date for progress bar (YYYY-MM-DD)')
@@ -466,10 +493,10 @@ def main():
         elif not args.date and not args.file:
             parser.error("--progress-bar requires either --date and --total-days or --file")
 
-    # Handle random mode
+  # Handle random mode
     if args.random:
         random_actions = ['gitlab-issues', 'gitea-issues', 'caldav-tasks', 'caldav-events',
-                         'todotxt', 'ttrss-marked', 'unread-mail', 'flagged-mail']
+                          'todotxt', 'ttrss-marked', 'unread-mail', 'flagged-mail', 'shaarli-readlater']
         chosen_action = random.choice(random_actions)
 
         # Set the chosen action to True
@@ -489,11 +516,14 @@ def main():
             args.unread_mail = True
         elif chosen_action == 'flagged-mail':
             args.flagged_mail = True
+        elif chosen_action == 'shaarli-readlater':
+            args.shaarli_readlater = True
 
     # If no arguments provided, run all sections
     if not any([args.gitlab_issues, args.gitea_issues, args.caldav_tasks,
                 args.caldav_events, args.todotxt, args.ttrss_marked,
-                args.modtime, args.unread_mail, args.flagged_mail, args.progress_bar]):
+                args.modtime, args.unread_mail, args.flagged_mail,
+                args.shaarli_readlater, args.progress_bar]):
         # Run all sections by default
         args.gitlab_issues = True
         args.gitea_issues = True
@@ -636,14 +666,14 @@ def main():
         out = format_list(unread_mail_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
         print(out)
 
-    # FLAGGED MAIL
+ # FLAGGED MAIL
     if args.flagged_mail:
         print_title('flagged mail')
         flagged_mail = get_flagged_mail(CONFIG['IMAP_SERVER'],
-                                      993,
-                                      CONFIG['IMAP_USERNAME'],
-                                      CONFIG['IMAP_PASSWORD'],
-                                      CONFIG['IMAP_FLAGGED_FOLDERS_LIST']) # comma-separated list
+                                       993,
+                                       CONFIG['IMAP_USERNAME'],
+                                       CONFIG['IMAP_PASSWORD'],
+                                       CONFIG['IMAP_FLAGGED_FOLDERS_LIST']) # comma-separated list
         if args.random and flagged_mail:
             flagged_mail = [random.choice(flagged_mail)]
         flagged_mail_lines = [
@@ -651,6 +681,20 @@ def main():
             for article in flagged_mail
         ]
         out = format_list(flagged_mail_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
+        print(out)
+
+    # SHAARLI READLATER
+    if args.shaarli_readlater:
+        print_title('shaarli readlater')
+        shaarli_readlater = get_shaarli_readlater(CONFIG['SHAARLI_URL'],
+                                                   CONFIG['SHAARLI_SECRET'])
+        if args.random and shaarli_readlater:
+            shaarli_readlater = [random.choice(shaarli_readlater)]
+        shaarli_readlater_lines = [
+            format_bullet_point('▧', colorama.Fore.CYAN, f'{link}')
+            for link in shaarli_readlater
+        ]
+        out = format_list(shaarli_readlater_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
         print(out)
 
 if __name__ == "__main__":
