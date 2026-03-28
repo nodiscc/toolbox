@@ -58,6 +58,35 @@ def format_bullet_point(symbol, color, text):
     return formatted
 
 
+def format_markdown_line(issue):
+    """Format an issue as a markdown line for TODO.md
+
+    parameters:
+        issue: dict with issue data from Gitea API
+
+    returns:
+        formatted markdown string
+    """
+    number = issue.get('number', '')
+    title = issue.get('title', '')
+    milestone = issue.get('milestone', {})
+    milestone_title = milestone.get('title', '') if milestone else ''
+    labels = issue.get('labels', [])
+    label_names = ','.join(label.get('name', '') for label in labels)
+
+    if milestone_title:
+        milestone_str = f"**`{milestone_title}`**"
+    else:
+        milestone_str = "**`-`**"
+
+    if label_names:
+        label_str = f"`{label_names}`"
+    else:
+        label_str = "``"
+
+    return f"- #{number} - {title} - {milestone_str} {label_str}"
+
+
 def format_list(items, max_lines):
     """Return the first items of a list as text on multiple lines"""
     if max_lines == 0:
@@ -66,16 +95,17 @@ def format_list(items, max_lines):
     return '\n'.join(first_items)
 
 
-def get_gitea_issues(gitea_instance_url, gitea_token, repo):
+def get_gitea_issues(gitea_instance_url, gitea_token, repo, return_raw=False):
     """Fetch open issues from a Gitea repository
 
     parameters:
         gitea_instance_url: Full URL to Gitea instance (e.g., https://gitea.example.com)
         gitea_token: Personal access token with repo scope
         repo: Repository in format "username/repo"
+        return_raw: If True, return raw issue data; if False, return formatted strings
 
     returns:
-        list of "URL - Title" strings
+        list of "URL - Title" strings (or raw issue dicts if return_raw=True)
     """
     # URL-encode the repo path component (preserve the / between owner and repo name)
     # quote(..., safe='') encodes everything, then we replace %2F back to /
@@ -120,6 +150,9 @@ def get_gitea_issues(gitea_instance_url, gitea_token, repo):
 
             # Move to next page
             params['page'] += 1
+
+        if return_raw:
+            return all_issues
 
         result = []
         for issue in all_issues:
@@ -223,6 +256,7 @@ Examples:
   %(prog)s --repo myorg/myproject              # List issues from specified repo
   %(prog)s --repo myorg/myproject --limit 10   # Show only first 10 issues
   %(prog)s --repo myorg/myproject --issue 286  # Show details of issue #286
+  %(prog)s --repo myorg/myproject --format markdown  # Output in TODO.md format
 
 Configuration file (~/.config/gitea-issues.yml):
   GITEA_URL:  https://gitea.example.com
@@ -248,6 +282,13 @@ Configuration file (~/.config/gitea-issues.yml):
         type=int,
         help='Show details of a specific issue by number'
     )
+    parser.add_argument(
+        '--format',
+        type=str,
+        choices=['list', 'markdown'],
+        default='list',
+        help='Output format: list (default) or markdown (for TODO.md)'
+    )
 
     args = parser.parse_args()
 
@@ -264,7 +305,10 @@ Configuration file (~/.config/gitea-issues.yml):
     print_title(f"gitea issues: {target_repo}")
 
     # Fetch issues
-    issues = get_gitea_issues(GITEA_URL, GITEA_TOKEN, target_repo)
+    if args.format == 'markdown':
+        issues = get_gitea_issues(GITEA_URL, GITEA_TOKEN, target_repo, return_raw=True)
+    else:
+        issues = get_gitea_issues(GITEA_URL, GITEA_TOKEN, target_repo)
 
     if issues is None:
         # Error occurred
@@ -275,13 +319,20 @@ Configuration file (~/.config/gitea-issues.yml):
         return
 
     # Format and display issues
-    formatted_issues = [
-        format_bullet_point('▧', colorama.Fore.GREEN, issue)
-        for issue in issues
-    ]
-
-    output = format_list(formatted_issues, args.limit)
-    print(output)
+    if args.format == 'markdown':
+        # Output in TODO.md format
+        output_lines = [format_markdown_line(issue) for issue in issues]
+        if args.limit > 0:
+            output_lines = output_lines[:args.limit]
+        print('\n'.join(output_lines))
+    else:
+        # Output in list format (default)
+        formatted_issues = [
+            format_bullet_point('▧', colorama.Fore.GREEN, issue)
+            for issue in issues
+        ]
+        output = format_list(formatted_issues, args.limit)
+        print(output)
 
 
 if __name__ == "__main__":
