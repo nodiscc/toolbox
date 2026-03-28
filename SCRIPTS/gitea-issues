@@ -5,7 +5,6 @@
 # Configuration file: ~/.config/gitea-issues.yml
 # GITEA_URL
 # GITEA_TOKEN
-# REPO
 # MAX_LINES
 # REQUESTS_TIMEOUT
 
@@ -36,7 +35,6 @@ with open(config_path, 'r', encoding='utf-8') as config_file:
 
 GITEA_URL = CONFIG.get('GITEA_URL')
 GITEA_TOKEN = CONFIG.get('GITEA_TOKEN')
-REPO = CONFIG.get('REPO')
 MAX_LINES = int(CONFIG.get('MAX_LINES', 20))
 REQUESTS_TIMEOUT = int(CONFIG.get('REQUESTS_TIMEOUT', 30))
 
@@ -46,10 +44,6 @@ if not GITEA_URL:
 
 if not GITEA_TOKEN:
     print(f'{colorama.Fore.RED}ERROR: GITEA_TOKEN not configured in {config_path}{colorama.Style.RESET_ALL}')
-    sys.exit(1)
-
-if not REPO:
-    print(f'{colorama.Fore.RED}ERROR: REPO not configured in {config_path}{colorama.Style.RESET_ALL}')
     sys.exit(1)
 
 
@@ -147,6 +141,78 @@ def get_gitea_issues(gitea_instance_url, gitea_token, repo):
         return None
 
 
+def get_gitea_issue_details(gitea_instance_url, gitea_token, repo, issue_number):
+    """Fetch details of a specific Gitea issue
+
+    parameters:
+        gitea_instance_url: Full URL to Gitea instance
+        gitea_token: Personal access token with repo scope
+        repo: Repository in format "username/repo"
+        issue_number: Issue number (not ID)
+
+    returns:
+        dict with issue details or None on error
+    """
+    repo_encoded = quote(repo, safe='')
+    repo_encoded = repo_encoded.replace('%2F', '/')
+    url = f"{gitea_instance_url}/api/v1/repos/{repo_encoded}/issues/{issue_number}"
+
+    headers = {
+        'Authorization': f'token {gitea_token}',
+        'Accept': 'application/json'
+    }
+
+    try:
+        response = requests.get(
+            url,
+            headers=headers,
+            verify=False,
+            timeout=REQUESTS_TIMEOUT
+        )
+        response.raise_for_status()
+        return response.json()
+
+    except requests.exceptions.RequestException as e:
+        error_msg = str(e)
+        if hasattr(e, 'response') and e.response is not None:
+            try:
+                error_data = e.response.json()
+                error_msg = f"{error_msg} - {error_data.get('message', '')}"
+            except (ValueError, KeyError):
+                pass
+        print(f'{colorama.Fore.RED}ERROR: Failed to fetch issue {issue_number}: {error_msg}{colorama.Style.RESET_ALL}')
+        return None
+
+
+def display_issue_details(issue_data):
+    """Display detailed information about an issue including comments"""
+    if not issue_data:
+        return
+
+    print(f'\n{colorama.Style.BRIGHT}Title:{colorama.Style.RESET_ALL} {issue_data.get("title", "N/A")}')
+    print(f'{colorama.Style.BRIGHT}State:{colorama.Style.RESET_ALL} {issue_data.get("state", "N/A")}')
+    print(f'{colorama.Style.BRIGHT}Number:{colorama.Style.RESET_ALL} #{issue_data.get("number", "N/A")}')
+    print(f'{colorama.Style.BRIGHT}Author:{colorama.Style.RESET_ALL} {issue_data.get("user", {}).get("username", "N/A")}')
+    print(f'{colorama.Style.BRIGHT}Created:{colorama.Style.RESET_ALL} {issue_data.get("created_at", "N/A")}')
+    print(f'{colorama.Style.BRIGHT}Updated:{colorama.Style.RESET_ALL} {issue_data.get("updated_at", "N/A")}')
+    print(f'{colorama.Style.BRIGHT}HTML URL:{colorama.Style.RESET_ALL} {issue_data.get("html_url", "N/A")}')
+
+    body = issue_data.get("body", "")
+    if body:
+        print(f'\n{colorama.Style.BRIGHT}Description:{colorama.Style.RESET_ALL}')
+        print(body)
+
+    comments = issue_data.get("comments", [])
+    if comments:
+        print(f'\n{colorama.Style.BRIGHT}--- Comments ({len(comments)}) ---{colorama.Style.RESET_ALL}')
+        for comment in comments:
+            author = comment.get("user", {}).get("username", "Unknown")
+            created = comment.get("created_at", "N/A")
+            body = comment.get("body", "")
+            print(f'\n{colorama.Fore.YELLOW}[{author}] {colorama.Style.RESET_ALL}{created}')
+            print(f'{body}')
+
+
 def main():
     """Main entry point for the Gitea issues script."""
     parser = argparse.ArgumentParser(
@@ -154,15 +220,13 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog='''
 Examples:
-  %(prog)s                          # Use repo from config (~/.config/gitea-issues.yml)
-  %(prog)s --repo myorg/myproject   # Override repo from command line
-  %(prog)s --limit 10               # Show only first 10 issues
-  %(prog)s --limit 0                # Show all issues (no limit)
+  %(prog)s --repo myorg/myproject              # List issues from specified repo
+  %(prog)s --repo myorg/myproject --limit 10   # Show only first 10 issues
+  %(prog)s --repo myorg/myproject --issue 286  # Show details of issue #286
 
 Configuration file (~/.config/gitea-issues.yml):
   GITEA_URL:  https://gitea.example.com
   GITEA_TOKEN: your-personal-access-token
-  REPO:       username/repo
   MAX_LINES:  20
   REQUESTS_TIMEOUT: 30
         '''
@@ -170,7 +234,8 @@ Configuration file (~/.config/gitea-issues.yml):
     parser.add_argument(
         '--repo',
         type=str,
-        help='Repository to query (format: username/repo), overrides config'
+        required=True,
+        help='Repository to query (format: username/repo)'
     )
     parser.add_argument(
         '--limit',
@@ -178,11 +243,22 @@ Configuration file (~/.config/gitea-issues.yml):
         default=MAX_LINES,
         help=f'Maximum number of issues to display (default: {MAX_LINES}, use 0 for no limit)'
     )
+    parser.add_argument(
+        '--issue',
+        type=int,
+        help='Show details of a specific issue by number'
+    )
 
     args = parser.parse_args()
 
-    # Use CLI repo if provided, otherwise use config
-    target_repo = args.repo if args.repo else REPO
+    target_repo = args.repo
+
+    # If --issue is provided, fetch and display that specific issue
+    if args.issue:
+        print_title(f"gitea issue #{args.issue}")
+        issue_data = get_gitea_issue_details(GITEA_URL, GITEA_TOKEN, target_repo, args.issue)
+        display_issue_details(issue_data)
+        return
 
     # Print title
     print_title(f"gitea issues: {target_repo}")
