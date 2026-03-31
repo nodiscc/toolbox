@@ -34,6 +34,7 @@ import json
 import os
 import time
 import random
+import subprocess
 
 import caldav
 import colorama
@@ -378,6 +379,30 @@ def get_shaarli_readlater(shaarli_url, shaarli_secret):
     return readlater_links
 
 
+def get_lutris_games():
+    """Fetch unfinished games from Lutris library.
+    
+    Returns:
+        List of game names
+    """
+    query = "SELECT name FROM games WHERE id NOT IN (SELECT DISTINCT game_id FROM games_categories) AND runner != 'libretro'"
+    try:
+        result = subprocess.run(
+            ['sqlite3', os.path.expanduser('~/.local/share/lutris/pga.db'), query],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        games = [line.strip() for line in result.stdout.strip().split('\n') if line.strip()]
+        return games
+    except subprocess.CalledProcessError as e:
+        print(f"Error fetching Lutris games: {e}")
+        return []
+    except FileNotFoundError:
+        print("Error: sqlite3 not found or Lutris database not found")
+        return []
+
+
 def check_mtime(file_path, warn_if_older_than_seconds):
     """check if a file last modification time is older than specified number of seconds"""
     if not os.path.exists(file_path):
@@ -470,6 +495,7 @@ def main():
     parser.add_argument('--unread-mail', action='store_true', help='Show unread mail')
     parser.add_argument('--flagged-mail', action='store_true', help='Show flagged mail')
     parser.add_argument('--shaarli-readlater', action='store_true', help='Show Shaarli readlater links')
+    parser.add_argument('--games', action='store_true', help='Show Lutris unfinished games')
     parser.add_argument('--progress-bar', action='store_true', help='Show progress bar')
     parser.add_argument('--random', action='store_true', help='Pick a random action and show a single random item')
     parser.add_argument('--date', help='Start date for progress bar (YYYY-MM-DD)')
@@ -492,7 +518,7 @@ def main():
   # Handle random mode
     if args.random:
         random_actions = ['gitlab-issues', 'gitea-issues', 'caldav-tasks', 'caldav-events',
-                          'todotxt', 'ttrss-marked', 'unread-mail', 'flagged-mail', 'shaarli-readlater']
+                          'todotxt', 'ttrss-marked', 'unread-mail', 'flagged-mail', 'shaarli-readlater', 'games']
         chosen_action = random.choice(random_actions)
 
         # Set the chosen action to True
@@ -514,12 +540,14 @@ def main():
             args.flagged_mail = True
         elif chosen_action == 'shaarli-readlater':
             args.shaarli_readlater = True
+        elif chosen_action == 'games':
+            args.games = True
 
     # If no arguments provided, run all sections
     if not any([args.gitlab_issues, args.gitea_issues, args.caldav_tasks,
                 args.caldav_events, args.todotxt, args.ttrss_marked,
                 args.modtime, args.unread_mail, args.flagged_mail,
-                args.shaarli_readlater, args.progress_bar]):
+                args.shaarli_readlater, args.games, args.progress_bar]):
         # Run all sections by default
         args.gitlab_issues = True
         args.gitea_issues = True
@@ -691,6 +719,19 @@ def main():
             for link in shaarli_readlater
         ]
         out = format_list(shaarli_readlater_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
+        print(out)
+
+    # LUTRIS GAMES
+    if args.games:
+        print_title('lutris games')
+        lutris_games = get_lutris_games()
+        if args.random and lutris_games:
+            lutris_games = [random.choice(lutris_games)]
+        lutris_games_lines = [
+            format_bullet_point('▧', colorama.Fore.GREEN, f'{game}')
+            for game in lutris_games
+        ]
+        out = format_list(lutris_games_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
         print(out)
 
 if __name__ == "__main__":
