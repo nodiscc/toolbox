@@ -558,6 +558,7 @@ def main():
         args.modtime = True
         args.unread_mail = True
         args.flagged_mail = True
+        args.shaarli_readlater = True
 
     # PROGRESS BAR
     if args.progress_bar:
