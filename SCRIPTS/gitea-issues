@@ -267,11 +267,12 @@ def get_gitea_issue_comments(gitea_instance_url, gitea_token, repo, issue_number
     return comments
 
 
-def display_issue_details(issue_data, gitea_instance_url, gitea_token, repo):
-    """Display detailed information about an issue including comments"""
-    if not issue_data:
-        return
+def format_issue_header(issue_data):
+    """Print issue header metadata
 
+    parameters:
+        issue_data: dict with issue details from Gitea API
+    """
     print(f'\n{colorama.Style.BRIGHT}Title:{COLORS["RESET"]} {issue_data.get("title", "N/A")}')
     print(f'{colorama.Style.BRIGHT}State:{COLORS["RESET"]} {issue_data.get("state", "N/A")}')
     print(f'{colorama.Style.BRIGHT}Number:{COLORS["RESET"]} #{issue_data.get("number", "N/A")}')
@@ -280,11 +281,28 @@ def display_issue_details(issue_data, gitea_instance_url, gitea_token, repo):
     print(f'{colorama.Style.BRIGHT}Updated:{COLORS["RESET"]} {issue_data.get("updated_at", "N/A")}')
     print(f'{colorama.Style.BRIGHT}HTML URL:{COLORS["RESET"]} {issue_data.get("html_url", "N/A")}')
 
+
+def format_issue_body(issue_data):
+    """Print issue body/description if present
+
+    parameters:
+        issue_data: dict with issue details from Gitea API
+    """
     body = issue_data.get("body", "")
     if body:
         print(f'\n{colorama.Style.BRIGHT}Description:{COLORS["RESET"]}')
         print(body)
 
+
+def format_comments(issue_data, gitea_instance_url, gitea_token, repo):
+    """Fetch and print issue comments
+
+    parameters:
+        issue_data: dict with issue details from Gitea API
+        gitea_instance_url: Full URL to Gitea instance
+        gitea_token: Personal access token with repo scope
+        repo: Repository in format "username/repo"
+    """
     comments = issue_data.get("comments", [])
     
     if isinstance(comments, int):
@@ -305,9 +323,19 @@ def display_issue_details(issue_data, gitea_instance_url, gitea_token, repo):
         for comment in comments:
             author = comment.get("user", {}).get("username", "Unknown")
             created = comment.get("created_at", "N/A")
-            body = comment.get("body", "")
+            comment_body = comment.get("body", "")
             print(f'\n{COLORS["YELLOW"]}[{author}] {COLORS["RESET"]}{created}')
-            print(f'{body}')
+            print(f'{comment_body}')
+
+
+def display_issue_details(issue_data, gitea_instance_url, gitea_token, repo):
+    """Display detailed information about an issue including comments"""
+    if not issue_data:
+        return
+
+    format_issue_header(issue_data)
+    format_issue_body(issue_data)
+    format_comments(issue_data, gitea_instance_url, gitea_token, repo)
 
 
 def main():
