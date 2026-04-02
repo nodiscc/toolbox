@@ -108,6 +108,66 @@ def format_list(items, max_lines):
     return '\n'.join(first_items)
 
 
+def build_repo_path(repo):
+    """Build URL-encoded repository path
+
+    parameters:
+        repo: Repository in format "username/repo"
+
+    returns:
+        URL-encoded repo path with / preserved
+    """
+    repo_encoded = quote(repo, safe='')
+    return repo_encoded.replace('%2F', '/')
+
+
+def get_headers():
+    """Get request headers for Gitea API
+
+    returns:
+        dict with Authorization and Accept headers
+    """
+    return {
+        'Authorization': f'token {GITEA_TOKEN}',
+        'Accept': 'application/json'
+    }
+
+
+def fetch_json(url, params=None, headers=None, timeout=None):
+    """Generic JSON API request wrapper
+
+    parameters:
+        url: Full API URL
+        params: Query parameters dict (optional)
+        headers: Request headers dict (optional)
+        timeout: Request timeout in seconds
+
+    returns:
+        response JSON dict or None on error
+    """
+    try:
+        response = requests.get(
+            url,
+            params=params,
+            headers=headers,
+            verify=False,
+            timeout=timeout or REQUESTS_TIMEOUT
+        )
+        response.raise_for_status()
+        return response.json()
+
+    except requests.exceptions.RequestException as e:
+        error_msg = str(e)
+        if hasattr(e, 'response') and e.response is not None:
+            try:
+                error_data = e.response.json()
+                error_msg = f"{error_msg} - {error_data.get('message', '')}"
+            except (ValueError, KeyError):
+                pass
+        print(f'{COLORS["RED"]}ERROR: API request failed: {error_msg}{COLORS["RESET"]}')
+        return None
+
+
 def get_gitea_issues(gitea_instance_url, gitea_token, repo, return_raw=False):
     """Fetch open issues from a Gitea repository
 
@@ -120,48 +180,34 @@ def get_gitea_issues(gitea_instance_url, gitea_token, repo, return_raw=False):
     returns:
         list of "URL - Title" strings (or raw issue dicts if return_raw=True)
     """
-    # URL-encode the repo path component (preserve the / between owner and repo name)
-    # quote(..., safe='') encodes everything, then we replace %2F back to /
-    repo_encoded = quote(repo, safe='')
-    repo_encoded = repo_encoded.replace('%2F', '/')
-    url = f"{gitea_instance_url}/api/v1/repos/{repo_encoded}/issues"
+    repo_path = build_repo_path(repo)
+    url = f"{gitea_instance_url}/api/{API_VERSION}/repos/{repo_path}/issues"
 
     params = {
         'state': 'open',
         'direction': 'desc',
         'sort': 'updated',
         'page': 1,
-        'limit': MAX_API_LIMIT  # Maximum allowed by Gitea API
+        'limit': MAX_API_LIMIT
     }
-    headers = {
-        'Authorization': f'token {gitea_token}',
-        'Accept': 'application/json'
-    }
+    headers = get_headers()
 
     all_issues = []
 
     try:
         while True:
-            response = requests.get(
-                url,
-                params=params,
-                headers=headers,
-                verify=False,
-                timeout=REQUESTS_TIMEOUT
-            )
-            response.raise_for_status()
-            issues = response.json()
+            issues = fetch_json(url, params=params, headers=headers)
+            if issues is None:
+                return None
 
             if not issues:
                 break
 
             all_issues.extend(issues)
 
-            # Check if we got fewer results than requested, meaning we've reached the end
             if len(issues) < params['limit']:
                 break
 
-            # Move to next page
             params['page'] += 1
 
         if return_raw:
@@ -176,14 +222,7 @@ def get_gitea_issues(gitea_instance_url, gitea_token, repo, return_raw=False):
         return result
 
     except requests.exceptions.RequestException as e:
-        error_msg = str(e)
-        if hasattr(e, 'response') and e.response is not None:
-            try:
-                error_data = e.response.json()
-                error_msg = f"{error_msg} - {error_data.get('message', '')}"
-            except (ValueError, KeyError):
-                pass
-        print(f'{COLORS["RED"]}ERROR: Failed to fetch issues: {error_msg}{COLORS["RESET"]}')
+        print(f'{COLORS["RED"]}ERROR: Failed to fetch issues: {e}{COLORS["RESET"]}')
         return None
 
 
@@ -199,35 +238,11 @@ def get_gitea_issue_details(gitea_instance_url, gitea_token, repo, issue_number)
     returns:
         dict with issue details or None on error
     """
-    repo_encoded = quote(repo, safe='')
-    repo_encoded = repo_encoded.replace('%2F', '/')
-    url = f"{gitea_instance_url}/api/v1/repos/{repo_encoded}/issues/{issue_number}"
+    repo_path = build_repo_path(repo)
+    url = f"{gitea_instance_url}/api/{API_VERSION}/repos/{repo_path}/issues/{issue_number}"
+    headers = get_headers()
 
-    headers = {
-        'Authorization': f'token {gitea_token}',
-        'Accept': 'application/json'
-    }
-
-    try:
-        response = requests.get(
-            url,
-            headers=headers,
-            verify=False,
-            timeout=REQUESTS_TIMEOUT
-        )
-        response.raise_for_status()
-        return response.json()
-
-    except requests.exceptions.RequestException as e:
-        error_msg = str(e)
-        if hasattr(e, 'response') and e.response is not None:
-            try:
-                error_data = e.response.json()
-                error_msg = f"{error_msg} - {error_data.get('message', '')}"
-            except (ValueError, KeyError):
-                pass
-        print(f'{COLORS["RED"]}ERROR: Failed to fetch issue {issue_number}: {error_msg}{COLORS["RESET"]}')
-        return None
+    return fetch_json(url, headers=headers)
 
 
 def get_gitea_issue_comments(gitea_instance_url, gitea_token, repo, issue_number):
@@ -242,28 +257,14 @@ def get_gitea_issue_comments(gitea_instance_url, gitea_token, repo, issue_number
     returns:
         list of comment dicts or empty list on error
     """
-    repo_encoded = quote(repo, safe='')
-    repo_encoded = repo_encoded.replace('%2F', '/')
-    url = f"{gitea_instance_url}/api/v1/repos/{repo_encoded}/issues/{issue_number}/comments"
+    repo_path = build_repo_path(repo)
+    url = f"{gitea_instance_url}/api/{API_VERSION}/repos/{repo_path}/issues/{issue_number}/comments"
+    headers = get_headers()
 
-    headers = {
-        'Authorization': f'token {gitea_token}',
-        'Accept': 'application/json'
-    }
-
-    try:
-        response = requests.get(
-            url,
-            headers=headers,
-            verify=False,
-            timeout=REQUESTS_TIMEOUT
-        )
-        response.raise_for_status()
-        return response.json()
-
-    except requests.exceptions.RequestException as e:
-        print(f'{COLORS["RED"]}ERROR: Failed to fetch comments for issue {issue_number}: {e}{COLORS["RESET"]}')
+    comments = fetch_json(url, headers=headers)
+    if comments is None:
         return []
+    return comments
 
 
 def display_issue_details(issue_data, gitea_instance_url, gitea_token, repo):
