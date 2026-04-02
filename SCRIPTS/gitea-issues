@@ -35,6 +35,7 @@ COLORS = {
     'RESET': colorama.Style.RESET_ALL,
     'GREEN': colorama.Fore.GREEN,
     'YELLOW': colorama.Fore.YELLOW,
+    'BRIGHT': colorama.Style.BRIGHT,
 }
 
 # load config from YAML file
@@ -273,13 +274,13 @@ def format_issue_header(issue_data):
     parameters:
         issue_data: dict with issue details from Gitea API
     """
-    print(f'\n{colorama.Style.BRIGHT}Title:{COLORS["RESET"]} {issue_data.get("title", "N/A")}')
-    print(f'{colorama.Style.BRIGHT}State:{COLORS["RESET"]} {issue_data.get("state", "N/A")}')
-    print(f'{colorama.Style.BRIGHT}Number:{COLORS["RESET"]} #{issue_data.get("number", "N/A")}')
-    print(f'{colorama.Style.BRIGHT}Author:{COLORS["RESET"]} {issue_data.get("user", {}).get("username", "N/A")}')
-    print(f'{colorama.Style.BRIGHT}Created:{COLORS["RESET"]} {issue_data.get("created_at", "N/A")}')
-    print(f'{colorama.Style.BRIGHT}Updated:{COLORS["RESET"]} {issue_data.get("updated_at", "N/A")}')
-    print(f'{colorama.Style.BRIGHT}HTML URL:{COLORS["RESET"]} {issue_data.get("html_url", "N/A")}')
+    print(f'\n{COLORS["BRIGHT"]}Title:{COLORS["RESET"]} {issue_data.get("title", "N/A")}')
+    print(f'{COLORS["BRIGHT"]}State:{COLORS["RESET"]} {issue_data.get("state", "N/A")}')
+    print(f'{COLORS["BRIGHT"]}Number:{COLORS["RESET"]} #{issue_data.get("number", "N/A")}')
+    print(f'{COLORS["BRIGHT"]}Author:{COLORS["RESET"]} {issue_data.get("user", {}).get("username", "N/A")}')
+    print(f'{COLORS["BRIGHT"]}Created:{COLORS["RESET"]} {issue_data.get("created_at", "N/A")}')
+    print(f'{COLORS["BRIGHT"]}Updated:{COLORS["RESET"]} {issue_data.get("updated_at", "N/A")}')
+    print(f'{COLORS["BRIGHT"]}HTML URL:{COLORS["RESET"]} {issue_data.get("html_url", "N/A")}')
 
 
 def format_issue_body(issue_data):
@@ -290,7 +291,7 @@ def format_issue_body(issue_data):
     """
     body = issue_data.get("body", "")
     if body:
-        print(f'\n{colorama.Style.BRIGHT}Description:{COLORS["RESET"]}')
+        print(f'\n{COLORS["BRIGHT"]}Description:{COLORS["RESET"]}')
         print(body)
 
 
@@ -309,7 +310,7 @@ def format_comments(issue_data, gitea_instance_url, gitea_token, repo):
         if comments > 0:
             actual_comments = get_gitea_issue_comments(gitea_instance_url, gitea_token, repo, issue_data.get("number"))
             if actual_comments:
-                print(f'\n{colorama.Style.BRIGHT}--- Comments ({len(actual_comments)}) ---{COLORS["RESET"]}')
+                print(f'\n{COLORS["BRIGHT"]}--- Comments ({len(actual_comments)}) ---{COLORS["RESET"]}')
                 for i, comment in enumerate(actual_comments):
                     if i > 0:
                         print('\n' + '-' * 50)
@@ -319,7 +320,7 @@ def format_comments(issue_data, gitea_instance_url, gitea_token, repo):
                     print(f'\n{COLORS["YELLOW"]}[{author}] {COLORS["RESET"]}{created}')
                     print(f'{comment_body}')
     elif comments:
-        print(f'\n{colorama.Style.BRIGHT}--- Comments ({len(comments)}) ---{COLORS["RESET"]}')
+        print(f'\n{COLORS["BRIGHT"]}--- Comments ({len(comments)}) ---{COLORS["RESET"]}')
         for comment in comments:
             author = comment.get("user", {}).get("username", "Unknown")
             created = comment.get("created_at", "N/A")
