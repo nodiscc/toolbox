@@ -24,10 +24,23 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 colorama.init()
 
+# Constants
+API_VERSION = 'v1'
+DEFAULT_MAX_LINES = 20
+DEFAULT_TIMEOUT = 30
+MAX_API_LIMIT = 100
+
+COLORS = {
+    'RED': colorama.Fore.RED,
+    'RESET': colorama.Style.RESET_ALL,
+    'GREEN': colorama.Fore.GREEN,
+    'YELLOW': colorama.Fore.YELLOW,
+}
+
 # load config from YAML file
 config_path = os.path.expanduser('~/.config/gitea-issues.yml')
 if not os.path.exists(config_path):
-    print(f'{colorama.Fore.RED}ERROR: Config file {config_path} not found{colorama.Style.RESET_ALL}')
+    print(f'{COLORS["RED"]}ERROR: Config file {config_path} not found{COLORS["RESET"]}')
     sys.exit(1)
 
 with open(config_path, 'r', encoding='utf-8') as config_file:
@@ -35,26 +48,26 @@ with open(config_path, 'r', encoding='utf-8') as config_file:
 
 GITEA_URL = CONFIG.get('GITEA_URL')
 GITEA_TOKEN = CONFIG.get('GITEA_TOKEN')
-MAX_LINES = int(CONFIG.get('MAX_LINES', 20))
-REQUESTS_TIMEOUT = int(CONFIG.get('REQUESTS_TIMEOUT', 30))
+MAX_LINES = int(CONFIG.get('MAX_LINES', DEFAULT_MAX_LINES))
+REQUESTS_TIMEOUT = int(CONFIG.get('REQUESTS_TIMEOUT', DEFAULT_TIMEOUT))
 
 if not GITEA_URL:
-    print(f'{colorama.Fore.RED}ERROR: GITEA_URL not configured in {config_path}{colorama.Style.RESET_ALL}')
+    print(f'{COLORS["RED"]}ERROR: GITEA_URL not configured in {config_path}{COLORS["RESET"]}')
     sys.exit(1)
 
 if not GITEA_TOKEN:
-    print(f'{colorama.Fore.RED}ERROR: GITEA_TOKEN not configured in {config_path}{colorama.Style.RESET_ALL}')
+    print(f'{COLORS["RED"]}ERROR: GITEA_TOKEN not configured in {config_path}{COLORS["RESET"]}')
     sys.exit(1)
 
 
 def print_title(text):
     """Print section title to screen"""
-    print(f'{colorama.Fore.GREEN}####### {text}{colorama.Style.RESET_ALL}')
+    print(f'{COLORS["GREEN"]}####### {text}{COLORS["RESET"]}')
 
 
 def format_bullet_point(symbol, color, text):
     """Format a string as a bullet point"""
-    formatted = f'{color}{symbol} {colorama.Style.RESET_ALL}{text}'
+    formatted = f'{color}{symbol} {COLORS["RESET"]}{text}'
     return formatted
 
 
@@ -118,7 +131,7 @@ def get_gitea_issues(gitea_instance_url, gitea_token, repo, return_raw=False):
         'direction': 'desc',
         'sort': 'updated',
         'page': 1,
-        'limit': 100  # Maximum allowed by Gitea API
+        'limit': MAX_API_LIMIT  # Maximum allowed by Gitea API
     }
     headers = {
         'Authorization': f'token {gitea_token}',
@@ -170,7 +183,7 @@ def get_gitea_issues(gitea_instance_url, gitea_token, repo, return_raw=False):
                 error_msg = f"{error_msg} - {error_data.get('message', '')}"
             except (ValueError, KeyError):
                 pass
-        print(f'{colorama.Fore.RED}ERROR: Failed to fetch issues: {error_msg}{colorama.Style.RESET_ALL}')
+        print(f'{COLORS["RED"]}ERROR: Failed to fetch issues: {error_msg}{COLORS["RESET"]}')
         return None
 
 
@@ -213,7 +226,7 @@ def get_gitea_issue_details(gitea_instance_url, gitea_token, repo, issue_number)
                 error_msg = f"{error_msg} - {error_data.get('message', '')}"
             except (ValueError, KeyError):
                 pass
-        print(f'{colorama.Fore.RED}ERROR: Failed to fetch issue {issue_number}: {error_msg}{colorama.Style.RESET_ALL}')
+        print(f'{COLORS["RED"]}ERROR: Failed to fetch issue {issue_number}: {error_msg}{COLORS["RESET"]}')
         return None
 
 
@@ -249,7 +262,7 @@ def get_gitea_issue_comments(gitea_instance_url, gitea_token, repo, issue_number
         return response.json()
 
     except requests.exceptions.RequestException as e:
-        print(f'{colorama.Fore.RED}ERROR: Failed to fetch comments for issue {issue_number}: {e}{colorama.Style.RESET_ALL}')
+        print(f'{COLORS["RED"]}ERROR: Failed to fetch comments for issue {issue_number}: {e}{COLORS["RESET"]}')
         return []
 
 
@@ -258,17 +271,17 @@ def display_issue_details(issue_data, gitea_instance_url, gitea_token, repo):
     if not issue_data:
         return
 
-    print(f'\n{colorama.Style.BRIGHT}Title:{colorama.Style.RESET_ALL} {issue_data.get("title", "N/A")}')
-    print(f'{colorama.Style.BRIGHT}State:{colorama.Style.RESET_ALL} {issue_data.get("state", "N/A")}')
-    print(f'{colorama.Style.BRIGHT}Number:{colorama.Style.RESET_ALL} #{issue_data.get("number", "N/A")}')
-    print(f'{colorama.Style.BRIGHT}Author:{colorama.Style.RESET_ALL} {issue_data.get("user", {}).get("username", "N/A")}')
-    print(f'{colorama.Style.BRIGHT}Created:{colorama.Style.RESET_ALL} {issue_data.get("created_at", "N/A")}')
-    print(f'{colorama.Style.BRIGHT}Updated:{colorama.Style.RESET_ALL} {issue_data.get("updated_at", "N/A")}')
-    print(f'{colorama.Style.BRIGHT}HTML URL:{colorama.Style.RESET_ALL} {issue_data.get("html_url", "N/A")}')
+    print(f'\n{colorama.Style.BRIGHT}Title:{COLORS["RESET"]} {issue_data.get("title", "N/A")}')
+    print(f'{colorama.Style.BRIGHT}State:{COLORS["RESET"]} {issue_data.get("state", "N/A")}')
+    print(f'{colorama.Style.BRIGHT}Number:{COLORS["RESET"]} #{issue_data.get("number", "N/A")}')
+    print(f'{colorama.Style.BRIGHT}Author:{COLORS["RESET"]} {issue_data.get("user", {}).get("username", "N/A")}')
+    print(f'{colorama.Style.BRIGHT}Created:{COLORS["RESET"]} {issue_data.get("created_at", "N/A")}')
+    print(f'{colorama.Style.BRIGHT}Updated:{COLORS["RESET"]} {issue_data.get("updated_at", "N/A")}')
+    print(f'{colorama.Style.BRIGHT}HTML URL:{COLORS["RESET"]} {issue_data.get("html_url", "N/A")}')
 
     body = issue_data.get("body", "")
     if body:
-        print(f'\n{colorama.Style.BRIGHT}Description:{colorama.Style.RESET_ALL}')
+        print(f'\n{colorama.Style.BRIGHT}Description:{COLORS["RESET"]}')
         print(body)
 
     comments = issue_data.get("comments", [])
@@ -277,22 +290,22 @@ def display_issue_details(issue_data, gitea_instance_url, gitea_token, repo):
         if comments > 0:
             actual_comments = get_gitea_issue_comments(gitea_instance_url, gitea_token, repo, issue_data.get("number"))
             if actual_comments:
-                print(f'\n{colorama.Style.BRIGHT}--- Comments ({len(actual_comments)}) ---{colorama.Style.RESET_ALL}')
+                print(f'\n{colorama.Style.BRIGHT}--- Comments ({len(actual_comments)}) ---{COLORS["RESET"]}')
                 for i, comment in enumerate(actual_comments):
                     if i > 0:
                         print('\n' + '-' * 50)
                     author = comment.get("user", {}).get("username", "Unknown")
                     created = comment.get("created_at", "N/A")
                     comment_body = comment.get("body", "")
-                    print(f'\n{colorama.Fore.YELLOW}[{author}] {colorama.Style.RESET_ALL}{created}')
+                    print(f'\n{COLORS["YELLOW"]}[{author}] {COLORS["RESET"]}{created}')
                     print(f'{comment_body}')
     elif comments:
-        print(f'\n{colorama.Style.BRIGHT}--- Comments ({len(comments)}) ---{colorama.Style.RESET_ALL}')
+        print(f'\n{colorama.Style.BRIGHT}--- Comments ({len(comments)}) ---{COLORS["RESET"]}')
         for comment in comments:
             author = comment.get("user", {}).get("username", "Unknown")
             created = comment.get("created_at", "N/A")
             body = comment.get("body", "")
-            print(f'\n{colorama.Fore.YELLOW}[{author}] {colorama.Style.RESET_ALL}{created}')
+            print(f'\n{COLORS["YELLOW"]}[{author}] {COLORS["RESET"]}{created}')
             print(f'{body}')
 
 
@@ -378,7 +391,7 @@ Configuration file (~/.config/gitea-issues.yml):
     else:
         # Output in list format (default)
         formatted_issues = [
-            format_bullet_point('▧', colorama.Fore.GREEN, issue)
+            format_bullet_point('▧', COLORS['GREEN'], issue)
             for issue in issues
         ]
         output = format_list(formatted_issues, args.limit)
