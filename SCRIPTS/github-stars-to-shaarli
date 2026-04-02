@@ -1,0 +1,222 @@
+#!/usr/bin/env python3
+"""
+Script to import GitHub repositories to Shaarli bookmarking service.
+Checks against existing Shaarli bookmarks via API to avoid duplicates.
+USAGE: export REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
+       ~/.venv/bin/python3 ~/.venv/bin/github-stars-to-shaarli --delete
+"""
+
+
+import json
+import sys
+import os
+import yaml
+import requests
+import argparse
+from shaarli_client.client import ShaarliV1Client
+
+# load config from YAML file
+config_path = os.path.expanduser('~/.config/dashboard.yml')
+with open(config_path, 'r', encoding='utf-8') as config_file:
+    CONFIG = yaml.safe_load(config_file)
+
+def get_github_starred_repos():
+    """Fetch starred repositories from GitHub API (first 100 only)."""
+    try:
+        print("Fetching starred repositories from GitHub API...")
+
+        headers = {
+            'Authorization': f'Bearer {CONFIG["GITHUB_TOKEN"]}',
+            'Accept': 'application/vnd.github+json',
+            'X-GitHub-Api-Version': '2022-11-28'
+        }
+
+        url = 'https://api.github.com/user/starred?per_page=100&page=1'
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+
+        repos = response.json()
+        all_repos = {
+            repo['full_name']: {
+                'url': repo['html_url'],
+                'description': repo['description'],
+                'homepage': repo['homepage'],
+                'language': repo['language'],
+                'stars': repo['stargazers_count']
+            }
+            for repo in repos
+        }
+
+        print(f"Retrieved {len(all_repos)} starred repositories from GitHub.\n")
+        return all_repos
+    except Exception as e:
+        print(f"Error fetching starred repos from GitHub API: {e}")
+        sys.exit(1)
+
+def unstar_github_repo(owner, repo):
+    """Unstar a repository on GitHub."""
+    try:
+        headers = {
+            'Authorization': f'Bearer {CONFIG["GITHUB_TOKEN"]}',
+            'Accept': 'application/vnd.github+json',
+            'X-GitHub-Api-Version': '2022-11-28'
+        }
+
+        url = f'https://api.github.com/user/starred/{owner}/{repo}'
+        response = requests.delete(url, headers=headers)
+
+        if response.status_code == 204:
+            print(f"✓ Unstarred {owner}/{repo} on GitHub")
+            return True
+
+        if response.status_code == 404:
+            oauth_scopes = response.headers.get('X-OAuth-Scopes', '')
+            if 'read:user' in oauth_scopes and 'public_repo' not in oauth_scopes and 'repo' not in oauth_scopes:
+                print(f"ERROR: Insufficient GitHub token permissions. Required: 'public_repo' scope")
+                sys.exit(1)
+
+            print(f"⚠ Repository {owner}/{repo} not found or not starred")
+            return False
+
+        if response.status_code == 401:
+            print(f"ERROR: GitHub authentication failed. Token may be invalid or expired.")
+            sys.exit(1)
+
+        if response.status_code == 403:
+            print(f"ERROR: GitHub API forbidden. Check token permissions or rate limits.")
+            sys.exit(1)
+
+        print(f"✗ Failed to unstar {owner}/{repo}: HTTP {response.status_code}")
+        if response.text:
+            print(f"   Response: {response.text}")
+        sys.exit(1)
+
+    except Exception as e:
+        print(f"✗ Error unstarring {owner}/{repo}: {e}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
+
+def get_shaarli_bookmarks(client):
+    """Fetch all bookmarks from Shaarli API."""
+    try:
+        print("Fetching existing bookmarks from Shaarli API...")
+        params = {'limit': 99999999}
+        response = client.get_links(params)
+        links = response.json()
+        print(f"Retrieved {len(links)} bookmarks from Shaarli.\n")
+        return links
+    except Exception as e:
+        print(f"Error fetching bookmarks from Shaarli API: {e}")
+        sys.exit(1)
+
+def get_extra_tags():
+    """Prompt user for additional tags and return them as a list."""
+    tags_input = input("Enter tags (comma-separated) or leave empty: ").strip()
+    return [t.strip() for t in tags_input.split(',')] if tags_input else None
+
+def post_to_shaarli(client, repo_name, repo_data, is_private, readlater=False, extra_tags=None):
+    """Post a repository to Shaarli. Optionally add extra tags."""
+    # Build description
+    homepage = repo_data.get('homepage')
+    description = f"> {homepage} - " if homepage else "> "
+    description += repo_data.get('description') or ''
+
+    tags = ['software']
+    if readlater:
+        tags.append("readlater")
+    if extra_tags:
+        tags.extend(extra_tags)
+
+    # Prepare link data
+    link_data = {
+        'url': repo_data['url'],
+        'title': repo_name,
+        'description': description,
+        'tags': tags,
+        'private': is_private
+    }
+
+    try:
+        result = client.post_link(link_data)
+        print(f"✓ Successfully posted to Shaarli: {repo_data['url']}")
+        return result
+    except Exception as e:
+        print(f"✗ Error posting to Shaarli: {e}")
+        return None
+
+def handle_post(client, repo_name, repo_data, is_private=False, readlater=False):
+    """Handle posting a repository to Shaarli."""
+    extra_tags = get_extra_tags()
+    post_to_shaarli(client, repo_name, repo_data, is_private, readlater, extra_tags)
+    print()
+    return True
+
+def handle_skip():
+    """Handle skipping the current repository."""
+    print("Exiting script.")
+    sys.exit(0)
+
+def main():
+    parser = argparse.ArgumentParser(description='Import GitHub starred repos to Shaarli')
+    parser.add_argument('--delete', action='store_true',
+                        help='Delete GitHub stars that are already in Shaarli')
+    args = parser.parse_args()
+
+    # Fetch starred repos from GitHub API
+    github_repos = get_github_starred_repos()
+
+    # Initialize Shaarli client
+    client = ShaarliV1Client(CONFIG['SHAARLI_URL'], CONFIG['SHAARLI_SECRET'])
+
+    # Fetch existing bookmarks from Shaarli API and build URL set for fast lookup
+    shaarli_data = get_shaarli_bookmarks(client)
+    existing_urls = {item.get('url') for item in shaarli_data}
+
+    # Define action handlers
+    action_handlers = {
+        'y': lambda c, n, d: handle_post(c, n, d, is_private=False),
+        'p': lambda c, n, d: handle_post(c, n, d, is_private=True),
+        'r': lambda c, n, d: handle_post(c, n, d, is_private=True, readlater=True),
+        'n': handle_skip
+    }
+
+    # Process each repository
+    for repo_name, repo_data in github_repos.items():
+        repo_url = repo_data.get('url')
+
+        # Check if URL already exists
+        if repo_url in existing_urls:
+            print(f"{repo_url} is already present in Shaarli")
+            if args.delete:
+                owner, repo = repo_name.split('/')
+                unstar_github_repo(owner, repo)
+            print()
+            continue
+
+        # Display repository info
+        print("=" * 70)
+        print(f"\033[32mRepository:\033[0m {repo_name}")
+        print(f"\033[32mURL:\033[0m {repo_url}")
+        print(f"\033[32mDescription:\033[0m {repo_data.get('description', 'N/A')}")
+        print(f"\033[32mLanguage:\033[0m {repo_data.get('language', 'N/A')}")
+        print(f"\033[32mStars:\033[0m {repo_data.get('stars', 0)}")
+        print("=" * 70)
+
+        # Ask user what to do
+        while True:
+            choice = input("Post to Shaarli? [y=public, p=private, n=no, r=readlater+private]: ").lower().strip()
+
+            if choice in action_handlers:
+                if choice == 'n':
+                    action_handlers[choice]()
+                else:
+                    action_handlers[choice](client, repo_name, repo_data)
+                break
+            else:
+                print("Invalid choice. Please enter 'y', 'p', 'n' or 'r'.")
+
+    print("\nFinished processing all repositories.")
+
+if __name__ == "__main__":
+    main()
