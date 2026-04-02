@@ -217,7 +217,43 @@ def get_gitea_issue_details(gitea_instance_url, gitea_token, repo, issue_number)
         return None
 
 
-def display_issue_details(issue_data):
+def get_gitea_issue_comments(gitea_instance_url, gitea_token, repo, issue_number):
+    """Fetch comments for a specific Gitea issue
+
+    parameters:
+        gitea_instance_url: Full URL to Gitea instance
+        gitea_token: Personal access token with repo scope
+        repo: Repository in format "username/repo"
+        issue_number: Issue number (not ID)
+
+    returns:
+        list of comment dicts or empty list on error
+    """
+    repo_encoded = quote(repo, safe='')
+    repo_encoded = repo_encoded.replace('%2F', '/')
+    url = f"{gitea_instance_url}/api/v1/repos/{repo_encoded}/issues/{issue_number}/comments"
+
+    headers = {
+        'Authorization': f'token {gitea_token}',
+        'Accept': 'application/json'
+    }
+
+    try:
+        response = requests.get(
+            url,
+            headers=headers,
+            verify=False,
+            timeout=REQUESTS_TIMEOUT
+        )
+        response.raise_for_status()
+        return response.json()
+
+    except requests.exceptions.RequestException as e:
+        print(f'{colorama.Fore.RED}ERROR: Failed to fetch comments for issue {issue_number}: {e}{colorama.Style.RESET_ALL}')
+        return []
+
+
+def display_issue_details(issue_data, gitea_instance_url, gitea_token, repo):
     """Display detailed information about an issue including comments"""
     if not issue_data:
         return
@@ -236,12 +272,20 @@ def display_issue_details(issue_data):
         print(body)
 
     comments = issue_data.get("comments", [])
-    comments_url = issue_data.get("comments_url", "")
     
     if isinstance(comments, int):
-        if comments > 0 and comments_url:
-            print(f'\n{colorama.Style.BRIGHT}--- Comments ({comments}) ---{colorama.Style.RESET_ALL}')
-            print(f'{colorama.Style.RESET_ALL}{colorama.Fore.YELLOW}(Comments fetched separately){colorama.Style.RESET_ALL}')
+        if comments > 0:
+            actual_comments = get_gitea_issue_comments(gitea_instance_url, gitea_token, repo, issue_data.get("number"))
+            if actual_comments:
+                print(f'\n{colorama.Style.BRIGHT}--- Comments ({len(actual_comments)}) ---{colorama.Style.RESET_ALL}')
+                for i, comment in enumerate(actual_comments):
+                    if i > 0:
+                        print('\n' + '-' * 50)
+                    author = comment.get("user", {}).get("username", "Unknown")
+                    created = comment.get("created_at", "N/A")
+                    comment_body = comment.get("body", "")
+                    print(f'\n{colorama.Fore.YELLOW}[{author}] {colorama.Style.RESET_ALL}{created}')
+                    print(f'{comment_body}')
     elif comments:
         print(f'\n{colorama.Style.BRIGHT}--- Comments ({len(comments)}) ---{colorama.Style.RESET_ALL}')
         for comment in comments:
@@ -304,7 +348,7 @@ Configuration file (~/.config/gitea-issues.yml):
     if args.issue:
         print_title(f"gitea issue #{args.issue}")
         issue_data = get_gitea_issue_details(GITEA_URL, GITEA_TOKEN, target_repo, args.issue)
-        display_issue_details(issue_data)
+        display_issue_details(issue_data, GITEA_URL, GITEA_TOKEN, target_repo)
         return
 
     # Print title
