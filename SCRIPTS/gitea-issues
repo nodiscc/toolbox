@@ -236,7 +236,13 @@ def display_issue_details(issue_data):
         print(body)
 
     comments = issue_data.get("comments", [])
-    if comments:
+    comments_url = issue_data.get("comments_url", "")
+    
+    if isinstance(comments, int):
+        if comments > 0 and comments_url:
+            print(f'\n{colorama.Style.BRIGHT}--- Comments ({comments}) ---{colorama.Style.RESET_ALL}')
+            print(f'{colorama.Style.RESET_ALL}{colorama.Fore.YELLOW}(Comments fetched separately){colorama.Style.RESET_ALL}')
+    elif comments:
         print(f'\n{colorama.Style.BRIGHT}--- Comments ({len(comments)}) ---{colorama.Style.RESET_ALL}')
         for comment in comments:
             author = comment.get("user", {}).get("username", "Unknown")
