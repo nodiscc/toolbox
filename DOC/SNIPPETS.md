@@ -20,6 +20,12 @@ git edit submodule URL: edit the .gitmodules file and run git submodule sync
 
 git bypass ssl certificate verification `git -c http.sslVerify=false clone https://example.com/path/to/git`
 
+git 20 most changed files last year `git log --format=format: --name-only --since="1 year ago" | sort | uniq -c | sort -nr | head -20`
+
+git 20 most changed files last year (fixes) `git log -i -E --grep="fix|bug|broken" --name-only --format='' | sort | uniq -c | sort -nr | head -20`
+
+git commit count by mont `git log --format='%ad' --date=format:'%Y-%m' | sort | uniq -c`
+
 ip address/interfaces in readable format `ip -br a`
 
 postgresql list users `\du`
