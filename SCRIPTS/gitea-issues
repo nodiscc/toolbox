@@ -169,7 +169,7 @@ def fetch_json(url, params=None, headers=None, timeout=None):
         return None
 
 
-def get_gitea_issues(gitea_instance_url, gitea_token, repo, return_raw=False):
+def get_gitea_issues(gitea_instance_url, _gitea_token, repo, return_raw=False):
     """Fetch open issues from a Gitea repository
 
     parameters:
@@ -227,7 +227,7 @@ def get_gitea_issues(gitea_instance_url, gitea_token, repo, return_raw=False):
         return None
 
 
-def get_gitea_issue_details(gitea_instance_url, gitea_token, repo, issue_number):
+def get_gitea_issue_details(gitea_instance_url, _gitea_token, repo, issue_number):
     """Fetch details of a specific Gitea issue
 
     parameters:
@@ -246,7 +246,7 @@ def get_gitea_issue_details(gitea_instance_url, gitea_token, repo, issue_number)
     return fetch_json(url, headers=headers)
 
 
-def get_gitea_issue_comments(gitea_instance_url, gitea_token, repo, issue_number):
+def get_gitea_issue_comments(gitea_instance_url, _gitea_token, repo, issue_number):
     """Fetch comments for a specific Gitea issue
 
     parameters:
@@ -305,7 +305,7 @@ def format_comments(issue_data, gitea_instance_url, gitea_token, repo):
         repo: Repository in format "username/repo"
     """
     comments = issue_data.get("comments", [])
-    
+
     if isinstance(comments, int):
         if comments > 0:
             actual_comments = get_gitea_issue_comments(gitea_instance_url, gitea_token, repo, issue_data.get("number"))
