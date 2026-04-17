@@ -8,6 +8,8 @@ LUTRIS_VERSION=0.5.22
 USERJS_VERSION=0.13.0
 USERJS_PACKAGE_VERSION=$(USERJS_VERSION)-1
 TARTUBE_VERSION=2.5.197
+IFGRAPH_VERSION=c8ec77496cc209dca1dbb1a8315d14e21836c1f6
+IFGRAPH_PACKAGE_VERSION=1.1-1
 
 .PHONY: yt_dlp
 yt_dlp:
@@ -67,7 +69,7 @@ tartube:
 	wget -O dist/python3-tartube_$(TARTUBE_VERSION).deb https://github.com/axcore/tartube/releases/download/v$(TARTUBE_VERSION)/python3-tartube_$(TARTUBE_VERSION).deb
 
 clean:
-	rm -rf build/ dist/ yt-dlp/usr/ bleachbit-cleanerml/usr/share/bleachbit/cleaners/*xml user.js/usr/share/ tipsy/usr/
+	rm -rf build/ dist/ yt-dlp/usr/ bleachbit-cleanerml/usr/share/bleachbit/cleaners/*xml user.js/usr/share/ tipsy/usr/ ifgraph/usr/ ifgraph/lib/
 
 ##### MANUAL BUILD TASKS, NOT RUN BY CI/MAKE ALL #####
 TIPSY_VERSION=863e3dc424b28631c7de24da3d9ff572797a1792
@@ -83,8 +85,8 @@ tipsy:
 	wget --continue --no-verbose https://models.spriters-resource.com/media/assets/302/305648.zip?updated=1755501652 -O build/tipsy-models/hex-navy.zip
 	unzip build/tipsy-models/hex-navy.zip -d build/tipsy-models/hex-navy
 	
-	
-	
+		
+		
 	mkdir -pv tipsy/usr/bin/ tipsy/usr/share/tipsy/models
 	cd build/tipsy-$(TIPSY_VERSION)/ && make tipsy
 	cp -v build/tipsy-863e3dc424b28631c7de24da3d9ff572797a1792/tipsy tipsy/usr/bin/tipsy
@@ -94,3 +96,19 @@ tipsy:
 	chmod -v 0755 tipsy/DEBIAN/
 	dpkg-deb --build tipsy/
 	mv -v tipsy.deb dist/tipsy_$(TIPSY_PACKAGE_VERSION)_all.deb
+
+.PHONY: ifgraph
+ifgraph:
+	rm -rf build/
+	mkdir -pv build/ dist/ ifgraph/usr/bin/ ifgraph/lib/systemd/system/ ifgraph/DEBIAN/
+	cd build/ && \
+	git clone https://github.com/stolk/ifgraph.git && \
+	git -C ifgraph checkout $(IFGRAPH_VERSION) && \
+	cd ifgraph && make
+	cp -v build/ifgraph/ifgraph ifgraph/usr/bin/
+	cp -v build/ifgraph/ifgraphd ifgraph/usr/bin/
+	cp -v build/ifgraph/ifgraph.service ifgraph/lib/systemd/system/
+	sed -i "s/%%IFGRAPH_VERSION%%/$(IFGRAPH_PACKAGE_VERSION)/g" ifgraph/DEBIAN/control
+	chmod -v 0755 ifgraph/DEBIAN/
+	dpkg-deb --build ifgraph/
+	mv -v ifgraph.deb dist/ifgraph_$(IFGRAPH_PACKAGE_VERSION)_amd64.deb

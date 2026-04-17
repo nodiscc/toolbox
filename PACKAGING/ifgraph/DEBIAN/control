@@ -1,0 +1,11 @@
+Package: ifgraph
+Version: %%IFGRAPH_VERSION%%
+Section: contrib/utils
+Priority: optional
+Maintainer: nodiscc <nodiscc@gmail.com>
+Architecture: amd64
+Depends:
+Description: Records and graphs the bandwidth use of network interfaces using the /sys filesystem.
+ Uses a back-end daemon (ifgraphd) to record statistics, and a front-end visualization (ifgraph)
+ using a text terminal that supports 24bit color. The tool has zero external dependencies
+ and uses shared memory for storage, resulting in minimal CPU usage.
