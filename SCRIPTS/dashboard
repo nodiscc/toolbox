@@ -1,30 +1,7 @@
 #!/usr/bin/env python3
 """Dashboard script for monitoring various services including CalDAV, GitLab, Gitea, IMAP, and TT-RSS."""
-# Requirements: python3 -m venv ~/.venv && ~/.venv/bin/pip3 install caldav vobject colorama pyyaml shaarli-client
+# Requirements: python3 -m venv ~/.venv && ~/.venv/bin/pip3 install caldav vobject colorama shaarli-client secretstorage
 # Usage: ~/.venv/bin/python3 ./dashboard
-# Configuration file: ~/.config/dashboard.yml
-# CALDAV_URL
-# CALDAV_USERNAME
-# CALDAV_PASSWORD
-# CALDAV_MAX_PRIORITY
-# CALDAV_EVENTS_MAX_DAYS_IN_FUTURE
-# GITLAB_TOKEN
-# MAX_LINES
-# GITEA_URL
-# GITEA_TOKEN
-# TODO_TXT_PATH
-# TTRSS_URL
-# TTRSS_USERNAME
-# TTRSS_PASSWORD
-# TTRSS_LIMIT
-# BACKUP_STATE_FILE
-# IMAP_FLAGGED_FOLDERS_LIST # comma-separated list
-# IMAP_UNREAD_FOLDERS_LIST # comma-separated list
-# IMAP_USERNAME
-# IMAP_PASSWORD
-# IMAP_SERVER
-# REQUESTS_TIMEOUT
-
 import sys
 import argparse
 import datetime
@@ -40,19 +17,15 @@ import caldav
 import colorama
 import icalendar
 import requests
+import secretstorage
 import urllib3
-import yaml
 from shaarli_client.client import ShaarliV1Client
 
 # Disable SSL warnings
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-# load config from YAML file
-config_path = os.path.expanduser('~/.config/dashboard.yml')
-with open(config_path, 'r', encoding='utf-8') as config_file:
-    CONFIG = yaml.safe_load(config_file)
-
-REQUESTS_TIMEOUT = int(CONFIG['REQUESTS_TIMEOUT'])  # global
+# Global settings
+REQUESTS_TIMEOUT = 30
 
 def print_title(text):
     """Print section title to screen"""
@@ -360,11 +333,11 @@ def get_caldav_tasks(caldav_url, caldav_username, caldav_password, max_priority=
 
 def get_shaarli_readlater(shaarli_url, shaarli_secret):
     """Fetch readlater links from Shaarli.
-    
+
     Args:
         shaarli_url: URL of the Shaarli instance
         shaarli_secret: Shaarli secret key for API access
-    
+
     Returns:
         List of formatted readlater link strings (URL - title)
     """
@@ -380,7 +353,7 @@ def get_shaarli_readlater(shaarli_url, shaarli_secret):
 
 def get_lutris_games():
     """Fetch unfinished games from Lutris library.
-    
+
     Returns:
         List of game names
     """
@@ -481,8 +454,149 @@ def calculate_file_progress(file_path):
         sys.exit(1)
     return progress, hash_lines, total_lines
 
+def get_default_collection():
+    """Get default keyring collection"""
+    connection = secretstorage.dbus_init()
+    return secretstorage.get_default_collection(connection)
+
+def secret_exists(service, account):
+    """Check if secret exists in keyring"""
+    try:
+        collection = get_default_collection()
+        items = collection.search_items({'service': service, 'account': account})
+        return len(list(items)) > 0
+    except:
+        return False
+
+def store_secret(service, account, label, secret):
+    """Store secret in keyring"""
+    collection = get_default_collection()
+    collection.create_item(label, {'service': service, 'account': account}, secret, True)
+
+def get_secret(service, account):
+    """Retrieve secret from keyring, raise exception if not found"""
+    try:
+        collection = get_default_collection()
+        items = collection.search_items({'service': service, 'account': account})
+        items_list = list(items)
+        if not items_list:
+            raise KeyError(f"Secret not found: {account}")
+        return items_list[0].get_secret().decode('utf-8')
+    except Exception:
+        raise KeyError(f"Secret not found: {account}")
+
+def get_missing_secrets():
+    """Return list of missing secret account names"""
+    config_keys = [
+        'BACKUP_STATE_FILE', 'CALDAV_EVENTS_MAX_DAYS_IN_FUTURE', 'CALDAV_MAX_PRIORITY',
+        'CALDAV_PASSWORD', 'CALDAV_URL', 'CALDAV_USERNAME', 'GITEA_TOKEN', 'GITEA_URL',
+        'GITHUB_TOKEN', 'GITLAB_TOKEN', 'IMAP_FLAGGED_FOLDERS_LIST', 'IMAP_PASSWORD',
+        'IMAP_SERVER', 'IMAP_UNREAD_FOLDERS_LIST', 'IMAP_USERNAME', 'MAX_LINES',
+        'REDDIT_CLIENT_ID', 'REDDIT_CLIENT_SECRET', 'REQUESTS_TIMEOUT', 'SHAARLI_SECRET',
+        'SHAARLI_URL', 'TODO_TXT_PATH', 'TTRSS_LIMIT', 'TTRSS_PASSWORD', 'TTRSS_URL',
+        'TTRSS_USERNAME'
+    ]
+    missing = []
+    for key in config_keys:
+        account = key.lower()
+        if not secret_exists('dashboard', account):
+            missing.append(account)
+    return missing
+
+def is_config_complete():
+    """Check if all required secrets exist in keyring"""
+    return len(get_missing_secrets()) == 0
+
+def get_all_config():
+    """Load all config values from keyring into dict"""
+    config_keys = [
+        'BACKUP_STATE_FILE', 'CALDAV_EVENTS_MAX_DAYS_IN_FUTURE', 'CALDAV_MAX_PRIORITY',
+        'CALDAV_PASSWORD', 'CALDAV_URL', 'CALDAV_USERNAME', 'GITEA_TOKEN', 'GITEA_URL',
+        'GITHUB_TOKEN', 'GITLAB_TOKEN', 'IMAP_FLAGGED_FOLDERS_LIST', 'IMAP_PASSWORD',
+        'IMAP_SERVER', 'IMAP_UNREAD_FOLDERS_LIST', 'IMAP_USERNAME', 'MAX_LINES',
+        'REDDIT_CLIENT_ID', 'REDDIT_CLIENT_SECRET', 'REQUESTS_TIMEOUT', 'SHAARLI_SECRET',
+        'SHAARLI_URL', 'TODO_TXT_PATH', 'TTRSS_LIMIT', 'TTRSS_PASSWORD', 'TTRSS_URL',
+        'TTRSS_USERNAME'
+    ]
+    config = {}
+    for key in config_keys:
+        account = key.lower()
+        config[key] = get_secret('dashboard', account)
+    return config
+
+def get_label_for_account(account):
+    """Get human-readable label for account name"""
+    labels = {
+        'backup_state_file': 'Backup State File Path',
+        'caldav_events_max_days_in_future': 'CalDAV Events Max Days In Future',
+        'caldav_max_priority': 'CalDAV Max Priority',
+        'caldav_password': 'CalDAV Password',
+        'caldav_url': 'CalDAV URL',
+        'caldav_username': 'CalDAV Username',
+        'gitea_token': 'Gitea Token',
+        'gitea_url': 'Gitea URL',
+        'github_token': 'GitHub Token',
+        'gitlab_token': 'GitLab Token',
+        'imap_flagged_folders_list': 'IMAP Flagged Folders List',
+        'imap_password': 'IMAP Password',
+        'imap_server': 'IMAP Server',
+        'imap_unread_folders_list': 'IMAP Unread Folders List',
+        'imap_username': 'IMAP Username',
+        'max_lines': 'Max Lines',
+        'reddit_client_id': 'Reddit Client ID',
+        'reddit_client_secret': 'Reddit Client Secret',
+        'requests_timeout': 'Requests Timeout',
+        'shaarli_secret': 'Shaarli Secret',
+        'shaarli_url': 'Shaarli URL',
+        'todo_txt_path': 'TODO.txt Path',
+        'ttrss_limit': 'TT-RSS Limit',
+        'ttrss_password': 'TT-RSS Password',
+        'ttrss_url': 'TT-RSS URL',
+        'ttrss_username': 'TT-RSS Username'
+    }
+    return labels.get(account, account.replace('_', ' ').title())
+
+def setup_config():
+    """Interactive setup for missing secrets"""
+    print("Dashboard Configuration Setup")
+    print("=" * 40)
+
+    missing = get_missing_secrets()
+    if not missing:
+        print("All secrets already configured in keyring.")
+        return
+
+    print(f"Found {len(missing)} missing secrets.\n")
+
+    for account in missing:
+        label = get_label_for_account(account)
+        print(f"Enter {label}:")
+        value = input()
+        store_secret('dashboard', account, label, value)
+        print(f"Stored {account} in keyring\n")
+
+    print("Configuration complete!")
+
 def main():
     """Main loop"""
+    # Check setup mode first
+    setup_parser = argparse.ArgumentParser(add_help=False)
+    setup_parser.add_argument('--setup', action='store_true')
+    setup_args, _ = setup_parser.parse_known_args()
+
+    if setup_args.setup:
+        setup_config()
+        return
+
+    # Load config from keyring
+    try:
+        CONFIG = get_all_config()
+    except KeyError:
+        missing = get_missing_secrets()
+        print(f"ERROR: Missing secrets: {', '.join(missing)}")
+        print("Run with --setup to initialize")
+        sys.exit(1)
+
     parser = argparse.ArgumentParser(description='Dashboard script for monitoring various services')
     parser.add_argument('--gitlab-issues', action='store_true', help='Show GitLab issues')
     parser.add_argument('--gitea-issues', action='store_true', help='Show Gitea issues')
