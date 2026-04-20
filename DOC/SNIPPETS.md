@@ -498,6 +498,8 @@ network display routing table `netstat -rn` or `ip r`
 
 network Serve the current directory on port 8080 `python -m SimpleHTTPServer 8080`, python3 `python3 -m http.server 8080`
 
+network Show tcp connections sorted by Host / Most connections `netstat -ntu | tail -n +3 | awk '{print $5}' | sed 's/:[0-9]*$//' | sort | uniq -c | sort -rn`
+
 firewall deny requests from 1 IP address `sudo ufw  insert 1 deny from $IP_ADDRESS`
 
 dirsplit (1) - splits directory into multiple with equal size
