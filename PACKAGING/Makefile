@@ -109,6 +109,8 @@ ifgraph:
 	cp -v build/ifgraph/ifgraphd ifgraph/usr/bin/
 	cp -v build/ifgraph/ifgraph.service ifgraph/lib/systemd/system/
 	sed -i "s/%%IFGRAPH_VERSION%%/$(IFGRAPH_PACKAGE_VERSION)/g" ifgraph/DEBIAN/control
-	chmod -v 0755 ifgraph/DEBIAN/
+	chmod -v 0755 ifgraph/usr/bin/ifgraph ifgraph/usr/bin/ifgraphd
+	chmod -v 0644 ifgraph/lib/systemd/system/ifgraph.service
+	chmod -v 0755 ifgraph/DEBIAN/ ifgraph/lib/ ifgraph/lib/systemd/ ifgraph/lib/systemd/system/
 	dpkg-deb --build ifgraph/
 	mv -v ifgraph.deb dist/ifgraph_$(IFGRAPH_PACKAGE_VERSION)_amd64.deb
