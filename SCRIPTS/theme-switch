@@ -1,4 +1,5 @@
 #!/bin/bash
+# Description: switch between light/dark desktop environment themes
 set -o errexit
 
 current_theme=$(xfconf-query --channel xfwm4 --property /general/theme --list -v| awk -F' ' '{print $2}')

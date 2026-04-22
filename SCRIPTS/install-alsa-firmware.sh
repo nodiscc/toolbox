@@ -1,7 +1,7 @@
 #!/bin/bash
-#Description: build ALSA firmware (works with E-MU 0404 PCI soundcard)
-#From: http://wiki.debian.org/snd-emu10k1
-#License: MIT (http://opensource.org/licenses/MIT)
+# Description: build ALSA firmware (works with E-MU 0404 PCI soundcard)
+# From: http://wiki.debian.org/snd-emu10k1
+# License: MIT (http://opensource.org/licenses/MIT)
 
 #Check for root privileges
 if [[ "$USER" == "root" ]]; then

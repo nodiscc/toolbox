@@ -1,4 +1,9 @@
 #! /usr/bin/python3
+"""
+Description: search the web using a searxng instance
+Usage: searxng "SEARCH TERMS"
+"""
+
 import requests
 import sys
 

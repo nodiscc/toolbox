@@ -1,7 +1,7 @@
 #!/bin/bash
-# display todo list in conky with formatting
-# first line (current task) in white and large font, other tasks in gray smaller font
-# usage: conky-todo PATH_TO_TODO.TXT
+# Description: display lines from a plain text file in conky with formatting
+#              first line (current task) in white and large font, other tasks in gray smaller font
+# Usage: conky-todo PATH_TO_TODO.TXT
 set -o errexit
 set -o nounset
 todo_file="$1"

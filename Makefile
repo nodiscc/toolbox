@@ -21,7 +21,7 @@ mirrors: cleanup-aria2
 	$(call call_aria2c,$(BIN_WINDOWS_DIR)/,bin-windows.urls.list)
 	$(call call_aria2c,$(BIN_DATA_DIR)/,bin-data.urls.list)
 
-tests: test-shellcheck test-ansible-lint test-pylint
+tests: test-comments test-shellcheck test-ansible-lint test-pylint
 
 test-shellcheck:
 	for i in $$(find SCRIPTS/ -maxdepth 1 -type f); do \
@@ -36,6 +36,16 @@ test-pylint:
 		SCRIPTS/dashboard \
 		SCRIPTS/file-sorter.py \
 		SCRIPTS/gitea-issues
+
+test-comments:
+	for file in SCRIPTS/*; do \
+	echo "Checking for description string in $$file"; \
+	filetype=$$(file --brief --mime-type "$$file") && \
+	if [[ "$$filetype" == "text/x-shellscript" ]]; then grep -q '^# Description:' "$$file" || exit 1; \
+	elif [[ "$$filetype" == "text/x-script.python" ]]; then grep -q '^Description:' "$$file" || exit 1; \
+	else true; \
+	fi; \
+	done
 
 test-ansible-lint:
 	cd ARCHIVE/ANSIBLE-COLLECTION/ && make

@@ -1,12 +1,14 @@
 #!/bin/env python3
-"""Display open issues from a Gitea repository."""
-# Requirements: python3 -m venv ~/.venv && ~/.venv/bin/pip3 install requests pyyaml colorama
-# Usage: ~/.venv/bin/python3 ./SCRIPTS/gitea-issues
-# Configuration file: ~/.config/gitea-issues.yml
-# GITEA_URL
-# GITEA_TOKEN
-# MAX_LINES
-# REQUESTS_TIMEOUT
+"""
+Description: Display open issues from a Gitea repository.
+Requirements: python3 -m venv ~/.venv && ~/.venv/bin/pip3 install requests pyyaml colorama
+Usage: ~/.venv/bin/python3 ./SCRIPTS/gitea-issues
+Configuration file: ~/.config/gitea-issues.yml
+GITEA_URL
+GITEA_TOKEN
+MAX_LINES
+REQUESTS_TIMEOUT
+"""
 
 import sys
 import argparse

@@ -1,29 +1,31 @@
 #!/usr/bin/env python3
-"""Dashboard script for monitoring various services including CalDAV, GitLab, Gitea, IMAP, and TT-RSS."""
-# Requirements: python3 -m venv ~/.venv && ~/.venv/bin/pip3 install caldav vobject colorama pyyaml shaarli-client
-# Usage: ~/.venv/bin/python3 ./dashboard
-# Configuration file: ~/.config/dashboard.yml
-# CALDAV_URL
-# CALDAV_USERNAME
-# CALDAV_PASSWORD
-# CALDAV_MAX_PRIORITY
-# CALDAV_EVENTS_MAX_DAYS_IN_FUTURE
-# GITLAB_TOKEN
-# MAX_LINES
-# GITEA_URL
-# GITEA_TOKEN
-# TODO_TXT_PATH
-# TTRSS_URL
-# TTRSS_USERNAME
-# TTRSS_PASSWORD
-# TTRSS_LIMIT
-# BACKUP_STATE_FILE
-# IMAP_FLAGGED_FOLDERS_LIST # comma-separated list
-# IMAP_UNREAD_FOLDERS_LIST # comma-separated list
-# IMAP_USERNAME
-# IMAP_PASSWORD
-# IMAP_SERVER
-# REQUESTS_TIMEOUT
+"""
+Description: dashboard script for monitoring various services including CalDAV, GitLab, Gitea, IMAP, and TT-RSS.
+Requirements: python3 -m venv ~/.venv && ~/.venv/bin/pip3 install caldav vobject colorama pyyaml shaarli-client
+Usage: ~/.venv/bin/python3 ./dashboard
+Configuration file: ~/.config/dashboard.yml
+CALDAV_URL
+CALDAV_USERNAME
+CALDAV_PASSWORD
+CALDAV_MAX_PRIORITY
+CALDAV_EVENTS_MAX_DAYS_IN_FUTURE
+GITLAB_TOKEN
+MAX_LINES
+GITEA_URL
+GITEA_TOKEN
+TODO_TXT_PATH
+TTRSS_URL
+TTRSS_USERNAME
+TTRSS_PASSWORD
+TTRSS_LIMIT
+BACKUP_STATE_FILE
+IMAP_FLAGGED_FOLDERS_LIST # comma-separated list
+IMAP_UNREAD_FOLDERS_LIST # comma-separated list
+IMAP_USERNAME
+IMAP_PASSWORD
+IMAP_SERVER
+REQUESTS_TIMEOUT
+"""
 
 import sys
 import argparse

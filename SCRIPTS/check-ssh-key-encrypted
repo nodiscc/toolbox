@@ -1,4 +1,5 @@
 #!/bin/bash
+# Description: check if an SSH key is encrypted
 if ssh-keygen -y -P "" -f ~/.ssh/id_rsa >/dev/null 2>&1; then
   echo "WARNING: ~/.ssh/id_rsa not encrypted"
 else

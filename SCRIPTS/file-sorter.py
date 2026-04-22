@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
-"""Batch file sorter utility that organizes files into KEEP, ARCHIVE, and TODO directories."""
-# requirements: python3-tqdm python3-send2trash
+"""
+Description: Batch file sorter utility that organizes files into KEEP, ARCHIVE, and TODO directories.
+Requirements: python3-tqdm python3-send2trash
+"""
 import datetime
 import os
 import random

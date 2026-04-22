@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Script to import GitHub repositories to Shaarli bookmarking service.
-Checks against existing Shaarli bookmarks via API to avoid duplicates.
+Description: import GitHub repositories to Shaarli bookmarking service.
+             checks against existing Shaarli bookmarks via API to avoid duplicates.
 USAGE: export REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
        ~/.venv/bin/python3 ~/.venv/bin/github-stars-to-shaarli --delete
 """
