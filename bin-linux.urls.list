@@ -25,7 +25,7 @@ https://packagecontrol.io/Package%20Control.sublime-package
 # https://www.qlcplus.org/downloads/4.11.0/qlcplus_4.11.0_amd64.deb # now available at https://packages.debian.org/bullseye/qlcplus
 https://www.worldpainter.net/files/worldpainter_2.8.10.deb
 https://al.chemy.org/files/Alchemy-008.tar.gz
-https://tiddlywiki.com/empty.html
+#https://tiddlywiki.com/empty.html
 #https://www.torproject.org/dist/torbrowser/12.0.5/tor-browser-linux64-12.0.5_ALL.tar.xz
 https://github.com/profclems/glab/releases/download/v1.15.0/glab_1.15.0_Linux_x86_64.tar.gz
 https://github.com/liamg/traitor/releases/download/v0.0.14/traitor-amd64
