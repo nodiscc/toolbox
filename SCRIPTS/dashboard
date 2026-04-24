@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Description: dashboard script for monitoring various services including CalDAV, GitLab, Gitea, IMAP, and TT-RSS.
-Requirements: python3 -m venv ~/.venv && ~/.venv/bin/pip3 install caldav vobject colorama pyyaml shaarli-client
+Requirements: python3 -m venv ~/.venv && ~/.venv/bin/pip3 install caldav==3.2.0 vobject==0.9.9 colorama==0.4.6 pyyaml==6.0.3 git+https://github.com/shaarli/python-shaarli-client@master
 Usage: ~/.venv/bin/python3 ./dashboard
 Configuration file: ~/.config/dashboard.yml
 CALDAV_URL

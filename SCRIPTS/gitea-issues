@@ -1,7 +1,7 @@
 #!/bin/env python3
 """
 Description: Display open issues from a Gitea repository.
-Requirements: python3 -m venv ~/.venv && ~/.venv/bin/pip3 install requests pyyaml colorama
+Requirements: python3 -m venv ~/.venv && ~/.venv/bin/pip3 install requests==2.33.1 pyyaml==6.0.3 colorama==0.4.6
 Usage: ~/.venv/bin/python3 ./SCRIPTS/gitea-issues
 Configuration file: ~/.config/gitea-issues.yml
 GITEA_URL

@@ -4,7 +4,7 @@ Description: Logitech G203 Prodigy / G203 LightSync Mouse LED control
 https://github.com/smasty/g203-led
 Authors: Smasty, TheAquaSheep (LightSync support)
 Licensed under the MIT license.
-Installation: ~/.venv/bin/pip3 install pyusb==1.0.2*
+Installation: ~/.venv/bin/pip3 install pyusb==1.3.1
 Usage: sudo ~/.venv/bin/python3 ./g203-led.py
 """
 

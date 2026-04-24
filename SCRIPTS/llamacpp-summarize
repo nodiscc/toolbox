@@ -1,7 +1,7 @@
 #!.venv/bin/python3
 """
 Description: extract the main article text from an URL or file and summarize it with llama.cpp
-Requirements: python3 -m venv ~/.venv && ~/.venv/bin/pip3 install bs4 git+https://github.com/buriy/python-readability@v0.8.1 html2text lxml[html_clean] requests
+Requirements: python3 -m venv ~/.venv && ~/.venv/bin/pip3 install beautifulsoup4==4.14.3 git+https://github.com/buriy/python-readability@v0.8.1 html2text==2025.4.15 lxml==6.1.0 requests==2.33.1
               llama.cpp server must be running locally at http://127.0.0.1:8033/v1
 Usage: usage: llm-summarize [-h] [--sentences SENTENCES_NUMBER] (--url URL | --file FILE)
 """

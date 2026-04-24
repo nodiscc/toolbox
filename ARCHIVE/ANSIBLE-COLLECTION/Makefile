@@ -5,7 +5,7 @@ LANG = C
 test-ansible-lint:
 	python3 -m venv .venv
 	.venv/bin/pip3 install wheel
-	.venv/bin/pip3 install isort ansible-lint==24.10.0 yamllint ansible==9.3.0
+	.venv/bin/pip3 install isort==8.0.1 ansible-lint==24.10.0 yamllint==1.38.0 ansible==9.3.0
 	.venv/bin/ansible-galaxy collection install git+https://gitlab.com/nodiscc/xsrv.git
 	.venv/bin/ansible-lint -v -x fqcn[action-core],fqcn[action],name[casing],yaml[truthy],schema[meta],yaml[line-length],var-naming[no-role-prefix] roles/*
 
