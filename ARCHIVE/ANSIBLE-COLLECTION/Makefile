@@ -42,4 +42,4 @@ doc_roles_list:
 		rm roles-list.tmp.md
 
 clean:
-	rm -rf .venv/
+	rm -rf .venv/ .ansible/
