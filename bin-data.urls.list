@@ -1,5 +1,6 @@
 #https://public-dns.info/nameservers.csv
-https://download.geofabrik.de/europe/france-260101.osm.pbf # can be updated every year, e.g 270101
+# can be updated every year, e.g 270101
+https://download.geofabrik.de/europe/france-260101.osm.pbf
 https://download.kiwix.org/zim/wikipedia/wikipedia_en_all_maxi_2025-08.zim
 https://download.kiwix.org/zim/wikipedia/wikipedia_fr_all_maxi_2026-02.zim
 https://download.kiwix.org/zim/other/rationalwiki_en_all_maxi_2025-05.zim
