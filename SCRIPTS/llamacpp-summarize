@@ -111,6 +111,17 @@ def parse_args():
     parser.add_argument('--output', dest='output_file', type=str, help='file path to append the summary output')
     return parser, parser.parse_args()
 
+def list_models(server):
+    try:
+        response = requests.get(f"{server}/models")
+        response.raise_for_status()
+        models = response.json()
+        print('Available models:')
+        for m in models.get('data', []):
+            print(f"- {m.get('id', 'unknown')}")
+    except requests.exceptions.RequestException as e:
+        print(f"Error retrieving models: {e}")
+
 if __name__ == "__main__":
     parser, args = parse_args()
 
@@ -118,15 +129,7 @@ if __name__ == "__main__":
         parser.error('one of --url or --file is required unless --list-models is used')
 
     if args.list_models:
-        try:
-            response = requests.get(f"{args.server}/models")
-            response.raise_for_status()
-            models = response.json()
-            print('Available models:')
-            for m in models.get('data', []):
-                print(f"- {m.get('id', 'unknown')}")
-        except requests.exceptions.RequestException as e:
-            print(f"Error retrieving models: {e}")
+        list_models(args.server)
         sys.exit(0)
 
     # Determine which input type to process
