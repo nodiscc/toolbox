@@ -180,6 +180,35 @@ def extract_text(source_type, source):
     plain_text = text_maker.handle(str(soup))
     return (plain_text, title_string, lang, False, separator, header)
 
+def build_prompts(plain_text, args, lang):
+    if args.translate:
+        target_lang = 'fr'
+    elif lang in ['fr', 'fr-FR']:
+        target_lang = 'fr'
+    else:
+        target_lang = 'en'
+
+    if args.translate:
+        system_content = 'You are a helpful assistant that summarizes articles concisely in French. You reply with a short summary of key information provided in the document, in the form of a bullet point list. At the end of a summary, you provide a one-sentence recommendation (actionable items). Always respond in French.'
+    else:
+        system_content = 'You are a helpful assistant that summarizes articles concisely. You reply with a short summary of key information provided in the document, in the form of a bullet point list. At the end of a summary, you provide a one-sentence recommendation (actionable items).'
+
+    if not args.prompt:
+        if args.sentences_number == 0:
+            if target_lang == 'fr':
+                user_content = f'Resume l\'information, en utilisant uniquement les informations suivantes pour fournir une reponse: {plain_text}'
+            else:
+                user_content = f'Summarize the information, use only the information in the following text to provide your answer: {plain_text}'
+        else:
+            if target_lang == 'fr':
+                user_content = f'Resume l\'information dans le document suivant, limite ta reponse a {str(args.sentences_number)} phrases. Utilise uniquement les informations dans le document pour fournir une reponse. Voici le document: {plain_text}'
+            else:
+                user_content = f'Summarize the information in the following document, limit your answer to {str(args.sentences_number)} sentences. Use only the information in the document to provide your answer. Here is the document: {plain_text}'
+    else:
+        user_content = f'{args.prompt}. use only the information in the following text to provide your answer: {plain_text}'
+
+    return system_content, user_content
+
 if __name__ == "__main__":
     parser, args = parse_args()
 
@@ -208,41 +237,15 @@ if __name__ == "__main__":
         if args.print_only:
             print(plain_text)
             continue
-        if not args.prompt:
-            # Determine target language based on --translate flag
-            if args.translate:
-                target_lang = 'fr'
-            elif lang in ['fr', 'fr-FR']:
-                target_lang = 'fr'
-            else:
-                target_lang = 'en'
 
-            if args.sentences_number == 0:
-                if target_lang == 'fr':
-                    chat_prompt = f'Résume l\'information, en utilisant uniquement les informations suivantes pour fournir une réponse: {plain_text}'
-                else:
-                    chat_prompt = f'Summarize the information, use only the information in the following text to provide your answer: {plain_text}'
-            else:
-                if target_lang == 'fr':
-                    chat_prompt = f'Résume l\'information dans le document suivant, limite ta réponse à {str(args.sentences_number)} phrases. Utilise uniquement les informations dans le document pour fournir une réponse. Voici le document: {plain_text}'
-                else:
-                    chat_prompt = f'Summarize the information in the following document, limit your answer to {str(args.sentences_number)} sentences. Use only the information in the document to provide your answer. Here is the document: {plain_text}'
-        else:
-            chat_prompt = f'{args.prompt}. use only the information in the following text to provide your answer: {plain_text}'
+        system_content, user_content = build_prompts(plain_text, args, lang)
 
-        # Make request to llama.cpp server
         try:
-            # Update system prompt based on --translate flag
-            if args.translate:
-                system_content = 'You are a helpful assistant that summarizes articles concisely in French. You reply with a short summary of key information provided in the document, in the form of a bullet point list. At the end of a summary, you provide a one-sentence recommendation (actionable items). Always respond in French.'
-            else:
-                system_content = 'You are a helpful assistant that summarizes articles concisely. You reply with a short summary of key information provided in the document, in the form of a bullet point list. At the end of a summary, you provide a one-sentence recommendation (actionable items).'
-
             payload = {
                 'model': args.model,
                 'messages': [
                     {'role': 'system', 'content': system_content},
-                    {'role': 'user', 'content': chat_prompt}
+                    {'role': 'user', 'content': user_content}
                 ],
                 'stream': True
             }
