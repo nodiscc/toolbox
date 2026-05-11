@@ -209,6 +209,39 @@ def build_prompts(plain_text, args, lang):
 
     return system_content, user_content
 
+def stream_completion(server, model, system_content, user_content):
+    payload = {
+        'model': model,
+        'messages': [
+            {'role': 'system', 'content': system_content},
+            {'role': 'user', 'content': user_content}
+        ],
+        'stream': True
+    }
+    response = requests.post(f"{server}/chat/completions", json=payload, stream=True)
+    response.raise_for_status()
+
+    streamed_content = []
+    for line in response.iter_lines():
+        if line:
+            line_str = line.decode('utf-8')
+            if line_str.startswith('data: '):
+                data_str = line_str[6:]
+                if data_str.strip() == '[DONE]':
+                    break
+                try:
+                    data = json.loads(data_str)
+                    if 'choices' in data and len(data['choices']) > 0:
+                        delta = data['choices'][0].get('delta', {})
+                        content = delta.get('content', '')
+                        if content:
+                            print(content, end='', flush=True)
+                            streamed_content.append(content)
+                except json.JSONDecodeError:
+                    continue
+    print()
+    return streamed_content
+
 if __name__ == "__main__":
     parser, args = parse_args()
 
@@ -241,40 +274,8 @@ if __name__ == "__main__":
         system_content, user_content = build_prompts(plain_text, args, lang)
 
         try:
-            payload = {
-                'model': args.model,
-                'messages': [
-                    {'role': 'system', 'content': system_content},
-                    {'role': 'user', 'content': user_content}
-                ],
-                'stream': True
-            }
+            streamed_content = stream_completion(args.server, args.model, system_content, user_content)
 
-            response = requests.post(f"{args.server}/chat/completions", json=payload, stream=True)
-            response.raise_for_status()
-
-            # Capture the streamed content
-            streamed_content = []
-            for line in response.iter_lines():
-                if line:
-                    line_str = line.decode('utf-8')
-                    if line_str.startswith('data: '):
-                        data_str = line_str[6:]
-                        if data_str.strip() == '[DONE]':
-                            break
-                        try:
-                            data = json.loads(data_str)
-                            if 'choices' in data and len(data['choices']) > 0:
-                                delta = data['choices'][0].get('delta', {})
-                                content = delta.get('content', '')
-                                if content:
-                                    print(content, end='', flush=True)
-                                    streamed_content.append(content)
-                        except json.JSONDecodeError:
-                            continue
-            print()
-
-            # Append to output file if specified
             if args.output_file:
                 try:
                     with open(args.output_file, 'a', encoding='utf-8') as f:
