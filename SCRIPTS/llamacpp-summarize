@@ -111,6 +111,9 @@ def parse_args():
     parser.add_argument('--output', dest='output_file', type=str, help='file path to append the summary output')
     return parser, parser.parse_args()
 
+if __name__ == "__main__":
+    parser, args = parse_args()
+
     if not args.list_models and not (args.urls or args.files):
         parser.error('one of --url or --file is required unless --list-models is used')
 
