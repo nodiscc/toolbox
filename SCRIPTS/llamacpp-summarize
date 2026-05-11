@@ -17,7 +17,7 @@ from readability import Document
 import html2text
 from pathlib import Path
 
-def get_content(url):
+def get_content_from_url(url):
     """
     Get a HTML page content from a URL.
     """
@@ -143,7 +143,7 @@ def extract_text(source_type, source):
                     f"\n{'-'*45}\n\033[0;36m# {source}\033[0m\n\n\033[0;36m{source}\033[0m\n\n",
                     source)
         else:
-            content_html = get_content(source)
+            content_html = get_content_from_url(source)
             if content_html is None:
                 return None
     else:
