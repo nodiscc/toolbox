@@ -131,7 +131,7 @@ def build_sources(args):
     return sources
 
 def extract_text(source_type, source):
-    """Fetch and parse content. Returns (plain_text, title, lang, is_youtube, separator, header) or None on error."""
+    """Fetch and parse content. Returns (plain_text, title, lang, is_youtube, separator, header, source_display) or None on error."""
     if source_type == 'url':
         if 'youtube.com' in source or 'youtu.be' in source:
             print("Detected YouTube URL, downloading transcript...")
@@ -140,7 +140,8 @@ def extract_text(source_type, source):
                 return None
             return (transcript_text, source, 'unknown', True,
                     "\n---------------------------------------------\n",
-                    f"\n{'-'*45}\n\033[0;36m# {source}\033[0m\n\n\033[0;36m{source}\033[0m\n\n")
+                    f"\n{'-'*45}\n\033[0;36m# {source}\033[0m\n\n\033[0;36m{source}\033[0m\n\n",
+                    source)
         else:
             content_html = get_content(source)
             if content_html is None:
@@ -170,7 +171,7 @@ def extract_text(source_type, source):
     if tags:
         ignored_tags = ['cyclisme', 'sport']
         if any(tag in ignored_tags for tag in tags):
-            return ('__IGNORED__', title_string, lang, False, separator, header)
+            return ('__IGNORED__', title_string, lang, False, separator, header, source_display)
 
     content_html = Document(content_html)
     content_summary = content_html.summary()
@@ -178,7 +179,7 @@ def extract_text(source_type, source):
     text_maker = html2text.HTML2Text()
     text_maker.ignore_links = True
     plain_text = text_maker.handle(str(soup))
-    return (plain_text, title_string, lang, False, separator, header)
+    return (plain_text, title_string, lang, False, separator, header, source_display)
 
 def build_prompts(plain_text, args, lang):
     if args.translate:
@@ -260,7 +261,7 @@ if __name__ == "__main__":
             print(f'error processing source: {source}')
             continue
 
-        plain_text, title_string, lang, is_youtube, separator, header = result
+        plain_text, title_string, lang, is_youtube, separator, header, source_display = result
 
         if plain_text == '__IGNORED__':
             print(f"Article matches ignored tag, ignoring")
@@ -279,7 +280,8 @@ if __name__ == "__main__":
             if args.output_file:
                 try:
                     with open(args.output_file, 'a', encoding='utf-8') as f:
-                        f.write(header)
+                        header_plain = separator + "\n### " + title_string + "\n\n" + source_display + "\n\n"
+                        f.write(header_plain)
                         f.write(''.join(streamed_content))
                         f.write('\n')
                 except Exception as e:
