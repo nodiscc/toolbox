@@ -122,6 +122,14 @@ def list_models(server):
     except requests.exceptions.RequestException as e:
         print(f"Error retrieving models: {e}")
 
+def build_sources(args):
+    sources = []
+    if args.urls:
+        sources = [('url', url) for url in args.urls]
+    elif args.files:
+        sources = [('file', filepath) for filepath in args.files]
+    return sources
+
 if __name__ == "__main__":
     parser, args = parse_args()
 
@@ -132,12 +140,7 @@ if __name__ == "__main__":
         list_models(args.server)
         sys.exit(0)
 
-    # Determine which input type to process
-    sources = []
-    if args.urls:
-        sources = [('url', url) for url in args.urls]
-    elif args.files:
-        sources = [('file', filepath) for filepath in args.files]
+    sources = build_sources(args)
 
     for source_type, source in sources:
         # Get content based on source type
