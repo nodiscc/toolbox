@@ -61,16 +61,6 @@ def get_youtube_transcript(url):
         ], capture_output=True, text=True, check=True)
         title = title_result.stdout.strip()
         # Download transcript (auto-subs in SRT format)
-        subprocess.run([
-            'yt-dlp',
-            '--write-auto-subs',
-            '--sub-langs', 'en',
-            '--sub-format', 'srt',
-            '--skip-download',
-            '--output', 'transcript',
-            url
-        ], capture_output=True, check=True)
-        # Read and process the SRT file
         try:
             tmp_dir = tempfile.gettempdir()
             tmp_base = os.path.join(tmp_dir, 'yt_transcript_')
@@ -103,7 +93,7 @@ def get_youtube_transcript(url):
         print(f"Error downloading YouTube transcript: {e}")
         return None, None
 
-if __name__ == "__main__":
+def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--sentences', dest='sentences_number', type=int, default=8, help='number of sentences for the summary. Set to 0 to disable')
 
@@ -119,7 +109,7 @@ if __name__ == "__main__":
     parser.add_argument('--list-models', dest='list_models', action='store_true', help='list available models from the server and exit')
     parser.add_argument('--translate', dest='translate', action='store_true', help='provide the summary in French regardless of the original language')
     parser.add_argument('--output', dest='output_file', type=str, help='file path to append the summary output')
-    args = parser.parse_args()
+    return parser, parser.parse_args()
 
     if not args.list_models and not (args.urls or args.files):
         parser.error('one of --url or --file is required unless --list-models is used')
