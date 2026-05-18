@@ -55,6 +55,7 @@
 {% else %}
   DocumentRoot /var/www/{{ awesome_selfhosted_html_fqdn }}
   DirectoryIndex index.html
+  php_admin_flag engine off
   Header set X-Frame-Options SAMEORIGIN
   Header set X-Content-Type-Options nosniff
   Header always set Referrer-Policy "same-origin"
