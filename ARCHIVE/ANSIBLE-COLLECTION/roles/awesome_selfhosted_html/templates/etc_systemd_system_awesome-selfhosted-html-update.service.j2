@@ -3,6 +3,19 @@ Description=Pull latest version of awesome-selfhosted-html
 
 [Service]
 Type=simple
+User=awesome-selfhosted
+Group=www-data
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+ReadWritePaths=/var/www/{{ awesome_selfhosted_html_fqdn }}
 ExecStartPre=/usr/bin/git remote update
 ExecStart=/usr/bin/git reset --hard origin/gh-pages
 WorkingDirectory=/var/www/{{ awesome_selfhosted_html_fqdn }}

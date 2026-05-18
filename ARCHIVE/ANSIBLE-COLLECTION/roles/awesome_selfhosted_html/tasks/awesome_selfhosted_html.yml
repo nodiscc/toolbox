@@ -10,6 +10,13 @@
 # - create application admin/user accounts
 # - start/stop service
 
+- name: create awesome-selfhosted update user
+  user:
+    name: awesome-selfhosted
+    group: www-data
+    shell: /usr/sbin/nologin
+    system: yes
+
 - name: clone/update awesome-selfhoted-html repository
   git:
     repo: "https://github.com/awesome-selfhosted/awesome-selfhosted-html"
@@ -17,6 +24,14 @@
     version: gh-pages
   diff: no
   ignore_errors: "{{ ansible_check_mode }}"
+
+- name: set web root ownership for git updates
+  file:
+    path: "/var/www/{{ awesome_selfhosted_html_fqdn }}"
+    owner: root
+    group: www-data
+    mode: "0755"
+    recurse: yes
 
 - name: configure automatic update systemd service
   template:
