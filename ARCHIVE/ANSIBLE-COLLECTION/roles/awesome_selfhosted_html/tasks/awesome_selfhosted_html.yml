@@ -1,15 +1,3 @@
-# installation/setup tasks for EXAMPLE component, such as:
-# - install packages
-# - download binaries/zips
-# - verify binary downloads using checksums and/or GPG keys
-# - create users/groups
-# - create configuration/data directories
-# - install binaries to $PATH
-# - copy configuration files
-# - create databases/tables
-# - create application admin/user accounts
-# - start/stop service
-
 - name: create awesome-selfhosted update user
   user:
     name: awesome-selfhosted
@@ -17,21 +5,23 @@
     shell: /usr/sbin/nologin
     system: yes
 
+- name: create documentroot and set ownership
+  file:
+    path: "/var/www/{{ awesome_selfhosted_html_fqdn }}"
+    state: directory
+    owner: awesome-selfhosted
+    group: www-data
+    recurse: yes
+
 - name: clone/update awesome-selfhoted-html repository
+  become_user: awesome-selfhosted
   git:
     repo: "https://github.com/awesome-selfhosted/awesome-selfhosted-html"
     dest: "/var/www/{{ awesome_selfhosted_html_fqdn }}"
     version: gh-pages
+    force: yes
   diff: no
   ignore_errors: "{{ ansible_check_mode }}"
-
-- name: set web root ownership for git updates
-  file:
-    path: "/var/www/{{ awesome_selfhosted_html_fqdn }}"
-    owner: root
-    group: www-data
-    mode: "0755"
-    recurse: yes
 
 - name: configure automatic update systemd service
   template:
