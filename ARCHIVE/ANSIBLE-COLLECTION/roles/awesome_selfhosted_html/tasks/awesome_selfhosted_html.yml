@@ -14,6 +14,7 @@
     recurse: yes
 
 - name: clone/update awesome-selfhoted-html repository
+  become: yes
   become_user: awesome-selfhosted
   git:
     repo: "https://github.com/awesome-selfhosted/awesome-selfhosted-html"
