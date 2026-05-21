@@ -338,7 +338,7 @@ def get_caldav_tasks(caldav_url, caldav_username, caldav_password, max_priority=
                 continue
             # Check if due date exists
             try:
-                dtue = todo.vobject_instance.vtodo.due.value
+                _ = todo.vobject_instance.vtodo.due.value
             except AttributeError:
                 continue
             # Check if start date exists and is in the past
