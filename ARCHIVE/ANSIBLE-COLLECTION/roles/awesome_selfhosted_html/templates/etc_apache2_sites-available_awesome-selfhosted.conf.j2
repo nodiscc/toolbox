@@ -64,5 +64,25 @@
   Header always set Content-Security-Policy "script-src 'self' 'unsafe-inline'; frame-ancestors 'self'"
   Header set Cache-Control "max-age=300, public"
   Header always unset X-Robots-Tag
+
+  <Directory /var/www/{{ awesome_selfhosted_html_fqdn }}>
+    Require all granted
+    # Deny dotfiles (e.g. .env, .htaccess)
+    <FilesMatch "^\.">
+      Require all denied
+    </FilesMatch>
+    # Deny extensionless files (e.g. .nojekyll)
+    <FilesMatch "^\.?[^.]+$">
+      Require all denied
+    </FilesMatch>
+    # Deny non-whitelisted extensions (.map, .txt, .xml, etc.)
+    <FilesMatch "\.(?!html?|css|js|png|svg|ico)$">
+      Require all denied
+    </FilesMatch>
+    # Allow robots.txt as the only .txt file
+    <Files "robots.txt">
+      Require all granted
+    </Files>
+  </Directory>
 {% endif %}
 </VirtualHost>
