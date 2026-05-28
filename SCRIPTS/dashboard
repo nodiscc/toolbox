@@ -34,9 +34,13 @@ import email
 import imaplib
 import json
 import os
-import time
 import random
+import shutil
+import sqlite3
 import subprocess
+import tempfile
+import time
+from pathlib import Path
 
 import caldav
 import colorama
@@ -419,6 +423,50 @@ def get_lutris_games():
         return []
 
 
+def get_firefox_bookmarks():
+    """Fetch URLs from the Firefox bookmark folder named '???'.
+
+    Returns:
+        List of URL strings
+    """
+    profiles_dir = Path.home() / ".mozilla" / "firefox"
+    profiles = list(profiles_dir.glob("*.default-esr"))
+    if not profiles:
+        return []
+
+    db_path = profiles[0] / "places.sqlite"
+    if not db_path.exists():
+        return []
+
+    with tempfile.NamedTemporaryFile(suffix=".sqlite", delete=False) as tmp:
+        tmp_path = tmp.name
+    shutil.copy2(db_path, tmp_path)
+
+    conn = sqlite3.connect(tmp_path)
+    cur = conn.cursor()
+
+    cur.execute("SELECT id FROM moz_bookmarks WHERE title = ?", ("???",))
+    row = cur.fetchone()
+    if not row:
+        conn.close()
+        os.unlink(tmp_path)
+        return []
+
+    cur.execute("""
+        SELECT p.url
+        FROM moz_bookmarks b
+        JOIN moz_places p ON p.id = b.fk
+        WHERE b.parent = ? AND b.type = 1
+        ORDER BY b.lastModified DESC
+    """, (row[0],))
+
+    urls = [r[0] or "(no URL)" for r in cur.fetchall()]
+
+    conn.close()
+    os.unlink(tmp_path)
+    return urls
+
+
 def check_mtime(file_path, warn_if_older_than_seconds):
     """check if a file last modification time is older than specified number of seconds"""
     if not os.path.exists(file_path):
@@ -513,6 +561,7 @@ def main():
     parser.add_argument('--flagged-mail', action='store_true', help='Show flagged mail')
     parser.add_argument('--shaarli-readlater', action='store_true', help='Show Shaarli readlater links')
     parser.add_argument('--games', action='store_true', help='Show Lutris unfinished games')
+    parser.add_argument('--firefox-bookmarks', action='store_true', help='Show Firefox bookmarks from ??? folder')
     parser.add_argument('--progress-bar', action='store_true', help='Show progress bar')
     parser.add_argument('--random', action='store_true', help='Pick a random action and show a single random item')
     parser.add_argument('--date', help='Start date for progress bar (YYYY-MM-DD)')
@@ -535,7 +584,7 @@ def main():
   # Handle random mode
     if args.random:
         random_actions = ['gitlab-issues', 'gitea-issues', 'caldav-tasks', 'caldav-events',
-                          'todotxt', 'ttrss-marked', 'unread-mail', 'flagged-mail', 'shaarli-readlater', 'games']
+                          'todotxt', 'ttrss-marked', 'unread-mail', 'flagged-mail', 'shaarli-readlater', 'games', 'firefox-bookmarks']
         chosen_action = random.choice(random_actions)
 
         # Set the chosen action to True
@@ -559,12 +608,14 @@ def main():
             args.shaarli_readlater = True
         elif chosen_action == 'games':
             args.games = True
+        elif chosen_action == 'firefox-bookmarks':
+            args.firefox_bookmarks = True
 
     # If no arguments provided, run all sections
     if not any([args.gitlab_issues, args.gitea_issues, args.caldav_tasks,
                 args.caldav_tasks_all, args.caldav_events, args.todotxt, args.ttrss_marked,
                 args.modtime, args.unread_mail, args.flagged_mail,
-                args.shaarli_readlater, args.games, args.progress_bar]):
+                args.shaarli_readlater, args.games, args.firefox_bookmarks, args.progress_bar]):
         # Run all sections by default
         args.gitlab_issues = True
         args.gitea_issues = True
@@ -576,6 +627,7 @@ def main():
         args.unread_mail = True
         args.flagged_mail = True
         args.shaarli_readlater = True
+        args.firefox_bookmarks = True
 
     # PROGRESS BAR
     if args.progress_bar:
@@ -751,6 +803,19 @@ def main():
             for game in lutris_games
         ]
         out = format_list(lutris_games_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
+        print(out)
+
+    # FIREFOX BOOKMARKS
+    if args.firefox_bookmarks:
+        print_title('firefox bookmarks')
+        firefox_bookmarks = get_firefox_bookmarks()
+        if args.random and firefox_bookmarks:
+            firefox_bookmarks = [random.choice(firefox_bookmarks)]
+        firefox_bookmarks_lines = [
+            format_bullet_point('▧', colorama.Fore.WHITE, f'{url}')
+            for url in firefox_bookmarks
+        ]
+        out = format_list(firefox_bookmarks_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
         print(out)
 
 if __name__ == "__main__":
