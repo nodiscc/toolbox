@@ -343,6 +343,12 @@ def get_caldav_tasks(caldav_url, caldav_username, caldav_password, max_priority=
                 except AttributeError:
                     continue
             # Check if start date exists and is in the past
+            due_date_str = ''
+            try:
+                due = todo.vobject_instance.vtodo.due.value
+                due_date_str = due.strftime('%d-%m-%Y')
+            except AttributeError:
+                pass
             try:
                 dtstart = todo.vobject_instance.vtodo.dtstart.value
                 # Convert to datetime if it's a date object
@@ -357,7 +363,10 @@ def get_caldav_tasks(caldav_url, caldav_username, caldav_password, max_priority=
                 # If no start date, include the task
                 pass
 
-            todos.append(f'{priority} {summary}')
+            if due_date_str:
+                todos.append(f'{priority} {due_date_str} - {summary}')
+            else:
+                todos.append(f'{priority} {summary}')
         todos.sort()
         return todos
 
