@@ -317,7 +317,7 @@ def get_caldav_events(caldav_url, caldav_username, caldav_password, max_days_in_
         return []
 
 
-def get_caldav_tasks(caldav_url, caldav_username, caldav_password, max_priority=9, all=False):
+def get_caldav_tasks(caldav_url, caldav_username, caldav_password, max_priority=9, all_tasks=False):
     """Show a list of caldav tasks"""
     todos = []
     caldav_client = caldav.DAVClient(
@@ -337,7 +337,7 @@ def get_caldav_tasks(caldav_url, caldav_username, caldav_password, max_priority=
                 priority = todo.vobject_instance.vtodo.priority.value
             except AttributeError:
                 priority = "9"
-            if not all:
+            if not all_tasks:
                 priority_int = int(priority)
                 if priority_int > max_priority:
                     continue
@@ -684,7 +684,7 @@ def main():
                                         CONFIG['CALDAV_USERNAME'],
                                         CONFIG['CALDAV_PASSWORD'],
                                         int(CONFIG['CALDAV_MAX_PRIORITY']),
-                                        all=args.caldav_tasks_all)
+                                        all_tasks=args.caldav_tasks_all)
         if args.random and caldav_tasks:
             caldav_tasks = [random.choice(caldav_tasks)]
         caldav_tasks_out_lines = [
