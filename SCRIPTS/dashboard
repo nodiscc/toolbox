@@ -313,7 +313,7 @@ def get_caldav_events(caldav_url, caldav_username, caldav_password, max_days_in_
         return []
 
 
-def get_caldav_tasks(caldav_url, caldav_username, caldav_password, max_priority=9):
+def get_caldav_tasks(caldav_url, caldav_username, caldav_password, max_priority=9, all=False):
     """Show a list of caldav tasks"""
     todos = []
     caldav_client = caldav.DAVClient(
@@ -333,14 +333,15 @@ def get_caldav_tasks(caldav_url, caldav_username, caldav_password, max_priority=
                 priority = todo.vobject_instance.vtodo.priority.value
             except AttributeError:
                 priority = "9"
-            priority_int = int(priority)
-            if priority_int > max_priority:
-                continue
-            # Check if due date exists
-            try:
-                _ = todo.vobject_instance.vtodo.due.value
-            except AttributeError:
-                continue
+            if not all:
+                priority_int = int(priority)
+                if priority_int > max_priority:
+                    continue
+                # Check if due date exists
+                try:
+                    _ = todo.vobject_instance.vtodo.due.value
+                except AttributeError:
+                    continue
             # Check if start date exists and is in the past
             try:
                 dtstart = todo.vobject_instance.vtodo.dtstart.value
@@ -494,6 +495,7 @@ def main():
     parser.add_argument('--gitlab-issues', action='store_true', help='Show GitLab issues')
     parser.add_argument('--gitea-issues', action='store_true', help='Show Gitea issues')
     parser.add_argument('--caldav-tasks', action='store_true', help='Show CalDAV tasks')
+    parser.add_argument('--caldav-tasks-all', action='store_true', help='Show all CalDAV tasks regardless of priority and due date')
     parser.add_argument('--caldav-events', action='store_true', help='Show CalDAV events')
     parser.add_argument('--todotxt', action='store_true', help='Show todo.txt tasks')
     parser.add_argument('--ttrss-marked', action='store_true', help='Show TT-RSS marked articles')
@@ -551,7 +553,7 @@ def main():
 
     # If no arguments provided, run all sections
     if not any([args.gitlab_issues, args.gitea_issues, args.caldav_tasks,
-                args.caldav_events, args.todotxt, args.ttrss_marked,
+                args.caldav_tasks_all, args.caldav_events, args.todotxt, args.ttrss_marked,
                 args.modtime, args.unread_mail, args.flagged_mail,
                 args.shaarli_readlater, args.games, args.progress_bar]):
         # Run all sections by default
@@ -615,12 +617,13 @@ def main():
         print(out)
 
     # NEXTCLOUD CALDAV TASKS
-    if args.caldav_tasks:
+    if args.caldav_tasks or args.caldav_tasks_all:
         print_title('nextcloud tasks')
         caldav_tasks = get_caldav_tasks(CONFIG['CALDAV_URL'],
-                                       CONFIG['CALDAV_USERNAME'],
-                                       CONFIG['CALDAV_PASSWORD'],
-                                       int(CONFIG['CALDAV_MAX_PRIORITY']))
+                                        CONFIG['CALDAV_USERNAME'],
+                                        CONFIG['CALDAV_PASSWORD'],
+                                        int(CONFIG['CALDAV_MAX_PRIORITY']),
+                                        all=args.caldav_tasks_all)
         if args.random and caldav_tasks:
             caldav_tasks = [random.choice(caldav_tasks)]
         caldav_tasks_out_lines = [
