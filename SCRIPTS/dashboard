@@ -65,7 +65,7 @@ def print_title(text, output_format):
     if output_format == 'cli':
         print(f'{colorama.Fore.GREEN}####### {text}{colorama.Style.RESET_ALL}')
     else:
-        print(f'${{color green}}####### {text}${{color1}}')
+        print(f'${{color green}}===== {text} =====${{color1}}')
 
 def format_bullet_point(symbol, color, text, output_format):
     """Format a string as a bullet point"""
