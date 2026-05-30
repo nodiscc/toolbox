@@ -60,13 +60,29 @@ with open(config_path, 'r', encoding='utf-8') as config_file:
 
 REQUESTS_TIMEOUT = int(CONFIG['REQUESTS_TIMEOUT'])  # global
 
-def print_title(text):
+def print_title(text, output_format):
     """Print section title to screen"""
-    print(f'{colorama.Fore.GREEN}####### {text}{colorama.Style.RESET_ALL}')
+    if output_format == 'cli':
+        print(f'{colorama.Fore.GREEN}####### {text}{colorama.Style.RESET_ALL}')
+    else:
+        print(f'${{color green}}####### {text}${{color2}}')
 
-def format_bullet_point(symbol, color, text):
+def format_bullet_point(symbol, color, text, output_format):
     """Format a string as a bullet point"""
-    formatted = f'{color}{symbol} {colorama.Style.RESET_ALL}{text}'
+    if output_format == 'cli':
+        formatted = f'{color}{symbol}{colorama.Style.RESET_ALL}{text}'
+    else:
+        conky_colors = {
+            colorama.Fore.GREEN: '${color green}',
+            colorama.Fore.YELLOW: '${color yellow}',
+            colorama.Fore.BLUE: '${color blue}',
+            colorama.Fore.CYAN: '${color cyan}',
+            colorama.Fore.MAGENTA: '${color magenta}',
+            colorama.Fore.WHITE: '${color white}',
+            colorama.Fore.RED: '${color red}',
+        }
+        conky_color = conky_colors.get(color, '${color1}')
+        formatted = f'{conky_color}{symbol}${{color2}}{text}'
     return formatted
 
 def format_list(items, max_lines):
@@ -87,7 +103,9 @@ def get_imap_subjects(conn, folder, criterion):
     prefix = folder.replace('INBOX/', '') + ': '
     #prefix = '' # hide folder names
 
-    conn.select(folder, readonly=True)
+    status, _ = conn.select(folder, readonly=True)
+    if status != 'OK':
+        return []
     _, imap_response = conn.search(None, criterion)
     message_uids = imap_response[0].split()
     messages = []
@@ -116,7 +134,10 @@ def get_unread_mail(imap_server, imap_port,
     conn.login(imap_username, imap_password)
     for folder in imap_folders_list.split(','):
         all_messages.extend(get_imap_subjects(conn, folder, '(UNSEEN)'))
-    conn.close()
+    try:
+        conn.close()
+    except imaplib.IMAP4.error:
+        pass
     conn.logout()
     return all_messages
 
@@ -129,12 +150,15 @@ def get_flagged_mail(imap_server, imap_port,
     conn.login(imap_username, imap_password)
     for folder in imap_folders_list.split(','):
         all_messages.extend(get_imap_subjects(conn, folder, '(FLAGGED)'))
-    conn.close()
+    try:
+        conn.close()
+    except imaplib.IMAP4.error:
+        pass
     conn.logout()
     return all_messages
 
 
-def get_gitlab_issues(gitlab_token, assigned=False, created=False, repos=False):
+def get_gitlab_issues(gitlab_token, *, assigned=False, created=False, repos=False, output_format):
     """TODO show a list of open github issues assigned to me
     parameters: github_username, github_token"""
     headers = {"PRIVATE-TOKEN": gitlab_token}
@@ -151,7 +175,7 @@ def get_gitlab_issues(gitlab_token, assigned=False, created=False, repos=False):
             gitlab_issues.append(f'{issue["web_url"]} - {issue["title"]}')
 
     if created:
-        print_title("gitlab issues created by you")
+        print_title("gitlab issues created by you", output_format)
         params = {"state": "opened", "scope": "created_by_me"}
         url = f"{BASE_URL}/issues"
         response = requests.get(url, headers=headers, params=params, timeout=REQUESTS_TIMEOUT)
@@ -161,7 +185,7 @@ def get_gitlab_issues(gitlab_token, assigned=False, created=False, repos=False):
             gitlab_issues.append(f'{issue["web_url"]} - {issue["title"]}')
 
     if repos:
-        print_title("gitlab issues in your repos")
+        print_title("gitlab issues in your repos", output_format)
         projects_url = f"{BASE_URL}/projects"
         params = {"owned": "true", "per_page": "50", "with_issues_enabled": "true"}
         response = requests.get(projects_url, headers=headers, params=params, timeout=REQUESTS_TIMEOUT)
@@ -467,10 +491,10 @@ def get_firefox_bookmarks():
     return urls
 
 
-def check_mtime(file_path, warn_if_older_than_seconds):
+def check_mtime(file_path, warn_if_older_than_seconds, output_format):
     """check if a file last modification time is older than specified number of seconds"""
     if not os.path.exists(file_path):
-        out = format_bullet_point('▧', colorama.Fore.RED, f'ERROR: {file_path} does not exist')
+        out = format_bullet_point('▧', colorama.Fore.RED, f'ERROR: {file_path} does not exist', output_format)
         print(out)
         return
     mod_time = os.path.getmtime(file_path)
@@ -478,9 +502,9 @@ def check_mtime(file_path, warn_if_older_than_seconds):
     time_diff = current_time - mod_time
     mod_time_readable = datetime.datetime.fromtimestamp(mod_time).strftime('%Y-%m-%d %H:%M:%S')
     if time_diff > warn_if_older_than_seconds:
-        out = format_bullet_point('▧', colorama.Fore.RED, f"ERROR: {file_path} last modified: {mod_time_readable})")
+        out = format_bullet_point('▧', colorama.Fore.RED, f"ERROR: {file_path} last modified: {mod_time_readable})", output_format)
     else:
-        out = format_bullet_point('▧', colorama.Fore.GREEN, f"{file_path} last modified: {mod_time_readable}")
+        out = format_bullet_point('▧', colorama.Fore.GREEN, f"{file_path} last modified: {mod_time_readable}", output_format)
     print(out)
 
 
@@ -631,7 +655,7 @@ def main():
 
     # PROGRESS BAR
     if args.progress_bar:
-        # print_title('Progress Bar')
+        # print_title('Progress Bar', args.format)
         if args.date and args.total_days:
             # progress based on date (number of days since date vs total days)
             # for example --progress-bar --date 2025-02-02 --total-days 365
@@ -650,14 +674,14 @@ def main():
 
     # GITLAB ISSUES
     if args.gitlab_issues:
-        print_title("gitlab issues assigned to you")
+        print_title("gitlab issues assigned to you", args.format)
         # this function takes either assigned=True, created=True, repos=True
         gitlab_issues = get_gitlab_issues(CONFIG["GITLAB_TOKEN"],
-                                    assigned=True)
+                                    assigned=True, output_format=args.format)
         if args.random and gitlab_issues:
             gitlab_issues = [random.choice(gitlab_issues)]
         gitlab_out_lines = [
-            format_bullet_point('▧', colorama.Fore.YELLOW, f'{issue}')
+            format_bullet_point('▧', colorama.Fore.YELLOW, f'{issue}', args.format)
             for issue in gitlab_issues
         ]
         out = format_list(gitlab_out_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
@@ -665,13 +689,13 @@ def main():
 
     # GITEA ISSUES
     if args.gitea_issues:
-        print_title('gitea issues')
+        print_title('gitea issues', args.format)
         gitea_issues = get_gitea_issues(CONFIG['GITEA_URL'],
                                       CONFIG['GITEA_TOKEN'])
         if args.random and gitea_issues:
             gitea_issues = [random.choice(gitea_issues)]
         gitea_out_lines = [
-            format_bullet_point('▧', colorama.Fore.GREEN, f'{issue}')
+            format_bullet_point('▧', colorama.Fore.GREEN, f'{issue}', args.format)
             for issue in gitea_issues
         ]
         out = format_list(gitea_out_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
@@ -679,7 +703,7 @@ def main():
 
     # NEXTCLOUD CALDAV TASKS
     if args.caldav_tasks or args.caldav_tasks_all:
-        print_title('nextcloud tasks')
+        print_title('nextcloud tasks', args.format)
         caldav_tasks = get_caldav_tasks(CONFIG['CALDAV_URL'],
                                         CONFIG['CALDAV_USERNAME'],
                                         CONFIG['CALDAV_PASSWORD'],
@@ -688,7 +712,7 @@ def main():
         if args.random and caldav_tasks:
             caldav_tasks = [random.choice(caldav_tasks)]
         caldav_tasks_out_lines = [
-            format_bullet_point('▧', colorama.Fore.BLUE, f'{task}')
+            format_bullet_point('▧', colorama.Fore.BLUE, f'{task}', args.format)
             for task in caldav_tasks
         ]
         out = format_list(caldav_tasks_out_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
@@ -696,7 +720,7 @@ def main():
 
     # NEXTCLOUD CALDAV EVENTS
     if args.caldav_events:
-        print_title('nextcloud events')
+        print_title('nextcloud events', args.format)
         caldav_events = get_caldav_events(CONFIG['CALDAV_URL'],
                                        CONFIG['CALDAV_USERNAME'],
                                        CONFIG['CALDAV_PASSWORD'],
@@ -704,7 +728,7 @@ def main():
         if args.random and caldav_events:
             caldav_events = [random.choice(caldav_events)]
         caldav_events_out_lines = [
-            format_bullet_point('▧', colorama.Fore.BLUE, f'{task}')
+            format_bullet_point('▧', colorama.Fore.BLUE, f'{task}', args.format)
             for task in caldav_events
         ]
         out = format_list(caldav_events_out_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
@@ -712,12 +736,12 @@ def main():
 
     # TODOTXT TODOS
     if args.todotxt:
-        print_title('todos')
+        print_title('todos', args.format)
         todotxt_todos = get_todo_list(CONFIG['TODO_TXT_PATH'])
         if args.random and todotxt_todos:
             todotxt_todos = [random.choice(todotxt_todos)]
         todotxt_out_lines = [
-            format_bullet_point('▧', colorama.Fore.CYAN, f'{todo}')
+            format_bullet_point('▧', colorama.Fore.CYAN, f'{todo}', args.format)
             for todo in todotxt_todos
         ]
         out = format_list(todotxt_out_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
@@ -725,7 +749,7 @@ def main():
 
     # TTRSS MARKED ARTICLES
     if args.ttrss_marked:
-        print_title('tt-rss marked')
+        print_title('tt-rss marked', args.format)
         ttrss_marked_articles = get_ttrss_marked(CONFIG['TTRSS_URL'],
                                                  CONFIG['TTRSS_USERNAME'],
                                                  CONFIG['TTRSS_PASSWORD'],
@@ -733,7 +757,7 @@ def main():
         if args.random and ttrss_marked_articles:
             ttrss_marked_articles = [random.choice(ttrss_marked_articles)]
         ttrss_marked_out_lines = [
-            format_bullet_point('▧', colorama.Fore.MAGENTA, f'{article}')
+            format_bullet_point('▧', colorama.Fore.MAGENTA, f'{article}', args.format)
             for article in ttrss_marked_articles
         ]
         out = format_list(ttrss_marked_out_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
@@ -741,12 +765,12 @@ def main():
 
     # FILE MODIFICATION TIME
     if args.modtime:
-        print_title('modification time check')
-        check_mtime(CONFIG['BACKUP_STATE_FILE'], 86400)
+        print_title('modification time check', args.format)
+        check_mtime(CONFIG['BACKUP_STATE_FILE'], 86400, args.format)
 
     # UNREAD MAIL
     if args.unread_mail:
-        print_title('unread mail')
+        print_title('unread mail', args.format)
         unread_mail = get_unread_mail(CONFIG['IMAP_SERVER'],
                                       993,
                                       CONFIG['IMAP_USERNAME'],
@@ -755,7 +779,7 @@ def main():
         if args.random and unread_mail:
             unread_mail = [random.choice(unread_mail)]
         unread_mail_lines = [
-            format_bullet_point('▧', colorama.Fore.YELLOW, f'{article}')
+            format_bullet_point('▧', colorama.Fore.YELLOW, f'{article}', args.format)
             for article in unread_mail
         ]
         out = format_list(unread_mail_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
@@ -763,7 +787,7 @@ def main():
 
  # FLAGGED MAIL
     if args.flagged_mail:
-        print_title('flagged mail')
+        print_title('flagged mail', args.format)
         flagged_mail = get_flagged_mail(CONFIG['IMAP_SERVER'],
                                        993,
                                        CONFIG['IMAP_USERNAME'],
@@ -772,7 +796,7 @@ def main():
         if args.random and flagged_mail:
             flagged_mail = [random.choice(flagged_mail)]
         flagged_mail_lines = [
-            format_bullet_point('▧', colorama.Fore.YELLOW, f'{article}')
+            format_bullet_point('▧', colorama.Fore.YELLOW, f'{article}', args.format)
             for article in flagged_mail
         ]
         out = format_list(flagged_mail_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
@@ -780,13 +804,13 @@ def main():
 
     # SHAARLI READLATER
     if args.shaarli_readlater:
-        print_title('shaarli readlater')
+        print_title('shaarli readlater', args.format)
         shaarli_readlater = get_shaarli_readlater(CONFIG['SHAARLI_URL'],
                                                    CONFIG['SHAARLI_SECRET'])
         if args.random and shaarli_readlater:
             shaarli_readlater = [random.choice(shaarli_readlater)]
         shaarli_readlater_lines = [
-            format_bullet_point('▧', colorama.Fore.CYAN, f'{link}')
+            format_bullet_point('▧', colorama.Fore.CYAN, f'{link}', args.format)
             for link in shaarli_readlater
         ]
         out = format_list(shaarli_readlater_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
@@ -794,12 +818,12 @@ def main():
 
     # LUTRIS GAMES
     if args.games:
-        print_title('lutris games')
+        print_title('lutris games', args.format)
         lutris_games = get_lutris_games()
         if args.random and lutris_games:
             lutris_games = [random.choice(lutris_games)]
         lutris_games_lines = [
-            format_bullet_point('▧', colorama.Fore.GREEN, f'{game}')
+            format_bullet_point('▧', colorama.Fore.GREEN, f'{game}', args.format)
             for game in lutris_games
         ]
         out = format_list(lutris_games_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
@@ -807,12 +831,12 @@ def main():
 
     # FIREFOX BOOKMARKS
     if args.firefox_bookmarks:
-        print_title('firefox bookmarks')
+        print_title('firefox bookmarks', args.format)
         firefox_bookmarks = get_firefox_bookmarks()
         if args.random and firefox_bookmarks:
             firefox_bookmarks = [random.choice(firefox_bookmarks)]
         firefox_bookmarks_lines = [
-            format_bullet_point('▧', colorama.Fore.WHITE, f'{url}')
+            format_bullet_point('▧', colorama.Fore.WHITE, f'{url}', args.format)
             for url in firefox_bookmarks
         ]
         out = format_list(firefox_bookmarks_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
