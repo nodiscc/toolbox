@@ -65,7 +65,7 @@ def print_title(text, output_format):
     if output_format == 'cli':
         print(f'{colorama.Fore.GREEN}####### {text}{colorama.Style.RESET_ALL}')
     else:
-        print(f'${{color green}}####### {text}${{color2}}')
+        print(f'${{color green}}####### {text}${{color1}}')
 
 def format_bullet_point(symbol, color, text, output_format):
     """Format a string as a bullet point"""
@@ -81,8 +81,8 @@ def format_bullet_point(symbol, color, text, output_format):
             colorama.Fore.WHITE: '${color white}',
             colorama.Fore.RED: '${color red}',
         }
-        conky_color = conky_colors.get(color, '${color1}')
-        formatted = f'{conky_color}{symbol}${{color2}}{text}'
+        conky_color = conky_colors.get(color, '${color0}')
+        formatted = f'{conky_color}{symbol}${{color1}}{text}'
     return formatted
 
 def format_list(items, max_lines):
@@ -517,7 +517,7 @@ def print_progress_bar(current, total, bar_length, output_format):
     else: # conky
         green = '${color green}'
         white = '${color white}'
-        reset = '${color2}'
+        reset = '${color1}'
     percent = float(current) / total
     blocks = '▅' * int(round(percent * bar_length))
     spaces = '▅' * (bar_length - len(blocks))
