@@ -283,6 +283,9 @@ def format_issue_header(issue_data):
     print(f'{COLORS["BRIGHT"]}Created:{COLORS["RESET"]} {issue_data.get("created_at", "N/A")}')
     print(f'{COLORS["BRIGHT"]}Updated:{COLORS["RESET"]} {issue_data.get("updated_at", "N/A")}')
     print(f'{COLORS["BRIGHT"]}HTML URL:{COLORS["RESET"]} {issue_data.get("html_url", "N/A")}')
+    milestone = issue_data.get("milestone")
+    if milestone:
+        print(f'{COLORS["BRIGHT"]}Milestone:{COLORS["RESET"]} {milestone.get("title", "N/A")}')
 
 
 def format_issue_body(issue_data):
