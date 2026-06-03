@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Description: dashboard script for monitoring various services including CalDAV, GitLab, Gitea, IMAP, and TT-RSS.
+Description: dashboard script for monitoring various services including CalDAV, GitLab, Gitea, GitHub, IMAP, and TT-RSS.
 Requirements: python3 -m venv ~/.venv && ~/.venv/bin/pip3 install caldav==3.2.0 vobject==0.9.9 colorama==0.4.6 pyyaml==6.0.3 git+https://github.com/shaarli/python-shaarli-client@master
 Usage: ~/.venv/bin/python3 ./dashboard
 Configuration file: ~/.config/dashboard.yml
@@ -10,6 +10,8 @@ CALDAV_PASSWORD
 CALDAV_MAX_PRIORITY
 CALDAV_EVENTS_MAX_DAYS_IN_FUTURE
 GITLAB_TOKEN
+GITHUB_TOKEN
+GITHUB_USERNAME
 MAX_LINES
 GITEA_URL
 GITEA_TOKEN
@@ -159,8 +161,8 @@ def get_flagged_mail(imap_server, imap_port,
 
 
 def get_gitlab_issues(gitlab_token, *, assigned=False, created=False, repos=False, output_format):
-    """TODO show a list of open github issues assigned to me
-    parameters: github_username, github_token"""
+    """Show a list of open gitlab issues.
+    parameters: gitlab_token"""
     headers = {"PRIVATE-TOKEN": gitlab_token}
     BASE_URL = "https://gitlab.com/api/v4"
     gitlab_issues = []
@@ -234,6 +236,31 @@ def get_gitea_issues(gitea_instance_url, gitea_token):
         return []
 
     return gitea_issues
+
+
+def get_github_issues(github_username, github_token):
+    """Show a list of open github issues assigned to me, PRs assigned to me, and review requests.
+
+    parameters: github_username, github_token
+    returns: list of issues/PRs URLs
+    """
+    url = "https://api.github.com/search/issues"
+    headers = {
+        "Authorization": f"token {github_token}",
+        "Accept": "application/vnd.github.v3+json",
+    }
+    seen = {}
+    for query in [f"is:open assignee:{github_username}", f"is:open review-requested:{github_username}"]:
+        params = {"q": query, "sort": "updated", "per_page": 100}
+        try:
+            response = requests.get(url, params=params, headers=headers, timeout=REQUESTS_TIMEOUT)
+            response.raise_for_status()
+            for item in response.json().get("items", []):
+                seen[item["html_url"]] = item["title"]
+        except requests.exceptions.RequestException as e:
+            print(f"Error fetching github issues: {e}")
+            return []
+    return [f'{u} - {t}' for u, t in seen.items()]
 
 
 def get_ttrss_marked(ttrss_url, ttrss_username, ttrss_password, ttrss_limit):
@@ -574,6 +601,7 @@ def main():
     """Main loop"""
     parser = argparse.ArgumentParser(description='Dashboard script for monitoring various services')
     parser.add_argument('--gitlab-issues', action='store_true', help='Show GitLab issues')
+    parser.add_argument('--github-issues', action='store_true', help='Show GitHub issues')
     parser.add_argument('--gitea-issues', action='store_true', help='Show Gitea issues')
     parser.add_argument('--caldav-tasks', action='store_true', help='Show CalDAV tasks')
     parser.add_argument('--caldav-tasks-all', action='store_true', help='Show all CalDAV tasks regardless of priority and due date')
@@ -607,13 +635,15 @@ def main():
 
   # Handle random mode
     if args.random:
-        random_actions = ['gitlab-issues', 'gitea-issues', 'caldav-tasks', 'caldav-events',
+        random_actions = ['gitlab-issues', 'github-issues', 'gitea-issues', 'caldav-tasks', 'caldav-events',
                           'todotxt', 'ttrss-marked', 'unread-mail', 'flagged-mail', 'shaarli-readlater', 'games', 'firefox-bookmarks']
         chosen_action = random.choice(random_actions)
 
         # Set the chosen action to True
         if chosen_action == 'gitlab-issues':
             args.gitlab_issues = True
+        elif chosen_action == 'github-issues':
+            args.github_issues = True
         elif chosen_action == 'gitea-issues':
             args.gitea_issues = True
         elif chosen_action == 'caldav-tasks':
@@ -636,12 +666,13 @@ def main():
             args.firefox_bookmarks = True
 
     # If no arguments provided, run all sections
-    if not any([args.gitlab_issues, args.gitea_issues, args.caldav_tasks,
+    if not any([args.gitlab_issues, args.github_issues, args.gitea_issues, args.caldav_tasks,
                 args.caldav_tasks_all, args.caldav_events, args.todotxt, args.ttrss_marked,
                 args.modtime, args.unread_mail, args.flagged_mail,
                 args.shaarli_readlater, args.games, args.firefox_bookmarks, args.progress_bar]):
         # Run all sections by default
         args.gitlab_issues = True
+        args.github_issues = True
         args.gitea_issues = True
         args.caldav_tasks = True
         args.caldav_events = True
@@ -685,6 +716,19 @@ def main():
             for issue in gitlab_issues
         ]
         out = format_list(gitlab_out_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
+        print(out)
+
+    # GITHUB ISSUES
+    if args.github_issues:
+        print_title('github issues', args.format)
+        github_issues = get_github_issues(CONFIG['GITHUB_USERNAME'], CONFIG['GITHUB_TOKEN'])
+        if args.random and github_issues:
+            github_issues = [random.choice(github_issues)]
+        github_out_lines = [
+            format_bullet_point('▧', colorama.Fore.YELLOW, f'{issue}', args.format)
+            for issue in github_issues
+        ]
+        out = format_list(github_out_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
         print(out)
 
     # GITEA ISSUES
