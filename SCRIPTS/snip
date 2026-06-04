@@ -4,7 +4,7 @@
 # License: MIT (http://opensource.org/licenses/MIT)
 
 
-# TODO: snip -a without arguments: open nano to type the snippet, and save it to snippets file when nano closes
+
 set -o errexit
 set -o nounset
 
