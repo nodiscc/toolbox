@@ -3,7 +3,7 @@
 # Copyright: (c) 2014-2015 nodiscc (nodiscc@gmail.com)
 # License: MIT (http://opensource.org/licenses/MIT)
 
-# TODO: separate results with a newline
+
 # TODO: snip -a without arguments: open nano to type the snippet, and save it to snippets file when nano closes
 set -o errexit
 set -o nounset
@@ -44,7 +44,7 @@ function _searchsnippet() {
     for term in "$@"; do
         pipe="$pipe | grep -Ei --color=always $term"
     done
-  	eval "$pipe"
+ eval "$pipe" | sed 'G'
 }
 
 function _addsnippet() {
