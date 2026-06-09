@@ -343,4 +343,50 @@ mongodb - setup mongodb database
 
 ## References
 
-- https://stdout.root.sx/links/?searchterms=graylog
+- https://buzut.net/analysez-vos-logs-graylog/
+- https://community.graylog.org/c/marketplace/31
+- https://community.graylog.org/t/hide-overall-count-from-line-chart/13843
+- https://community.graylog.org/t/pipeline-rule-to-set-facility-and-log-level-categories/21100/2
+- https://community.graylog.org/t/stream-pipeline-and-input-extractor-clarification/5655
+- https://docs.ansible.com/ansible/latest/collections/community/mongodb/mongodb_user_module.html
+- https://docs.graylog.org/en/5.0/index.html
+- https://docs.mongodb.com/manual/tutorial/configure-ssl/
+- https://docs.mongodb.com/manual/tutorial/install-mongodb-on-debian/
+- https://dzone.com/articles/mongodb-the-good-the-bad-and-the-ugly
+- https://en.wikipedia.org/wiki/MongoDB
+- https://gettingstarted.graylog.org/assets/v3/guides/1-first_messages.html
+- https://gettingstarted.graylog.org/assets/v3/guides/2-do_something.html
+- https://gettingstarted.graylog.org/assets/v3/guides/3-dashboards.ftl
+- https://gettingstarted.graylog.org/assets/v3/guides/4-alerts.ftl
+- https://go2docs.graylog.org/5-0/downloading_and_installing_graylog/debian_installation.htm
+- https://go2docs.graylog.org/5-0/interacting_with_your_log_data/decorators.html
+- https://go2docs.graylog.org/5-0/making_sense_of_your_log_data/lookup_tables.html
+- https://go2docs.graylog.org/5-0/making_sense_of_your_log_data/pipelines.html
+- https://go2docs.graylog.org/5-0/making_sense_of_your_log_data/rules.html
+- https://go2docs.graylog.org/5-0/making_sense_of_your_log_data/streams.html
+- https://go2docs.graylog.org/5-0/setting_up_graylog/backup_considerations.html
+- https://go2docs.graylog.org/5-0/setting_up_graylog/multi-node_setup.html
+- https://go2docs.graylog.org/5-0/upgrading_graylog/upgrading_graylog.html
+- https://go2docs.graylog.org/5-0/upgrading_graylog/upgrading_to_graylog_5.0.x.htm
+- https://graylog.org/post/getting-started-with-grok-patterns/
+- https://logz.io/blog/logstash-grok/
+- https://old.reddit.com/r/graylog/
+- https://serverfault.com/questions/822886/graylog-fields-from-pipeline-rule-not-showing-up-in-search-data
+- https://www.graylog.org/post/building-an-operations-dashboard/
+- https://www.graylog.org/pricing/
+- https://www.graylog.org/products/source-available/
+- https://www.graylog.org/releases/
+- https://www.howtoforge.com/how-to-install-and-secure-mongodb-on-debian-11/
+- https://www.lisenet.com/2017/set-up-mongodb-authentication-for-graylog/
+- https://www.mongodb.com/docs/database-tools/mongodump/
+- https://www.mongodb.com/docs/manual/core/backups/
+- https://www.mongodb.com/docs/manual/reference/configuration-options/
+- https://www.mongodb.com/docs/manual/reference/connection-string/
+- https://www.mongodb.com/docs/manual/reference/log-messages/
+- https://www.mongodb.com/docs/manual/tutorial/configure-scram-client-authentication/
+- https://www.mongodb.com/docs/mongodb-shell/connect/
+- https://www.vdalabs.com/no-more-secrets-logging-made-easy-through-graylog-part-7/
+- [Detecting Threats with Graylog Pipelines - Part 1](https://blog.reconinfosec.com/detecting-threats-with-graylog-pipelines)
+- [Detecting Threats with Graylog Pipelines - Part 2](https://blog.reconinfosec.com/detecting-threats-with-graylog-pipelines-part-2)
+- [Detecting Threats with Graylog Pipelines - Part 3](https://blog.reconinfosec.com/detecting-threats-with-graylog-pipelines-part-3)
+- [The Ultimate Guide to Sigma Rules](https://graylog.org/post/the-ultimate-guide-to-sigma-rules/), [Graylog v5 - Using Sigma Rules](https://www.scip.ch/en/?labs.20230817), [SigmaHQ/sigma: Main Sigma Rule Repository](https://github.com/SigmaHQ/sigma), [SigmaHQ/sigma-cli: The Sigma command line interface based on pySigma](https://github.com/SigmaHQ/sigma-cli)
