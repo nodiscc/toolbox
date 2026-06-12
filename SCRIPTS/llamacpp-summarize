@@ -104,6 +104,105 @@ def get_youtube_transcript(url):
         print(f"Error downloading YouTube transcript: {e}")
         return None, None
 
+def get_reddit_client():
+    """Initialize and return a PRAW Reddit client, or None if credentials are missing."""
+    client_id = CONFIG.get('REDDIT_CLIENT_ID')
+    client_secret = CONFIG.get('REDDIT_CLIENT_SECRET')
+    user_agent = CONFIG.get('REDDIT_USER_AGENT', 'TLDRBot/1.0')
+    if not client_id or not client_secret:
+        return None
+    try:
+        return praw.Reddit(
+            client_id=client_id,
+            client_secret=client_secret,
+            user_agent=user_agent
+        )
+    except Exception as e:
+        print(f"Error initializing Reddit client: {e}")
+        return None
+
+
+def fetch_reddit(url):
+    """Fetch comments from a Reddit thread and format for LLM summarization.
+
+    Returns (plain_text, title, lang, is_youtube, separator, header, source_display, source_type)
+    or None on error.
+    """
+    reddit = get_reddit_client()
+    if reddit is None:
+        print("Error: Reddit credentials not found in config (~/.config/dashboard.yml). "
+              "Missing REDDIT_CLIENT_ID or REDDIT_CLIENT_SECRET.")
+        return None
+
+    try:
+        submission = reddit.submission(url=url)
+        submission.comments.replace_more(limit=0)
+    except praw.exceptions.PrawError as e:
+        print(f"Error fetching Reddit thread: {e}")
+        return None
+
+    all_comments = []
+
+    def process_comment(comment, parent_author=None, depth=0):
+        if hasattr(comment, 'body'):
+            comment_data = {
+                'author': str(comment.author) if comment.author else '[deleted]',
+                'body': comment.body,
+                'score': comment.score,
+                'is_op': str(comment.author) == str(submission.author) if comment.author and submission.author else False,
+                'parent_author': parent_author,
+                'depth': depth,
+                'created_utc': comment.created_utc
+            }
+            all_comments.append(comment_data)
+            for reply in comment.replies:
+                process_comment(reply, parent_author=str(comment.author), depth=depth + 1)
+
+    for comment in submission.comments:
+        process_comment(comment)
+
+    sorted_comments = sorted(all_comments, key=lambda x: x['score'], reverse=True)
+
+    pct_cutoff = max(10, int(len(sorted_comments) * 0.25))
+    candidates = sorted_comments[:pct_cutoff]
+
+    if candidates:
+        top_score = candidates[0]['score']
+        score_floor = top_score * 0.10
+        candidates = [c for c in candidates if c['score'] >= score_floor]
+
+    if len(candidates) < 10:
+        candidates = sorted_comments[:10]
+    else:
+        candidates = candidates[:100]
+
+    formatted = f"Subreddit: r/{submission.subreddit}\n"
+    formatted += f"Thread Title: {submission.title}\n"
+    formatted += f"Original Poster: {str(submission.author) if submission.author else '[deleted]'}\n"
+
+    if submission.selftext and submission.selftext.strip():
+        formatted += f"\nOriginal Post:\n{submission.selftext.strip()}\n"
+
+    formatted += f"\nTotal comments in thread: {len(all_comments)}\n"
+    formatted += f"Comments analyzed: {len(candidates)}\n"
+    formatted += f"\n{'='*80}\n\n"
+
+    for i, comment in enumerate(candidates, 1):
+        author_label = comment['author']
+        if comment['is_op']:
+            author_label += " [OP]"
+        formatted += f"Comment {i} (Score: {comment['score']}, Author: {author_label}"
+        if comment['parent_author']:
+            formatted += f", Reply to: {comment['parent_author']}"
+        formatted += "):\n"
+        formatted += f"{comment['body']}\n\n"
+
+    separator = "\n---------------------------------------------\n"
+    header = f"\n{separator}\n\033[0;36m### {submission.title}\033[0m\n\n\033[0;36m{url}\033[0m\n\n"
+
+    return (formatted, submission.title, 'en', False, separator, header, url, "reddit")
+
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--sentences', dest='sentences_number', type=int, default=8, help='number of sentences for the summary. Set to 0 to disable')
