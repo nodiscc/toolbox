@@ -393,10 +393,17 @@ if __name__ == "__main__":
     sources = build_sources(args)
 
     for source_type, source in sources:
-        result = extract_text(source_type, source)
-        if result is None:
-            print(f'error processing source: {source}')
-            continue
+        if source_type == 'url' and ('reddit.com' in source or 'old.reddit.com' in source):
+            result = fetch_reddit(source)
+            if result is None:
+                print(f'error processing source: {source}')
+                continue
+            source_type = "reddit"
+        else:
+            result = extract_text(source_type, source)
+            if result is None:
+                print(f'error processing source: {source}')
+                continue
 
         plain_text, title_string, lang, is_youtube, separator, header, source_display, source_type = result
 
@@ -409,7 +416,10 @@ if __name__ == "__main__":
             print(plain_text)
             continue
 
-        system_content, user_content = build_prompts(plain_text, args, lang)
+        if source_type == "reddit":
+            system_content, user_content = build_reddit_prompts(plain_text, args)
+        else:
+            system_content, user_content = build_prompts(plain_text, args, lang)
 
         try:
             streamed_content = stream_completion(args.server, args.model, system_content, user_content)
