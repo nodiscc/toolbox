@@ -16,6 +16,15 @@ from bs4 import BeautifulSoup
 from readability import Document
 import html2text
 from pathlib import Path
+import yaml
+
+# load config from YAML file
+_config_path = os.path.expanduser('~/.config/dashboard.yml')
+try:
+    with open(_config_path, 'r', encoding='utf-8') as _config_file:
+        CONFIG = yaml.safe_load(_config_file)
+except (FileNotFoundError, yaml.YAMLError):
+    CONFIG = {}
 
 def get_content_from_url(url):
     """
