@@ -125,7 +125,7 @@ def get_reddit_client():
 def fetch_reddit(url):
     """Fetch comments from a Reddit thread and format for LLM summarization.
 
-    Returns (plain_text, title, lang, is_youtube, separator, header, source_display, source_type)
+    Returns (plain_text, title, lang, separator, header, source_display, source_type)
     or None on error.
     """
     reddit = get_reddit_client()
@@ -204,7 +204,7 @@ def fetch_reddit(url):
     separator = "\n---------------------------------------------\n"
     header = f"\n{separator}\n\033[0;36m### {submission.title}\033[0m\n\n\033[0;36m{url}\033[0m\n\n"
 
-    return (formatted, submission.title, 'en', False, separator, header, url, "reddit")
+    return (formatted, submission.title, 'en', separator, header, url, "reddit")
 
 
 def parse_args():
@@ -245,14 +245,14 @@ def build_sources(args):
     return sources
 
 def extract_text(source_type, source):
-    """Fetch and parse content. Returns (plain_text, title, lang, is_youtube, separator, header, source_display, source_type) or None on error."""
+    """Fetch and parse content. Returns (plain_text, title, lang, separator, header, source_display, source_type) or None on error."""
     if source_type == 'url':
         if 'youtube.com' in source or 'youtu.be' in source:
             print("Detected YouTube URL, downloading transcript...")
             transcript_text, title = get_youtube_transcript(source)
             if transcript_text is None:
                 return None
-            return (transcript_text, source, 'unknown', True,
+            return (transcript_text, source, 'unknown',
                     "\n---------------------------------------------\n",
                     f"\n{'-'*45}\n\033[0;36m# {source}\033[0m\n\n\033[0;36m{source}\033[0m\n\n",
                     source, "youtube")
@@ -285,7 +285,7 @@ def extract_text(source_type, source):
     if tags:
         ignored_tags = ['cyclisme', 'sport']
         if any(tag in ignored_tags for tag in tags):
-            return ('__IGNORED__', title_string, lang, False, separator, header, source_display, "article")
+            return ('__IGNORED__', title_string, lang, separator, header, source_display, "article")
 
     content_html = Document(content_html)
     content_summary = content_html.summary()
@@ -293,7 +293,7 @@ def extract_text(source_type, source):
     text_maker = html2text.HTML2Text()
     text_maker.ignore_links = True
     plain_text = text_maker.handle(str(soup))
-    return (plain_text, title_string, lang, False, separator, header, source_display, "article")
+     return (plain_text, title_string, lang, separator, header, source_display, "article")
 
 def build_reddit_prompts(plain_text, args):
     if args.prompt:
@@ -409,7 +409,7 @@ if __name__ == "__main__":
                 print(f'error processing source: {source}')
                 continue
 
-        plain_text, title_string, lang, is_youtube, separator, header, source_display, source_type = result
+        plain_text, title_string, lang, separator, header, source_display, source_type = result
 
         if plain_text == '__IGNORED__':
             print(f"Article matches ignored tag, ignoring")
