@@ -209,20 +209,21 @@ def fetch_reddit(url):
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--sentences', dest='sentences_number', type=int, default=8, help='number of sentences for the summary. Set to 0 to disable')
+    parser.add_argument('--sentences', dest='sentences_number', type=int, default=0, help='number of sentences for the summary. Set to 0 to disable')
 
     # Create mutually exclusive group for URL and file inputs
     input_group = parser.add_mutually_exclusive_group()
     input_group.add_argument('--url', dest='urls', type=str, action='append', help='URL of the article to summarize (can be specified multiple times)')
     input_group.add_argument('--file', dest='files', type=str, action='append', help='path to HTML file to summarize (can be specified multiple times)')
 
-    parser.add_argument('--model', dest='model', type=str, default='qwen3.5:35b-a3b:instruct', help='llama.cpp model to use (default qwen3.5:35b-a3b:instruct)')
+    parser.add_argument('--model', dest='model', type=str, default='qwen3.6:35b-a3b:coding', help='llama.cpp model to use (default qwen3.6:35b-a3b:coding)')
     parser.add_argument('--server', dest='server', type=str, default='http://127.0.0.1:8033/v1', help='llama.cpp server URL (default http://127.0.0.1:8033/v1)')
     parser.add_argument('--prompt', dest='prompt', type=str, help='custom prompt, replaces the default summarization prompt (but still asks the LLM to only consider the information from the webpage)')
     parser.add_argument('--print-only', dest='print_only', action='store_true', help='only print the extracted plain text from the HTML, do not perform summarization')
     parser.add_argument('--list-models', dest='list_models', action='store_true', help='list available models from the server and exit')
     parser.add_argument('--translate', dest='translate', action='store_true', help='provide the summary in French regardless of the original language')
     parser.add_argument('--output', dest='output_file', type=str, help='file path to append the summary output')
+    parser.add_argument('--thinking', dest='thinking', action='store_true', help='enable thinking (reasoning mode)')
     return parser, parser.parse_args()
 
 def list_models(server):
@@ -342,7 +343,7 @@ def build_prompts(plain_text, args, lang):
 
     return system_content, user_content
 
-def stream_completion(server, model, system_content, user_content):
+def stream_completion(server, model, system_content, user_content, thinking=False):
     payload = {
         'model': model,
         'messages': [
@@ -351,6 +352,9 @@ def stream_completion(server, model, system_content, user_content):
         ],
         'stream': True
     }
+    if not thinking:
+        payload['chat_template_kwargs'] = {'enable_thinking': False}
+    print(payload)
     response = requests.post(f"{server}/chat/completions", json=payload, stream=True)
     response.raise_for_status()
 
@@ -417,7 +421,7 @@ if __name__ == "__main__":
             system_content, user_content = build_prompts(plain_text, args, lang)
 
         try:
-            streamed_content = stream_completion(args.server, args.model, system_content, user_content)
+            streamed_content = stream_completion(args.server, args.model, system_content, user_content, args.thinking)
 
             if args.output_file:
                 try:
