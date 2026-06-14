@@ -160,6 +160,11 @@ def fetch_reddit(url):
     for comment in submission.comments:
         process_comment(comment)
 
+    # Select top comments for summarization:
+    # 1. Sort all comments by score (desc)
+    # 2. Take top 25% (min 10) as initial candidates
+    # 3. Filter to only those with score >= 10% of the top score
+    # 4. If fewer than 10 survive, fallback to raw top 10; otherwise cap at 100
     sorted_comments = sorted(all_comments, key=lambda x: x['score'], reverse=True)
 
     initial_candidate_count = max(10, int(len(sorted_comments) * 0.25))
