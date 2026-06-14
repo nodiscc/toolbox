@@ -293,30 +293,21 @@ def extract_text(source_type, source):
     text_maker = html2text.HTML2Text()
     text_maker.ignore_links = True
     plain_text = text_maker.handle(str(soup))
-     return (plain_text, title_string, lang, separator, header, source_display, "article")
+    return (plain_text, title_string, lang, separator, header, source_display, "article")
 
 def build_reddit_prompts(plain_text, args):
+    system_content = (
+        "You summarize Reddit threads accurately and concisely. "
+        "Your summary should accurately reflect what the majority of commenters think or feel, "
+        "and note any significant minority positions. "
+        "Capture any important clarifications, corrections, or developments that emerge across the comments. "
+        "Be concise and readable — a few short paragraphs at most. "
+        "Only include claims supported by the actual comments. "
+        "If the thread is inconclusive or chaotic, say so."
+    )
     if args.prompt:
-        system_content = (
-            "You summarize Reddit threads accurately and concisely. "
-            "Your summary should accurately reflect what the majority of commenters think or feel, "
-            "and note any significant minority positions. "
-            "Capture any important clarifications, corrections, or developments that emerge across the comments. "
-            "Be concise and readable — a few short paragraphs at most. "
-            "Only include claims supported by the actual comments. "
-            "If the thread is inconclusive or chaotic, say so."
-        )
         user_content = f'{args.prompt}. use only the information in the following text to provide your answer: {plain_text}'
     else:
-        system_content = (
-            "You summarize Reddit threads accurately and concisely. "
-            "Your summary should accurately reflect what the majority of commenters think or feel, "
-            "and note any significant minority positions. "
-            "Capture any important clarifications, corrections, or developments that emerge across the comments. "
-            "Be concise and readable — a few short paragraphs at most. "
-            "Only include claims supported by the actual comments. "
-            "If the thread is inconclusive or chaotic, say so."
-        )
         user_content = f"Summarize the following Reddit thread:\n\n{plain_text}\n\nTL;DR:"
 
     return system_content, user_content
