@@ -144,19 +144,18 @@ def fetch_reddit(url):
     all_comments = []
 
     def process_comment(comment, parent_author=None, depth=0):
-        if hasattr(comment, 'body'):
-            comment_data = {
-                'author': str(comment.author) if comment.author else '[deleted]',
-                'body': comment.body,
-                'score': comment.score,
-                'is_op': str(comment.author) == str(submission.author) if comment.author and submission.author else False,
-                'parent_author': parent_author,
-                'depth': depth,
-                'created_utc': comment.created_utc
-            }
-            all_comments.append(comment_data)
-            for reply in comment.replies:
-                process_comment(reply, parent_author=str(comment.author), depth=depth + 1)
+        comment_data = {
+            'author': str(comment.author) if comment.author else '[deleted]',
+            'body': comment.body,
+            'score': comment.score,
+            'is_op': str(comment.author) == str(submission.author) if comment.author and submission.author else False,
+            'parent_author': parent_author,
+            'depth': depth,
+            'created_utc': comment.created_utc
+        }
+        all_comments.append(comment_data)
+        for reply in comment.replies:
+            process_comment(reply, parent_author=str(comment.author), depth=depth + 1)
 
     for comment in submission.comments:
         process_comment(comment)
