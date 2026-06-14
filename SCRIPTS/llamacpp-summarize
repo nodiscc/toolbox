@@ -162,8 +162,8 @@ def fetch_reddit(url):
 
     sorted_comments = sorted(all_comments, key=lambda x: x['score'], reverse=True)
 
-    pct_cutoff = max(10, int(len(sorted_comments) * 0.25))
-    candidates = sorted_comments[:pct_cutoff]
+    initial_candidate_count = max(10, int(len(sorted_comments) * 0.25))
+    candidates = sorted_comments[:initial_candidate_count]
 
     if candidates:
         top_score = candidates[0]['score']
