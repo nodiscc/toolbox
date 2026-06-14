@@ -354,7 +354,6 @@ def stream_completion(server, model, system_content, user_content, thinking=Fals
     }
     if not thinking:
         payload['chat_template_kwargs'] = {'enable_thinking': False}
-    print(payload)
     response = requests.post(f"{server}/chat/completions", json=payload, stream=True)
     response.raise_for_status()
 
