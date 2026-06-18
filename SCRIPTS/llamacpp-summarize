@@ -9,6 +9,7 @@ import sys
 import argparse
 import json
 import os
+import datetime
 import requests
 import subprocess
 import tempfile
@@ -19,6 +20,7 @@ from readability import Document
 import html2text
 from pathlib import Path
 import yaml
+from markdown_it import MarkdownIt
 
 # load config from YAML file
 _config_path = os.path.expanduser('~/.config/dashboard.yml')
@@ -27,6 +29,11 @@ try:
         CONFIG = yaml.safe_load(_config_file)
 except (FileNotFoundError, yaml.YAMLError):
     CONFIG = {}
+
+# Output paths
+MD_OUTPUT_DIR = os.path.expanduser('~/Nextcloud/Notes/SUMMARIES')
+HTML_OUTPUT_PATH = os.path.join(MD_OUTPUT_DIR, 'summaries.html')
+_md = MarkdownIt()
 
 def get_content_from_url(url):
     """
@@ -224,6 +231,7 @@ def parse_args():
     parser.add_argument('--translate', dest='translate', action='store_true', help='provide the summary in French regardless of the original language')
     parser.add_argument('--output', dest='output_file', type=str, help='file path to append the summary output')
     parser.add_argument('--thinking', dest='thinking', action='store_true', help='enable thinking (reasoning mode)')
+    parser.add_argument('--html', dest='html', action='store_true', help='convert summary to HTML and open in browser')
     return parser, parser.parse_args()
 
 def list_models(server):
@@ -343,6 +351,19 @@ def build_prompts(plain_text, args, lang):
 
     return system_content, user_content
 
+def get_dated_md_path():
+    """Return path like ~/Nextcloud/Notes/SUMMARIES/SUMMARIES-2026-06-17.md"""
+    ymd = datetime.datetime.now().strftime('%Y-%m-%d')
+    os.makedirs(MD_OUTPUT_DIR, exist_ok=True)
+    return os.path.join(MD_OUTPUT_DIR, f'SUMMARIES-{ymd}.md')
+
+
+def render_html(html_content, output_path):
+    """Write HTML content to output_path."""
+    with open(output_path, 'w', encoding='utf-8') as f:
+        f.write(html_content)
+
+
 def stream_completion(server, model, system_content, user_content, thinking=False):
     payload = {
         'model': model,
@@ -388,7 +409,11 @@ if __name__ == "__main__":
         list_models(args.server)
         sys.exit(0)
 
+    if args.html and not args.output_file:
+        args.output_file = get_dated_md_path()
+
     sources = build_sources(args)
+    html_fragments = []
 
     for source_type, source in sources:
         if source_type == 'url' and ('reddit.com' in source or 'old.reddit.com' in source):
@@ -421,17 +446,33 @@ if __name__ == "__main__":
 
         try:
             streamed_content = stream_completion(args.server, args.model, system_content, user_content, args.thinking)
+            summary_text = ''.join(streamed_content)
 
             if args.output_file:
                 try:
                     with open(args.output_file, 'a', encoding='utf-8') as f:
                         header_plain = separator + "\n### " + title_string + "\n\n" + source_display + "\n\n"
                         f.write(header_plain)
-                        f.write(''.join(streamed_content))
+                        f.write(summary_text)
                         f.write('\n')
                 except Exception as e:
                     print(f"Error writing to output file: {e}")
 
+            if args.html:
+                header_html = f"<h3>{title_string}</h3>\n<p><a href=\"{source}\">{source_display}</a></p>\n"
+                html_fragments.append(header_html + _md.render(summary_text))
+
         except requests.exceptions.RequestException as error:
             print(f"Error communicating with llama.cpp server: {error}")
             continue
+
+    if args.html and html_fragments:
+        os.makedirs(os.path.dirname(HTML_OUTPUT_PATH), exist_ok=True)
+        full_html = '<!DOCTYPE html>\n<html>\n<head>\n<meta charset="utf-8">\n<title>Summaries</title>\n</head>\n<body>\n'
+        full_html += '\n<hr>\n'.join(html_fragments)
+        full_html += '\n</body>\n</html>\n'
+        try:
+            render_html(full_html, HTML_OUTPUT_PATH)
+            subprocess.Popen(['xdg-open', HTML_OUTPUT_PATH])
+        except Exception as e:
+            print(f"Error rendering HTML: {e}")
