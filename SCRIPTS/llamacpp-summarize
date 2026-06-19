@@ -91,7 +91,7 @@ def get_youtube_transcript(url):
                 '--output', tmp_base,
                 url
             ], capture_output=True, check=True)
-            srt_path = tmp_base + 'en.srt'
+            srt_path = tmp_base + '.en.srt'
             with open(srt_path, 'r', encoding='utf-8') as f:
                 srt_content = f.read()
             # Extract just the text lines (skip timestamps and numbers)
