@@ -39,3 +39,38 @@
   with_items:
     - "{{ awesome_selfhosted_html_fqdn }}"
     - "www.{{ awesome_selfhosted_html_fqdn }}"
+
+- name: generate openssl private key for awesome-sysadmin
+  openssl_privatekey:
+    path: "/etc/ssl/private/{{ item }}.key"
+  notify: restart apache
+  ignore_errors: "{{ ansible_check_mode }}"
+  with_items:
+    - "{{ awesome_sysadmin_fqdn }}"
+  when: awesome_sysadmin | bool
+
+- name: generate openssl certificate signing request for awesome-sysadmin
+  openssl_csr:
+    path: "/etc/ssl/private/{{ item }}.csr"
+    privatekey_path: "/etc/ssl/private/{{ item }}.key"
+    common_name: "{{ item }}"
+    key_usage: "digitalSignature,keyEncipherment"
+    basicConstraints: "CA:TRUE"
+    mode: "0644"
+  ignore_errors: "{{ ansible_check_mode }}"
+  with_items:
+    - "{{ awesome_sysadmin_fqdn }}"
+  when: awesome_sysadmin | bool
+
+- name: generate self-signed openssl certificate for awesome-sysadmin
+  openssl_certificate:
+    path: "/etc/ssl/certs/{{ item }}.crt"
+    privatekey_path: "/etc/ssl/private/{{ item }}.key"
+    csr_path: "/etc/ssl/private/{{ item }}.csr"
+    provider: selfsigned
+    mode: "0644"
+  notify: restart apache
+  ignore_errors: "{{ ansible_check_mode }}"
+  with_items:
+    - "{{ awesome_sysadmin_fqdn }}"
+  when: awesome_sysadmin | bool

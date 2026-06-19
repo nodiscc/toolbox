@@ -16,6 +16,12 @@
   become: yes
   tags: awesome_selfhosted_html
 
+- name: include awesome-sysadmin deployment tasks
+  import_tasks: awesome_sysadmin.yml
+  become: yes
+  tags: awesome_selfhosted_html
+  when: awesome_sysadmin | bool
+
 - name: include apache configuration tasks
   import_tasks: apache.yml
   become: yes

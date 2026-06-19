@@ -8,3 +8,15 @@
     - awesome_selfhosted_html_https_mode in ['selfsigned', 'letsencrypt']
     - awesome_selfhosted_html_enable_service == awesome_selfhosted_html_enable_service | bool
     - awesome_selfhosted_html_redirect_www_to_non_www == awesome_selfhosted_html_redirect_www_to_non_www | bool
+
+- name: check that awesome-sysadmin variables are correctly defined (when enabled)
+  assert:
+    quiet: yes
+    that: "{{ item }}"
+    fail_msg: "awesome-sysadmin: One or more variables are not correctly defined. Check role documentation: https://gitlab.com/nodiscc/toolbox/-/blob/master/ARCHIVE/ANSIBLE-COLLECTION/roles/awesome_selfhosted_html/defaults/main.yml"
+  loop:
+    - awesome_sysadmin == awesome_sysadmin | bool
+    - awesome_sysadmin_fqdn is not search('CHANGEME')
+    - awesome_sysadmin_https_mode in ['selfsigned', 'letsencrypt']
+    - awesome_sysadmin_enable_service == awesome_sysadmin_enable_service | bool
+  when: awesome_sysadmin | bool

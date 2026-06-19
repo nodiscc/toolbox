@@ -9,3 +9,15 @@ awesome_selfhosted_html_https_mode: "selfsigned"
 awesome_selfhosted_html_redirect_www_to_non_www: yes
 # enable/disable the awesome-selfhosted virtualhost (redirect users to maintenance page if disabled)
 awesome_selfhosted_html_enable_service: yes
+
+##### AWESOME-SYSADMIN STATIC WEBSITE #####
+# (yes/no) deploy the awesome-sysadmin static website
+awesome_sysadmin: false
+# fully qualified domain name of the awesome-sysadmin website
+awesome_sysadmin_fqdn: "awesome-sysadmin.CHANGEME.org"
+# HTTPS and SSL/TLS certificate mode for the awesome-sysadmin webserver virtualhost
+#   letsencrypt: acquire a certificate from letsencrypt.org
+#   selfsigned: generate a self-signed certificate
+awesome_sysadmin_https_mode: "selfsigned"
+# enable/disable the awesome-sysadmin virtualhost (redirect users to maintenance page if disabled)
+awesome_sysadmin_enable_service: yes

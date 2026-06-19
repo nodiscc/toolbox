@@ -1,0 +1,53 @@
+- name: create awesome-sysadmin update user
+  user:
+    name: awesome-sysadmin
+    group: www-data
+    shell: /usr/sbin/nologin
+    system: yes
+
+- name: create documentroot and set ownership
+  file:
+    path: "/var/www/{{ awesome_sysadmin_fqdn }}"
+    state: directory
+    owner: awesome-sysadmin
+    group: www-data
+    recurse: yes
+
+- name: clone/update awesome-sysadmin-html repository
+  become: yes
+  become_user: awesome-sysadmin
+  git:
+    repo: "https://github.com/awesome-foss/awesome-sysadmin-html"
+    dest: "/var/www/{{ awesome_sysadmin_fqdn }}"
+    version: main
+    force: yes
+  diff: no
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: configure automatic update systemd service
+  template:
+    src: etc_systemd_system_awesome-sysadmin-html-update.service.j2
+    dest: /etc/systemd/system/awesome-sysadmin-html-update.service
+    owner: root
+    group: root
+    mode: "0644"
+  notify: reload systemd unit files
+
+- name: configure automatic update systemd timer
+  template:
+    src: etc_systemd_system_awesome-sysadmin-html-update.timer.j2
+    dest: /etc/systemd/system/awesome-sysadmin-html-update.timer
+    owner: root
+    group: root
+    mode: "0644"
+  notify: reload systemd unit files
+
+- name: apply configuration (flush handlers)
+  meta: flush_handlers
+
+- name: enable automatic update systemd timer
+  systemd:
+    name: awesome-sysadmin-html-update.timer
+    state: started
+    enabled: true
+  ignore_errors: "{{ ansible_check_mode }}"

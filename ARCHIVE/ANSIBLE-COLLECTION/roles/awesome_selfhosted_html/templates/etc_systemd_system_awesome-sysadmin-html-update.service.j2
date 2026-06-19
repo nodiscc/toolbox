@@ -1,0 +1,25 @@
+[Unit]
+Description=Pull latest version of awesome-sysadmin-html
+
+[Service]
+Type=simple
+User=awesome-sysadmin
+Group=www-data
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+ReadWritePaths=/var/www/{{ awesome_sysadmin_fqdn }}
+ExecStartPre=/usr/bin/git remote update
+ExecStart=/usr/bin/git reset --hard origin/gh-pages
+WorkingDirectory=/var/www/{{ awesome_sysadmin_fqdn }}
+SyslogIdentifier=awesome-sysadmin-html
+
+[Install]
+WantedBy=multi-user.target

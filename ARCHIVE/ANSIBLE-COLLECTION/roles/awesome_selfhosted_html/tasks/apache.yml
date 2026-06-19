@@ -33,3 +33,27 @@
     path: /etc/hosts
     line: '127.0.0.1	www.{{ awesome_selfhosted_html_fqdn }}' # noqa no-tabs
     state: "{{ 'present' if awesome_selfhosted_html_redirect_www_to_non_www else 'absent' }}"
+
+- name: copy awesome-sysadmin apache virtualhost configuration
+  template:
+    src: etc_apache2_sites-available_awesome-sysadmin.conf.j2
+    dest: /etc/apache2/sites-available/awesome-sysadmin.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: reload apache
+  when: awesome_sysadmin | bool
+
+- name: enable awesome-sysadmin apache virtualhost configuration
+  command: a2ensite awesome-sysadmin
+  args:
+    creates: "/etc/apache2/sites-enabled/awesome-sysadmin.conf"
+  notify: reload apache
+  when: awesome_sysadmin | bool
+
+- name: add a hosts file entry for the awesome-sysadmin server fqdn
+  lineinfile:
+    path: /etc/hosts
+    line: '127.0.0.1	{{ awesome_sysadmin_fqdn }}' # noqa no-tabs
+    state: present
+  when: awesome_sysadmin | bool

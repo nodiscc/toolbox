@@ -1,0 +1,64 @@
+<VirtualHost *:80>
+  ServerName {{ awesome_sysadmin_fqdn }}
+  DocumentRoot /var/www/{{ awesome_sysadmin_fqdn }}
+{% if awesome_sysadmin_https_mode == 'selfsigned' %}
+  # Redirect all HTTP requests to HTTPS
+  RewriteEngine On
+  RewriteCond %{HTTPS} off
+  RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
+{% endif %}
+</VirtualHost>
+
+{% if awesome_sysadmin_https_mode == 'letsencrypt' %}
+<MDomain {{ awesome_sysadmin_fqdn }}>
+  MDRequireHttps permanent
+</MDomain>
+{% endif %}
+
+<VirtualHost *:443>
+  ServerName  {{ awesome_sysadmin_fqdn }}
+  SSLEngine on
+{% if awesome_sysadmin_https_mode == 'selfsigned' %}
+  SSLCertificateFile /etc/ssl/certs/{{ awesome_sysadmin_fqdn }}.crt
+  SSLCertificateKeyFile /etc/ssl/private/{{ awesome_sysadmin_fqdn }}.key
+{% endif %}
+{% if not awesome_sysadmin_enable_service %}
+  DocumentRoot /var/www/maintenance/
+  ErrorDocument 503 /maintenance.html
+  RewriteEngine On
+  RewriteCond %{REQUEST_URI} !=/maintenance.html
+  RewriteRule ^.*$ - [R=503,L]
+{% else %}
+  DocumentRoot /var/www/{{ awesome_sysadmin_fqdn }}
+  DirectoryIndex index.html
+  <FilesMatch "\.ph(?:ar|p|tml)$">
+    SetHandler None
+  </FilesMatch>
+  Header set X-Frame-Options SAMEORIGIN
+  Header set X-Content-Type-Options nosniff
+  Header always set Referrer-Policy "same-origin"
+  Header always set Content-Security-Policy "script-src 'self' 'unsafe-inline'; frame-ancestors 'self'"
+  Header set Cache-Control "max-age=300, public"
+  Header always unset X-Robots-Tag
+
+  <Directory /var/www/{{ awesome_sysadmin_fqdn }}>
+    Require all granted
+    # Deny dotfiles (e.g. .env, .htaccess)
+    <FilesMatch "^\.">
+      Require all denied
+    </FilesMatch>
+    # Deny extensionless files (e.g. .nojekyll)
+    <FilesMatch "^\.?[^.]+$">
+      Require all denied
+    </FilesMatch>
+    # Deny non-whitelisted extensions (.map, .txt, .xml, etc.)
+    <FilesMatch "\.(?!html?|css|js|png|svg|ico)$">
+      Require all denied
+    </FilesMatch>
+    # Allow robots.txt as the only .txt file
+    <Files "robots.txt">
+      Require all granted
+    </Files>
+  </Directory>
+{% endif %}
+</VirtualHost>

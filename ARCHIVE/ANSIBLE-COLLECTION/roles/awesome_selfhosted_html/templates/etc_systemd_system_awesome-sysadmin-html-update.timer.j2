@@ -1,0 +1,12 @@
+[Unit]
+Description=Pull latest version of awesome-sysadmin-html
+After=network-online.target
+
+[Install]
+WantedBy=timers.target
+
+[Timer]
+Unit=awesome-sysadmin-html-update.service
+Persistent=true
+OnCalendar=*:0/5
+OnBootSec=1s
