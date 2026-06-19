@@ -1,39 +1,39 @@
 - name: include variable checks tasks
   import_tasks: checks.yml
   tags:
-    - awesome_selfhosted_html
+    - awesome-selfhosted-html
     - checks
 
 - name: include self-signed certificates configuration tasks
   import_tasks: ssl-selfsigned.yml
   become: yes
   tags:
-    - awesome_selfhosted_html
+    - awesome-selfhosted-html
     - ssl
 
 - name: include static site deployment tasks
   import_tasks: awesome_selfhosted_html.yml
   become: yes
-  tags: awesome_selfhosted_html
+  tags: awesome-selfhosted-html
 
 - name: include awesome-sysadmin deployment tasks
   import_tasks: awesome_sysadmin.yml
   become: yes
-  tags: awesome_selfhosted_html
+  tags: awesome-selfhosted-html
   when: awesome_sysadmin | bool
 
 - name: include apache configuration tasks
   import_tasks: apache.yml
   become: yes
   tags:
-    - awesome_selfhosted_html
+    - awesome-selfhosted-html
     - apache
 
 - name: include ansible facts configuration tasks
   import_tasks: fact.yml
   become: yes
-  tags: awesome_selfhosted_html
+  tags: awesome-selfhosted-html
 
 - name: apply configuration (flush handlers)
   meta: flush_handlers
-  tags: awesome_selfhosted_html
+  tags: awesome-selfhosted-html
