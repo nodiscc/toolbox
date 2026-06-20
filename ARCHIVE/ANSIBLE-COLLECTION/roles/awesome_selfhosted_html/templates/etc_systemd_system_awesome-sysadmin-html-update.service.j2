@@ -17,7 +17,7 @@ LockPersonality=yes
 MemoryDenyWriteExecute=yes
 ReadWritePaths=/var/www/{{ awesome_sysadmin_fqdn }}
 ExecStartPre=/usr/bin/git remote update
-ExecStart=/usr/bin/git reset --hard origin/gh-pages
+ExecStart=/usr/bin/git reset --hard origin/main
 WorkingDirectory=/var/www/{{ awesome_sysadmin_fqdn }}
 SyslogIdentifier=awesome-sysadmin-html
 
