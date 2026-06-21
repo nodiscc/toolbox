@@ -149,7 +149,7 @@ def fetch_reddit(url):
     try:
         submission = reddit.submission(url=url)
         submission.comments.replace_more(limit=0)
-    except praw.exceptions.PrawError as e:
+    except praw.exceptions.PRAWException as e:
         print(f"Error fetching Reddit thread: {e}")
         return None
 
