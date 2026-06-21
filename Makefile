@@ -35,7 +35,8 @@ test-pylint:
 	.venv/bin/pylint --disable fixme,line-too-long,too-many-locals,consider-using-f-string,invalid-name --fail-under 8 --fail-on E,W \
 		SCRIPTS/dashboard \
 		SCRIPTS/file-sorter.py \
-		SCRIPTS/gitea-issues
+		SCRIPTS/gitea-issues \
+		SCRIPTS/llamacpp-summarize
 
 test-comments:
 	for file in SCRIPTS/*; do \
