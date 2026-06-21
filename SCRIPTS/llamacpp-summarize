@@ -110,11 +110,11 @@ def get_youtube_transcript(url):
                 continue
         if transcript_text is None:
             print("Error: Could not download subtitles in English or French")
-            return None, title
-        return transcript_text, title
+            return None, title, None
+        return transcript_text, title, lang_code
     except subprocess.CalledProcessError as e:
         print(f"Error downloading YouTube transcript: {e}")
-        return None, None
+        return None, None, None
 
 def get_reddit_client():
     """Initialize and return a PRAW Reddit client, or None if credentials are missing."""
@@ -263,10 +263,10 @@ def extract_text(source_type, source):
     if source_type == 'url':
         if 'youtube.com' in source or 'youtu.be' in source:
             print("Detected YouTube URL, downloading transcript...")
-            transcript_text, title = get_youtube_transcript(source)
+            transcript_text, title, lang = get_youtube_transcript(source)
             if transcript_text is None:
                 return None
-            return (transcript_text, source, 'unknown',
+            return (transcript_text, source, lang or 'unknown',
                     "\n---------------------------------------------\n",
                     f"\n{'-'*45}\n\033[0;36m# {source}\033[0m\n\n\033[0;36m{source}\033[0m\n\n",
                     source, "youtube")
