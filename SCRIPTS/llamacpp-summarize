@@ -79,34 +79,39 @@ def get_youtube_transcript(url):
         ], capture_output=True, text=True, check=True)
         title = title_result.stdout.strip()
         # Download transcript (auto-subs in SRT format)
-        try:
-            tmp_dir = tempfile.gettempdir()
-            tmp_base = os.path.join(tmp_dir, 'yt_transcript_')
-            subprocess.run([
-                'yt-dlp',
-                '--write-auto-subs',
-                '--sub-langs', 'en',
-                '--sub-format', 'srt',
-                '--skip-download',
-                '--output', tmp_base,
-                url
-            ], capture_output=True, check=True)
-            srt_path = tmp_base + '.en.srt'
-            with open(srt_path, 'r', encoding='utf-8') as f:
-                srt_content = f.read()
-            # Extract just the text lines (skip timestamps and numbers)
-            lines = []
-            for line in srt_content.split('\n'):
-                if line.strip() and not line.strip().isdigit() and '-->' not in line:
-                    lines.append(line.strip())
-            # Join all text lines
-            transcript_text = ' '.join(lines)
-            # Clean up the temporary file
-            os.unlink(srt_path)
-            return transcript_text, title
-        except FileNotFoundError:
-            print("Error: Could not find transcript file")
+        tmp_dir = tempfile.gettempdir()
+        tmp_base = os.path.join(tmp_dir, 'yt_transcript_')
+        transcript_text = None
+        for lang_code in ['en', 'fr']:
+            try:
+                subprocess.run([
+                    'yt-dlp',
+                    '--write-auto-subs',
+                    '--sub-langs', lang_code,
+                    '--sub-format', 'srt',
+                    '--skip-download',
+                    '--output', tmp_base,
+                    url
+                ], capture_output=True, check=True)
+                srt_path = tmp_base + f'.{lang_code}.srt'
+                with open(srt_path, 'r', encoding='utf-8') as f:
+                    srt_content = f.read()
+                # Extract just the text lines (skip timestamps and numbers)
+                lines = []
+                for line in srt_content.split('\n'):
+                    if line.strip() and not line.strip().isdigit() and '-->' not in line:
+                        lines.append(line.strip())
+                transcript_text = ' '.join(lines)
+                os.unlink(srt_path)
+                break
+            except (subprocess.CalledProcessError, FileNotFoundError):
+                if lang_code == 'en':
+                    print(f"English subtitles unavailable, trying French...")
+                continue
+        if transcript_text is None:
+            print("Error: Could not download subtitles in English or French")
             return None, title
+        return transcript_text, title
     except subprocess.CalledProcessError as e:
         print(f"Error downloading YouTube transcript: {e}")
         return None, None
