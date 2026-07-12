@@ -18,7 +18,7 @@ https://github.com/junegunn/fzf-bin/releases/download/0.15.9/fzf-0.15.9-linux_am
 https://github.com/kmkolasinski/AwesomeBump/releases/download/Linuxv5.0/AwesomeBumpV5.Bin64Linux.tar.gz
 https://github.com/mifi/lossless-cut/releases/download/v3.66.1/LosslessCut-linux-x64.tar.bz2
 https://github.com/mltframework/shotcut/releases/download/v17.09/shotcut-linux-x86_64-170904.tar.bz2
-https://github.com/vrana/adminer/releases/download/v5.4.2/adminer-5.4.2.php
+https://github.com/vrana/adminer/releases/download/v5.4.4/adminer-5.4.4.php
 https://packagecontrol.io/Package%20Control.sublime-package
 # https://s3.amazonaws.com/Minecraft.Download/versions/1.11.2/minecraft_server.1.11.2.jar
 # https://yt-dl.org/downloads/latest/youtube-dl
@@ -35,8 +35,8 @@ https://github.com/dungeon-revealer/dungeon-revealer/releases/download/v1.17.1/d
 https://codeberg.org/derat/soundalike/releases/download/v0.1.3/soundalike-0.1.3-linux-amd64.tar.gz
 https://github.com/upscayl/upscayl/releases/download/v2.15.0/upscayl-2.15.0-linux.AppImage
 #https://github.com/0x90d/videoduplicatefinder/releases/download/3.0.x/App-linux-x64.tar.gz
-https://codeberg.org/mikf/gallery-dl/releases/download/v1.32.3/gallery-dl.bin
-https://codeberg.org/mikf/gallery-dl/releases/download/v1.32.3/gallery-dl.bin.sig
+https://codeberg.org/mikf/gallery-dl/releases/download/v1.32.6/gallery-dl.bin
+https://codeberg.org/mikf/gallery-dl/releases/download/v1.32.6/gallery-dl.bin.sig
 https://github.com/snes9xgit/snes9x/releases/download/1.63/Snes9x-1.63-x86_64.AppImage
 #https://github.com/anthonyraymond/joal/releases/download/2.1.33/joal.tar.gz
 https://github.com/sigoden/aichat/releases/download/v0.27.0/aichat-v0.27.0-x86_64-unknown-linux-musl.tar.gz
@@ -61,8 +61,8 @@ https://github.com/Umio-Yasuno/amdgpu_top/releases/download/v0.11.5/amdgpu_top-0
 https://github.com/DavidoTek/ProtonUp-Qt/releases/download/v2.14.0/ProtonUp-Qt-2.14.0-x86_64.AppImage
 https://github.com/anthonyraymond/joal/releases/download/2.1.37/joal.tar.gz
 https://github.com/caarlos0/starcharts/releases/download/v1.11.0/starcharts_1.11.0_linux_amd64.tar.gz
-https://github.com/schollz/croc/releases/download/v10.4.3/croc_v10.4.3_Linux-64bit.tar.gz
-https://github.com/AlexsJones/llmfit/releases/download/v0.9.33/llmfit-v0.9.33-x86_64-unknown-linux-gnu.tar.gz
+https://github.com/schollz/croc/releases/download/v10.4.12/croc_v10.4.12_Linux-64bit.tar.gz
+https://github.com/AlexsJones/llmfit/releases/download/v0.9.38/llmfit-v0.9.38-x86_64-unknown-linux-gnu.tar.gz
 https://github.com/swsnr/mdcat/releases/download/mdcat-2.7.1/mdcat-2.7.1-x86_64-unknown-linux-gnu.tar.gz
 https://github.com/9001/copyparty/releases/latest/download/copyparty-sfx.py
 https://github.com/orhun/linuxwave/releases/download/v0.4.0/linuxwave-0.4.0-x86_64-linux.tar.gz
