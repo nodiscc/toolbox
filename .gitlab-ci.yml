@@ -15,7 +15,7 @@ test:
   stage: test
   interruptible: true
   script:
-    - apt-get install -y shellcheck python3-venv python3-pip wget make git file
+    - apt-get install -y shellcheck python3-venv python3-pip wget make git file python3-html2text python3-bs4 python3-readability
     - make tests
 
 build-packages:
