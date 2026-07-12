@@ -404,7 +404,7 @@ def stream_completion(server, model, system_content, user_content, thinking=Fals
     print()
     return streamed_content
 
-if __name__ == "__main__":
+def main():
     parser, args = parse_args()
 
     if not args.list_models and not (args.urls or args.files):
@@ -481,3 +481,7 @@ if __name__ == "__main__":
             subprocess.Popen(['xdg-open', HTML_OUTPUT_PATH])
         except Exception as e:
             print(f"Error rendering HTML: {e}")
+
+
+if __name__ == "__main__":
+    main()
