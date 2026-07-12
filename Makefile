@@ -29,7 +29,7 @@ test-shellcheck:
 		shellcheck "$$i"; fi; done
 
 test-pylint:
-	python3 -m venv .venv
+	python3 -m venv --system-site-packages .venv
 	.venv/bin/pip3 install wheel
 	.venv/bin/pip3 install pylint==4.0.5 secretstorage==3.5.0 requests==2.33.1 caldav==3.2.0 icalendar==7.0.3 tqdm==4.67.3 send2trash==2.1.0 colorama==0.4.6 pyyaml==6.0.3 praw==7.8.2 markdown-it-py==4.2.0 git+https://github.com/shaarli/python-shaarli-client@master
 	.venv/bin/pylint --disable fixme,line-too-long,too-many-locals,consider-using-f-string,invalid-name --fail-under 8 --fail-on E,W \
