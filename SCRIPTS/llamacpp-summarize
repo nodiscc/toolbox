@@ -106,7 +106,7 @@ def get_youtube_transcript(url):
                 break
             except (subprocess.CalledProcessError, FileNotFoundError):
                 if lang_code == 'en':
-                    print(f"English subtitles unavailable, trying French...")
+                    print("English subtitles unavailable, trying French...")
                 continue
         if transcript_text is None:
             print("Error: Could not download subtitles in English or French")
@@ -436,7 +436,7 @@ if __name__ == "__main__":
         plain_text, title_string, lang, separator, header, source_display, source_type = result
 
         if plain_text == '__IGNORED__':
-            print(f"Article matches ignored tag, ignoring")
+            print("Article matches ignored tag, ignoring")
             continue
 
         print(header, end='')
