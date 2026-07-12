@@ -130,7 +130,7 @@ def get_reddit_client():
             user_agent=user_agent
         )
     except praw.exceptions.PRAWException:
-        print(f"Error initializing Reddit client: credentials invalid or unreachable")
+        print("Error initializing Reddit client: credentials invalid or unreachable")
         return None
 
 
@@ -263,7 +263,7 @@ def extract_text(source_type, source):
     if source_type == 'url':
         if 'youtube.com' in source or 'youtu.be' in source:
             print("Detected YouTube URL, downloading transcript...")
-            transcript_text, title, lang = get_youtube_transcript(source)
+            transcript_text, _, lang = get_youtube_transcript(source)
             if transcript_text is None:
                 return None
             return (transcript_text, source, lang or 'unknown',
