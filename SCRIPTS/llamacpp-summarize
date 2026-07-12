@@ -62,8 +62,8 @@ def get_content_from_file(filepath):
     except FileNotFoundError:
         print(f"Error: File not found: {filepath}")
         return None
-    except Exception as error:
-        print(f"Error reading file: {error}")
+    except IOError:
+        print(f"Error reading file: {filepath}")
         return None
 
 def get_youtube_transcript(url):
@@ -129,8 +129,8 @@ def get_reddit_client():
             client_secret=client_secret,
             user_agent=user_agent
         )
-    except Exception as e:
-        print(f"Error initializing Reddit client: {e}")
+    except praw.exceptions.PRAWException:
+        print(f"Error initializing Reddit client: credentials invalid or unreachable")
         return None
 
 
@@ -460,8 +460,8 @@ def main():
                         f.write(header_plain)
                         f.write(summary_text)
                         f.write('\n')
-                except Exception as e:
-                    print(f"Error writing to output file: {e}")
+                except OSError:
+                    print(f"Error writing to output file: {args.output_file}")
 
             if args.html:
                 header_html = f"<h3>{title_string}</h3>\n<p><a href=\"{source}\">{source_display}</a></p>\n"
@@ -479,8 +479,8 @@ def main():
         try:
             render_html(full_html, HTML_OUTPUT_PATH)
             subprocess.Popen(['xdg-open', HTML_OUTPUT_PATH])
-        except Exception as e:
-            print(f"Error rendering HTML: {e}")
+        except OSError:
+            print(f"Error rendering HTML: {HTML_OUTPUT_PATH}")
 
 
 if __name__ == "__main__":
