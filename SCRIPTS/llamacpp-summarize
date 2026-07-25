@@ -484,7 +484,7 @@ def main():
         full_html += '\n</body>\n</html>\n'
         try:
             render_html(full_html, HTML_OUTPUT_PATH)
-            subprocess.Popen(['xdg-open', HTML_OUTPUT_PATH])
+            subprocess.Popen(['xdg-open', HTML_OUTPUT_PATH])  # pylint: disable=consider-using-with
         except OSError:
             print(f"Error rendering HTML: {HTML_OUTPUT_PATH}")
 
