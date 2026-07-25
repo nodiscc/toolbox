@@ -5,22 +5,22 @@ Requirements: python3 -m venv ~/.venv && ~/.venv/bin/pip3 install beautifulsoup4
               llama.cpp server must be running locally at http://127.0.0.1:8033/v1
 Usage: usage: llm-summarize [-h] [--sentences SENTENCES_NUMBER] (--url URL | --file FILE)
 """
-import sys
 import argparse
+import datetime
 import json
 import os
-import datetime
-import requests
 import subprocess
+import sys
 import tempfile
+from pathlib import Path
+import html2text
 import praw
 import praw.exceptions
-from bs4 import BeautifulSoup
-from readability import Document
-import html2text
-from pathlib import Path
+import requests
 import yaml
+from bs4 import BeautifulSoup
 from markdown_it import MarkdownIt
+from readability import Document
 
 # load config from YAML file
 _config_path = os.path.expanduser('~/.config/dashboard.yml')
