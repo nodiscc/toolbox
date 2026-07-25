@@ -21,11 +21,7 @@ TTRSS_USERNAME
 TTRSS_PASSWORD
 TTRSS_LIMIT
 BACKUP_STATE_FILE
-IMAP_FLAGGED_FOLDERS_LIST # comma-separated list
-IMAP_UNREAD_FOLDERS_LIST # comma-separated list
-IMAP_USERNAME
-IMAP_PASSWORD
-IMAP_SERVER
+IMAP_ACCOUNTS # list of dicts with: server, port, username, password, unread_folders, flagged_folders
 REQUESTS_TIMEOUT
 """
 
@@ -128,30 +124,55 @@ def get_imap_subjects(conn, folder, criterion):
     return messages
 
 
-def get_unread_mail(imap_server, imap_port,
-                     imap_username, imap_password, imap_folders_list):
-    """show a list of unread mail in an IMAP mailbox"""
+def get_unread_mail(imap_accounts):
+    """show a list of unread mail across multiple IMAP accounts"""
     all_messages = []
-    conn = imaplib.IMAP4_SSL(imap_server, imap_port)
-    conn.login(imap_username, imap_password)
-    for folder in imap_folders_list.split(','):
-        all_messages.extend(get_imap_subjects(conn, folder, '(UNSEEN)'))
-    try:
-        conn.close()
-    except imaplib.IMAP4.error:
-        pass
-    conn.logout()
+    for account in imap_accounts:
+        try:
+            all_messages.extend(_fetch_mail(account, 'UNSEEN'))
+        except Exception:  # pylint: disable=broad-exception-caught
+            pass
     return all_messages
 
 
-def get_flagged_mail(imap_server, imap_port,
-                     imap_username, imap_password, imap_folders_list):
-    """show a list of flagged mail in an IMAP mailbox"""
+def get_flagged_mail(imap_accounts):
+    """show a list of flagged mail across multiple IMAP accounts"""
     all_messages = []
-    conn = imaplib.IMAP4_SSL(imap_server, imap_port)
-    conn.login(imap_username, imap_password)
-    for folder in imap_folders_list.split(','):
-        all_messages.extend(get_imap_subjects(conn, folder, '(FLAGGED)'))
+    for account in imap_accounts:
+        try:
+            all_messages.extend(_fetch_mail(account, 'FLAGGED'))
+        except Exception:  # pylint: disable=broad-exception-caught
+            pass
+    return all_messages
+
+
+def _fetch_mail(account, criterion):
+    """Connect to one IMAP account and fetch messages matching criterion"""
+    all_messages = []
+    conn = imaplib.IMAP4_SSL(account['server'], account.get('port', 993))
+    conn.login(account['username'], account['password'])
+    folder_prefix = account['username'] + ': '
+    for folder in account.get(criterion.lower() + '_folders', '').split(','):
+        folder = folder.strip()
+        if not folder:
+            continue
+        status, _ = conn.select(folder, readonly=True)
+        if status != 'OK':
+            continue
+        _, imap_response = conn.search(None, '(' + criterion + ')')
+        message_uids = imap_response[0].split()
+        for message_uid in message_uids:
+            _, message_data = conn.fetch(message_uid, '(BODY.PEEK[HEADER])')
+            for response_part in message_data:
+                if isinstance(response_part, tuple):
+                    msg = email.message_from_bytes(response_part[1])  # pylint: disable=unsubscriptable-object
+                    decoded_header, encoding = email.header.decode_header(msg['Subject'])[0]
+                    if isinstance(decoded_header, bytes):
+                        effective_encoding = encoding if encoding is not None else 'utf-8'
+                        subject = decoded_header.decode(effective_encoding).replace('\r', '').replace('\n', '')
+                    else:
+                        subject = decoded_header.replace('\r', '').replace('\n', '')
+                    all_messages.append(folder_prefix + folder + ': ' + subject)
     try:
         conn.close()
     except imaplib.IMAP4.error:
@@ -815,11 +836,7 @@ def main():
     # UNREAD MAIL
     if args.unread_mail:
         print_title('unread mail', args.format)
-        unread_mail = get_unread_mail(CONFIG['IMAP_SERVER'],
-                                      993,
-                                      CONFIG['IMAP_USERNAME'],
-                                      CONFIG['IMAP_PASSWORD'],
-                                      CONFIG['IMAP_UNREAD_FOLDERS_LIST']) # comma-separated list
+        unread_mail = get_unread_mail(CONFIG['IMAP_ACCOUNTS'])
         if args.random and unread_mail:
             unread_mail = [random.choice(unread_mail)]
         unread_mail_lines = [
@@ -832,11 +849,7 @@ def main():
  # FLAGGED MAIL
     if args.flagged_mail:
         print_title('flagged mail', args.format)
-        flagged_mail = get_flagged_mail(CONFIG['IMAP_SERVER'],
-                                       993,
-                                       CONFIG['IMAP_USERNAME'],
-                                       CONFIG['IMAP_PASSWORD'],
-                                       CONFIG['IMAP_FLAGGED_FOLDERS_LIST']) # comma-separated list
+        flagged_mail = get_flagged_mail(CONFIG['IMAP_ACCOUNTS'])
         if args.random and flagged_mail:
             flagged_mail = [random.choice(flagged_mail)]
         flagged_mail_lines = [
