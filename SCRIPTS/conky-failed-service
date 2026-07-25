@@ -1,2 +1,3 @@
 #!/bin/bash
+# Description: display failed systemd user services in conky
 echo -n '${color red}'; systemctl --user list-units --failed | grep ● | awk -F ' ' '{print $1 " " $2}'; echo '${color}'
