@@ -220,6 +220,7 @@ def fetch_reddit(url):
 
 
 def parse_args():
+    """Parse and return command-line arguments."""
     parser = argparse.ArgumentParser()
     parser.add_argument('--sentences', dest='sentences_number', type=int, default=0, help='number of sentences for the summary. Set to 0 to disable')
 
@@ -240,6 +241,7 @@ def parse_args():
     return parser, parser.parse_args()
 
 def list_models(server):
+    """List available models from the llama.cpp server."""
     try:
         response = requests.get(f"{server}/models", timeout=10)
         response.raise_for_status()
@@ -251,6 +253,7 @@ def list_models(server):
         print(f"Error retrieving models: {e}")
 
 def build_sources(args):
+    """Build a list of (source_type, source) tuples from parsed arguments."""
     sources = []
     if args.urls:
         sources = [('url', url) for url in args.urls]
@@ -310,6 +313,7 @@ def extract_text(source_type, source):
     return (plain_text, title_string, lang, separator, header, source_display, "article")
 
 def build_reddit_prompts(plain_text, args):
+    """Build system and user prompts for summarizing a Reddit thread."""
     system_content = (
         "You summarize Reddit threads accurately and concisely. "
         "Your summary should accurately reflect what the majority of commenters think or feel, "
@@ -328,6 +332,7 @@ def build_reddit_prompts(plain_text, args):
 
 
 def build_prompts(plain_text, args, lang):
+    """Build system and user prompts for summarizing an article."""
     if args.translate:
         target_lang = 'fr'
     elif lang in ['fr', 'fr-FR']:
@@ -370,6 +375,7 @@ def render_html(html_content, output_path):
 
 
 def stream_completion(server, model, system_content, user_content, thinking=False):
+    """Send a request to the llama.cpp server and stream the completion response."""
     payload = {
         'model': model,
         'messages': [
@@ -405,6 +411,7 @@ def stream_completion(server, model, system_content, user_content, thinking=Fals
     return streamed_content
 
 def main():
+    """Main entry point: parse arguments, extract content from URLs/files, and summarize via llama.cpp."""
     parser, args = parse_args()
 
     if not args.list_models and not (args.urls or args.files):
