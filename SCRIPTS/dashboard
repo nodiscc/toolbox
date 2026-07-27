@@ -25,10 +25,10 @@ IMAP_ACCOUNTS # list of dicts with: server, port, username, password, unread_fol
 REQUESTS_TIMEOUT
 """
 
-import sys
 import argparse
 import datetime
 import email
+import io
 import imaplib
 import json
 import os
@@ -36,8 +36,10 @@ import random
 import shutil
 import sqlite3
 import subprocess
+import sys
 import tempfile
 import time
+from contextlib import redirect_stdout
 from pathlib import Path
 
 import caldav
@@ -618,6 +620,129 @@ def calculate_file_progress(file_path):
         sys.exit(1)
     return progress, hash_lines, total_lines
 
+HTML_COLORS = {
+    colorama.Fore.GREEN: '#26a69a',
+    colorama.Fore.YELLOW: '#ffa726',
+    colorama.Fore.BLUE: '#5c6bc0',
+    colorama.Fore.CYAN: '#26a69a',
+    colorama.Fore.MAGENTA: '#ab47bc',
+    colorama.Fore.WHITE: '#777777',
+    colorama.Fore.RED: '#ef5350',
+}
+
+HTML_CSS = """
+        body {
+            background: #ffffff;
+            color: rgb(15, 15, 15);
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+            font-size: 85%;
+            line-height: 1.5;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            margin: 0;
+        }
+        .widget-wrapper {
+            width: 100%;
+            max-width: 400px;
+            box-sizing: border-box;
+        }
+        .card {
+            background: #ffffff;
+            border: #DFDFDF 1px solid;
+            border-radius: 4px;
+            padding: 25px;
+            box-shadow: 3px 6px 30px -14px rgba(0,0,0,.15);
+            margin-bottom: 20px;
+        }
+        .card-title {
+            font-size: 0.8em;
+            font-weight: bold;
+            color: #777;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .card-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #f5f5f5;
+            word-break: break-word;
+        }
+        .card-item:last-child {
+            border-bottom: none;
+        }
+        .card-item a {
+            color: #333;
+            text-decoration: none;
+        }
+        .card-item a:hover {
+            text-decoration: underline;
+        }
+        .dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+"""
+
+def html_escape(text):
+    """Escape HTML special characters"""
+    return (str(text)
+            .replace('&', '&amp;')
+            .replace('<', '&lt;')
+            .replace('>', '&gt;')
+            .replace('"', '&quot;'))
+
+def make_link(text):
+    """Wrap URLs in <a> tags, handling 'URL - Title' format"""
+    text = html_escape(text)
+    # Handle 'http://... - Title' format
+    if text.startswith(('http://', 'https://')):
+        parts = text.split(' - ', 1)
+        url = parts[0]
+        display = text
+        if len(parts) > 1:
+            display = parts[1]
+        return f'<a href="{url}">{display}</a>'
+    return text
+
+def generate_html_section(title, items, color_hex):
+    """Generate HTML for one section with individual cards per item"""
+    lines = []
+    lines.append('<div class="card">')
+    lines.append(f'<div class="card-title" style="color: {color_hex}">{html_escape(title)}</div>')
+    if not items:
+        lines.append('<div class="card-item"><span style="color: #aaa">No items</span></div>')
+    else:
+        for item in items:
+            lines.append(f'<div class="card-item"><span class="dot" style="background: {color_hex}"></span>{make_link(item)}</div>')
+    lines.append('</div>')
+    return '\n'.join(lines)
+
+def generate_html_output(sections):
+    """Generate complete HTML document from list of (title, items, color_hex) tuples"""
+    cards = '\n'.join(generate_html_section(t, items, c) for t, items, c in sections)
+    return f'''<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Dashboard</title>
+    <style>{HTML_CSS}</style>
+</head>
+<body>
+    <div class="widget-wrapper">
+{cards}
+    </div>
+</body>
+</html>
+'''
+
 def main():
     """Main loop"""
     parser = argparse.ArgumentParser(description='Dashboard script for monitoring various services')
@@ -640,7 +765,7 @@ def main():
     parser.add_argument('--date', help='Start date for progress bar (YYYY-MM-DD)')
     parser.add_argument('--total-days', type=int, help='Total days for progress bar calculation with --date')
     parser.add_argument('--file', help='File path for progress bar calculation')
-    parser.add_argument('--format', dest='format', default='cli', choices=['cli', 'conky'], help='Output format')
+    parser.add_argument('--format', dest='format', default='cli', choices=['cli', 'conky', 'html'], help='Output format')
     args = parser.parse_args()
 
     # Validate progress bar arguments
@@ -654,7 +779,9 @@ def main():
         elif not args.date and not args.file:
             parser.error("--progress-bar requires either --date and --total-days or --file")
 
-  # Handle random mode
+    sections = []  # collected for HTML output
+
+    # Handle random mode
     if args.random:
         random_actions = ['gitlab-issues', 'github-issues', 'gitea-issues', 'caldav-tasks', 'caldav-events',
                           'todotxt', 'ttrss-marked', 'unread-mail', 'flagged-mail', 'shaarli-readlater', 'games', 'firefox-bookmarks']
@@ -707,16 +834,11 @@ def main():
 
     # PROGRESS BAR
     if args.progress_bar:
-        # print_title('Progress Bar', args.format)
         if args.date and args.total_days:
-            # progress based on date (number of days since date vs total days)
-            # for example --progress-bar --date 2025-02-02 --total-days 365
             days_elapsed, progress = calculate_progress(args.date, args.total_days)
             print_progress_bar(progress, 100, 60, args.format)
             print(f'{days_elapsed} / {args.total_days}')
         elif args.file:
-            # progress based on file (#-commented out lines vs total lines)
-            # for example --progress-bar --file /path/to/todo.txt
             progress, hash_lines, total_lines = calculate_file_progress(args.file)
             print_progress_bar(progress, 100, 60, args.format)
             print(f'{hash_lines} / {total_lines}')
@@ -726,49 +848,56 @@ def main():
 
     # GITLAB ISSUES
     if args.gitlab_issues:
-        print_title("gitlab issues assigned to you", args.format)
-        # this function takes either assigned=True, created=True, repos=True
         gitlab_issues = get_gitlab_issues(CONFIG["GITLAB_TOKEN"],
                                     assigned=True, output_format=args.format)
         if args.random and gitlab_issues:
             gitlab_issues = [random.choice(gitlab_issues)]
-        gitlab_out_lines = [
-            format_bullet_point('▧', colorama.Fore.YELLOW, f'{issue}', args.format)
-            for issue in gitlab_issues
-        ]
-        out = format_list(gitlab_out_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
-        print(out)
+        if args.format == 'html':
+            sections.append(("GitLab Issues", gitlab_issues, HTML_COLORS[colorama.Fore.YELLOW]))
+        else:
+            print_title("gitlab issues assigned to you", args.format)
+            gitlab_out_lines = [
+                format_bullet_point('▧', colorama.Fore.YELLOW, f'{issue}', args.format)
+                for issue in gitlab_issues
+            ]
+            out = format_list(gitlab_out_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
+            print(out)
 
     # GITHUB ISSUES
     if args.github_issues:
-        print_title('github issues', args.format)
         github_issues = get_github_issues(CONFIG['GITHUB_USERNAME'], CONFIG['GITHUB_TOKEN'])
         if args.random and github_issues:
             github_issues = [random.choice(github_issues)]
-        github_out_lines = [
-            format_bullet_point('▧', colorama.Fore.YELLOW, f'{issue}', args.format)
-            for issue in github_issues
-        ]
-        out = format_list(github_out_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
-        print(out)
+        if args.format == 'html':
+            sections.append(("GitHub Issues", github_issues, HTML_COLORS[colorama.Fore.YELLOW]))
+        else:
+            print_title('github issues', args.format)
+            github_out_lines = [
+                format_bullet_point('▧', colorama.Fore.YELLOW, f'{issue}', args.format)
+                for issue in github_issues
+            ]
+            out = format_list(github_out_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
+            print(out)
 
     # GITEA ISSUES
     if args.gitea_issues:
-        print_title('gitea issues', args.format)
         gitea_issues = get_gitea_issues(CONFIG['GITEA_URL'],
                                       CONFIG['GITEA_TOKEN'])
         if args.random and gitea_issues:
             gitea_issues = [random.choice(gitea_issues)]
-        gitea_out_lines = [
-            format_bullet_point('▧', colorama.Fore.GREEN, f'{issue}', args.format)
-            for issue in gitea_issues
-        ]
-        out = format_list(gitea_out_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
-        print(out)
+        if args.format == 'html':
+            sections.append(("Gitea Issues", gitea_issues, HTML_COLORS[colorama.Fore.GREEN]))
+        else:
+            print_title('gitea issues', args.format)
+            gitea_out_lines = [
+                format_bullet_point('▧', colorama.Fore.GREEN, f'{issue}', args.format)
+                for issue in gitea_issues
+            ]
+            out = format_list(gitea_out_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
+            print(out)
 
     # NEXTCLOUD CALDAV TASKS
     if args.caldav_tasks or args.caldav_tasks_all:
-        print_title('nextcloud tasks', args.format)
         caldav_tasks = get_caldav_tasks(CONFIG['CALDAV_URL'],
                                         CONFIG['CALDAV_USERNAME'],
                                         CONFIG['CALDAV_PASSWORD'],
@@ -776,128 +905,170 @@ def main():
                                         all_tasks=args.caldav_tasks_all)
         if args.random and caldav_tasks:
             caldav_tasks = [random.choice(caldav_tasks)]
-        caldav_tasks_out_lines = [
-            format_bullet_point('▧', colorama.Fore.BLUE, f'{task}', args.format)
-            for task in caldav_tasks
-        ]
-        out = format_list(caldav_tasks_out_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
-        print(out)
+        if args.format == 'html':
+            sections.append(("Nextcloud Tasks", caldav_tasks, HTML_COLORS[colorama.Fore.BLUE]))
+        else:
+            print_title('nextcloud tasks', args.format)
+            caldav_tasks_out_lines = [
+                format_bullet_point('▧', colorama.Fore.BLUE, f'{task}', args.format)
+                for task in caldav_tasks
+            ]
+            out = format_list(caldav_tasks_out_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
+            print(out)
 
     # NEXTCLOUD CALDAV EVENTS
     if args.caldav_events:
-        print_title('nextcloud events', args.format)
         caldav_events = get_caldav_events(CONFIG['CALDAV_URL'],
                                        CONFIG['CALDAV_USERNAME'],
                                        CONFIG['CALDAV_PASSWORD'],
                                        int(CONFIG['CALDAV_EVENTS_MAX_DAYS_IN_FUTURE']))
         if args.random and caldav_events:
             caldav_events = [random.choice(caldav_events)]
-        caldav_events_out_lines = [
-            format_bullet_point('▧', colorama.Fore.BLUE, f'{task}', args.format)
-            for task in caldav_events
-        ]
-        out = format_list(caldav_events_out_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
-        print(out)
+        if args.format == 'html':
+            sections.append(("Nextcloud Events", caldav_events, HTML_COLORS[colorama.Fore.BLUE]))
+        else:
+            print_title('nextcloud events', args.format)
+            caldav_events_out_lines = [
+                format_bullet_point('▧', colorama.Fore.BLUE, f'{task}', args.format)
+                for task in caldav_events
+            ]
+            out = format_list(caldav_events_out_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
+            print(out)
 
     # TODOTXT TODOS
     if args.todotxt:
-        print_title('todos', args.format)
         todotxt_todos = get_todo_list(CONFIG['TODO_TXT_PATH'])
         if args.random and todotxt_todos:
             todotxt_todos = [random.choice(todotxt_todos)]
-        todotxt_out_lines = [
-            format_bullet_point('▧', colorama.Fore.CYAN, f'{todo}', args.format)
-            for todo in todotxt_todos
-        ]
-        out = format_list(todotxt_out_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
-        print(out)
+        if args.format == 'html':
+            sections.append(("Todos", todotxt_todos, HTML_COLORS[colorama.Fore.CYAN]))
+        else:
+            print_title('todos', args.format)
+            todotxt_out_lines = [
+                format_bullet_point('▧', colorama.Fore.CYAN, f'{todo}', args.format)
+                for todo in todotxt_todos
+            ]
+            out = format_list(todotxt_out_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
+            print(out)
 
     # TTRSS MARKED ARTICLES
     if args.ttrss_marked:
-        print_title('tt-rss marked', args.format)
         ttrss_marked_articles = get_ttrss_marked(CONFIG['TTRSS_URL'],
                                                  CONFIG['TTRSS_USERNAME'],
                                                  CONFIG['TTRSS_PASSWORD'],
                                                  CONFIG['TTRSS_LIMIT'])
         if args.random and ttrss_marked_articles:
             ttrss_marked_articles = [random.choice(ttrss_marked_articles)]
-        ttrss_marked_out_lines = [
-            format_bullet_point('▧', colorama.Fore.MAGENTA, f'{article}', args.format)
-            for article in ttrss_marked_articles
-        ]
-        out = format_list(ttrss_marked_out_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
-        print(out)
+        if args.format == 'html':
+            sections.append(("TT-RSS Marked", ttrss_marked_articles, HTML_COLORS[colorama.Fore.MAGENTA]))
+        else:
+            print_title('tt-rss marked', args.format)
+            ttrss_marked_out_lines = [
+                format_bullet_point('▧', colorama.Fore.MAGENTA, f'{article}', args.format)
+                for article in ttrss_marked_articles
+            ]
+            out = format_list(ttrss_marked_out_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
+            print(out)
 
     # FILE MODIFICATION TIME
     if args.modtime:
-        print_title('modification time check', args.format)
-        check_mtime(CONFIG['BACKUP_STATE_FILE'], 86400, args.format)
+        if args.format == 'html':
+            f = io.StringIO()
+            with redirect_stdout(f):
+                check_mtime(CONFIG['BACKUP_STATE_FILE'], 86400, 'html')
+            output = f.getvalue().strip()
+            if output:
+                sections.append(("File Modification Time", [output], HTML_COLORS.get(
+                    colorama.Fore.GREEN if 'last modified:' in output and 'ERROR' not in output
+                    else colorama.Fore.RED, colorama.Fore.GREEN)))
+        else:
+            print_title('modification time check', args.format)
+            check_mtime(CONFIG['BACKUP_STATE_FILE'], 86400, args.format)
 
     # UNREAD MAIL
     if args.unread_mail:
-        print_title('unread mail', args.format)
         unread_mail = get_unread_mail(CONFIG['IMAP_ACCOUNTS'])
         if args.random and unread_mail:
             unread_mail = [random.choice(unread_mail)]
-        unread_mail_lines = [
-            format_bullet_point('▧', colorama.Fore.YELLOW, f'{article}', args.format)
-            for article in unread_mail
-        ]
-        out = format_list(unread_mail_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
-        print(out)
+        if args.format == 'html':
+            sections.append(("Unread Mail", unread_mail, HTML_COLORS[colorama.Fore.YELLOW]))
+        else:
+            print_title('unread mail', args.format)
+            unread_mail_lines = [
+                format_bullet_point('▧', colorama.Fore.YELLOW, f'{article}', args.format)
+                for article in unread_mail
+            ]
+            out = format_list(unread_mail_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
+            print(out)
 
- # FLAGGED MAIL
+    # FLAGGED MAIL
     if args.flagged_mail:
-        print_title('flagged mail', args.format)
         flagged_mail = get_flagged_mail(CONFIG['IMAP_ACCOUNTS'])
         if args.random and flagged_mail:
             flagged_mail = [random.choice(flagged_mail)]
-        flagged_mail_lines = [
-            format_bullet_point('▧', colorama.Fore.YELLOW, f'{article}', args.format)
-            for article in flagged_mail
-        ]
-        out = format_list(flagged_mail_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
-        print(out)
+        if args.format == 'html':
+            sections.append(("Flagged Mail", flagged_mail, HTML_COLORS[colorama.Fore.YELLOW]))
+        else:
+            print_title('flagged mail', args.format)
+            flagged_mail_lines = [
+                format_bullet_point('▧', colorama.Fore.YELLOW, f'{article}', args.format)
+                for article in flagged_mail
+            ]
+            out = format_list(flagged_mail_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
+            print(out)
 
     # SHAARLI READLATER
     if args.shaarli_readlater:
-        print_title('shaarli readlater', args.format)
         shaarli_readlater = get_shaarli_readlater(CONFIG['SHAARLI_URL'],
                                                    CONFIG['SHAARLI_SECRET'])
         if args.random and shaarli_readlater:
             shaarli_readlater = [random.choice(shaarli_readlater)]
-        shaarli_readlater_lines = [
-            format_bullet_point('▧', colorama.Fore.CYAN, f'{link}', args.format)
-            for link in shaarli_readlater
-        ]
-        out = format_list(shaarli_readlater_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
-        print(out)
+        if args.format == 'html':
+            sections.append(("Shaarli Readlater", shaarli_readlater, HTML_COLORS[colorama.Fore.CYAN]))
+        else:
+            print_title('shaarli readlater', args.format)
+            shaarli_readlater_lines = [
+                format_bullet_point('▧', colorama.Fore.CYAN, f'{link}', args.format)
+                for link in shaarli_readlater
+            ]
+            out = format_list(shaarli_readlater_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
+            print(out)
 
     # LUTRIS GAMES
     if args.games:
-        print_title('lutris games', args.format)
         lutris_games = get_lutris_games()
         if args.random and lutris_games:
             lutris_games = [random.choice(lutris_games)]
-        lutris_games_lines = [
-            format_bullet_point('▧', colorama.Fore.GREEN, f'{game}', args.format)
-            for game in lutris_games
-        ]
-        out = format_list(lutris_games_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
-        print(out)
+        if args.format == 'html':
+            sections.append(("Lutris Games", lutris_games, HTML_COLORS[colorama.Fore.GREEN]))
+        else:
+            print_title('lutris games', args.format)
+            lutris_games_lines = [
+                format_bullet_point('▧', colorama.Fore.GREEN, f'{game}', args.format)
+                for game in lutris_games
+            ]
+            out = format_list(lutris_games_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
+            print(out)
 
     # FIREFOX BOOKMARKS
     if args.firefox_bookmarks:
-        print_title('firefox bookmarks', args.format)
         firefox_bookmarks = get_firefox_bookmarks()
         if args.random and firefox_bookmarks:
             firefox_bookmarks = [random.choice(firefox_bookmarks)]
-        firefox_bookmarks_lines = [
-            format_bullet_point('▧', colorama.Fore.WHITE, f'{url}', args.format)
-            for url in firefox_bookmarks
-        ]
-        out = format_list(firefox_bookmarks_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
-        print(out)
+        if args.format == 'html':
+            sections.append(("Firefox Bookmarks", firefox_bookmarks, HTML_COLORS[colorama.Fore.WHITE]))
+        else:
+            print_title('firefox bookmarks', args.format)
+            firefox_bookmarks_lines = [
+                format_bullet_point('▧', colorama.Fore.WHITE, f'{url}', args.format)
+                for url in firefox_bookmarks
+            ]
+            out = format_list(firefox_bookmarks_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
+            print(out)
+
+    # Emit HTML output
+    if args.format == 'html' and sections:
+        print(generate_html_output(sections))
 
 if __name__ == "__main__":
     main()
