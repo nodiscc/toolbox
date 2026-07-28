@@ -846,6 +846,45 @@ def main():
             print("Progress bar requires either --date and --total-days, or --file")
             return
 
+    # NEXTCLOUD CALDAV TASKS
+    if args.caldav_tasks or args.caldav_tasks_all:
+        caldav_tasks = get_caldav_tasks(CONFIG['CALDAV_URL'],
+                                        CONFIG['CALDAV_USERNAME'],
+                                        CONFIG['CALDAV_PASSWORD'],
+                                        int(CONFIG['CALDAV_MAX_PRIORITY']),
+                                        all_tasks=args.caldav_tasks_all)
+        if args.random and caldav_tasks:
+            caldav_tasks = [random.choice(caldav_tasks)]
+        if args.format == 'html':
+            sections.append(("Nextcloud Tasks", caldav_tasks, HTML_COLORS[colorama.Fore.BLUE]))
+        else:
+            print_title('nextcloud tasks', args.format)
+            caldav_tasks_out_lines = [
+                format_bullet_point('▧', colorama.Fore.BLUE, f'{task}', args.format)
+                for task in caldav_tasks
+            ]
+            out = format_list(caldav_tasks_out_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
+            print(out)
+
+    # NEXTCLOUD CALDAV EVENTS
+    if args.caldav_events:
+        caldav_events = get_caldav_events(CONFIG['CALDAV_URL'],
+                                       CONFIG['CALDAV_USERNAME'],
+                                       CONFIG['CALDAV_PASSWORD'],
+                                       int(CONFIG['CALDAV_EVENTS_MAX_DAYS_IN_FUTURE']))
+        if args.random and caldav_events:
+            caldav_events = [random.choice(caldav_events)]
+        if args.format == 'html':
+            sections.append(("Nextcloud Events", caldav_events, HTML_COLORS[colorama.Fore.BLUE]))
+        else:
+            print_title('nextcloud events', args.format)
+            caldav_events_out_lines = [
+                format_bullet_point('▧', colorama.Fore.BLUE, f'{task}', args.format)
+                for task in caldav_events
+            ]
+            out = format_list(caldav_events_out_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
+            print(out)
+
     # GITLAB ISSUES
     if args.gitlab_issues:
         gitlab_issues = get_gitlab_issues(CONFIG["GITLAB_TOKEN"],
@@ -894,45 +933,6 @@ def main():
                 for issue in gitea_issues
             ]
             out = format_list(gitea_out_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
-            print(out)
-
-    # NEXTCLOUD CALDAV TASKS
-    if args.caldav_tasks or args.caldav_tasks_all:
-        caldav_tasks = get_caldav_tasks(CONFIG['CALDAV_URL'],
-                                        CONFIG['CALDAV_USERNAME'],
-                                        CONFIG['CALDAV_PASSWORD'],
-                                        int(CONFIG['CALDAV_MAX_PRIORITY']),
-                                        all_tasks=args.caldav_tasks_all)
-        if args.random and caldav_tasks:
-            caldav_tasks = [random.choice(caldav_tasks)]
-        if args.format == 'html':
-            sections.append(("Nextcloud Tasks", caldav_tasks, HTML_COLORS[colorama.Fore.BLUE]))
-        else:
-            print_title('nextcloud tasks', args.format)
-            caldav_tasks_out_lines = [
-                format_bullet_point('▧', colorama.Fore.BLUE, f'{task}', args.format)
-                for task in caldav_tasks
-            ]
-            out = format_list(caldav_tasks_out_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
-            print(out)
-
-    # NEXTCLOUD CALDAV EVENTS
-    if args.caldav_events:
-        caldav_events = get_caldav_events(CONFIG['CALDAV_URL'],
-                                       CONFIG['CALDAV_USERNAME'],
-                                       CONFIG['CALDAV_PASSWORD'],
-                                       int(CONFIG['CALDAV_EVENTS_MAX_DAYS_IN_FUTURE']))
-        if args.random and caldav_events:
-            caldav_events = [random.choice(caldav_events)]
-        if args.format == 'html':
-            sections.append(("Nextcloud Events", caldav_events, HTML_COLORS[colorama.Fore.BLUE]))
-        else:
-            print_title('nextcloud events', args.format)
-            caldav_events_out_lines = [
-                format_bullet_point('▧', colorama.Fore.BLUE, f'{task}', args.format)
-                for task in caldav_events
-            ]
-            out = format_list(caldav_events_out_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
             print(out)
 
     # TODOTXT TODOS
