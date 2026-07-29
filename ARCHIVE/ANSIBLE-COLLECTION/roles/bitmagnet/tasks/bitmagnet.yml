@@ -1,8 +1,15 @@
-- name: install required packages
+- name: install golang from backports (Debian 12)
   apt:
     state: present
     package: golang
     default_release: bookworm-backports
+  when: ansible_facts.distribution_release == 'bookworm'
+
+- name: install golang (Debian 13)
+  apt:
+    state: present
+    package: golang
+  when: ansible_facts.distribution_release == 'trixie'
 
 - name: create bitmagnet user
   user:
