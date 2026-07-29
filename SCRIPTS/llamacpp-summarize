@@ -43,7 +43,7 @@ def get_content_from_url(url):
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; rv:128.0) Gecko/20100101 Firefox/128.0'
     }
     try:
-        response = requests.get(url, headers=headers, timeout=10)
+        response = requests.get(url, headers=headers, timeout=30)
         response.raise_for_status()
         content = response.text
         return content
@@ -243,7 +243,7 @@ def parse_args():
 def list_models(server):
     """List available models from the llama.cpp server."""
     try:
-        response = requests.get(f"{server}/models", timeout=10)
+        response = requests.get(f"{server}/models", timeout=30)
         response.raise_for_status()
         models = response.json()
         print('Available models:')
@@ -385,7 +385,7 @@ def stream_completion(server, model, system_content, user_content, thinking=Fals
     }
     if not thinking:
         payload['chat_template_kwargs'] = {'enable_thinking': False}
-    response = requests.post(f"{server}/chat/completions", json=payload, stream=True, timeout=10)
+    response = requests.post(f"{server}/chat/completions", json=payload, stream=True, timeout=30)
     response.raise_for_status()
 
     streamed_content = []
