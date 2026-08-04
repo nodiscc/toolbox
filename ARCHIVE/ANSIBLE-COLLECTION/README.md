@@ -22,6 +22,7 @@ Less-maintained, experimental or project-specific ansible [roles](roles/).
 - [rocketchat](roles/rocketchat) - instant messaging & communication platform
 - [rss2email](roles/rss2email) - receive RSS feeds by email
 - [rss_bridge](roles/rss_bridge) - generate RSS feeds for websites missing them
+- [stirlingpdf](roles/stirlingpdf) - PDF manipulation tools
 - [valheim_server](roles/valheim_server) - Valheim multiplayer server
 - [vscodium](roles/vscodium) - free/Libre and Open-Source distribution of the VSCode text/source code editor/IDE
 - [znc](roles/znc) - IRC bouncer

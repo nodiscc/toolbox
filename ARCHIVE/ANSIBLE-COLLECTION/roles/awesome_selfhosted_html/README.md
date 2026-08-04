@@ -40,7 +40,7 @@ There is no data worth backing up.
 
 <!--BEGIN TAGS LIST-->
 ```
-awesome_selfhosted_html - setup awesome-selfhosted static website
+awesome-selfhosted-html - setup awesome-selfhosted and awesome-sysadmin static websites
 ```
 <!--END TAGS LIST-->
 
