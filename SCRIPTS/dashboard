@@ -806,7 +806,7 @@ def main():
     # If no arguments provided, run all sections
     if not any([args.gitlab_issues, args.github_issues, args.gitea_issues, args.caldav_tasks,
                 args.caldav_tasks_all, args.caldav_events, args.ttrss_marked,
-                args.modtime, args.unread_mail, args.flagged_mail,
+                args.unread_mail, args.flagged_mail,
                 args.shaarli_readlater, args.games, args.firefox_bookmarks, args.progress_bar]):
         # Run all sections by default
         args.gitlab_issues = True
@@ -815,7 +815,6 @@ def main():
         args.caldav_tasks = True
         args.caldav_events = True
         args.ttrss_marked = True
-        args.modtime = True
         args.unread_mail = True
         args.flagged_mail = True
         args.shaarli_readlater = True
