@@ -989,6 +989,22 @@ def main():
             out = format_list(flagged_mail_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
             print(out)
 
+    # FIREFOX BOOKMARKS
+    if args.firefox_bookmarks:
+        firefox_bookmarks = get_firefox_bookmarks()
+        if args.random and firefox_bookmarks:
+            firefox_bookmarks = [random.choice(firefox_bookmarks)]
+        if args.format == 'html':
+            sections.append(("Firefox Bookmarks", firefox_bookmarks, HTML_COLORS[colorama.Fore.WHITE]))
+        else:
+            print_title('firefox bookmarks', args.format)
+            firefox_bookmarks_lines = [
+                format_bullet_point('▧', colorama.Fore.WHITE, f'{url}', args.format)
+                for url in firefox_bookmarks
+            ]
+            out = format_list(firefox_bookmarks_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
+            print(out)
+
     # SHAARLI READLATER
     if args.shaarli_readlater:
         shaarli_readlater = get_shaarli_readlater(CONFIG['SHAARLI_URL'],
@@ -1020,22 +1036,6 @@ def main():
                 for game in lutris_games
             ]
             out = format_list(lutris_games_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
-            print(out)
-
-    # FIREFOX BOOKMARKS
-    if args.firefox_bookmarks:
-        firefox_bookmarks = get_firefox_bookmarks()
-        if args.random and firefox_bookmarks:
-            firefox_bookmarks = [random.choice(firefox_bookmarks)]
-        if args.format == 'html':
-            sections.append(("Firefox Bookmarks", firefox_bookmarks, HTML_COLORS[colorama.Fore.WHITE]))
-        else:
-            print_title('firefox bookmarks', args.format)
-            firefox_bookmarks_lines = [
-                format_bullet_point('▧', colorama.Fore.WHITE, f'{url}', args.format)
-                for url in firefox_bookmarks
-            ]
-            out = format_list(firefox_bookmarks_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
             print(out)
 
     # Emit HTML output
