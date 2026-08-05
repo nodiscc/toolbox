@@ -351,7 +351,8 @@ def get_caldav_events(caldav_url, caldav_username, caldav_password, max_days_in_
         url=caldav_url,
         username=caldav_username,
         password=caldav_password,
-        ssl_verify_cert=False)
+        ssl_verify_cert=False,
+        timeout=REQUESTS_TIMEOUT)
     try:
         caldav_principal = caldav_client.principal()
         caldav_calendar = caldav_principal.calendar(name='Personnel')
@@ -389,7 +390,8 @@ def get_caldav_tasks(caldav_url, caldav_username, caldav_password, max_priority=
         url=caldav_url,
         username=caldav_username,
         password=caldav_password,
-        ssl_verify_cert=False)
+        ssl_verify_cert=False,
+        timeout=REQUESTS_TIMEOUT)
     try:
         caldav_principal = caldav_client.principal()
         caldav_calendar = caldav_principal.calendar(name='Personnel')
