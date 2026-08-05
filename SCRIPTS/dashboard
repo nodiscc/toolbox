@@ -818,6 +818,7 @@ def main():
         args.unread_mail = True
         args.flagged_mail = True
         args.shaarli_readlater = True
+        args.games = True
         args.firefox_bookmarks = True
 
     # PROGRESS BAR
