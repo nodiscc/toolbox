@@ -153,7 +153,10 @@ def _fetch_mail(account, criterion):
     conn = imaplib.IMAP4_SSL(account['server'], account.get('port', 993))
     conn.login(account['username'], account['password'])
     folder_prefix = account['username'] + ': '
-    for folder in account.get(criterion.lower() + '_folders', '').split(','):
+    # Map IMAP criterion to config key names
+    key_map = {'UNSEEN': 'unread', 'FLAGGED': 'flagged'}
+    key_name = key_map.get(criterion, criterion.lower())
+    for folder in account.get(key_name + '_folder_list', '').split(','):
         folder = folder.strip()
         if not folder:
             continue
