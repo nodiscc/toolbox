@@ -1,4 +1,4 @@
-all: yt_dlp bleachbit_cleanerml lutris user.js tartube
+all: yt_dlp bleachbit_cleanerml lutris user.js tartube skippy-xd
 
 YT_DLP_VERSION=2026.08.19
 CLEANERML_VERSION=5bc2961
@@ -10,6 +10,13 @@ USERJS_PACKAGE_VERSION=$(USERJS_VERSION)-1
 TARTUBE_VERSION=2.5.197
 IFGRAPH_VERSION=c8ec77496cc209dca1dbb1a8315d14e21836c1f6
 IFGRAPH_PACKAGE_VERSION=1.1-1
+SKIPPY_XD_VERSION=v2026.06.24
+SKIPPY_XD_PACKAGE_VERSION=0.10.7-1
+
+.PHONY: skippy-xd
+skippy-xd:
+	mkdir -p dist/
+	wget --continue --no-verbose --directory-prefix=dist/ https://github.com/felixfung/skippy-xd/releases/download/$(SKIPPY_XD_VERSION)/skippy-xd_$(SKIPPY_XD_PACKAGE_VERSION)_amd64.deb
 
 .PHONY: yt_dlp
 yt_dlp:
