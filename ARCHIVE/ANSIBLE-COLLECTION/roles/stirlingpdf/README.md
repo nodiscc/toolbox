@@ -27,8 +27,17 @@ stirlingpdf_fqdn: "pdf.CHANGEME.org"
 See [defaults/main.yml](defaults/main.yml) for all configuration variables
 
 
-## Usage
+## Uninstallation
 
+```bash
+sudo systemctl --machine stirlingpdf@ disable container-stirlingpdf.service --now --user
+cd / && sudo -u stirlingpdf podman rm -f stirlingpdf
+sudo killall --user stirlingpdf
+sudo userdel -r stirlingpdf
+sudo a2dissite stirlingpdf
+sudo rm -rf /var/lib/stirlingpdf /etc/apache2/sites-available/stirlingpdf.conf /etc/ansible/facts.d/stirlingpdf.fact
+sudo systemctl reload apache2
+```
 
 ## Tags
 
