@@ -1,0 +1,90 @@
+#!/usr/bin/env python3
+"""Fetch watched Jellyfin favorites, and rsync them to an archive directory.
+
+Required keys in ~/.config/dashboard.yml:
+  JELLYFIN_URL
+  JELLYFIN_TOKEN
+  JELLYFIN_USER_ID
+  JELLYFIN_SRC_BASE
+  JELLYFIN_DST_BASE
+  JELLYFIN_MAPPINGS  # list of dicts with: src, dst
+"""
+import argparse
+import os
+import shlex
+import subprocess
+import sys
+
+import requests
+import urllib3
+import yaml
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+config_path = os.path.expanduser('~/.config/dashboard.yml')
+with open(config_path, 'r', encoding='utf-8') as config_file:
+    CONFIG = yaml.safe_load(config_file)
+
+SERVER = CONFIG['JELLYFIN_URL']
+TOKEN = CONFIG['JELLYFIN_TOKEN']
+USER_ID = CONFIG['JELLYFIN_USER_ID']
+SRC_BASE = CONFIG['JELLYFIN_SRC_BASE']
+DST_BASE = CONFIG['JELLYFIN_DST_BASE']
+MAPPINGS = [(m['src'], m['dst']) for m in CONFIG['JELLYFIN_MAPPINGS']]
+
+
+def resolve_path(path):
+    for src_prefix, dst_prefix in MAPPINGS:
+        if path.startswith(src_prefix):
+            rel = path[len(src_prefix):]
+            return f"{DST_BASE}{dst_prefix}{rel}"
+    print(f"ERROR: no mapping for {path}", file=sys.stderr)
+    sys.exit(1)
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--dry-run", action="store_true")
+    args = parser.parse_args()
+
+    params = {
+        "Recursive": True,
+        "Filters": "IsFavorite,IsPlayed",
+        "IncludeItemTypes": "Movie",
+        "enableImages": False,
+        "fields": "Path",
+    }
+    headers = {
+        "Authorization": f'MediaBrowser Token="{TOKEN}"',
+        "accept": "application/json",
+    }
+
+    resp = requests.get(f"{SERVER}/Users/{USER_ID}/Items", params=params, headers=headers, verify=False)
+    resp.raise_for_status()
+
+    paths = [item["Path"] for item in resp.json()["Items"]]
+    for path in paths:
+        if not path.startswith(tuple(m[0] for m in MAPPINGS)):
+            print(f"ERROR: unexpected path: {path}", file=sys.stderr)
+            sys.exit(1)
+
+    synced = []
+    for path in paths:
+        src = f"{SRC_BASE}{path}"
+        dest = resolve_path(path)
+        cmd = ["rsync", "-avP", "--mkpath", src, dest]
+        if args.dry_run:
+            cmd.append("--dry-run")
+        print(f"[INFO] rsync {' '.join(cmd)}")
+        result = subprocess.run(cmd)
+        if result.returncode != 0:
+            sys.exit(result.returncode)
+        synced.append(path)
+
+    print("[INFO] All favorites synchronized. You can now delete the originals:")
+    for path in synced:
+        print(f"rm -v {shlex.quote(SRC_BASE + path)}")
+
+
+if __name__ == "__main__":
+    main()
