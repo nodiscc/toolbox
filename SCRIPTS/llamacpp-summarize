@@ -473,7 +473,16 @@ def main():
         latest_html = (
             '<!DOCTYPE html>\n<html>\n<head>\n'
             '<meta charset="utf-8">\n'
-            '<style>body{font-family:sans-serif;max-width:700px;margin:2rem auto;padding:0 1rem;line-height:1.6}</style>\n'
+            '<style>\n'
+            'body{color:#eee;background:#26262a;font-family:"Fira Sans",sans-serif;line-height:1.5;max-width:980px;margin:auto;padding:0 4em}\n'
+            'a{color:#b5daff;text-decoration:none}\n'
+            'a:hover{text-decoration:underline}\n'
+            'code{font-family:"Fira Mono",monospace;background:#3c3c42;padding:0.2em 0.4em;border-radius:0.1875em}\n'
+            'pre{background:#37373d;padding:1em;border-radius:0.1875em;overflow:auto}\n'
+            'pre>code{background:transparent;padding:0}\n'
+            'blockquote{color:#a8a8a6;border-left:0.25em solid #4d4d55;padding:0 1em;margin:0}\n'
+            'hr{border:0;height:0.25em;background:#4b4b53;margin:1.5em 0}\n'
+            '</style>\n'
             '</head>\n<body>\n'
         )
         latest_html += '\n<hr>\n'.join(html_fragments)
