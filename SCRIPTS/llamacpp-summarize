@@ -6,7 +6,6 @@ Requirements: python3 -m venv ~/.venv && ~/.venv/bin/pip3 install beautifulsoup4
 Usage: usage: llm-summarize [-h] [--sentences SENTENCES_NUMBER] (--url URL | --file FILE)
 """
 import argparse
-import datetime
 import json
 import os
 import subprocess
@@ -32,7 +31,7 @@ except (FileNotFoundError, yaml.YAMLError):
 
 # Output paths
 MD_OUTPUT_DIR = os.path.expanduser('~/Nextcloud/Notes/SUMMARIES')
-HTML_OUTPUT_PATH = os.path.join(MD_OUTPUT_DIR, 'summaries.html')
+
 _md = MarkdownIt()
 
 def get_content_from_url(url):
@@ -360,13 +359,6 @@ def build_prompts(plain_text, args, lang):
 
     return system_content, user_content
 
-def get_dated_md_path():
-    """Return path like ~/Nextcloud/Notes/SUMMARIES/SUMMARIES-2026-06-17.md"""
-    ymd = datetime.datetime.now().strftime('%Y-%m-%d')
-    os.makedirs(MD_OUTPUT_DIR, exist_ok=True)
-    return os.path.join(MD_OUTPUT_DIR, f'SUMMARIES-{ymd}.md')
-
-
 def render_html(html_content, output_path):
     """Write HTML content to output_path."""
     with open(output_path, 'w', encoding='utf-8') as f:
@@ -421,7 +413,7 @@ def main():
         sys.exit(0)
 
     if args.html and not args.output_file:
-        args.output_file = get_dated_md_path()
+        args.output_file = os.path.join(MD_OUTPUT_DIR, 'SUMMARIES.MD')
 
     sources = build_sources(args)
     html_fragments = []
@@ -478,15 +470,20 @@ def main():
             continue
 
     if args.html and html_fragments:
-        os.makedirs(os.path.dirname(HTML_OUTPUT_PATH), exist_ok=True)
-        full_html = '<!DOCTYPE html>\n<html>\n<head>\n<meta charset="utf-8">\n<title>Summaries</title>\n</head>\n<body>\n'
-        full_html += '\n<hr>\n'.join(html_fragments)
-        full_html += '\n</body>\n</html>\n'
+        latest_html = (
+            '<!DOCTYPE html>\n<html>\n<head>\n'
+            '<meta charset="utf-8">\n'
+            '<style>body{font-family:sans-serif;max-width:700px;margin:2rem auto;padding:0 1rem;line-height:1.6}</style>\n'
+            '</head>\n<body>\n'
+        )
+        latest_html += '\n<hr>\n'.join(html_fragments)
+        latest_html += '\n</body>\n</html>\n'
+        tmp_html = os.path.join(tempfile.gettempdir(), 'llama-summarize-latest.html')
         try:
-            render_html(full_html, HTML_OUTPUT_PATH)
-            subprocess.Popen(['xdg-open', HTML_OUTPUT_PATH])  # pylint: disable=consider-using-with
+            render_html(latest_html, tmp_html)
+            subprocess.Popen(['xdg-open', tmp_html])  # pylint: disable=consider-using-with
         except OSError:
-            print(f"Error rendering HTML: {HTML_OUTPUT_PATH}")
+            print(f"Error opening latest summary in browser: {tmp_html}")
 
 
 if __name__ == "__main__":
