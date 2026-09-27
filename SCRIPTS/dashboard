@@ -774,7 +774,7 @@ def main():
     parser.add_argument('--total-days', type=int, help='Total days for progress bar calculation with --date')
     parser.add_argument('--file', help='File path for progress bar calculation')
     parser.add_argument('--format', dest='format', default='cli', choices=['cli', 'conky', 'html'], help='Output format')
-    parser.add_argument('--clock', action='store_true', help='Show clock with time progress bars (html format only)')
+    parser.add_argument('--no-clock', action='store_false', dest='clock', default=True, help='Disable clock in html output')
     args = parser.parse_args()
 
     # Validate progress bar arguments
