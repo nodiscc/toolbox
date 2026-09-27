@@ -46,9 +46,18 @@
     #month-progress { background-color: #26a69a; }
     #week-progress { background-color: #ffa726; }
     #day-progress { background-color: #ef5350; }
+    .clock-display {
+        font-size: 2.5em;
+        font-family: monospace;
+        color: #333;
+        text-align: center;
+        margin-bottom: 20px;
+        font-weight: bold;
+    }
 </style>
 
 <div class="clock-card">
+    <div id="clock-display" class="clock-display">00:00</div>
     <div class="time-scale">
         <div class="time-label-group">
             <span class="time-label-name">Year</span>
@@ -99,6 +108,10 @@
         const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
         const dayProgress = (now - startOfDay) / (endOfDay - startOfDay);
         updateUI('day', dayProgress, now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false }));
+        const clockEl = document.getElementById('clock-display');
+        if (clockEl) {
+            clockEl.textContent = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false });
+        }
     }
     function updateUI(id, progress, text) {
         const bar = document.getElementById(`${id}-progress`);
