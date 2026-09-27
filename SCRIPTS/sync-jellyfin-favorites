@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fetch watched Jellyfin favorites, and rsync them to an archive directory.
+Description: Fetch watched Jellyfin favorites, and rsync them to an archive directory.
 
 Required keys in ~/.config/dashboard.yml:
   JELLYFIN_URL
