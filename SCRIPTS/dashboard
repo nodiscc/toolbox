@@ -626,6 +626,13 @@ HTML_COLORS = {
     colorama.Fore.RED: '#ef5350',
 }
 
+def load_clock_html():
+    """Load clock HTML content from the separate clock-clock.html file."""
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    clock_path = os.path.join(script_dir, 'clock-clock.html')
+    with open(clock_path, 'r', encoding='utf-8') as f:
+        return f.read()
+
 HTML_CSS = """
         body {
             background: #ffffff;
@@ -720,9 +727,15 @@ def generate_html_section(title, items, color_hex):
     lines.append('</div>')
     return '\n'.join(lines)
 
-def generate_html_output(sections):
-    """Generate complete HTML document from list of (title, items, color_hex) tuples"""
+def generate_html_output(sections, clock_html=''):
+    """Generate complete HTML document from list of (title, items, color_hex) tuples
+
+    Args:
+        sections: list of (title, items, color_hex) tuples
+        clock_html: optional pre-loaded clock HTML to prepend
+    """
     cards = '\n'.join(generate_html_section(t, items, c) for t, items, c in sections)
+    clock_block = f'{clock_html}\n' if clock_html else ''
     return f'''<!doctype html>
 <html lang="en">
 <head>
@@ -733,7 +746,7 @@ def generate_html_output(sections):
 </head>
 <body>
     <div class="widget-wrapper">
-{cards}
+{clock_block}{cards}
     </div>
 </body>
 </html>
@@ -761,6 +774,7 @@ def main():
     parser.add_argument('--total-days', type=int, help='Total days for progress bar calculation with --date')
     parser.add_argument('--file', help='File path for progress bar calculation')
     parser.add_argument('--format', dest='format', default='cli', choices=['cli', 'conky', 'html'], help='Output format')
+    parser.add_argument('--clock', action='store_true', help='Show clock with time progress bars (html format only)')
     args = parser.parse_args()
 
     # Validate progress bar arguments
@@ -1044,7 +1058,8 @@ def main():
 
     # Emit HTML output
     if args.format == 'html' and sections:
-        print(generate_html_output(sections))
+        clock_html = load_clock_html() if args.clock else ''
+        print(generate_html_output(sections, clock_html))
 
 if __name__ == "__main__":
     main()

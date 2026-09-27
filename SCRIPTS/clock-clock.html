@@ -1,0 +1,113 @@
+<style>
+    .clock-card {
+        background: #ffffff;
+        border: #DFDFDF 1px solid;
+        border-radius: 4px;
+        padding: 25px;
+        box-shadow: 3px 6px 30px -14px rgba(0,0,0,.15);
+        margin-bottom: 20px;
+    }
+    .time-scale {
+        margin-bottom: 15px;
+    }
+    .time-scale:last-child { margin-bottom: 0; }
+    .time-label-group {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 6px;
+    }
+    .time-label-name {
+        font-size: 0.8em;
+        font-weight: bold;
+        color: #777;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .time-label-value {
+        font-size: 0.85em;
+        font-family: monospace;
+        color: #333;
+    }
+    .time-track {
+        width: 100%;
+        height: 7px;
+        background-color: #f0f0f0;
+        border-radius: 3px;
+        overflow: hidden;
+    }
+    .time-progress {
+        height: 100%;
+        width: 0%;
+        border-radius: 3px;
+        transition: width 1s linear;
+    }
+    #year-progress { background-color: #5c6bc0; }
+    #month-progress { background-color: #26a69a; }
+    #week-progress { background-color: #ffa726; }
+    #day-progress { background-color: #ef5350; }
+</style>
+
+<div class="clock-card">
+    <div class="time-scale">
+        <div class="time-label-group">
+            <span class="time-label-name">Year</span>
+            <span id="year-text" class="time-label-value">0%</span>
+        </div>
+        <div class="time-track"><div id="year-progress" class="time-progress"></div></div>
+    </div>
+    <div class="time-scale">
+        <div class="time-label-group">
+            <span class="time-label-name">Month</span>
+            <span id="month-text" class="time-label-value">0%</span>
+        </div>
+        <div class="time-track"><div id="month-progress" class="time-progress"></div></div>
+    </div>
+    <div class="time-scale">
+        <div class="time-label-group">
+            <span class="time-label-name">Week</span>
+            <span id="week-text" class="time-label-value">0%</span>
+        </div>
+        <div class="time-track"><div id="week-progress" class="time-progress"></div></div>
+    </div>
+    <div class="time-scale">
+        <div class="time-label-group">
+            <span class="time-label-name">Day</span>
+            <span id="day-text" class="time-label-value">00:00</span>
+        </div>
+        <div class="time-track"><div id="day-progress" class="time-progress"></div></div>
+    </div>
+</div>
+
+<script>
+    const TIMEZONE_OFFSET = 2;
+    function getLocalDate() {
+        return new Date(Date.now() + TIMEZONE_OFFSET * 3600000);
+    }
+    function updateTime() {
+        const now = getLocalDate();
+        const startOfYear = new Date(now.getFullYear(), 0, 1);
+        const endOfYear = new Date(now.getFullYear() + 1, 0, 1);
+        updateUI('year', (now - startOfYear) / (endOfYear - startOfYear), Math.floor(((now - startOfYear) / (endOfYear - startOfYear)) * 100) + '%');
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+        updateUI('month', (now - startOfMonth) / (endOfMonth - startOfMonth), Math.floor(((now - startOfMonth) / (endOfMonth - startOfMonth)) * 100) + '%');
+        const dayOfWeek = (now.getDay() + 6) % 7;
+        const weekProgress = (dayOfWeek + (now.getHours() / 24) + (now.getMinutes() / (24 * 60))) / 7;
+        updateUI('week', weekProgress, Math.floor(weekProgress * 100) + '%');
+        const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+        const dayProgress = (now - startOfDay) / (endOfDay - startOfDay);
+        updateUI('day', dayProgress, now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false }));
+    }
+    function updateUI(id, progress, text) {
+        const bar = document.getElementById(`${id}-progress`);
+        const label = document.getElementById(`${id}-text`);
+        if (bar && label) {
+            bar.style.width = (Math.min(Math.max(progress, 0), 1) * 100) + '%';
+            label.textContent = text;
+        }
+    }
+    updateTime();
+    setInterval(updateTime, 1000);
+</script>
