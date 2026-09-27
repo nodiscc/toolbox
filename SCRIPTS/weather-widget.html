@@ -1,8 +1,16 @@
 <style>
     .weather-card {
         display: flex;
+        gap: 20px;
+    }
+    .weather-current {
+        flex: 2;
+        display: flex;
         align-items: center;
         justify-content: space-between;
+    }
+    .weather-forecast {
+        flex: 6;
     }
     .weather-info {
         display: flex;
@@ -28,12 +36,7 @@
         color: #777;
         text-transform: capitalize;
     }
-    .weather-city {
-        font-size: 0.7em;
-        color: #AAA;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
+
     .forecast-row {
         display: flex;
         justify-content: space-between;
@@ -52,19 +55,21 @@
     }
 </style>
 
-<div class="card weather-card">
-    <div class="weather-info">
-        <img id="weather-icon" class="weather-icon" src="" alt="">
-        <div class="weather-details">
-            <div id="weather-temp" class="weather-temp">--°C</div>
-            <div id="weather-desc" class="weather-desc">Error loading</div>
+<div class="card">
+    <div class="weather-card">
+        <div class="weather-current">
+            <div class="weather-info">
+                <img id="weather-icon" class="weather-icon" src="" alt="">
+                <div class="weather-details">
+                    <div id="weather-temp" class="weather-temp">--°C</div>
+                    <div id="weather-desc" class="weather-desc">Error loading</div>
+                </div>
+            </div>
+        </div>
+        <div class="weather-forecast">
+            <div id="forecast-row" class="forecast-row"></div>
         </div>
     </div>
-    <div id="weather-city" class="weather-city">--</div>
-</div>
-
-<div class="card">
-    <div id="forecast-row" class="forecast-row"></div>
 </div>
 
 <script>
@@ -112,7 +117,6 @@
         const iconEl = document.getElementById('weather-icon');
         const tempEl = document.getElementById('weather-temp');
         const descEl = document.getElementById('weather-desc');
-        const cityEl = document.getElementById('weather-city');
 
         try {
             const url = `https://api.open-meteo.com/v1/forecast?latitude=${LATITUDE}&longitude=${LONGITUDE}&hourly=temperature_2m,precipitation,weather_code,is_day&current=temperature_2m,weather_code&forecast_days=2&models=meteofrance_seamless`;
@@ -141,8 +145,6 @@
                 tempEl.textContent = `${temp.toFixed(1)}°C`;
                 descEl.textContent = "Unknown";
             }
-
-            cityEl.textContent = `(${LATITUDE.toFixed(2)}, ${LONGITUDE.toFixed(2)})`;
 
             const forecastRow = document.getElementById('forecast-row');
             if (forecastRow && hourIndex !== -1) {
