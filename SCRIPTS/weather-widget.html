@@ -155,7 +155,12 @@
                         const utcHour = parseInt(data.hourly.time[idx].substring(11, 13));
                         const localTime = formatHour(utcHour + WEATHER_TIMEZONE_OFFSET);
                         const t = data.hourly.temperature_2m[idx].toFixed(1);
-                        hourDiv.innerHTML = `<div class="forecast-time">${localTime}h</div><div class="forecast-temp">${t}°C</div>`;
+                        const code = data.hourly.weather_code[idx];
+                        const isDay = data.hourly.is_day[idx] === 1;
+                        const mode = isDay ? 'day' : 'night';
+                        const info = weatherMapping[code.toString()] ? weatherMapping[code.toString()][mode] : null;
+                        const iconSrc = info ? info.image : '';
+                        hourDiv.innerHTML = `<div class="forecast-time">${localTime}h</div>${iconSrc ? `<img src="${iconSrc}" width="32" height="32">` : ''}<div class="forecast-temp">${t}°C</div>`;
                         forecastRow.appendChild(hourDiv);
                     }
                 }
