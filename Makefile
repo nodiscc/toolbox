@@ -40,10 +40,9 @@ test-pylint:
 
 test-comments:
 	for file in SCRIPTS/*; do \
-	echo "Checking for description string in $$file"; \
 	filetype=$$(file --brief --mime-type "$$file") && \
-	if [[ "$$filetype" == "text/x-shellscript" ]]; then grep -q '^# Description:' "$$file" || exit 1; \
-	elif [[ "$$filetype" == "text/x-script.python" ]]; then grep -q '^Description:' "$$file" || exit 1; \
+	if [[ "$$filetype" == "text/x-shellscript" ]]; then grep -q '^# Description:' "$$file" || { echo "FAIL: $$file"; exit 1; }; \
+	elif [[ "$$filetype" == "text/x-script.python" ]]; then grep -q '^Description:' "$$file" || { echo "FAIL: $$file"; exit 1; }; \
 	else true; \
 	fi; \
 	done
