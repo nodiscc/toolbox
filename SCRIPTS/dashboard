@@ -705,6 +705,15 @@ HTML_CSS = """
             margin-right: 8px;
             vertical-align: middle;
         }
+        .todo-counter {
+            text-align: center;
+            padding: 15px 25px;
+        }
+        .todo-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #333;
+        }
 """
 
 def html_escape(text):
@@ -741,17 +750,19 @@ def generate_html_section(title, items, color_hex):
     lines.append('</div>')
     return '\n'.join(lines)
 
-def generate_html_output(sections, clock_html='', weather_html=''):
+def generate_html_output(sections, clock_html='', weather_html='', todo_count=0):
     """Generate complete HTML document from list of (title, items, color_hex) tuples
 
     Args:
         sections: list of (title, items, color_hex) tuples
         clock_html: optional pre-loaded clock HTML to prepend
         weather_html: optional pre-loaded weather HTML to insert after clock
+        todo_count: optional remaining TODO counter
     """
     cards = '\n'.join(generate_html_section(t, items, c) for t, items, c in sections)
     clock_block = f'{clock_html}\n' if clock_html else ''
     weather_block = f'{weather_html}\n' if weather_html else ''
+    counter_block = f'<div class="card todo-counter"><span class="todo-number">◰ {todo_count}</span></div>\n' if todo_count else ''
     return f'''<!doctype html>
 <html lang="en">
 <head>
@@ -762,7 +773,7 @@ def generate_html_output(sections, clock_html='', weather_html=''):
 </head>
 <body>
     <div class="widget-wrapper">
-{clock_block}{weather_block}{cards}
+{clock_block}{weather_block}{counter_block}{cards}
     </div>
 </body>
 </html>
@@ -805,6 +816,7 @@ def main():
             parser.error("--progress-bar requires either --date and --total-days or --file")
 
     sections = []  # collected for HTML output
+    todo_count = 0  # remaining TODO counter for HTML
 
     # Handle random mode
     if args.random:
@@ -872,6 +884,7 @@ def main():
                                         CONFIG['CALDAV_PASSWORD'],
                                         int(CONFIG['CALDAV_MAX_PRIORITY']),
                                         all_tasks=args.caldav_tasks_all)
+        todo_count += len(caldav_tasks)
         if args.random and caldav_tasks:
             caldav_tasks = [random.choice(caldav_tasks)]
         if args.format == 'html':
@@ -924,6 +937,7 @@ def main():
     # GITHUB ISSUES
     if args.github_issues:
         github_issues = get_github_issues(CONFIG['GITHUB_USERNAME'], CONFIG['GITHUB_TOKEN'])
+        todo_count += len(github_issues)
         if args.random and github_issues:
             github_issues = [random.choice(github_issues)]
         if args.format == 'html':
@@ -941,6 +955,7 @@ def main():
     if args.gitea_issues:
         gitea_issues = get_gitea_issues(CONFIG['GITEA_URL'],
                                       CONFIG['GITEA_TOKEN'])
+        todo_count += len(gitea_issues)
         if args.random and gitea_issues:
             gitea_issues = [random.choice(gitea_issues)]
         if args.format == 'html':
@@ -960,6 +975,7 @@ def main():
                                                  CONFIG['TTRSS_USERNAME'],
                                                  CONFIG['TTRSS_PASSWORD'],
                                                  CONFIG['TTRSS_LIMIT'])
+        todo_count += len(ttrss_marked_articles)
         if args.random and ttrss_marked_articles:
             ttrss_marked_articles = [random.choice(ttrss_marked_articles)]
         if args.format == 'html':
@@ -991,6 +1007,7 @@ def main():
     # UNREAD MAIL
     if args.unread_mail:
         unread_mail = get_unread_mail(CONFIG['IMAP_ACCOUNTS'])
+        todo_count += len(unread_mail)
         if args.random and unread_mail:
             unread_mail = [random.choice(unread_mail)]
         if args.format == 'html':
@@ -1007,6 +1024,7 @@ def main():
     # FLAGGED MAIL
     if args.flagged_mail:
         flagged_mail = get_flagged_mail(CONFIG['IMAP_ACCOUNTS'])
+        todo_count += len(flagged_mail) * 2
         if args.random and flagged_mail:
             flagged_mail = [random.choice(flagged_mail)]
         if args.format == 'html':
@@ -1023,6 +1041,7 @@ def main():
     # FIREFOX BOOKMARKS
     if args.firefox_bookmarks:
         firefox_bookmarks = get_firefox_bookmarks()
+        todo_count += len(firefox_bookmarks)
         if args.random and firefox_bookmarks:
             firefox_bookmarks = [random.choice(firefox_bookmarks)]
         if args.format == 'html':
@@ -1040,6 +1059,7 @@ def main():
     if args.shaarli_readlater:
         shaarli_readlater = get_shaarli_readlater(CONFIG['SHAARLI_URL'],
                                                    CONFIG['SHAARLI_SECRET'])
+        todo_count += len(shaarli_readlater)
         if args.random and shaarli_readlater:
             shaarli_readlater = [random.choice(shaarli_readlater)]
         if args.format == 'html':
@@ -1073,7 +1093,7 @@ def main():
     if args.format == 'html' and sections:
         clock_html = load_clock_html() if args.clock else ''
         weather_html = load_weather_html() if args.clock else ''
-        print(generate_html_output(sections, clock_html, weather_html))
+        print(generate_html_output(sections, clock_html, weather_html, todo_count))
 
 if __name__ == "__main__":
     main()
