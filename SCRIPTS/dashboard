@@ -22,6 +22,9 @@ TTRSS_LIMIT
 BACKUP_STATE_FILE
 IMAP_ACCOUNTS # list of dicts with: server, port, username, password, unread_folders, flagged_folders
 REQUESTS_TIMEOUT
+WEATHER_LATITUDE
+WEATHER_LONGITUDE
+WEATHER_TIMEZONE_OFFSET
 """
 
 import argparse
@@ -633,6 +636,17 @@ def load_clock_html():
     with open(clock_path, 'r', encoding='utf-8') as f:
         return f.read()
 
+def load_weather_html():
+    """Load weather HTML content and inject config values."""
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    weather_path = os.path.join(script_dir, 'weather-widget.html')
+    with open(weather_path, 'r', encoding='utf-8') as f:
+        html = f.read()
+    html = html.replace('{{TIMEZONE_OFFSET}}', str(CONFIG['WEATHER_TIMEZONE_OFFSET']))
+    html = html.replace('{{LATITUDE}}', str(CONFIG['WEATHER_LATITUDE']))
+    html = html.replace('{{LONGITUDE}}', str(CONFIG['WEATHER_LONGITUDE']))
+    return html
+
 HTML_CSS = """
         body {
             background: #ffffff;
@@ -727,15 +741,17 @@ def generate_html_section(title, items, color_hex):
     lines.append('</div>')
     return '\n'.join(lines)
 
-def generate_html_output(sections, clock_html=''):
+def generate_html_output(sections, clock_html='', weather_html=''):
     """Generate complete HTML document from list of (title, items, color_hex) tuples
 
     Args:
         sections: list of (title, items, color_hex) tuples
         clock_html: optional pre-loaded clock HTML to prepend
+        weather_html: optional pre-loaded weather HTML to insert after clock
     """
     cards = '\n'.join(generate_html_section(t, items, c) for t, items, c in sections)
     clock_block = f'{clock_html}\n' if clock_html else ''
+    weather_block = f'{weather_html}\n' if weather_html else ''
     return f'''<!doctype html>
 <html lang="en">
 <head>
@@ -746,7 +762,7 @@ def generate_html_output(sections, clock_html=''):
 </head>
 <body>
     <div class="widget-wrapper">
-{clock_block}{cards}
+{clock_block}{weather_block}{cards}
     </div>
 </body>
 </html>
@@ -1056,7 +1072,8 @@ def main():
     # Emit HTML output
     if args.format == 'html' and sections:
         clock_html = load_clock_html() if args.clock else ''
-        print(generate_html_output(sections, clock_html))
+        weather_html = load_weather_html() if args.clock else ''
+        print(generate_html_output(sections, clock_html, weather_html))
 
 if __name__ == "__main__":
     main()

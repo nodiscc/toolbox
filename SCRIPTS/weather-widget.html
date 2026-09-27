@@ -1,0 +1,172 @@
+<style>
+    .weather-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .weather-info {
+        display: flex;
+        align-items: center;
+    }
+    .weather-icon {
+        width: 60px;
+        height: 60px;
+        margin-right: 15px;
+        object-fit: contain;
+    }
+    .weather-details {
+        display: flex;
+        flex-direction: column;
+    }
+    .weather-temp {
+        font-size: 1.6em;
+        font-weight: bold;
+        color: #333;
+    }
+    .weather-desc {
+        font-size: 0.9em;
+        color: #777;
+        text-transform: capitalize;
+    }
+    .weather-city {
+        font-size: 0.7em;
+        color: #AAA;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    .forecast-row {
+        display: flex;
+        justify-content: space-between;
+    }
+    .forecast-hour {
+        text-align: center;
+        font-size: 0.75em;
+        min-width: 50px;
+    }
+    .forecast-time {
+        color: #777;
+        margin-bottom: 4px;
+    }
+    .forecast-temp {
+        color: #333;
+    }
+</style>
+
+<div class="card weather-card">
+    <div class="weather-info">
+        <img id="weather-icon" class="weather-icon" src="" alt="">
+        <div class="weather-details">
+            <div id="weather-temp" class="weather-temp">--°C</div>
+            <div id="weather-desc" class="weather-desc">Error loading</div>
+        </div>
+    </div>
+    <div id="weather-city" class="weather-city">--</div>
+</div>
+
+<div class="card">
+    <div id="forecast-row" class="forecast-row"></div>
+</div>
+
+<script>
+    const WEATHER_TIMEZONE_OFFSET = {{TIMEZONE_OFFSET}};
+    const LATITUDE = {{LATITUDE}};
+    const LONGITUDE = {{LONGITUDE}};
+
+    function formatHour(hour) {
+        const h = ((hour % 24) + 24) % 24;
+        return (h < 10 ? '0' : '') + h;
+    }
+
+    const weatherMapping = {
+        "0":{"day":{"description":"Sunny","image":"http://openweathermap.org/img/wn/01d@2x.png"},"night":{"description":"Clear","image":"http://openweathermap.org/img/wn/01n@2x.png"}},
+        "1":{"day":{"description":"Mainly Sunny","image":"http://openweathermap.org/img/wn/01d@2x.png"},"night":{"description":"Mainly Clear","image":"http://openweathermap.org/img/wn/01n@2x.png"}},
+        "2":{"day":{"description":"Partly Cloudy","image":"http://openweathermap.org/img/wn/02d@2x.png"},"night":{"description":"Partly Cloudy","image":"http://openweathermap.org/img/wn/02n@2x.png"}},
+        "3":{"day":{"description":"Cloudy","image":"http://openweathermap.org/img/wn/03d@2x.png"},"night":{"description":"Cloudy","image":"http://openweathermap.org/img/wn/03n@2x.png"}},
+        "45":{"day":{"description":"Foggy","image":"http://openweathermap.org/img/wn/50d@2x.png"},"night":{"description":"Foggy","image":"http://openweathermap.org/img/wn/50n@2x.png"}},
+        "48":{"day":{"description":"Rime Fog","image":"http://openweathermap.org/img/wn/50d@2x.png"},"night":{"description":"Rime Fog","image":"http://openweathermap.org/img/wn/50n@2x.png"}},
+        "51":{"day":{"description":"Light Drizzle","image":"http://openweathermap.org/img/wn/09d@2x.png"},"night":{"description":"Light Drizzle","image":"http://openweathermap.org/img/wn/09n@2x.png"}},
+        "53":{"day":{"description":"Drizzle","image":"http://openweathermap.org/img/wn/09d@2x.png"},"night":{"description":"Drizzle","image":"http://openweathermap.org/img/wn/09n@2x.png"}},
+        "55":{"day":{"description":"Heavy Drizzle","image":"http://openweathermap.org/img/wn/09d@2x.png"},"night":{"description":"Heavy Drizzle","image":"http://openweathermap.org/img/wn/09n@2x.png"}},
+        "56":{"day":{"description":"Light Freezing Drizzle","image":"http://openweathermap.org/img/wn/09d@2x.png"},"night":{"description":"Light Freezing Drizzle","image":"http://openweathermap.org/img/wn/09n@2x.png"}},
+        "57":{"day":{"description":"Freezing Drizzle","image":"http://openweathermap.org/img/wn/09d@2x.png"},"night":{"description":"Freezing Drizzle","image":"http://openweathermap.org/img/wn/09n@2x.png"}},
+        "61":{"day":{"description":"Light Rain","image":"http://openweathermap.org/img/wn/10d@2x.png"},"night":{"description":"Light Rain","image":"http://openweathermap.org/img/wn/10n@2x.png"}},
+        "63":{"day":{"description":"Rain","image":"http://openweathermap.org/img/wn/10d@2x.png"},"night":{"description":"Rain","image":"http://openweathermap.org/img/wn/10n@2x.png"}},
+        "65":{"day":{"description":"Heavy Rain","image":"http://openweathermap.org/img/wn/10d@2x.png"},"night":{"description":"Heavy Rain","image":"http://openweathermap.org/img/wn/10n@2x.png"}},
+        "66":{"day":{"description":"Light Freezing Rain","image":"http://openweathermap.org/img/wn/10d@2x.png"},"night":{"description":"Light Freezing Rain","image":"http://openweathermap.org/img/wn/10n@2x.png"}},
+        "67":{"day":{"description":"Freezing Rain","image":"http://openweathermap.org/img/wn/10d@2x.png"},"night":{"description":"Freezing Rain","image":"http://openweathermap.org/img/wn/10n@2x.png"}},
+        "71":{"day":{"description":"Light Snow","image":"http://openweathermap.org/img/wn/13d@2x.png"},"night":{"description":"Light Snow","image":"http://openweathermap.org/img/wn/13n@2x.png"}},
+        "73":{"day":{"description":"Snow","image":"http://openweathermap.org/img/wn/13d@2x.png"},"night":{"description":"Snow","image":"http://openweathermap.org/img/wn/13n@2x.png"}},
+        "75":{"day":{"description":"Heavy Snow","image":"http://openweathermap.org/img/wn/13d@2x.png"},"night":{"description":"Heavy Snow","image":"http://openweathermap.org/img/wn/13n@2x.png"}},
+        "77":{"day":{"description":"Snow Grains","image":"http://openweathermap.org/img/wn/13d@2x.png"},"night":{"description":"Snow Grains","image":"http://openweathermap.org/img/wn/13n@2x.png"}},
+        "80":{"day":{"description":"Light Showers","image":"http://openweathermap.org/img/wn/09d@2x.png"},"night":{"description":"Light Showers","image":"http://openweathermap.org/img/wn/09n@2x.png"}},
+        "81":{"day":{"description":"Showers","image":"http://openweathermap.org/img/wn/09d@2x.png"},"night":{"description":"Showers","image":"http://openweathermap.org/img/wn/09n@2x.png"}},
+        "82":{"day":{"description":"Heavy Showers","image":"http://openweathermap.org/img/wn/09d@2x.png"},"night":{"description":"Heavy Showers","image":"http://openweathermap.org/img/wn/09n@2x.png"}},
+        "85":{"day":{"description":"Light Snow Showers","image":"http://openweathermap.org/img/wn/13d@2x.png"},"night":{"description":"Light Snow Showers","image":"http://openweathermap.org/img/wn/13n@2x.png"}},
+        "86":{"day":{"description":"Snow Showers","image":"http://openweathermap.org/img/wn/13d@2x.png"},"night":{"description":"Snow Showers","image":"http://openweathermap.org/img/wn/13n@2x.png"}},
+        "95":{"day":{"description":"Thunderstorm","image":"http://openweathermap.org/img/wn/11d@2x.png"},"night":{"description":"Thunderstorm","image":"http://openweathermap.org/img/wn/11n@2x.png"}},
+        "96":{"day":{"description":"Light Thunderstorms With Hail","image":"http://openweathermap.org/img/wn/11d@2x.png"},"night":{"description":"Light Thunderstorms With Hail","image":"http://openweathermap.org/img/wn/11n@2x.png"}},
+        "99":{"day":{"description":"Thunderstorm With Hail","image":"http://openweathermap.org/img/wn/11d@2x.png"},"night":{"description":"Thunderstorm With Hail","image":"http://openweathermap.org/img/wn/11n@2x.png"}}
+    };
+
+    async function fetchWeather() {
+        const iconEl = document.getElementById('weather-icon');
+        const tempEl = document.getElementById('weather-temp');
+        const descEl = document.getElementById('weather-desc');
+        const cityEl = document.getElementById('weather-city');
+
+        try {
+            const url = `https://api.open-meteo.com/v1/forecast?latitude=${LATITUDE}&longitude=${LONGITUDE}&hourly=temperature_2m,precipitation,weather_code,is_day&current=temperature_2m,weather_code&forecast_days=2&models=meteofrance_seamless`;
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('Network error');
+
+            const data = await response.json();
+            const current = data.current;
+            const code = current.weather_code;
+            const temp = current.temperature_2m;
+
+            const currentHourStr = current.time.substring(0, 13);
+            const hourIndex = data.hourly.time.findIndex(t => t.startsWith(currentHourStr));
+            const isDay = hourIndex !== -1 ? data.hourly.is_day[hourIndex] === 1 : true;
+
+            const mode = isDay ? 'day' : 'night';
+            const weatherInfo = weatherMapping[code.toString()] ? weatherMapping[code.toString()][mode] : null;
+
+            if (weatherInfo) {
+                iconEl.src = weatherInfo.image;
+                iconEl.style.display = 'block';
+                tempEl.textContent = `${temp.toFixed(1)}°C`;
+                descEl.textContent = weatherInfo.description;
+            } else {
+                iconEl.style.display = 'none';
+                tempEl.textContent = `${temp.toFixed(1)}°C`;
+                descEl.textContent = "Unknown";
+            }
+
+            cityEl.textContent = `(${LATITUDE.toFixed(2)}, ${LONGITUDE.toFixed(2)})`;
+
+            const forecastRow = document.getElementById('forecast-row');
+            if (forecastRow && hourIndex !== -1) {
+                forecastRow.innerHTML = '';
+                for (let i = 1; i <= 6; i++) {
+                    const idx = hourIndex + i;
+                    if (idx < data.hourly.time.length) {
+                        const hourDiv = document.createElement('div');
+                        hourDiv.className = 'forecast-hour';
+                        const utcHour = parseInt(data.hourly.time[idx].substring(11, 13));
+                        const localTime = formatHour(utcHour + WEATHER_TIMEZONE_OFFSET);
+                        const t = data.hourly.temperature_2m[idx].toFixed(1);
+                        hourDiv.innerHTML = `<div class="forecast-time">${localTime}h</div><div class="forecast-temp">${t}°C</div>`;
+                        forecastRow.appendChild(hourDiv);
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Weather error:', error);
+            descEl.textContent = "Error loading";
+            iconEl.style.display = 'none';
+        }
+    }
+
+    fetchWeather();
+    setInterval(fetchWeather, 1800000);
+</script>
