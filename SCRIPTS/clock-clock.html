@@ -7,6 +7,12 @@
         box-shadow: 3px 6px 30px -14px rgba(0,0,0,.15);
         margin-bottom: 20px;
     }
+    .clock-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
     .time-scale {
         margin-bottom: 15px;
     }
@@ -50,8 +56,6 @@
         font-size: 2.5em;
         font-family: monospace;
         color: #333;
-        text-align: center;
-        margin-bottom: 8px;
         font-weight: bold;
     }
     .date-display {
@@ -60,14 +64,14 @@
         color: #777;
         text-transform: uppercase;
         letter-spacing: 0.5px;
-        text-align: center;
-        margin-bottom: 20px;
     }
 </style>
 
 <div class="clock-card">
-    <div id="clock-display" class="clock-display">00:00</div>
-    <div id="date-display" class="date-display">00 septembre 0000</div>
+    <div class="clock-header">
+        <div id="clock-display" class="clock-display">00:00</div>
+        <div id="date-display" class="date-display">00 septembre 0000</div>
+    </div>
     <div class="time-scale">
         <div class="time-label-group">
             <span class="time-label-name">Year</span>
