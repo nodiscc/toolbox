@@ -51,13 +51,23 @@
         font-family: monospace;
         color: #333;
         text-align: center;
-        margin-bottom: 20px;
+        margin-bottom: 8px;
         font-weight: bold;
+    }
+    .date-display {
+        font-size: 0.8em;
+        font-weight: bold;
+        color: #777;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        text-align: center;
+        margin-bottom: 20px;
     }
 </style>
 
 <div class="clock-card">
     <div id="clock-display" class="clock-display">00:00</div>
+    <div id="date-display" class="date-display">00 septembre 0000</div>
     <div class="time-scale">
         <div class="time-label-group">
             <span class="time-label-name">Year</span>
@@ -111,6 +121,10 @@
         const clockEl = document.getElementById('clock-display');
         if (clockEl) {
             clockEl.textContent = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false });
+        }
+        const dateEl = document.getElementById('date-display');
+        if (dateEl) {
+            dateEl.textContent = now.toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
         }
     }
     function updateUI(id, progress, text) {
