@@ -792,14 +792,12 @@ def main():
 
     # Handle random mode
     if args.random:
-        random_actions = ['gitlab-issues', 'github-issues', 'gitea-issues', 'caldav-tasks', 'caldav-events',
+        random_actions = ['github-issues', 'gitea-issues', 'caldav-tasks', 'caldav-events',
                           'ttrss-marked', 'unread-mail', 'flagged-mail', 'shaarli-readlater', 'games', 'firefox-bookmarks']
         chosen_action = random.choice(random_actions)
 
         # Set the chosen action to True
-        if chosen_action == 'gitlab-issues':
-            args.gitlab_issues = True
-        elif chosen_action == 'github-issues':
+        if chosen_action == 'github-issues':
             args.github_issues = True
         elif chosen_action == 'gitea-issues':
             args.gitea_issues = True
@@ -821,12 +819,11 @@ def main():
             args.firefox_bookmarks = True
 
     # If no arguments provided, run all sections
-    if not any([args.gitlab_issues, args.github_issues, args.gitea_issues, args.caldav_tasks,
+    if not any([args.github_issues, args.gitea_issues, args.caldav_tasks,
                 args.caldav_tasks_all, args.caldav_events, args.ttrss_marked,
                 args.unread_mail, args.flagged_mail,
                 args.shaarli_readlater, args.games, args.firefox_bookmarks, args.progress_bar]):
         # Run all sections by default
-        args.gitlab_issues = True
         args.github_issues = True
         args.gitea_issues = True
         args.caldav_tasks = True
