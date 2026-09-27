@@ -330,7 +330,7 @@ def get_ttrss_marked(ttrss_url, ttrss_username, ttrss_password, ttrss_limit):
         data = json.loads(response.text)
         ttrss_marked_articles = []
         for article in data['content']:
-            ttrss_marked_articles.append(article['title'])
+            ttrss_marked_articles.append(f'{article["link"]} - {article["title"]}')
 
         return ttrss_marked_articles
 
