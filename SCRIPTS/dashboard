@@ -652,7 +652,7 @@ HTML_COLORS = {
 def load_clock_html():
     """Load clock HTML content from the separate clock-clock.html file."""
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    clock_path = os.path.join(script_dir, 'clock-clock.html')
+    clock_path = os.path.join(script_dir, 'dashboard-clock.html')
     with open(clock_path, 'r', encoding='utf-8') as f:
         return f.read()
 
@@ -666,7 +666,7 @@ def load_css():
 def load_weather_html():
     """Load weather HTML content and inject config values."""
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    weather_path = os.path.join(script_dir, 'weather-widget.html')
+    weather_path = os.path.join(script_dir, 'dashboard-weather.html')
     with open(weather_path, 'r', encoding='utf-8') as f:
         html = f.read()
     html = html.replace('{{TIMEZONE_OFFSET}}', str(CONFIG['WEATHER_TIMEZONE_OFFSET']))
