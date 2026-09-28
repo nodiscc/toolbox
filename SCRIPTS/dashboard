@@ -756,17 +756,10 @@ def main():
                 args.caldav_events, args.ttrss_marked,
                 args.unread_mail, args.flagged_mail,
                 args.shaarli_readlater, args.games, args.firefox_bookmarks, args.progress_bar]):
-        # Run all sections by default
-        args.github_issues = True
-        args.gitea_issues = True
-        args.caldav_tasks = True
-        args.caldav_events = True
-        args.ttrss_marked = True
-        args.unread_mail = True
-        args.flagged_mail = True
-        args.shaarli_readlater = True
-        args.games = True
-        args.firefox_bookmarks = True
+        for flag in ['github_issues', 'gitea_issues', 'caldav_tasks', 'caldav_events',
+                     'ttrss_marked', 'unread_mail', 'flagged_mail', 'shaarli_readlater',
+                     'games', 'firefox_bookmarks']:
+            setattr(args, flag, True)
 
     # PROGRESS BAR
     if args.progress_bar:
