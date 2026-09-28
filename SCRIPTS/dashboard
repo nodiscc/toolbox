@@ -62,6 +62,27 @@ with open(config_path, 'r', encoding='utf-8') as config_file:
 
 REQUESTS_TIMEOUT = int(CONFIG['REQUESTS_TIMEOUT'])  # global
 
+
+def load_state():
+    """Load dashboard state from YAML file."""
+    state_path = os.path.expanduser('~/.cache/dashboard-state.yml')
+    try:
+        with open(state_path, 'r', encoding='utf-8') as f:
+            state = yaml.safe_load(f)
+            if isinstance(state, dict) and 'todo_count' in state and 'xp' in state:
+                return state
+    except (OSError, yaml.YAMLError):
+        pass
+    return {'todo_count': 0, 'xp': 0}
+
+
+def save_state(state):
+    """Save dashboard state to YAML file."""
+    state_path = os.path.expanduser('~/.cache/dashboard-state.yml')
+    os.makedirs(os.path.dirname(state_path), exist_ok=True)
+    with open(state_path, 'w', encoding='utf-8') as f:
+        yaml.dump(state, f, default_flow_style=False)
+
 def print_title(text, output_format):
     """Print section title to screen"""
     if output_format == 'cli':
@@ -708,10 +729,13 @@ HTML_CSS = """
             text-align: center;
             padding: 15px 25px;
         }
-        .todo-number {
+        .counter-number {
             font-size: 2em;
             font-weight: bold;
             color: #333;
+        }
+        .counter-number + .counter-number {
+            margin-left: 30px;
         }
 """
 
@@ -749,7 +773,7 @@ def generate_html_section(title, items, color_hex):
     lines.append('</div>')
     return '\n'.join(lines)
 
-def generate_html_output(sections, clock_html='', weather_html='', todo_count=0):
+def generate_html_output(sections, clock_html='', weather_html='', todo_count=0, xp=0):
     """Generate complete HTML document from list of (title, items, color_hex) tuples
 
     Args:
@@ -757,11 +781,12 @@ def generate_html_output(sections, clock_html='', weather_html='', todo_count=0)
         clock_html: optional pre-loaded clock HTML to prepend
         weather_html: optional pre-loaded weather HTML to insert after clock
         todo_count: optional remaining TODO counter
+        xp: optional XP counter
     """
     cards = '\n'.join(generate_html_section(t, items, c) for t, items, c in sections)
     clock_block = f'{clock_html}\n' if clock_html else ''
     weather_block = f'{weather_html}\n' if weather_html else ''
-    counter_block = f'<div class="card todo-counter"><span class="todo-number">◰ {todo_count}</span></div>\n' if todo_count else ''
+    counter_block = f'<div class="card todo-counter"><span class="counter-number">📌 {todo_count}</span><span class="counter-number"> ⚡ {xp}</span></div>\n' if todo_count else ''
     return f'''<!doctype html>
 <html lang="en">
 <head>
@@ -1087,11 +1112,23 @@ def main():
             out = format_list(lutris_games_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
             print(out)
 
+    # XP computation
+    state = load_state()
+    previous_count = state['todo_count']
+    xp = state['xp']
+
     # Emit HTML output
     if args.format == 'html' and sections:
+        if previous_count > 0:
+            diff = previous_count - todo_count
+            if diff > 0:
+                xp += diff
+        state['todo_count'] = todo_count
+        state['xp'] = xp
+        save_state(state)
         clock_html = load_clock_html() if args.clock else ''
         weather_html = load_weather_html() if args.clock else ''
-        print(generate_html_output(sections, clock_html, weather_html, todo_count))
+        print(generate_html_output(sections, clock_html, weather_html, todo_count, xp))
 
 if __name__ == "__main__":
     main()
