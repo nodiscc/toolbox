@@ -745,31 +745,11 @@ def main():
 
     # Handle random mode
     if args.random:
-        random_actions = ['github-issues', 'gitea-issues', 'caldav-tasks', 'caldav-events',
-                          'ttrss-marked', 'unread-mail', 'flagged-mail', 'shaarli-readlater', 'games', 'firefox-bookmarks']
+        random_actions = ['github_issues', 'gitea_issues', 'caldav_tasks', 'caldav_events',
+                          'ttrss_marked', 'unread_mail', 'flagged_mail', 'shaarli_readlater',
+                          'games', 'firefox_bookmarks']
         chosen_action = random.choice(random_actions)
-
-        # Set the chosen action to True
-        if chosen_action == 'github-issues':
-            args.github_issues = True
-        elif chosen_action == 'gitea-issues':
-            args.gitea_issues = True
-        elif chosen_action == 'caldav-tasks':
-            args.caldav_tasks = True
-        elif chosen_action == 'caldav-events':
-            args.caldav_events = True
-        elif chosen_action == 'ttrss-marked':
-            args.ttrss_marked = True
-        elif chosen_action == 'unread-mail':
-            args.unread_mail = True
-        elif chosen_action == 'flagged-mail':
-            args.flagged_mail = True
-        elif chosen_action == 'shaarli-readlater':
-            args.shaarli_readlater = True
-        elif chosen_action == 'games':
-            args.games = True
-        elif chosen_action == 'firefox-bookmarks':
-            args.firefox_bookmarks = True
+        setattr(args, chosen_action, True)
 
     # If no arguments provided, run all sections
     if not any([args.github_issues, args.gitea_issues, args.caldav_tasks,
