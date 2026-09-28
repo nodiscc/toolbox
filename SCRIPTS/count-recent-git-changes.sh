@@ -7,12 +7,16 @@ set -o nounset
 URL="$1"
 N_DAYS="$2"
 
-REPO_NAME=$(basename "$URL" | sed 's/\.git$//')
-CLONE_DIR="./tmp-clone-${REPO_NAME}"
-
-git clone "$URL" "$CLONE_DIR"
-
-cd "$CLONE_DIR"
+if [[ "$URL" == https://* ]]; then
+    REPO_NAME=$(basename "$URL" | sed 's/\.git$//')
+    CLONE_DIR="./tmp-clone-${REPO_NAME}"
+    git clone "$URL" "$CLONE_DIR"
+    cd "$CLONE_DIR"
+    cleanup=1
+else
+    cd "$URL"
+    cleanup=0
+fi
 
 TOTAL_ADDED=0
 TOTAL_REMOVED=0
@@ -28,9 +32,10 @@ while IFS= read -r hash; do
     done <<< "$STAT"
 done < <(git log --since="${N_DAYS} days ago" --format="%H")
 
-cd ..
+if [ "$cleanup" = 1 ]; then
+    cd ..
+    rm -rf "$CLONE_DIR"
+fi
 
 echo -e "\033[32mAdded: ${TOTAL_ADDED}\033[0m"
 echo -e "\033[31mRemoved: ${TOTAL_REMOVED}\033[0m"
-
-rm -rf "$CLONE_DIR"
