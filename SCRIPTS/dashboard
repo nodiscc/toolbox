@@ -209,53 +209,16 @@ def _fetch_mail(account, criterion):
     return all_messages
 
 
-def get_gitlab_issues(gitlab_token, *, assigned=False, created=False, repos=False, output_format):
-    """Show a list of open gitlab issues.
-    parameters: gitlab_token"""
+def get_gitlab_issues(gitlab_token):
+    """Show a list of open gitlab issues assigned to the user."""
     headers = {"PRIVATE-TOKEN": gitlab_token}
     BASE_URL = "https://gitlab.com/api/v4"
-    gitlab_issues = []
-
-    if assigned:
-        params = {"state": "opened", "scope": "assigned_to_me"}
-        url = f"{BASE_URL}/issues"
-        response = requests.get(url, headers=headers, params=params, timeout=REQUESTS_TIMEOUT)
-        response.raise_for_status()
-        issues = response.json()
-        for issue in issues:
-            gitlab_issues.append(f'{issue["web_url"]} - {issue["title"]}')
-
-    if created:
-        print_title("gitlab issues created by you", output_format)
-        params = {"state": "opened", "scope": "created_by_me"}
-        url = f"{BASE_URL}/issues"
-        response = requests.get(url, headers=headers, params=params, timeout=REQUESTS_TIMEOUT)
-        response.raise_for_status()
-        issues = response.json()
-        for issue in issues:
-            gitlab_issues.append(f'{issue["web_url"]} - {issue["title"]}')
-
-    if repos:
-        print_title("gitlab issues in your repos", output_format)
-        projects_url = f"{BASE_URL}/projects"
-        params = {"owned": "true", "per_page": "50", "with_issues_enabled": "true"}
-        response = requests.get(projects_url, headers=headers, params=params, timeout=REQUESTS_TIMEOUT)
-        response.raise_for_status()
-        projects = response.json()
-
-        for project in projects:
-            project_id = project['id']
-            issues_url = f"{BASE_URL}/projects/{project_id}/issues"
-            params = {"state": "opened"}
-            response = requests.get(issues_url, headers=headers, params=params, timeout=REQUESTS_TIMEOUT)
-            response.raise_for_status()
-            issues = response.json()
-
-            if issues:
-                for issue in issues:
-                    gitlab_issues.append(f'{issue["web_url"]} - {issue["title"]}')
-
-    return gitlab_issues
+    params = {"state": "opened", "scope": "assigned_to_me"}
+    url = f"{BASE_URL}/issues"
+    response = requests.get(url, headers=headers, params=params, timeout=REQUESTS_TIMEOUT)
+    response.raise_for_status()
+    issues = response.json()
+    return [f'{issue["web_url"]} - {issue["title"]}' for issue in issues]
 
 
 def get_gitea_issues(gitea_instance_url, gitea_token):
@@ -881,8 +844,7 @@ def main():
 
     # GITLAB ISSUES
     if args.gitlab_issues:
-        gitlab_issues = get_gitlab_issues(CONFIG["GITLAB_TOKEN"],
-                                    assigned=True, output_format=args.format)
+        gitlab_issues = get_gitlab_issues(CONFIG["GITLAB_TOKEN"])
         if args.random and gitlab_issues:
             gitlab_issues = [random.choice(gitlab_issues)]
         if args.format == 'html':
