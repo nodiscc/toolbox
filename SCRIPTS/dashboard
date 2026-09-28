@@ -907,7 +907,7 @@ def main():
                                         CONFIG['CALDAV_PASSWORD'],
                                         int(CONFIG['CALDAV_MAX_PRIORITY']),
                                         only_with_due_date=CONFIG.get('CALDAV_ONLY_WITH_DUE_DATE', False))
-        todo_count += len(caldav_tasks)
+        todo_count += sum(10 - int(t.split()[0]) for t in caldav_tasks)
         if args.random and caldav_tasks:
             caldav_tasks = [random.choice(caldav_tasks)]
         if args.format == 'html':
