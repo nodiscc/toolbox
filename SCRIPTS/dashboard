@@ -656,6 +656,13 @@ def load_clock_html():
     with open(clock_path, 'r', encoding='utf-8') as f:
         return f.read()
 
+def load_css():
+    """Load CSS content from dashboard.css."""
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    css_path = os.path.join(script_dir, 'dashboard.css')
+    with open(css_path, 'r', encoding='utf-8') as f:
+        return f.read()
+
 def load_weather_html():
     """Load weather HTML content and inject config values."""
     script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -667,77 +674,7 @@ def load_weather_html():
     html = html.replace('{{LONGITUDE}}', str(CONFIG['WEATHER_LONGITUDE']))
     return html
 
-HTML_CSS = """
-        body {
-            background: #ffffff;
-            color: rgb(15, 15, 15);
-            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-            font-size: 85%;
-            line-height: 1.5;
-            display: flex;
-            justify-content: center;
-            padding: 20px;
-            margin: 0;
-        }
-        .widget-wrapper {
-            width: 100%;
-            max-width: 600px;
-            box-sizing: border-box;
-        }
-        .card {
-            background: #ffffff;
-            border: #DFDFDF 1px solid;
-            border-radius: 4px;
-            padding: 25px;
-            box-shadow: 3px 6px 30px -14px rgba(0,0,0,.15);
-            margin-bottom: 20px;
-        }
-        .card-title {
-            font-size: 0.8em;
-            font-weight: bold;
-            color: #777;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 10px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #f0f0f0;
-        }
-        .card-item {
-            padding: 8px 0;
-            border-bottom: 1px solid #f5f5f5;
-            word-break: break-word;
-        }
-        .card-item:last-child {
-            border-bottom: none;
-        }
-        .card-item a {
-            color: #333;
-            text-decoration: none;
-        }
-        .card-item a:hover {
-            text-decoration: underline;
-        }
-        .dot {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            margin-right: 8px;
-            vertical-align: middle;
-        }
-        .todo-counter {
-            text-align: center;
-            padding: 15px 25px;
-        }
-        .counter-number {
-            font-size: 2em;
-            font-weight: bold;
-            color: #333;
-        }
-        .counter-number + .counter-number {
-            margin-left: 30px;
-        }
-"""
+
 
 def html_escape(text):
     """Escape HTML special characters"""
@@ -773,11 +710,12 @@ def generate_html_section(title, items, color_hex):
     lines.append('</div>')
     return '\n'.join(lines)
 
-def generate_html_output(sections, clock_html='', weather_html='', todo_count=0, xp=0):
+def generate_html_output(sections, css, clock_html='', weather_html='', todo_count=0, xp=0):
     """Generate complete HTML document from list of (title, items, color_hex) tuples
 
     Args:
         sections: list of (title, items, color_hex) tuples
+        css: CSS content string
         clock_html: optional pre-loaded clock HTML to prepend
         weather_html: optional pre-loaded weather HTML to insert after clock
         todo_count: optional remaining TODO counter
@@ -793,7 +731,7 @@ def generate_html_output(sections, clock_html='', weather_html='', todo_count=0,
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>Dashboard</title>
-    <style>{HTML_CSS}</style>
+    <style>{css}</style>
 </head>
 <body>
     <div class="widget-wrapper">
@@ -802,6 +740,7 @@ def generate_html_output(sections, clock_html='', weather_html='', todo_count=0,
 </body>
 </html>
 '''
+
 
 def main():
     """Main loop"""
@@ -1126,9 +1065,10 @@ def main():
         state['todo_count'] = todo_count
         state['xp'] = xp
         save_state(state)
+        css = load_css()
         clock_html = load_clock_html() if args.clock else ''
         weather_html = load_weather_html() if args.clock else ''
-        print(generate_html_output(sections, clock_html, weather_html, todo_count, xp))
+        print(generate_html_output(sections, css, clock_html, weather_html, todo_count, xp))
 
 if __name__ == "__main__":
     main()
