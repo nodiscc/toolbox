@@ -960,7 +960,7 @@ def main():
     # GITHUB ISSUES
     if args.github_issues:
         github_issues = get_github_issues(CONFIG['GITHUB_USERNAME'], CONFIG['GITHUB_TOKEN'])
-        todo_count += len(github_issues)
+        todo_count += len(github_issues) * 5
         if args.random and github_issues:
             github_issues = [random.choice(github_issues)]
         if args.format == 'html':
