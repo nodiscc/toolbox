@@ -673,7 +673,7 @@ def generate_html_section(title, items, color_hex):
     lines.append('</div>')
     return '\n'.join(lines)
 
-def generate_html_output(sections, css, clock_html='', weather_html='', todo_count=0, xp=0):
+def generate_html_output(sections, css, clock_html='', weather_html='', todo_count=0, xp=0, days_since=None):
     """Generate complete HTML document from list of (title, items, color_hex) tuples
 
     Args:
@@ -683,11 +683,15 @@ def generate_html_output(sections, css, clock_html='', weather_html='', todo_cou
         weather_html: optional pre-loaded weather HTML to insert after clock
         todo_count: optional remaining TODO counter
         xp: optional XP counter
+        days_since: optional days-elapsed counter
     """
     cards = '\n'.join(generate_html_section(t, items, c) for t, items, c in sections)
     clock_block = f'{clock_html}\n' if clock_html else ''
     weather_block = f'{weather_html}\n' if weather_html else ''
-    counter_block = f'<div class="card todo-counter"><span class="counter-number">📌 {todo_count}</span><span class="counter-number"> ⚡ {xp}</span></div>\n' if todo_count else ''
+    counters = f'<span class="counter-number">📌 {todo_count}</span>' if todo_count else ''
+    counters += f'<span class="counter-number"> ⚡ {xp}</span>' if xp else ''
+    counters += f'<span class="counter-number"> 🕐 {days_since}</span>' if days_since is not None else ''
+    counter_block = f'<div class="card todo-counter">{counters}</div>\n' if counters else ''
     return f'''<!doctype html>
 <html lang="en">
 <head>
@@ -986,6 +990,13 @@ def main():
             out = format_list(lutris_games_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
             print(out)
 
+    # Days since date counter
+    days_since = None
+    since_date_str = CONFIG.get('COUNTER_SINCE_DATE')
+    if since_date_str:
+        since_date = datetime.datetime.strptime(since_date_str, "%Y-%m-%d").date()
+        days_since = (datetime.datetime.now().date() - since_date).days
+
     # XP computation
     state = load_state()
     previous_count = state['todo_count']
@@ -1003,7 +1014,7 @@ def main():
         css = load_css()
         clock_html = load_clock_html() if args.clock else ''
         weather_html = load_weather_html() if args.clock else ''
-        print(generate_html_output(sections, css, clock_html, weather_html, todo_count, xp))
+        print(generate_html_output(sections, css, clock_html, weather_html, todo_count, xp, days_since))
 
 if __name__ == "__main__":
     main()
