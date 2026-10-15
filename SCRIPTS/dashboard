@@ -686,8 +686,12 @@ def html_escape(text):
             .replace('"', '&quot;'))
 
 def make_link(text):
-    """Wrap URLs in <a> tags, handling 'URL - Title' format"""
+    """Wrap URLs in <a> tags, handle 'URL - Title' format, bold remaining time prefix"""
     text = html_escape(text)
+    # Bold remaining time prefix: starts with digit, has " | " separator
+    if text[0].isdigit() and ' | ' in text:
+        parts = text.split(' | ', 1)
+        return f'<strong>{parts[0]}</strong> | {parts[1]}'
     # Handle 'http://... - Title' format
     if text.startswith(('http://', 'https://')):
         parts = text.split(' - ', 1)
@@ -711,7 +715,7 @@ def generate_html_section(title, items, color_hex):
     lines.append('</div>')
     return '\n'.join(lines)
 
-def generate_html_output(sections, css, clock_html='', weather_html='', todo_count=0, xp=0, days_since=None):
+def generate_html_output(sections, css, clock_html='', weather_html='', todo_count=0, xp=0, days_since=None, near_events_card=''):
     """Generate complete HTML document from list of (title, items, color_hex) tuples
 
     Args:
@@ -722,10 +726,12 @@ def generate_html_output(sections, css, clock_html='', weather_html='', todo_cou
         todo_count: optional remaining TODO counter
         xp: optional XP counter
         days_since: optional days-elapsed counter
+        near_events_card: optional pre-rendered HTML card for near-term events
     """
     cards = '\n'.join(generate_html_section(t, items, c) for t, items, c in sections)
     clock_block = f'{clock_html}\n' if clock_html else ''
     weather_block = f'{weather_html}\n' if weather_html else ''
+    near_events_block = f'{near_events_card}\n' if near_events_card else ''
     counters = f'<span class="counter-number">📌 {todo_count}</span>' if todo_count else ''
     counters += f'<span class="counter-number"> ⚡ {xp}</span>' if xp else ''
     counters += f'<span class="counter-number"> 🕐 {days_since}</span>' if days_since is not None else ''
@@ -740,7 +746,7 @@ def generate_html_output(sections, css, clock_html='', weather_html='', todo_cou
 </head>
 <body>
     <div class="widget-wrapper">
-{clock_block}{weather_block}{counter_block}{cards}
+{clock_block}{weather_block}{near_events_block}{counter_block}{cards}
     </div>
 </body>
 </html>
@@ -839,6 +845,7 @@ def main():
             print(out)
 
     # NEXTCLOUD CALDAV EVENTS
+    has_near_events = False
     if args.caldav_events:
         caldav_events = get_caldav_events(CONFIG['CALDAV_URL'],
                                        CONFIG['CALDAV_USERNAME'],
@@ -847,7 +854,15 @@ def main():
         if args.random and caldav_events:
             caldav_events = [random.choice(caldav_events)]
         if args.format == 'html':
-            sections.append(("Nextcloud Events", caldav_events, HTML_COLORS[colorama.Fore.BLUE]))
+            # Split events: <24h (h/min prefix) vs >=24h (d prefix)
+            near_events = [e for e in caldav_events if e and '|' in e and not e.split('|')[0].strip().endswith('d')]
+            far_events = [e for e in caldav_events if e and '|' in e and e.split('|')[0].strip().endswith('d')]
+            if near_events:
+                has_near_events = True
+                near_items = '\n'.join(f'<div class="card-item"><span class="dot" style="background: {HTML_COLORS[colorama.Fore.GREEN]}"></span>{make_link(item)}</div>' for item in near_events)
+                near_events_card_html = f'<div class="card near-events">\n{near_items}\n</div>'
+            if far_events:
+                sections.append(("Nextcloud Events", far_events, HTML_COLORS[colorama.Fore.BLUE]))
         else:
             print_title('nextcloud events', args.format)
             caldav_events_out_lines = [
@@ -1052,7 +1067,7 @@ def main():
         css = load_css()
         clock_html = load_clock_html() if args.clock else ''
         weather_html = load_weather_html() if args.clock else ''
-        print(generate_html_output(sections, css, clock_html, weather_html, todo_count, xp, days_since))
+        print(generate_html_output(sections, css, clock_html, weather_html, todo_count, xp, days_since, near_events_card_html if has_near_events else ''))
 
 if __name__ == "__main__":
     main()

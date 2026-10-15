@@ -67,3 +67,6 @@ body {
 .counter-number + .counter-number {
     margin-left: 30px;
 }
+.near-events {
+    text-align: center;
+}
