@@ -324,6 +324,43 @@ def get_ttrss_marked(ttrss_url, ttrss_username, ttrss_password, ttrss_limit):
 
 
 
+def format_remaining_time(start_dt, now):
+    """Format remaining time until an event starts.
+
+    Returns:
+        - Days if >= 24h (e.g. "1d")
+        - Hours+minutes if < 24h and >= 1h (e.g. "3h4min")
+        - Minutes if < 1h (e.g. "24min")
+        - Empty string if event already started
+    """
+    # Handle all-day events (date vs datetime)
+    if isinstance(start_dt, datetime.date) and not isinstance(start_dt, datetime.datetime):
+        start_dt = datetime.datetime(start_dt.year, start_dt.month, start_dt.day)
+
+    # Normalise timezone: ensure both are UTC-aware
+    if start_dt.tzinfo is not None:
+        start_dt = start_dt.astimezone(datetime.timezone.utc)
+    else:
+        start_dt = start_dt.replace(tzinfo=datetime.timezone.utc)
+
+    remaining = start_dt - now
+    total_seconds = int(remaining.total_seconds())
+
+    if total_seconds < 0:
+        return ""
+
+    days = total_seconds // 86400
+    hours = (total_seconds % 86400) // 3600
+    minutes = (total_seconds % 3600) // 60
+
+    if days >= 1:
+        return f"{days}d"
+    elif hours >= 1:
+        return f"{hours}h{minutes}min"
+    else:
+        return f"{minutes}min"
+
+
 def get_caldav_events(caldav_url, caldav_username, caldav_password, max_days_in_future):
     """Fetch and format CalDAV events within a specified number of days in the future.
 
@@ -361,7 +398,11 @@ def get_caldav_events(caldav_url, caldav_username, caldav_password, max_days_in_
                     summary = component.get('summary')
                     start_datetime = component.get('dtstart').dt
                     start = start_datetime.strftime('%a %d/%m %H:%M')
-                    out_line = f'{start} | {summary}'
+                    remaining = format_remaining_time(start_datetime, now)
+                    if remaining:
+                        out_line = f'{remaining} | {start} | {summary}'
+                    else:
+                        out_line = f'{start} | {summary}'
                     events.append(out_line)
         return events
 
