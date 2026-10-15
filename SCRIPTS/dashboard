@@ -846,6 +846,7 @@ def main():
 
     # NEXTCLOUD CALDAV EVENTS
     has_near_events = False
+    near_events_card_html = ''
     if args.caldav_events:
         caldav_events = get_caldav_events(CONFIG['CALDAV_URL'],
                                        CONFIG['CALDAV_USERNAME'],
