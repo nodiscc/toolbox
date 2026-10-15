@@ -361,7 +361,7 @@ def get_caldav_events(caldav_url, caldav_username, caldav_password, max_days_in_
                     summary = component.get('summary')
                     start_datetime = component.get('dtstart').dt
                     start = start_datetime.strftime('%a %d/%m %H:%M')
-                    out_line = f'{start} {summary}'
+                    out_line = f'{start} | {summary}'
                     events.append(out_line)
         return events
 
