@@ -1,0 +1,59 @@
+#!/usr/bin/env python3
+"""
+Description: Fetch a GitHub issue and its comments, print human-readable output.
+Usage: github-issue <github-issue-url>
+Requires: requests
+"""
+import sys
+import re
+import requests
+
+URL_RE = re.compile(r"github\.com/([^/]+)/([^/]+)/issues/(\d+)")
+
+
+def main():
+    if len(sys.argv) != 2:
+        print("Usage: gh-issue.py <github-issue-url>")
+        sys.exit(1)
+
+    url = sys.argv[1]
+    m = URL_RE.search(url)
+    if not m:
+        print(f"ERROR: could not parse URL: {url}")
+        print("Usage: gh-issue.py <github-issue-url>")
+        sys.exit(1)
+
+    owner, repo, number = m.group(1), m.group(2), m.group(3)
+    base = f"https://api.github.com/repos/{owner}/{repo}/issues/{number}"
+
+    issue = requests.get(f"{base}?per_page=1", timeout=30).json()
+    comments = requests.get(f"{base}/comments", timeout=30).json()
+
+    # Header
+    print(f"# {issue['title']}")
+    print(f"**{owner}/{repo}#{number}** — {issue['state']} by {issue['user']['login']}")
+    print(f"Created: {issue['created_at']}  Updated: {issue['updated_at']}")
+    if issue.get('labels'):
+        print(f"Labels: {', '.join(l['name'] for l in issue['labels'])}")
+    if issue.get('assignees'):
+        print(f"Assignees: {', '.join(a['login'] for a in issue['assignees'])}")
+    print()
+
+    # Body
+    if issue.get('body'):
+        print(issue['body'])
+        print()
+
+    # Comments
+    if comments:
+        print(f"--- Comments ({len(comments)}) ---\n")
+        for i, c in enumerate(comments):
+            if i > 0:
+                print('-' * 50)
+            print(f"**{c['user']['login']}** — {c['created_at']}")
+            print(c['body'])
+            print()
+
+
+if __name__ == "__main__":
+    main()
