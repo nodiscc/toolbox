@@ -8,7 +8,7 @@ import sys
 import re
 import requests
 
-URL_RE = re.compile(r"github\.com/([^/]+)/([^/]+)/issues/(\d+)")
+URL_RE = re.compile(r"github\.com/([^/]+)/([^/]+)/(issues|pull)/(\d+)")
 
 
 def main():
@@ -23,15 +23,16 @@ def main():
         print("Usage: gh-issue.py <github-issue-url>")
         sys.exit(1)
 
-    owner, repo, number = m.group(1), m.group(2), m.group(3)
-    base = f"https://api.github.com/repos/{owner}/{repo}/issues/{number}"
+    owner, repo, kind, number = m.group(1), m.group(2), m.group(3), m.group(4)
+    api_kind = "issues"  # GitHub API uses /issues/ for both issues and PRs
+    base = f"https://api.github.com/repos/{owner}/{repo}/{api_kind}/{number}"
 
     issue = requests.get(f"{base}?per_page=1", timeout=30).json()
     comments = requests.get(f"{base}/comments", timeout=30).json()
 
     # Header
     print(f"# {issue['title']}")
-    print(f"**{owner}/{repo}#{number}** — {issue['state']} by {issue['user']['login']}")
+    print(f"**{owner}/{repo}#{number}** — {issue['state']} by {issue['user']['login']} ({kind})")
     print(f"Created: {issue['created_at']}  Updated: {issue['updated_at']}")
     if issue.get('labels'):
         print(f"Labels: {', '.join(l['name'] for l in issue['labels'])}")
