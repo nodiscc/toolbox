@@ -138,10 +138,14 @@ def get_imap_subjects(conn, folder, criterion):
     if status != 'OK':
         return []
     _, imap_response = conn.search(None, criterion)
-    message_uids = imap_response[0].split()
+    message_uids = imap_response[0].split() if imap_response[0] else []
     messages = []
-    for message_uid in message_uids:
-        _, message_data = conn.fetch(message_uid, '(BODY.PEEK[HEADER])')
+    if not message_uids:
+        return messages
+    batch_size = 100
+    for i in range(0, len(message_uids), batch_size):
+        batch_uids = message_uids[i:i + batch_size]
+        _, message_data = conn.fetch(b','.join(batch_uids), '(BODY.PEEK[HEADER])')
         for response_part in message_data:
             if isinstance(response_part, tuple):
                 msg = email.message_from_bytes(response_part[1])
@@ -196,9 +200,13 @@ def _fetch_mail(account, criterion):
         if status != 'OK':
             continue
         _, imap_response = conn.search(None, '(' + criterion + ')')
-        message_uids = imap_response[0].split()
-        for message_uid in message_uids:
-            _, message_data = conn.fetch(message_uid, '(BODY.PEEK[HEADER])')
+        message_uids = imap_response[0].split() if imap_response[0] else []
+        if not message_uids:
+            continue
+        batch_size = 100
+        for i in range(0, len(message_uids), batch_size):
+            batch_uids = message_uids[i:i + batch_size]
+            _, message_data = conn.fetch(b','.join(batch_uids), '(BODY.PEEK[HEADER])')
             for response_part in message_data:
                 if isinstance(response_part, tuple):
                     msg = email.message_from_bytes(response_part[1])  # pylint: disable=unsubscriptable-object
