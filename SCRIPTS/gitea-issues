@@ -171,7 +171,7 @@ def fetch_json(url, params=None, headers=None, timeout=None):
         return None
 
 
-def get_gitea_issues(gitea_instance_url, _gitea_token, repo, return_raw=False):
+def get_gitea_issues(gitea_instance_url, _gitea_token, repo, return_raw=False, milestone=None):
     """Fetch open issues from a Gitea repository
 
     parameters:
@@ -179,6 +179,7 @@ def get_gitea_issues(gitea_instance_url, _gitea_token, repo, return_raw=False):
         gitea_token: Personal access token with repo scope
         repo: Repository in format "username/repo"
         return_raw: If True, return raw issue data; if False, return formatted strings
+        milestone: Optional milestone title to filter by (server-side)
 
     returns:
         list of "URL - Title" strings (or raw issue dicts if return_raw=True)
@@ -191,8 +192,10 @@ def get_gitea_issues(gitea_instance_url, _gitea_token, repo, return_raw=False):
         'direction': 'desc',
         'sort': 'updated',
         'page': 1,
-        'limit': MAX_API_LIMIT
+        'limit': MAX_API_LIMIT,
     }
+    if milestone:
+        params['milestones'] = milestone
     headers = get_headers()
 
     all_issues = []
@@ -381,6 +384,11 @@ Configuration file (~/.config/gitea-issues.yml):
         help='Show details of a specific issue by number'
     )
     parser.add_argument(
+        '--milestone',
+        type=str,
+        help='Only list issues from the specified milestone (title)'
+    )
+    parser.add_argument(
         '--format',
         type=str,
         choices=['list', 'markdown'],
@@ -389,6 +397,9 @@ Configuration file (~/.config/gitea-issues.yml):
     )
 
     args = parser.parse_args()
+
+    if args.issue and args.milestone:
+        parser.error('arguments --issue and --milestone are mutually exclusive')
 
     target_repo = args.repo
 
@@ -400,13 +411,16 @@ Configuration file (~/.config/gitea-issues.yml):
         return
 
     # Print title
-    print_title(f"gitea issues: {target_repo}")
+    if args.milestone:
+        print_title(f"gitea issues: {target_repo} [milestone: {args.milestone}]")
+    else:
+        print_title(f"gitea issues: {target_repo}")
 
     # Fetch issues
     if args.format == 'markdown':
-        issues = get_gitea_issues(GITEA_URL, GITEA_TOKEN, target_repo, return_raw=True)
+        issues = get_gitea_issues(GITEA_URL, GITEA_TOKEN, target_repo, return_raw=True, milestone=args.milestone)
     else:
-        issues = get_gitea_issues(GITEA_URL, GITEA_TOKEN, target_repo)
+        issues = get_gitea_issues(GITEA_URL, GITEA_TOKEN, target_repo, milestone=args.milestone)
 
     if issues is None:
         # Error occurred
