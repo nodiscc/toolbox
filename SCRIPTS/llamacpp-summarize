@@ -1,6 +1,6 @@
 #!.venv/bin/python3
 """
-Description: extract the main article text from an URL or file and summarize it with llama.cpp
+Description: extract the main article text from an URL or file, or fetch comments from Reddit/Hacker News, and summarize with llama.cpp
 Requirements: python3 -m venv ~/.venv && ~/.venv/bin/pip3 install beautifulsoup4==4.14.3 git+https://github.com/buriy/python-readability@v0.8.1 html2text==2025.4.15 lxml_html_clean==0.4.5 requests==2.33.1 praw==7.8.2 markdown-it-py==4.2.0
               llama.cpp server must be running locally at http://127.0.0.1:8033/v1
 Usage: usage: llm-summarize [-h] [--sentences SENTENCES_NUMBER] (--url URL | --file FILE)
@@ -12,7 +12,9 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+import html
 import html2text
+import re
 import praw
 import praw.exceptions
 import requests
@@ -218,6 +220,101 @@ def fetch_reddit(url):
     return (formatted, submission.title, 'en', separator, header, url, "reddit")
 
 
+def fetch_hn(url):
+    """Fetch Hacker News story comments and format for LLM summarization.
+
+    Fetches the top 10 top-level comments and up to 5 replies each.
+    Returns (plain_text, title, lang, separator, header, source_display, source_type)
+    or None on error.
+    """
+    m = re.search(r'item\?id=(\d+)', url)
+    if not m:
+        print(f"Error: could not parse item ID from URL: {url}")
+        return None
+
+    item_id = m.group(1)
+    base = "https://hacker-news.firebaseio.com/v0"
+
+    # Fetch the story
+    try:
+        story_resp = requests.get(f"{base}/item/{item_id}.json", timeout=30)
+        story_resp.raise_for_status()
+        story = story_resp.json()
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching HN story: {e}")
+        return None
+
+    if not story or story.get("type") != "story":
+        print(f"Error: item {item_id} is not a story")
+        return None
+
+    kids = story.get("kids", [])
+    top_count = min(10, len(kids))
+
+    # Fetch top-level comments
+    top_comments = []
+    for cid in kids[:top_count]:
+        try:
+            cresp = requests.get(f"{base}/item/{cid}.json", timeout=30)
+            cresp.raise_for_status()
+            comment = cresp.json()
+            if comment and comment.get("type") == "comment":
+                top_comments.append(comment)
+        except requests.exceptions.RequestException:
+            continue
+
+    # Fetch up to 5 replies for each top-level comment
+    all_comments = []
+    for i, tc in enumerate(top_comments):
+        tc_author = tc.get("by", "[deleted]")
+        all_comments.append({
+            'author': tc_author,
+            'body': html.unescape(tc.get("text", "")),
+            'depth': 0,
+            'parent_author': None,
+        })
+
+        replies_ids = tc.get("kids", [])[:5]
+        for rid in replies_ids:
+            try:
+                rresp = requests.get(f"{base}/item/{rid}.json", timeout=30)
+                rresp.raise_for_status()
+                reply = rresp.json()
+                if reply and reply.get("type") == "comment":
+                    all_comments.append({
+                        'author': reply.get("by", "[deleted]"),
+                        'body': html.unescape(reply.get("text", "")),
+                        'depth': 1,
+                        'parent_author': tc_author,
+                    })
+            except requests.exceptions.RequestException:
+                continue
+
+    title = story.get("title", "Untitled")
+    author = story.get("by", "[deleted]")
+    score = story.get("score", 0)
+    descendants = story.get("descendants", 0)
+    url_field = story.get("url", "")
+
+    formatted = f"Story: {title}\n"
+    formatted += f"Author: {author} | Score: {score} | Comments: {descendants}"
+    if url_field:
+        formatted += f" | URL: {url_field}"
+    formatted += "\n"
+    formatted += f"\n{'='*80}\n\n"
+
+    for i, c in enumerate(all_comments, 1):
+        if c['depth'] == 1:
+            formatted += f"  ↳ (Reply to: {c['parent_author']}) "
+        formatted += f"Comment {i} (Author: {c['author']}):\n"
+        formatted += f"{c['body']}\n\n"
+
+    separator = "\n---------------------------------------------\n"
+    header = f"\n{separator}\n\033[0;36m### {title}\033[0m\n\n\033[0;36m{url}\033[0m\n\n"
+
+    return (formatted, title, 'en', separator, header, url, "hackernews")
+
+
 def parse_args():
     """Parse and return command-line arguments."""
     parser = argparse.ArgumentParser()
@@ -329,6 +426,22 @@ def build_reddit_prompts(plain_text, args):
     return system_content, user_content
 
 
+def build_hn_prompts(plain_text, args):
+    """Build system and user prompts for summarizing a Hacker News discussion."""
+    system_content = (
+        "You summarize Hacker News discussions. Focus on the key technical points, "
+        "arguments, and counterarguments made by commenters. Note any notable consensus "
+        "or significant disagreements. Be precise and technical — HN audiences value "
+        "accuracy over brevity. Highlight corrections, clarifications, and expert insights."
+    )
+    if args.prompt:
+        user_content = f'{args.prompt}. use only the information in the following text to provide your answer: {plain_text}'
+    else:
+        user_content = f"Summarize the following Hacker News discussion:\n\n{plain_text}\n\nTL;DR:"
+
+    return system_content, user_content
+
+
 def build_prompts(plain_text, args, lang):
     """Build system and user prompts for summarizing an article."""
     if args.translate:
@@ -425,6 +538,12 @@ def main():
                 print(f'error processing source: {source}')
                 continue
             source_type = "reddit"
+        elif source_type == 'url' and 'news.ycombinator.com' in source:
+            result = fetch_hn(source)
+            if result is None:
+                print(f'error processing source: {source}')
+                continue
+            source_type = "hackernews"
         else:
             result = extract_text(source_type, source)
             if result is None:
@@ -444,6 +563,8 @@ def main():
 
         if source_type == "reddit":
             system_content, user_content = build_reddit_prompts(plain_text, args)
+        elif source_type == "hackernews":
+            system_content, user_content = build_hn_prompts(plain_text, args)
         else:
             system_content, user_content = build_prompts(plain_text, args, lang)
 
