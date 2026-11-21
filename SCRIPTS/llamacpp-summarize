@@ -13,8 +13,8 @@ import sys
 import tempfile
 from pathlib import Path
 import html
-import html2text
 import re
+import html2text
 import praw
 import praw.exceptions
 import requests
@@ -47,7 +47,8 @@ def get_content_from_url(url):
         response = requests.get(url, headers=headers, timeout=30)
         response.raise_for_status()
         content = response.text
-        return content
+        content_type = response.headers.get("Content-Type", "")
+        return content, content_type
     except requests.exceptions.RequestException as error:
         print(f"Error querying URL: {error}")
         return None
@@ -369,9 +370,14 @@ def extract_text(source_type, source):
                     "\n---------------------------------------------\n",
                     f"\n{'-'*45}\n\033[0;36m# {title}\033[0m\n\n\033[0;36m{source}\033[0m\n\n",
                     source, "youtube")
-        content_html = get_content_from_url(source)
+        content_html, content_type = get_content_from_url(source)
         if content_html is None:
             return None
+
+        # Bypass readability/html2text for non-HTML content — return raw text as-is
+        if "html" not in (content_type or "").lower():
+            # Let main() generate the header to avoid duplication
+            return (content_html, source, "en", "", "", source, "article")
     else:
         content_html = get_content_from_file(source)
         if content_html is None:
