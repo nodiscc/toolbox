@@ -71,6 +71,19 @@ with open(config_path, 'r', encoding='utf-8') as config_file:
 REQUESTS_TIMEOUT = int(CONFIG['REQUESTS_TIMEOUT'])  # global
 
 
+def get_caldav_config():
+    """Build CalDAV config dict from global CONFIG."""
+    return {
+        'url': CONFIG['CALDAV_URL'],
+        'username': CONFIG['CALDAV_USERNAME'],
+        'password': CONFIG['CALDAV_PASSWORD'],
+        'calendar_name': CONFIG['CALDAV_CALENDAR_NAME'],
+        'max_priority': int(CONFIG['CALDAV_MAX_PRIORITY']),
+        'max_days_in_future': int(CONFIG['CALDAV_EVENTS_MAX_DAYS_IN_FUTURE']),
+        'only_with_due_date': CONFIG.get('CALDAV_ONLY_WITH_DUE_DATE', False),
+    }
+
+
 def load_state():
     """Load dashboard state from YAML file."""
     state_path = os.path.expanduser('~/.cache/dashboard-state.yml')
@@ -376,34 +389,30 @@ def format_remaining_time(start_dt, now):
     return f"{minutes}min"
 
 
-def get_caldav_events(caldav_url, caldav_username, caldav_password, caldav_calendar_name, max_days_in_future):
+def get_caldav_events(caldav_config):
     """Fetch and format CalDAV events within a specified number of days in the future.
 
     Args:
-        caldav_url: URL of the CalDAV server
-        caldav_username: Username for authentication
-        caldav_password: Password for authentication
-        caldav_calendar_name: Name of the CalDAV calendar
-        max_days_in_future: Maximum number of days to look ahead
+        caldav_config: dict with keys: url, username, password, calendar_name, max_days_in_future
 
     Returns:
         List of formatted event strings
     """
     events = []
     caldav_client = caldav.DAVClient(
-        url=caldav_url,
-        username=caldav_username,
-        password=caldav_password,
+        url=caldav_config['url'],
+        username=caldav_config['username'],
+        password=caldav_config['password'],
         ssl_verify_cert=False,
         timeout=REQUESTS_TIMEOUT)
     try:
         caldav_principal = caldav_client.principal()
-        caldav_calendar = caldav_principal.calendar(name=caldav_calendar_name)
+        caldav_calendar = caldav_principal.calendar(name=caldav_config['calendar_name'])
         assert caldav_calendar
         now = datetime.datetime.now(datetime.timezone.utc)
         caldav_events = caldav_calendar.search(
             start=now,
-            end=now + datetime.timedelta(days=max_days_in_future),
+            end=now + datetime.timedelta(days=caldav_config['max_days_in_future']),
             event=True,
             expand=True,
             sort_keys=('dtstart',))
@@ -427,18 +436,25 @@ def get_caldav_events(caldav_url, caldav_username, caldav_password, caldav_calen
         return []
 
 
-def get_caldav_tasks(caldav_url, caldav_username, caldav_password, caldav_calendar_name, max_priority=9, only_with_due_date=False):
-    """Show a list of caldav tasks"""
+def get_caldav_tasks(caldav_config):
+    """Show a list of caldav tasks.
+
+    Args:
+        caldav_config: dict with keys: url, username, password, calendar_name, max_priority, only_with_due_date
+
+    Returns:
+        List of task dicts
+    """
     todos = []
     caldav_client = caldav.DAVClient(
-        url=caldav_url,
-        username=caldav_username,
-        password=caldav_password,
+        url=caldav_config['url'],
+        username=caldav_config['username'],
+        password=caldav_config['password'],
         ssl_verify_cert=False,
         timeout=REQUESTS_TIMEOUT)
     try:
         caldav_principal = caldav_client.principal()
-        caldav_calendar = caldav_principal.calendar(name=caldav_calendar_name)
+        caldav_calendar = caldav_principal.calendar(name=caldav_config['calendar_name'])
         assert caldav_calendar
         caldav_todos = caldav_calendar.todos(include_completed=False)
         now = datetime.datetime.now(datetime.timezone.utc)
@@ -449,9 +465,9 @@ def get_caldav_tasks(caldav_url, caldav_username, caldav_password, caldav_calend
             except AttributeError:
                 priority = "9"
             priority_int = int(priority)
-            if priority_int > max_priority:
+            if priority_int > caldav_config['max_priority']:
                 continue
-            if only_with_due_date:
+            if caldav_config['only_with_due_date']:
                 try:
                     _ = todo.vobject_instance.vtodo.due.value
                 except AttributeError:
@@ -851,13 +867,9 @@ def main():
             return
 
     # NEXTCLOUD CALDAV TASKS
+    caldav_config = get_caldav_config()
     if args.caldav_tasks:
-        caldav_tasks = get_caldav_tasks(CONFIG['CALDAV_URL'],
-                                        CONFIG['CALDAV_USERNAME'],
-                                        CONFIG['CALDAV_PASSWORD'],
-                                        CONFIG['CALDAV_CALENDAR_NAME'],
-                                        int(CONFIG['CALDAV_MAX_PRIORITY']),
-                                        only_with_due_date=CONFIG.get('CALDAV_ONLY_WITH_DUE_DATE', False))
+        caldav_tasks = get_caldav_tasks(caldav_config)
         todo_count += sum(10 - t['priority_int'] for t in caldav_tasks)
         if args.random and caldav_tasks:
             caldav_tasks = [random.choice(caldav_tasks)]
@@ -886,11 +898,7 @@ def main():
     has_near_events = False
     near_events_card_html = ''
     if args.caldav_events:
-        caldav_events = get_caldav_events(CONFIG['CALDAV_URL'],
-                                       CONFIG['CALDAV_USERNAME'],
-                                       CONFIG['CALDAV_PASSWORD'],
-                                       CONFIG['CALDAV_CALENDAR_NAME'],
-                                       int(CONFIG['CALDAV_EVENTS_MAX_DAYS_IN_FUTURE']))
+        caldav_events = get_caldav_events(caldav_config)
         if args.random and caldav_events:
             caldav_events = [random.choice(caldav_events)]
         if args.format == 'html':
