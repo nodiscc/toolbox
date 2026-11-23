@@ -757,26 +757,21 @@ def generate_html_section(title, items, color_hex):
     lines.append('</div>')
     return '\n'.join(lines)
 
-def generate_html_output(sections, css, clock_html='', weather_html='', todo_count=0, xp=0, days_since=None, near_events_card=''):
-    """Generate complete HTML document from list of (title, items, color_hex) tuples
+def generate_html_output(sections, css, html_config):
+    """Generate complete HTML document from list of (title, items, color_hex) tuples.
 
     Args:
         sections: list of (title, items, color_hex) tuples
         css: CSS content string
-        clock_html: optional pre-loaded clock HTML to prepend
-        weather_html: optional pre-loaded weather HTML to insert after clock
-        todo_count: optional remaining TODO counter
-        xp: optional XP counter
-        days_since: optional days-elapsed counter
-        near_events_card: optional pre-rendered HTML card for near-term events
+        html_config: dict with keys: clock_html, weather_html, near_events_card, todo_count, xp, days_since
     """
     cards = '\n'.join(generate_html_section(t, items, c) for t, items, c in sections)
-    clock_block = f'{clock_html}\n' if clock_html else ''
-    weather_block = f'{weather_html}\n' if weather_html else ''
-    near_events_block = f'{near_events_card}\n' if near_events_card else ''
-    counters = f'<span class="counter-number">📌 {todo_count}</span>' if todo_count else ''
-    counters += f'<span class="counter-number"> ⚡ {xp}</span>' if xp else ''
-    counters += f'<span class="counter-number"> 🕐 {days_since}</span>' if days_since is not None else ''
+    clock_block = f"{html_config['clock_html']}\n" if html_config['clock_html'] else ''
+    weather_block = f"{html_config['weather_html']}\n" if html_config['weather_html'] else ''
+    near_events_block = f"{html_config['near_events_card']}\n" if html_config['near_events_card'] else ''
+    counters = f'<span class="counter-number">📌 {html_config["todo_count"]}</span>' if html_config['todo_count'] else ''
+    counters += f'<span class="counter-number"> ⚡ {html_config["xp"]}</span>' if html_config['xp'] else ''
+    counters += f'<span class="counter-number"> 🕐 {html_config["days_since"]}</span>' if html_config['days_since'] is not None else ''
     counter_block = f'<div class="card todo-counter">{counters}</div>\n' if counters else ''
     return f'''<!doctype html>
 <html lang="en">
@@ -1113,9 +1108,15 @@ def main():
         state['xp'] = xp
         save_state(state)
         css = load_css()
-        clock_html = load_clock_html() if args.clock else ''
-        weather_html = load_weather_html() if args.clock else ''
-        print(generate_html_output(sections, css, clock_html, weather_html, todo_count, xp, days_since, near_events_card_html if has_near_events else ''))
+        html_config = {
+            'clock_html': load_clock_html() if args.clock else '',
+            'weather_html': load_weather_html() if args.clock else '',
+            'near_events_card': near_events_card_html if has_near_events else '',
+            'todo_count': todo_count,
+            'xp': xp,
+            'days_since': days_since,
+        }
+        print(generate_html_output(sections, css, html_config))
 
 if __name__ == "__main__":
     main()
