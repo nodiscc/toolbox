@@ -370,9 +370,10 @@ def extract_text(source_type, source):
                     "\n---------------------------------------------\n",
                     f"\n{'-'*45}\n\033[0;36m# {title}\033[0m\n\n\033[0;36m{source}\033[0m\n\n",
                     source, "youtube")
-        content_html, content_type = get_content_from_url(source)
-        if content_html is None:
+        result = get_content_from_url(source)
+        if result is None:
             return None
+        content_html, content_type = result
 
         # Bypass readability/html2text for non-HTML content — return raw text as-is
         if "html" not in (content_type or "").lower():
