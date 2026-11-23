@@ -478,11 +478,21 @@ def get_caldav_tasks(caldav_url, caldav_username, caldav_password, caldav_calend
                 # If no start date, include the task
                 pass
 
-            if due_date_str:
-                todos.append(f'{priority} {due_date_str} - {summary}')
-            else:
-                todos.append(f'{priority} {summary}')
-        todos.sort()
+            task = {
+                'priority': priority,
+                'priority_int': priority_int,
+                'due_date_str': due_date_str,
+                'summary': summary,
+                'description': None,
+            }
+            try:
+                desc = todo.vobject_instance.vtodo.description.value
+                if desc and desc.strip():
+                    task['description'] = desc.strip()
+            except AttributeError:
+                pass
+            todos.append(task)
+        todos.sort(key=lambda t: (t['priority_int'], t['due_date_str'], t['summary']))
         return todos
 
     except requests.exceptions.RequestException as e:
@@ -792,6 +802,7 @@ def main():
     parser.add_argument('--file', help='File path for progress bar calculation')
     parser.add_argument('--format', dest='format', default='cli', choices=['cli', 'conky', 'html'], help='Output format')
     parser.add_argument('--no-clock', action='store_false', dest='clock', default=True, help='Disable clock in html output')
+    parser.add_argument('--descriptions', action='store_true', help='Show task descriptions in CLI output')
     args = parser.parse_args()
 
     # Validate progress bar arguments
@@ -848,17 +859,27 @@ def main():
                                         CONFIG['CALDAV_CALENDAR_NAME'],
                                         int(CONFIG['CALDAV_MAX_PRIORITY']),
                                         only_with_due_date=CONFIG.get('CALDAV_ONLY_WITH_DUE_DATE', False))
-        todo_count += sum(10 - int(t.split()[0]) for t in caldav_tasks)
+        todo_count += sum(10 - t['priority_int'] for t in caldav_tasks)
         if args.random and caldav_tasks:
             caldav_tasks = [random.choice(caldav_tasks)]
         if args.format == 'html':
-            sections.append(("Nextcloud Tasks", caldav_tasks, HTML_COLORS[colorama.Fore.BLUE]))
-        else:
-            print_title('nextcloud tasks', args.format)
-            caldav_tasks_out_lines = [
-                format_bullet_point('▧', colorama.Fore.BLUE, f'{task}', args.format)
+            html_tasks = [
+                f"{task['priority']} {task['due_date_str']} - {task['summary']}" if task['due_date_str'] else f"{task['priority']} {task['summary']}"
                 for task in caldav_tasks
             ]
+            sections.append(("Nextcloud Tasks", html_tasks, HTML_COLORS[colorama.Fore.BLUE]))
+        else:
+            print_title('nextcloud tasks', args.format)
+            caldav_tasks_out_lines = []
+            for task in caldav_tasks:
+                if task['due_date_str']:
+                    line = f"{task['priority']} {task['due_date_str']} - {task['summary']}"
+                else:
+                    line = f"{task['priority']} {task['summary']}"
+                caldav_tasks_out_lines.append(format_bullet_point('▧', colorama.Fore.BLUE, line, args.format))
+                if args.descriptions and task.get('description'):
+                    desc = '\n  ↳'.join(line for line in task['description'].split('\n') if line.strip())
+                    caldav_tasks_out_lines.append(format_bullet_point('  ↳', colorama.Fore.BLUE, desc, args.format))
             out = format_list(caldav_tasks_out_lines, int(CONFIG['MAX_LINES']) if not args.random else 1)
             print(out)
 
